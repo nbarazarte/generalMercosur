@@ -1,2 +1,0 @@
-Notas:
-En la carpeta inicio, ve al archivo: MainGrid.jsx y declara ahí las paginas que se van a usar en la aplicación
