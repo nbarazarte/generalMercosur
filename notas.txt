@@ -1,0 +1,103 @@
+para saber si mi version de node es vulnerable
+$ npx is-my-node-vulnerable
+
+
+para compartir mi desarrollo
+npm install -g localtunnel
+lt --port 5173
+
+
+node --watch server.js 
+
+const { styleText } = require('node:util');
+
+ejemplo:
+app.listen(port, () => {
+    console.log(
+        styleText(
+            'blue',
+            styleText(
+                'bold',
+                styleText(
+                    'underline', `Servidor escuchando en http://localhost:${port}`))
+        )
+    );
+});
+
+
+Instalar express-generator globalmente:
+npm install -g express-generator
+
+Crear una nueva aplicación con el generador:
+express mi-api
+
+Instalar las dependencias del proyecto:
+cd mi-api
+npm install
+
+Iniciar el servidor:
+npm start
+
+
+
+
+CREATE TABLE clientes_monto_pm (
+    id SERIAL PRIMARY KEY,
+    cliente_id INTEGER NOT NULL,
+    monto NUMERIC(10, 2) NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT NOW()
+);
+
+
+// mailer.js
+/* const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // This handles host, port, and secure settings automatically
+  auth: {
+    user: process.env.SENDER_EMAIL,
+    pass: process.env.PASSWORD_EMAIL, // Must be the 16-digit App Password
+  }
+});
+
+module.exports = transporter; */
+
+
+
+CREATE INDEX IF NOT EXISTS idx_usuarios_email_upper 
+ON public.usuarios (UPPER(email));
+
+
+0 * * * * /home/mercoadmlocal/respaldo_db.sh >> /home/mercoadmlocal/log_respaldo.log 2>&1
+
+
+
+Llaves SSH: Para que el scp no pida contraseña, debes generar llaves SSH (ssh-keygen) y copiar la pública al servidor destino (ssh-copy-id usuario@192.168.12.29).
+
+
+Crea el archivo: nano ~/.pgpass
+
+Pega esto adentro (ajustando a tu clave real):
+192.168.12.36:5432:onboarding:postgres:1123581321
+
+Dale permisos estrictos (si no, Postgres lo ignora por seguridad):
+chmod 600 ~/.pgpass
+
+
+
+----------------------
+# Instala la versión más reciente de la línea 22 (que ya incluye los parches)
+nvm install 22
+
+# Dile a nvm que use esa versión por defecto
+nvm alias default 22
+
+# (Opcional) Si quieres desinstalar la versión vulnerable
+nvm uninstall 22.16.0
+
+
+SELECT column_name
+FROM information_schema.columns
+WHERE table_schema = 'onboarding'
+  AND table_name = 'view_reporte_detallado'
+ORDER BY ordinal_position;

@@ -1,0 +1,121 @@
+[
+    {
+        "id": 329,
+        "nombre": "ASAMBLEA DE ACCIONISTAS BVC",
+        "slug": "asamblea-de-accionistas-bvc",
+        "total_posts": 134,
+        "parent_id": 2
+    },
+    {
+        "id": 7,
+        "nombre": "CONVOCATORIAS Y DIVIDENDOS",
+        "slug": "convocatorias-y-dividendos",
+        "total_posts": 567,
+        "parent_id": 2
+    },
+    {
+        "id": 1938,
+        "nombre": "Dating Tips",
+        "slug": "dating-tips",
+        "total_posts": 0,
+        "parent_id": 0
+    },
+    {
+        "id": 53,
+        "nombre": "DESCARGABLES",
+        "slug": "descargables",
+        "total_posts": 2,
+        "parent_id": 48
+    },
+    {
+        "id": 3,
+        "nombre": "GENERALES",
+        "slug": "generales",
+        "total_posts": 2443,
+        "parent_id": 2
+    },
+    {
+        "id": 50,
+        "nombre": "GRUPOS",
+        "slug": "grupos",
+        "total_posts": 2,
+        "parent_id": 48
+    },
+    {
+        "id": 2,
+        "nombre": "HOME",
+        "slug": "home",
+        "total_posts": 6644,
+        "parent_id": 0
+    },
+    {
+        "id": 51,
+        "nombre": "INDIVIDUAL",
+        "slug": "individual",
+        "total_posts": 2,
+        "parent_id": 48
+    },
+    {
+        "id": 52,
+        "nombre": "MASIVO POR TIEMPO",
+        "slug": "masivo_por_tiempo",
+        "total_posts": 2,
+        "parent_id": 48
+    },
+    {
+        "id": 4,
+        "nombre": "NOTAS DE PRENSA DE LA BVC",
+        "slug": "notas-de-prensa-de-la-bvc",
+        "total_posts": 2008,
+        "parent_id": 2
+    },
+    {
+        "id": 8,
+        "nombre": "NOTAS DEL MERCADO ONLINE",
+        "slug": "notas-del-mercado-online",
+        "total_posts": 1929,
+        "parent_id": 2
+    },
+    {
+        "id": 9,
+        "nombre": "NOTICIAS EN SLIDER HOME",
+        "slug": "noticias-en-slider-home",
+        "total_posts": 1056,
+        "parent_id": 0
+    },
+    {
+        "id": 6,
+        "nombre": "NOTIFICACIONES DE EMPRESAS EMISORAS",
+        "slug": "notificaciones-de-empresas-emisoras",
+        "total_posts": 2140,
+        "parent_id": 2
+    },
+    {
+        "id": 49,
+        "nombre": "PLANES",
+        "slug": "planes",
+        "total_posts": 2,
+        "parent_id": 48
+    },
+    {
+        "id": 48,
+        "nombre": "PRODUCTOS Y SERVICIOS",
+        "slug": "productos_y_servicios",
+        "total_posts": 7,
+        "parent_id": 0
+    },
+    {
+        "id": 5,
+        "nombre": "PULSO BURSÁTIL - LA REVISTA DE LA BOLSA DE CARACAS",
+        "slug": "pulso-bursatil",
+        "total_posts": 50,
+        "parent_id": 2
+    },
+    {
+        "id": 1,
+        "nombre": "Sin categoría",
+        "slug": "sin-categoria",
+        "total_posts": 36,
+        "parent_id": 0
+    }
+]
