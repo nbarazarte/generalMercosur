@@ -101,3 +101,5 @@ FROM information_schema.columns
 WHERE table_schema = 'onboarding'
   AND table_name = 'view_reporte_detallado'
 ORDER BY ordinal_position;
+
+Pruebas Yineska
