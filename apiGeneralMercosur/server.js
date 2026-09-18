@@ -55,10 +55,10 @@ app.use("/uploads", express.static("/var/www/uploads"));
 
 // 6. Definición de Rutas
 app.use("/seguridad", seguridadEndpoints);
-app.use("/onboarding", onboardingEndpoints);
+app.use("/admin", onboardingEndpoints);
 
 app.get("/", (req, res) => {
-  res.send("API Onboarding activa y configurada con SSL!");
+  res.send("API Mercosur Enterprise Portal!");
 });
 
 app.listen(port, "0.0.0.0", () => {

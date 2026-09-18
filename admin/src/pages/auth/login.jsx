@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Logo from "../components/Logo";
+import axios from "axios";
 
 const Login = () => {
   // ===== ESTADOS GENERALES =====
@@ -18,6 +19,9 @@ const Login = () => {
     password: false,
   });
   const [isLoginLoading, setIsLoginLoading] = useState(false);
+
+  const API_URL = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;
+  const API_TOKEN = import.meta.env.VITE_TOKEN;
 
   // ===== EFECTO DE TEMA =====
   useEffect(() => {
@@ -42,12 +46,15 @@ const Login = () => {
   };
 
   // ===== MANEJO DE LOGIN =====
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     let valid = true;
     const errors = { email: false, password: false };
 
-    if (!loginEmail || !loginEmail.includes("@")) {
+    // Expresión regular estándar para formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!loginEmail || !emailRegex.test(loginEmail.trim())) {
       errors.email = true;
       valid = false;
     }
@@ -62,10 +69,37 @@ const Login = () => {
 
     setIsLoginLoading(true);
 
-    setTimeout(() => {
+    /* setTimeout(() => {
       setIsLoginLoading(false);
       showToast("¡Sesión iniciada correctamente!", "success");
-    }, 1500);
+    }, 1500); */
+
+    try {
+      const response = await axios.post(
+        `${API_URL}/login`,
+        { email: loginEmail, password: loginPassword },
+        { headers: { Authorization: `Bearer ${API_TOKEN}` } },
+      );
+
+      console.log("Respuesta del backend:", response.data);
+
+      /* localStorage.setItem("cl_userId", String(response.data.id));
+      localStorage.setItem("cl_token", response.data.token);
+      localStorage.setItem("cl_userEmail", response.data.email); */
+
+      // 4. Feedback visual y redirección/limpieza
+      showToast("¡Sesión iniciada correctamente!", "success");
+
+      // Ejemplo de redirección o actualización de estado global aquí...
+    } catch (error) {
+      // 5. Manejo de errores devueltos por el backend (ej. 401 Unauthorized, 400 Bad Request)
+      const errorMessage = error.response?.data;
+
+      showToast(errorMessage, "error");
+    } finally {
+      // 6. Finalizar el estado de carga siempre
+      setIsLoginLoading(false);
+    }
   };
 
   return (
@@ -245,7 +279,7 @@ const Login = () => {
                         autoComplete="email"
                         value={loginEmail}
                         onChange={(e) => {
-                          setLoginEmail(e.target.value);
+                          setLoginEmail(e.target.value.toLowerCase());
                           setLoginErrors((prev) => ({ ...prev, email: false }));
                         }}
                         required

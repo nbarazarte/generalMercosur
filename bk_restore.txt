@@ -1,99 +1,25 @@
 ############### BD LOCALHOST #########################
 # BK de Produccion:
-pg_dump -U postgres -h 192.168.12.36 -F c -b -v -f ./sistemaOnboarding-produccion.backup onboarding
-
-pg_dump -U postgres -h localhost -F c -b -v -f ./sistemaOnboarding-casa.backup onboarding
-
+pg_dump -U postgres -h 192.168.12.29 -F c -b -v -f ./sistemadb_general_mercosur-produccion.backup db_general_mercosur
+pg_dump -U postgres -h localhost -F c -b -v -f ./sistemadb_general_mercosur-casa.backup db_general_mercosur
 
 # Restore
-dropdb -U postgres -h localhost onboarding
-createdb -U postgres -h localhost onboarding
-pg_restore -U postgres -h localhost -d onboarding -v ./sistemaOnboarding-produccion.backup
+dropdb -U postgres -h localhost db_general_mercosur
+createdb -U postgres -h localhost db_general_mercosur
+pg_restore -U postgres -h localhost -d db_general_mercosur -v ./sistemadb_general_mercosur-qa.backup
 
+time psql -h localhost -U postgres -d db_general_mercosur -c "SELECT count(*) FROM db_general_mercosur.fichas"
 
-ALTER TABLE onboarding.fichas 
-    ADD COLUMN bol_verificacion_pep boolean DEFAULT false,
-    ADD COLUMN bol_verificacion_noticrimen boolean DEFAULT false,
-    ADD COLUMN bol_descartada boolean DEFAULT false;
-    ADD COLUMN bol_confirmado_pep boolean DEFAULT false,
-
-    f.bol_devuelta,
-
-
-
-
-pg_dump -U postgres -h localhost -F c -b -v -f ./sistemaOnboarding-produccion.backup onboarding
-
-time psql -h localhost -U postgres -d onboarding -c "SELECT count(*) FROM onboarding.fichas"
-
-SELECT 
-    COUNT(CASE 
-            WHEN bol_ficha_completa = true THEN 1 
-          END) AS completas,
-    COUNT(CASE 
-            WHEN (bol_ficha_completa = false OR bol_ficha_completa IS NULL) 
-                 AND bol_verificacion_datos = false THEN 1 
-          END) AS incompletas
-FROM onboarding.fichas
-WHERE bol_eliminado = false;
-
-
-
-    f.bol_seccion_1,
-    f.bol_seccion_2,
-    f.bol_seccion_3,
-    f.bol_seccion_4,
-    f.bol_seccion_5,
-    f.bol_seccion_6,
-    f.bol_seccion_7,
-    f.bol_seccion_8,
-    f.bol_seccion_9,
-    f.bol_seccion_10,
-    f.bol_seccion_11,
-    f.bol_seccion_12,
-
-
-
-
-ALTER DATABASE onboarding_2mek SET timezone = 'America/Caracas';
-
-
-
-
-
+ALTER DATABASE db_general_mercosur SET timezone = 'America/Caracas';
 
 sudo -i -u postgres
 psql
 
 ALTER USER postgres WITH PASSWORD 'H3r05*!';
-
 ALTER USER postgres WITH PASSWORD '1123581321';
-
-
--- 1. Cambiamos el tipo de dato y formateamos los números
-ALTER TABLE onboarding.fichas 
-  ALTER COLUMN codigo_postal_id TYPE character varying(5) 
-  USING LPAD(codigo_postal_id::text, 5, '0');
-
--- 2. Cambiamos el nombre de la columna
-ALTER TABLE onboarding.fichas 
-  RENAME COLUMN pais_direccion_id TO pais_nacionalidad_id;
-
 
 SELECT column_name, data_type 
 FROM information_schema.columns 
-WHERE table_schema = 'onboarding' 
+WHERE table_schema = 'db_general_mercosur' 
   AND table_name = 'representantes'
 ORDER BY ordinal_position;
-
-
-
-
-SELECT o.id, o.str_nombre
-FROM public.usuarios_bo u
-JOIN public.roles r ON u.rol_id = r.id
-JOIN public.roles_opciones ro ON r.id = ro.rol_id
-JOIN public.opciones o ON ro.opcion_id = o.id
-WHERE u.id = 22 -- ID del usuario
-  AND r.bol_eliminado = false
-  AND o.bol_eliminado = false;

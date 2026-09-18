@@ -1,12 +1,11 @@
 const { v4: uuidv4 } = require('uuid');
-const dotenv = require('dotenv');
+//const dotenv = require('dotenv');
 
 // Asegúrate de especificar la ruta correcta si tu archivo .env no está en el directorio raíz
-dotenv.config({ path: './.env' });
+//dotenv.config({ path: './.env' });
 
 function generarUUID() {
     const uuid = uuidv4();
-    console.log("UUID generado:", uuid);
     return uuid;
 }
 
