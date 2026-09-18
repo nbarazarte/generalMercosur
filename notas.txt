@@ -102,4 +102,27 @@ WHERE table_schema = 'onboarding'
   AND table_name = 'view_reporte_detallado'
 ORDER BY ordinal_position;
 
-Pruebas Yineska
+#################### Variables API de admin #################### 
+VITE_NOMBRE_SISTEMA=Mercosur Enterprise Portal
+VITE_NOMBRE_SISTEMA_BO=Back Office Mercosur Enterprise Portal
+
+# URLS API LOCAL
+VITE_URL_API_LOCAL_SEGURIDAD=http://localhost:3000/seguridad/
+VITE_URL_API_LOCAL=http://localhost:3000/admin/
+VITE_URL_API_LOCAL_VER=http://localhost:3000/
+
+# URLS API OFICINA (Corregidas con puerto 3000)
+#VITE_URL_API_LOCAL_SEGURIDAD=http://192.168.12.35:3000/seguridad/
+#VITE_URL_API_LOCAL=http://192.168.12.35:3000/admin/
+#VITE_URL_API_LOCAL_VER=http://192.168.12.35:3000/
+
+#VITE_URL_API_LOCAL_SEGURIDAD=/apiadmin/seguridad/
+#VITE_URL_API_LOCAL=/apiadmin/admin/
+#VITE_URL_API_LOCAL_VER=/apiadmin/
+
+# TOKEN de la api
+VITE_TOKEN=0117921a-64a2-4676-8d0a-22877bfecaf5
+VITE_DOCUMENTACION_API=
+
+#Prefijo de la aplicacion
+VITE_PREFIJO=admin
