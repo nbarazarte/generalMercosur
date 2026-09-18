@@ -33,7 +33,6 @@ router.get("/config/mantenimiento", (req, res) => {
 
 // --- RUTAS PRIVADAS USUARIOS MERCOSUR---
 
-
 // --- RUTAS PÚBLICAS CLIENTES---
 
 // Nuevo endpoint para iniciar el registro
@@ -215,12 +214,11 @@ router.post("/login", async (req, res) => {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    console.log(normalizedEmail, password);
-    
+    //console.log(normalizedEmail, password);
 
     //const result = await pool.query("SELECT * FROM usuarios WHERE email = $1", [
     const result = await pool.query(
-      "SELECT * FROM tbl_usuarios WHERE UPPER(str_email) = $1",
+      "SELECT * FROM tbl_usuarios WHERE str_email = $1",
       [normalizedEmail],
     );
     if (result.rows.length === 0)
@@ -228,14 +226,14 @@ router.post("/login", async (req, res) => {
 
     const user = result.rows[0];
 
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await bcrypt.compare(password, user.str_password);
     if (!validPassword) return res.status(401).send("Contraseña incorrecta");
 
     const token = jwt.sign({ id: user.id, username: user.username }, "secret", {
       expiresIn: "1h",
     });
     await pool.query(
-      "INSERT INTO auth_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
+      "INSERT INTO tbl_auth_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
       [user.id, token, new Date(Date.now() + 3600000)],
     );
     res.json({

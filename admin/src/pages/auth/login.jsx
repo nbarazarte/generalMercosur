@@ -93,7 +93,8 @@ const Login = () => {
       // Ejemplo de redirección o actualización de estado global aquí...
     } catch (error) {
       // 5. Manejo de errores devueltos por el backend (ej. 401 Unauthorized, 400 Bad Request)
-      const errorMessage = error.response?.data;
+      const errorMessage =
+        error.response?.data || "No hay conexion en el servidor.";
 
       showToast(errorMessage, "error");
     } finally {
