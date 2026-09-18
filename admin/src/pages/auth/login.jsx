@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Logo from "../components/Logo";
 
 const Login = () => {
   // ===== ESTADOS GENERALES =====
@@ -249,66 +250,22 @@ const Login = () => {
           <div className="overlay-bottom"></div>
 
           <div className="aside-logo">
-            <svg
-              viewBox="0 0 280 200"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect
-                x="40"
-                y="40"
-                width="200"
-                height="8"
-                rx="4"
-                fill="rgba(255,255,255,0.9)"
-              />
-              <text
-                x="140"
-                y="95"
-                textAnchor="middle"
-                fill="white"
-                fontFamily="Poppins, sans-serif"
-                fontSize="32"
-                fontWeight="700"
-                letterSpacing="6"
-              >
-                MERCOADMIN
-              </text>
-              <text
-                x="140"
-                y="130"
-                textAnchor="middle"
-                fill="rgba(255,255,255,0.7)"
-                fontFamily="Inter, sans-serif"
-                fontSize="14"
-                fontWeight="500"
-                letterSpacing="3"
-              >
-                SISTEMA ADMINISTRATIVO
-              </text>
-              <rect
-                x="60"
-                y="155"
-                width="160"
-                height="4"
-                rx="2"
-                fill="rgba(255,255,255,0.3)"
-              />
-            </svg>
+            <Logo width="150px" height="auto" />
           </div>
 
           <div className="aside-content">
             <h1>
-              Tu Casa de Bolsa,
+              Mercosur
               <br />
-              en tu bolsillo.
+              Enterprise Portal
             </h1>
             <p className="subtitle">
-              Opera en la Bolsa de Valores de Caracas, sigue tu portafolio y
-              gestiona tus saldos desde un solo lugar.
+              Tu portal unificado de acceso centralizado para la gestión de
+              sistemas.
             </p>
 
             <ul className="feature-list">
+              {/* Sistema de RRHH */}
               <li className="feature-item">
                 <span className="feature-icon">
                   <svg
@@ -320,15 +277,18 @@ const Login = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <path d="M3 3v16a2 2 0 0 0 2 2h16" />
-                    <path d="m19 9-5 5-4-4-3 3" />
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <polyline points="16 11 18 13 22 9" />
                   </svg>
                 </span>
                 <div className="feature-text">
-                  <p>Mercado en tiempo real</p>
-                  <p>Cotizaciones y órdenes al instante</p>
+                  <p>Sistema de RRHH</p>
+                  <p>Gestiona tu ficha de empleado</p>
                 </div>
               </li>
+
+              {/* Sistema de Canales de Atención */}
               <li className="feature-item">
                 <span className="feature-icon">
                   <svg
@@ -340,15 +300,17 @@ const Login = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
-                    <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+                    <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
                   </svg>
                 </span>
                 <div className="feature-text">
-                  <p>Tu portafolio, claro</p>
-                  <p>Saldos y posiciones siempre a la mano</p>
+                  <p>Sistema de Canales de Atención</p>
+                  <p>Atiende a tus clientes de manera eficiente</p>
                 </div>
               </li>
+
+              {/* Base de datos de Conocimiento */}
               <li className="feature-item">
                 <span className="feature-icon">
                   <svg
@@ -360,13 +322,13 @@ const Login = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
-                    <path d="m9 12 2 2 4-4" />
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
                   </svg>
                 </span>
                 <div className="feature-text">
-                  <p>Seguridad primero</p>
-                  <p>Acceso biométrico y verificación KYC</p>
+                  <p>Base de datos de Conocimiento</p>
+                  <p>Accede a información valiosa para nuestros clientes</p>
                 </div>
               </li>
             </ul>
@@ -374,6 +336,8 @@ const Login = () => {
 
           <p className="aside-footer">
             &copy; 2026 MERCOSUR Casa de Bolsa C.A.
+            <br />
+            GCIA. General de Tecnología de la Información
           </p>
         </aside>
 
@@ -381,36 +345,7 @@ const Login = () => {
         <main className="main-panel">
           <div className="form-wrapper">
             <div className="mobile-logo">
-              <svg
-                viewBox="0 0 280 200"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <text
-                  x="140"
-                  y="110"
-                  textAnchor="middle"
-                  fill="var(--foreground)"
-                  fontFamily="Poppins, sans-serif"
-                  fontSize="30"
-                  fontWeight="700"
-                  letterSpacing="5"
-                >
-                  MERCOADMIN
-                </text>
-                <text
-                  x="140"
-                  y="140"
-                  textAnchor="middle"
-                  fill="var(--muted-foreground)"
-                  fontFamily="Inter, sans-serif"
-                  fontSize="12"
-                  fontWeight="500"
-                  letterSpacing="3"
-                >
-                  Sistema Administrativo
-                </text>
-              </svg>
+              <Logo width="150px" height="auto" />
             </div>
 
             {/* VISTA LOGIN */}
@@ -418,7 +353,7 @@ const Login = () => {
               <div className="view-login active" id="viewLogin">
                 <div className="form-header">
                   <h2>Iniciar sesión</h2>
-                  <p>Accede a tu portafolio y opera con MERCOSUR.</p>
+                  <p>Accede a tu portal interno de MERCOSUR</p>
                 </div>
 
                 <div className="glass-card">
