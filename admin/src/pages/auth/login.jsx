@@ -19,22 +19,6 @@ const Login = () => {
   });
   const [isLoginLoading, setIsLoginLoading] = useState(false);
 
-  // ===== ESTADOS DE REGISTRO =====
-  const [currentStep, setCurrentStep] = useState(1);
-  const [regName, setRegName] = useState("");
-  const [regEmail, setRegEmail] = useState("");
-  const [regPhone, setRegPhone] = useState("");
-  const [regTerms, setRegTerms] = useState(false);
-  const [regErrors, setRegErrors] = useState({
-    name: false,
-    email: false,
-    phone: false,
-  });
-  const [otpCode, setOtpCode] = useState(["", "", "", "", "", ""]);
-  const [isRegisterLoading, setIsRegisterLoading] = useState(false);
-
-  const otpInputsRef = useRef([]);
-
   // ===== EFECTO DE TEMA =====
   useEffect(() => {
     document.documentElement.classList.remove("light", "dark");
@@ -55,14 +39,6 @@ const Login = () => {
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 3300);
-  };
-
-  // ===== CAMBIO DE VISTA =====
-  const handleSwitchView = (view) => {
-    setCurrentView(view);
-    if (view === "login") {
-      resetStepper();
-    }
   };
 
   // ===== MANEJO DE LOGIN =====
@@ -90,105 +66,6 @@ const Login = () => {
       setIsLoginLoading(false);
       showToast("¡Sesión iniciada correctamente!", "success");
     }, 1500);
-  };
-
-  // ===== MANEJO DEL STEPPER DE REGISTRO =====
-  const validateStep = (step) => {
-    if (step === 1) {
-      let valid = true;
-      const errors = { name: false, email: false, phone: false };
-
-      if (!regName.trim()) {
-        errors.name = true;
-        valid = false;
-      }
-
-      if (!regEmail || !regEmail.includes("@")) {
-        errors.email = true;
-        valid = false;
-      }
-
-      if (!regPhone.trim() || regPhone.trim().length < 8) {
-        errors.phone = true;
-        valid = false;
-      }
-
-      setRegErrors(errors);
-
-      if (!regTerms) {
-        showToast("Debes aceptar los términos y condiciones", "error");
-        valid = false;
-      }
-
-      return valid;
-    }
-    return true;
-  };
-
-  const goToStep = (step) => {
-    if (step > currentStep) {
-      if (!validateStep(currentStep)) return;
-    }
-    setCurrentStep(step);
-  };
-
-  const completeRegistration = () => {
-    setIsRegisterLoading(true);
-
-    setTimeout(() => {
-      setIsRegisterLoading(false);
-      setCurrentStep("success");
-    }, 1800);
-  };
-
-  const resetStepper = () => {
-    setCurrentStep(1);
-    setRegName("");
-    setRegEmail("");
-    setRegPhone("");
-    setRegTerms(false);
-    setRegErrors({ name: false, email: false, phone: false });
-    setOtpCode(["", "", "", "", "", ""]);
-  };
-
-  // ===== MANEJO DE OTP CODE (Móvil / Web) =====
-  const handleOtpChange = (e, index) => {
-    const val = e.target.value;
-    if (val && /^\d$/.test(val)) {
-      const newOtp = [...otpCode];
-      newOtp[index] = val;
-      setOtpCode(newOtp);
-
-      if (index < 5 && otpInputsRef.current[index + 1]) {
-        otpInputsRef.current[index + 1].focus();
-      }
-    } else if (!val) {
-      const newOtp = [...otpCode];
-      newOtp[index] = "";
-      setOtpCode(newOtp);
-    }
-  };
-
-  const handleOtpKeyDown = (e, index) => {
-    if (e.key === "Backspace" && !otpCode[index] && index > 0) {
-      if (otpInputsRef.current[index - 1]) {
-        otpInputsRef.current[index - 1].focus();
-      }
-    }
-  };
-
-  const handleOtpPaste = (e) => {
-    e.preventDefault();
-    const paste = (e.clipboardData || window.clipboardData)
-      .getData("text")
-      .trim();
-    if (/^\d{6}$/.test(paste)) {
-      const newOtp = paste.split("");
-      setOtpCode(newOtp);
-      if (otpInputsRef.current[5]) {
-        otpInputsRef.current[5].focus();
-      }
-    }
   };
 
   return (
@@ -250,7 +127,7 @@ const Login = () => {
           <div className="overlay-bottom"></div>
 
           <div className="aside-logo">
-            <Logo width="150px" height="auto" />
+            <Logo />
           </div>
 
           <div className="aside-content">
@@ -345,7 +222,7 @@ const Login = () => {
         <main className="main-panel">
           <div className="form-wrapper">
             <div className="mobile-logo">
-              <Logo width="150px" height="auto" />
+              <Logo />
             </div>
 
             {/* VISTA LOGIN */}

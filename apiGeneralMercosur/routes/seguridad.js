@@ -571,7 +571,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const normalizedEmail = email.trim().toUpperCase();
+    const normalizedEmail = email.trim().toLowerCase();
 
     //const result = await pool.query("SELECT * FROM usuarios WHERE email = $1", [
     const result = await pool.query(
