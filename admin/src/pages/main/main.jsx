@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const sistemas = [
   {
     id: "rrhh",
-    nombre: "RRHH",
+    nombre: "Recursos Humanos",
     descripcion: "Gestiona tu ficha de empleado.",
     url: "/rrhh",
     icon: (
@@ -45,8 +45,8 @@ const sistemas = [
   },
   {
     id: "kcs",
-    nombre: "KCS",
-    descripcion: "Base de datos de Conocimiento.",
+    nombre: "Base de Datos de Conocimiento",
+    descripcion: "Accede a información valiosa para nuestros clientes.",
     url: "/kcs",
     icon: (
       <svg

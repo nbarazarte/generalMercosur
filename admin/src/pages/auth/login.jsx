@@ -26,7 +26,7 @@ export const LoginAside = (
           </svg>
         </span>
         <div className="feature-text">
-          <p>Sistema de RRHH</p>
+          <p>Recursos Humanos</p>
           <p>Gestiona tu ficha de empleado</p>
         </div>
       </li>
@@ -38,7 +38,7 @@ export const LoginAside = (
           </svg>
         </span>
         <div className="feature-text">
-          <p>Sistema de Canales de Atención</p>
+          <p>Tickets</p>
           <p>Atiende a tus clientes de manera eficiente</p>
         </div>
       </li>
