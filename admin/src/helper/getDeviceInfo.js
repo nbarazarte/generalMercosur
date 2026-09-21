@@ -1,38 +1,49 @@
-// Helper para obtener/generar el ID y nombre del dispositivo
-export const getDeviceInfo = () => {
-  // 1. Obtener o generar un UUID persistente para este navegador
+// src/helper/getDeviceInfo.js
+
+const getDeviceInfo = async () => {
   let deviceId = localStorage.getItem("cl_deviceId");
-  
+
   if (!deviceId) {
-    // Si la API crypto.randomUUID() está disponible (modern browsers)
     if (typeof crypto !== "undefined" && crypto.randomUUID) {
       deviceId = crypto.randomUUID();
     } else {
-      // Fallback básico para entornos más antiguos
-      deviceId = 'dev_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+      deviceId =
+        "dev_" +
+        Math.random().toString(36).substring(2, 15) +
+        Date.now().toString(36);
     }
     localStorage.setItem("cl_deviceId", deviceId);
   }
 
-  // 2. Detectar nombre legible del dispositivo/navegador desde el User-Agent
   const ua = navigator.userAgent;
-  let browser = "Navegador Desconocido";
-  let os = "OS Desconocido";
+  let browser = "Chrome";
+  let os = "Android Móvil";
 
-  // Detección simple de SO
-  if (ua.includes("Win")) os = "Windows";
-  else if (ua.includes("Mac")) os = "macOS";
-  else if (ua.includes("Linux") && !ua.includes("Android")) os = "Linux";
-  else if (ua.includes("Android")) os = "Android";
-  else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+  // Intentar obtener la marca y modelo exacto desde Client Hints
+  if (
+    navigator.userAgentData &&
+    typeof navigator.userAgentData.getHighEntropyValues === "function"
+  ) {
+    try {
+      const hints = await navigator.userAgentData.getHighEntropyValues([
+        "model",
+        "platform",
+        "platformVersion",
+      ]);
 
-  // Detección simple de Navegador
-  if (ua.includes("Chrome") && !ua.includes("Edg")) browser = "Chrome";
-  else if (ua.includes("Edg")) browser = "Edge";
-  else if (ua.includes("Firefox")) browser = "Firefox";
-  else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+      // En un Samsung Galaxy A54, hints.model suele retornar "SM-A546B" o "Galaxy A54 5G"
+      if (hints.model) {
+        os = `Android (${hints.model})`;
+      }
+    } catch (e) {
+      console.warn("Client Hints no permitidos o no soportados", e);
+    }
+  }
 
-  const deviceName = `${browser} en ${os}`;
-
-  return { deviceId, deviceName };
+  return {
+    deviceId,
+    deviceName: `${browser} en ${os}`,
+  };
 };
+
+export default getDeviceInfo;

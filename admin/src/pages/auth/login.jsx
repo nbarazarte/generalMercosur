@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Logo from "../components/Logo";
 import axios from "axios";
-import { getDeviceInfo } from "../../helper/getDeviceInfo"; // Importa la función desde el helper
+import getDeviceInfo from "../../helper/getDeviceInfo"; // Importa la función desde el helper
 
 const Login = () => {
   // ===== ESTADOS GENERALES =====
@@ -71,8 +71,8 @@ const Login = () => {
     setIsLoginLoading(true);
 
     try {
-      // 1. Obtener la identificación del dispositivo
-      const { deviceId, deviceName } = getDeviceInfo();
+      // 1. Obtener la identificación del dispositivo (se agrega await porque la lectura Client Hints es asíncrona)
+      const { deviceId, deviceName } = await getDeviceInfo();
 
       // 2. Realizar la petición POST enviando datos de login + dispositivo
       const response = await axios.post(
