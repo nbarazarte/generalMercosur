@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Logo from "../components/Logo";
 import axios from "axios";
+import { getDeviceInfo } from "../../helper/getDeviceInfo"; // Importa la función desde el helper
 
 const Login = () => {
   // ===== ESTADOS GENERALES =====
@@ -69,36 +70,44 @@ const Login = () => {
 
     setIsLoginLoading(true);
 
-    /* setTimeout(() => {
-      setIsLoginLoading(false);
-      showToast("¡Sesión iniciada correctamente!", "success");
-    }, 1500); */
-
     try {
+      // 1. Obtener la identificación del dispositivo
+      const { deviceId, deviceName } = getDeviceInfo();
+
+      // 2. Realizar la petición POST enviando datos de login + dispositivo
       const response = await axios.post(
         `${API_URL}/login`,
-        { email: loginEmail, password: loginPassword },
+        {
+          email: loginEmail.trim().toLowerCase(),
+          password: loginPassword,
+          device_id: deviceId,
+          device_name: deviceName,
+        },
         { headers: { Authorization: `Bearer ${API_TOKEN}` } },
       );
 
       console.log("Respuesta del backend:", response.data);
 
-      /* localStorage.setItem("cl_userId", String(response.data.id));
+      // 3. Guardar datos de autenticación en localStorage
+      localStorage.setItem("cl_userId", String(response.data.id));
       localStorage.setItem("cl_token", response.data.token);
-      localStorage.setItem("cl_userEmail", response.data.email); */
+      localStorage.setItem("cl_userEmail", response.data.email);
+      localStorage.setItem("cl_username", response.data.username);
 
-      // 4. Feedback visual y redirección/limpieza
+      // 4. Feedback visual
       showToast("¡Sesión iniciada correctamente!", "success");
 
-      // Ejemplo de redirección o actualización de estado global aquí...
+      // Redirección o actualización de estado global aquí si aplica...
     } catch (error) {
-      // 5. Manejo de errores devueltos por el backend (ej. 401 Unauthorized, 400 Bad Request)
+      // 5. Manejo de errores devueltos por el backend
       const errorMessage =
-        error.response?.data || "No hay conexion en el servidor.";
+        typeof error.response?.data === "string"
+          ? error.response.data
+          : error.response?.data?.message || "No hay conexión con el servidor.";
 
       showToast(errorMessage, "error");
     } finally {
-      // 6. Finalizar el estado de carga siempre
+      // 6. Finalizar el estado de carga
       setIsLoginLoading(false);
     }
   };

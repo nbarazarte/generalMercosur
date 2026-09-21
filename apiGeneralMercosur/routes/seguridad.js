@@ -210,36 +210,67 @@ router.post("/register", async (req, res) => {
 // Login de usuario
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, device_id, device_name } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).send("Email y contraseña son requeridos");
+    }
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    //console.log(normalizedEmail, password);
-
-    //const result = await pool.query("SELECT * FROM usuarios WHERE email = $1", [
+    // 1. Buscar usuario
     const result = await pool.query(
       "SELECT * FROM tbl_usuarios WHERE str_email = $1",
       [normalizedEmail],
     );
-    if (result.rows.length === 0)
+
+    if (result.rows.length === 0) {
       return res.status(404).send("Usuario no encontrado");
+    }
 
     const user = result.rows[0];
 
+    // 2. Validar contraseña
     const validPassword = await bcrypt.compare(password, user.str_password);
-    if (!validPassword) return res.status(401).send("Contraseña incorrecta");
+    if (!validPassword) {
+      return res.status(401).send("Contraseña incorrecta");
+    }
 
-    const token = jwt.sign({ id: user.id, username: user.username }, "secret", {
-      expiresIn: "1h",
-    });
-    await pool.query(
-      "INSERT INTO tbl_auth_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
-      [user.id, token, new Date(Date.now() + 3600000)],
+    // 3. Generar token JWT
+    const secretKey = process.env.JWT_SECRET || "secret_fallback_dev";
+    const token = jwt.sign(
+      { id: user.id, username: user.str_usuario },
+      secretKey,
+      { expiresIn: "1h" },
     );
+
+    // 4. Limpieza global de tokens expirados en segundo plano (no frena el response)
+    pool
+      .query("DELETE FROM tbl_auth_tokens WHERE expires_at < NOW()")
+      .catch((err) =>
+        console.error("Error al limpiar tokens expirados:", err.message),
+      );
+
+    // 5. UPSERT: Si ya existe un token para este dispositivo, lo reemplaza. Si no, crea uno nuevo.
+    const deviceId = device_id || "default_device";
+    const deviceName = device_name || "Dispositivo Desconocido";
+
+    await pool.query(
+      `INSERT INTO tbl_auth_tokens (user_id, str_device_id, str_device_name, token, expires_at)
+       VALUES ($1, $2, $3, $4, NOW() + INTERVAL '1 hour')
+       ON CONFLICT (user_id, str_device_id) 
+       DO UPDATE SET 
+         token = EXCLUDED.token, 
+         expires_at = EXCLUDED.expires_at,
+         str_device_name = EXCLUDED.str_device_name`,
+      [user.id, deviceId, deviceName, token],
+    );
+
+    // 6. Respuesta al cliente
     res.json({
       id: user.id,
-      username: user.username,
-      email: user.email,
+      username: user.str_usuario,
+      email: user.str_email,
       token: token,
     });
   } catch (err) {
