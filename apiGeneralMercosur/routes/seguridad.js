@@ -244,23 +244,25 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" },
     );
 
-    // 4. Limpieza global de tokens expirados en segundo plano (no frena el response)
+    // 4. Limpieza global de tokens expirados en segundo plano
     pool
       .query("DELETE FROM tbl_auth_tokens WHERE expires_at < NOW()")
       .catch((err) =>
         console.error("Error al limpiar tokens expirados:", err.message),
       );
 
-    // 5. UPSERT: Si ya existe un token para este dispositivo, lo reemplaza. Si no, crea uno nuevo.
+    // 5. UPSERT: Si ya existe un token para este dispositivo, lo reemplaza y fuerza used = false
     const deviceId = device_id || "default_device";
     const deviceName = device_name || "Dispositivo Desconocido";
 
     await pool.query(
-      `INSERT INTO tbl_auth_tokens (user_id, str_device_id, str_device_name, token, expires_at)
-       VALUES ($1, $2, $3, $4, NOW() + INTERVAL '1 hour')
+      `INSERT INTO tbl_auth_tokens (user_id, str_device_id, str_device_name, token, used, expires_at)
+       VALUES ($1, $2, $3, $4, false, NOW() + INTERVAL '1 hour')
        ON CONFLICT (user_id, str_device_id) 
        DO UPDATE SET 
          token = EXCLUDED.token, 
+         used = false,
+         created_at = NOW(),
          expires_at = EXCLUDED.expires_at,
          str_device_name = EXCLUDED.str_device_name`,
       [user.id, deviceId, deviceName, token],

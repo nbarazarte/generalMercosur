@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Logo from "../components/Logo";
+import LogoMobile from "../components/LogoMobile";
 import axios from "axios";
 import getDeviceInfo from "../../helper/getDeviceInfo"; // Importa la función desde el helper
 
@@ -266,7 +267,7 @@ const Login = () => {
         <main className="main-panel">
           <div className="form-wrapper">
             <div className="mobile-logo">
-              <Logo />
+              <LogoMobile theme={theme} />
             </div>
 
             {/* VISTA LOGIN */}
