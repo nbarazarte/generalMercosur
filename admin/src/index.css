@@ -9,7 +9,8 @@
   --radius-2xl: 1.25rem;
   --radius-3xl: 1.5rem;
   --spacing: 0.25rem;
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-display: "Poppins", "Inter", system-ui, sans-serif;
 }
 
@@ -781,9 +782,15 @@ ol {
   backdrop-filter: blur(8px);
 }
 
-.toast.success { background: rgba(34, 197, 94, 0.9); }
-.toast.error { background: rgba(239, 68, 68, 0.9); }
-.toast.info { background: rgba(59, 130, 246, 0.9); }
+.toast.success {
+  background: rgba(34, 197, 94, 0.9);
+}
+.toast.error {
+  background: rgba(239, 68, 68, 0.9);
+}
+.toast.info {
+  background: rgba(59, 130, 246, 0.9);
+}
 
 /* ===== CHECKBOX & ERRORS ===== */
 .checkbox-wrap {
@@ -934,7 +941,10 @@ ol {
   padding: 1.125rem;
   text-decoration: none;
   color: var(--foreground);
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .system-card:hover {
@@ -984,7 +994,9 @@ ol {
   display: flex;
   align-items: center;
   color: var(--muted-foreground);
-  transition: transform 0.15s ease, color 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
 }
 
 .system-card:hover .system-arrow {
@@ -1054,4 +1066,16 @@ ol {
 .theme-logout svg {
   width: 1rem;
   height: 1rem;
+}
+
+/* Agrega un fondo de cuadrícula financiera suave al aside */
+.aside-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
 }
