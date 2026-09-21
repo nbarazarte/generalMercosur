@@ -17,27 +17,47 @@ const getDeviceInfo = async () => {
 
   const ua = navigator.userAgent;
   let browser = "Chrome";
-  let os = "Android Móvil";
+  let os = "Dispositivo Desconocido";
 
-  // Intentar obtener la marca y modelo exacto desde Client Hints
-  if (
-    navigator.userAgentData &&
-    typeof navigator.userAgentData.getHighEntropyValues === "function"
-  ) {
+  // 1. Detectar Navegador
+  if (ua.includes("Chrome") && !ua.includes("Edg") && !ua.includes("OPR")) {
+    browser = "Chrome";
+  } else if (ua.includes("Edg")) {
+    browser = "Edge";
+  } else if (ua.includes("Firefox")) {
+    browser = "Firefox";
+  } else if (ua.includes("Safari") && !ua.includes("Chrome")) {
+    browser = "Safari";
+  }
+
+  // 2. Intentar API moderna (Client Hints en HTTPS para Android)
+  let detectedModel = null;
+  if (navigator.userAgentData && typeof navigator.userAgentData.getHighEntropyValues === "function") {
     try {
-      const hints = await navigator.userAgentData.getHighEntropyValues([
-        "model",
-        "platform",
-        "platformVersion",
-      ]);
-
-      // En un Samsung Galaxy A54, hints.model suele retornar "SM-A546B" o "Galaxy A54 5G"
+      const hints = await navigator.userAgentData.getHighEntropyValues(["model", "platform"]);
       if (hints.model) {
-        os = `Android (${hints.model})`;
+        detectedModel = hints.model; // ej. "SM-A546B"
       }
     } catch (e) {
-      console.warn("Client Hints no permitidos o no soportados", e);
+      // Ignorar error en HTTP
     }
+  }
+
+  // 3. Evaluar Sistema Operativo y Dispositivo
+  if (detectedModel) {
+    os = `Android (${detectedModel})`;
+  } else if (/Win/i.test(ua)) {
+    os = "Windows PC";
+  } else if (/Mac/i.test(ua) && !/iPhone|iPad/i.test(ua)) {
+    os = "macOS";
+  } else if (/Linux/i.test(ua) && !/Android/i.test(ua)) {
+    os = "Linux PC";
+  } else if (/iPhone/i.test(ua)) {
+    os = "iPhone (iOS)";
+  } else if (/iPad/i.test(ua)) {
+    os = "iPad (iPadOS)";
+  } else if (/Android/i.test(ua)) {
+    os = "Android Móvil";
   }
 
   return {
