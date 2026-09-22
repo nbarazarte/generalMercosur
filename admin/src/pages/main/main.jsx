@@ -4,6 +4,25 @@ import { useNavigate } from "react-router-dom";
 
 const sistemas = [
   {
+    id: "admin",
+    nombre: "Admin MEP",
+    descripcion: "Gestiona la configuración del sistema.",
+    url: "/admin",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    ),
+  },
+  {
     id: "rrhh",
     nombre: "Recursos Humanos",
     descripcion: "Gestiona tu ficha de empleado.",
@@ -25,7 +44,7 @@ const sistemas = [
   },
   {
     id: "tickets",
-    nombre: "Tickets",
+    nombre: "Sistema Tickets",
     descripcion: "Centraliza tus tickets.",
     url: "/tickets",
     icon: (
@@ -136,17 +155,26 @@ const Main = () => {
 
   return (
     <div className="systems-wrapper">
-      <div className="form-header">
-        <h2>Selecciona el sistema al que deseas acceder.</h2>
+      <div className="form-header flex flex-col items-center justify-center text-center">
+        <h2>Panel General</h2>
+        <p className="subtitle">Selecciona el sistema al que deseas acceder.</p>
       </div>
 
       <div className="systems-grid">
         {sistemas.map((sistema, i) => (
-          <a
+          <div
             key={sistema.id}
-            href={sistema.url}
+            onClick={() => navigate(sistema.url)}
             className="system-card glass-card animate-rise"
-            style={{ animationDelay: `${i * 0.08}s` }}
+            style={{ animationDelay: `${i * 0.08}s`, cursor: "pointer" }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate(sistema.url);
+              }
+            }}
           >
             <div className="system-icon">{sistema.icon}</div>
             <div className="system-info">
@@ -165,7 +193,7 @@ const Main = () => {
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </span>
-          </a>
+          </div>
         ))}
       </div>
     </div>

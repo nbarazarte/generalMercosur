@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import AuthLayout from "./layouts/AuthLayout";
 import Login, { LoginAside } from "./pages/auth/login";
 import Main, { getMainAside } from "./pages/main/main";
+
+import Admin from "./pages/main/admin";
 import RRHH from "./pages/rrhh/rrhh";
 import Tickets from "./pages/tickets/tickets";
 import KCS from "./pages/kcs/kcs";
@@ -26,6 +28,7 @@ function App() {
         <Route path="/main" element={<Main />} />
       </Route>
 
+      <Route path="/admin" element={<Admin />} />
       <Route path="/rrhh" element={<RRHH />} />
       <Route path="/tickets" element={<Tickets />} />
       <Route path="/kcs" element={<KCS />} />
