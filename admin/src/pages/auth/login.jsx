@@ -3,7 +3,6 @@ import axios from "axios";
 import getDeviceInfo from "../../helper/getDeviceInfo";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-
 import { setUser } from "../../store/authSlice";
 
 // Contenido estático para el Aside de Login
@@ -85,7 +84,7 @@ export const LoginAside = (
 
 const Login = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Inicializar dispatch
+  const dispatch = useDispatch();
   const [toasts, setToasts] = useState([]);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -140,14 +139,10 @@ const Login = () => {
         { headers: { Authorization: `Bearer ${API_TOKEN}` } },
       );
 
-      // Guardar en localStorage
-      localStorage.setItem("cl_userId", String(response.data.id));
-      localStorage.setItem("cl_token", response.data.token);
-      localStorage.setItem("cl_userEmail", response.data.email);
-      localStorage.setItem("cl_username", response.data.username);
+      //console.log(response.data); // Verifica la respuesta del servidor
 
-      // Guardar en el estado global de Redux
-      dispatch(setUser(response.data.username));
+      // Despachamos todo a Redux y él se encarga del localStorage
+      dispatch(setUser(response.data));
 
       showToast("¡Sesión iniciada correctamente!", "success");
       navigate("/home");
