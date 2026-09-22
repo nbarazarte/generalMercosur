@@ -9,34 +9,30 @@ import "../../AdminUsuarios.css";
  *  acceso solo a algunos sistemas, y su ROL puede ser distinto en
  *  cada sistema (p. ej. Administrador en Admin MEP y Solo Lectura
  *  en Base de Conocimiento).
- *
- *  Reemplaza los datos mock y las funciones onSave/onDelete por tus
- *  llamadas al backend.
  * ------------------------------------------------------------------ */
 
 /* Sistemas reales de la plataforma (panel de sistemas del portal) */
 const SISTEMAS = [
-  { id: "adminmep", nombre: "Admin MEP", ic: "\u2699\uFE0F", color: "#2f6fed", desc: "Configuraci\u00f3n del sistema" },
-  { id: "rrhh", nombre: "Recursos Humanos", ic: "\uD83D\uDC65", color: "#1f9d63", desc: "Ficha de empleado" },
-  { id: "tickets", nombre: "Sistema Tickets", ic: "\uD83C\uDFA7", color: "#d8992a", desc: "Centraliza tus tickets" },
-  { id: "kb", nombre: "Base de Conocimiento", ic: "\uD83D\uDCD6", color: "#8155d8", desc: "Informaci\u00f3n para clientes" },
+  { id: "adminmep", nombre: "Admin MEP", ic: "⚙️", color: "#2f6fed", desc: "Configuración del sistema" },
+  { id: "rrhh", nombre: "Recursos Humanos", ic: "👥", color: "#1f9d63", desc: "Ficha de empleado" },
+  { id: "tickets", nombre: "Sistema Tickets", ic: "🎧", color: "#d8992a", desc: "Centraliza tus tickets" },
+  { id: "kb", nombre: "Base de Conocimiento", ic: "📖", color: "#8155d8", desc: "Información para clientes" },
 ];
 const SYS = Object.fromEntries(SISTEMAS.map((s) => [s.id, s]));
 
 /*
  * Catálogo de roles. Cada rol declara en qué sistemas es válido
- * mediante `sistemas` ("all" o una lista de ids). Así el rol varía
- * según el sistema al que se concede acceso.
+ * mediante `sistemas` ("all" o una lista de ids).
  */
 const ROLES = [
-  { id: 1, nombre: "Administrador", desc: "Control total del sistema y su configuraci\u00f3n.", ic: "\uD83D\uDEE1\uFE0F", color: "#0b2545", bg: "rgba(11,37,69,.1)", sistemas: "all", permisos: ["Ver", "Crear", "Editar", "Eliminar", "Aprobar", "Exportar"] },
-  { id: 2, nombre: "Supervisor", desc: "Supervisa la operaci\u00f3n y aprueba acciones.", ic: "\uD83D\uDC53", color: "#2f6fed", bg: "rgba(47,111,237,.12)", sistemas: "all", permisos: ["Ver", "Editar", "Aprobar", "Exportar"] },
-  { id: 3, nombre: "Operador MEP", desc: "Opera la configuraci\u00f3n y par\u00e1metros de MEP.", ic: "\u26A1", color: "#123a63", bg: "rgba(18,58,99,.12)", sistemas: ["adminmep"], permisos: ["Ver", "Crear", "Editar"] },
-  { id: 4, nombre: "Gestor RR.HH.", desc: "Administra fichas y datos de empleados.", ic: "\uD83D\uDCC1", color: "#1f9d63", bg: "rgba(31,157,99,.12)", sistemas: ["rrhh"], permisos: ["Ver", "Crear", "Editar", "Exportar"] },
-  { id: 5, nombre: "Empleado", desc: "Consulta y actualiza su propia ficha.", ic: "\uD83D\uDC64", color: "#0f7a4c", bg: "rgba(31,157,99,.1)", sistemas: ["rrhh"], permisos: ["Ver", "Editar"] },
-  { id: 6, nombre: "Agente de Soporte", desc: "Atiende y resuelve tickets de soporte.", ic: "\uD83C\uDFA7", color: "#d8992a", bg: "rgba(216,153,42,.14)", sistemas: ["tickets"], permisos: ["Ver", "Crear", "Editar"] },
-  { id: 7, nombre: "Editor de Contenido", desc: "Crea y edita art\u00edculos de la base de conocimiento.", ic: "\u270D\uFE0F", color: "#8155d8", bg: "rgba(129,85,216,.12)", sistemas: ["kb"], permisos: ["Ver", "Crear", "Editar"] },
-  { id: 8, nombre: "Solo Lectura", desc: "Consulta informaci\u00f3n sin poder editar.", ic: "\uD83D\uDC41\uFE0F", color: "#69748c", bg: "rgba(105,116,140,.14)", sistemas: "all", permisos: ["Ver"] },
+  { id: 1, nombre: "Administrador", desc: "Control total del sistema y su configuración.", ic: "🛡️", color: "#0b2545", bg: "rgba(11,37,69,.1)", sistemas: "all", permisos: ["Ver", "Crear", "Editar", "Eliminar", "Aprobar", "Exportar"] },
+  { id: 2, nombre: "Supervisor", desc: "Supervisa la operación y aprueba acciones.", ic: "👓", color: "#2f6fed", bg: "rgba(47,111,237,.12)", sistemas: "all", permisos: ["Ver", "Editar", "Aprobar", "Exportar"] },
+  { id: 3, nombre: "Operador MEP", desc: "Opera la configuración y parámetros de MEP.", ic: "⚡", color: "#123a63", bg: "rgba(18,58,99,.12)", sistemas: ["adminmep"], permisos: ["Ver", "Crear", "Editar"] },
+  { id: 4, nombre: "Gestor RR.HH.", desc: "Administra fichas y datos de empleados.", ic: "📁", color: "#1f9d63", bg: "rgba(31,157,99,.12)", sistemas: ["rrhh"], permisos: ["Ver", "Crear", "Editar", "Exportar"] },
+  { id: 5, nombre: "Empleado", desc: "Consulta y actualiza su propia ficha.", ic: "👤", color: "#0f7a4c", bg: "rgba(31,157,99,.1)", sistemas: ["rrhh"], permisos: ["Ver", "Editar"] },
+  { id: 6, nombre: "Agente de Soporte", desc: "Atiende y resuelve tickets de soporte.", ic: "🎧", color: "#d8992a", bg: "rgba(216,153,42,.14)", sistemas: ["tickets"], permisos: ["Ver", "Crear", "Editar"] },
+  { id: 7, nombre: "Editor de Contenido", desc: "Crea y edita artículos de la base de conocimiento.", ic: "✍️", color: "#8155d8", bg: "rgba(129,85,216,.12)", sistemas: ["kb"], permisos: ["Ver", "Crear", "Editar"] },
+  { id: 8, nombre: "Solo Lectura", desc: "Consulta información sin poder editar.", ic: "👁️", color: "#69748c", bg: "rgba(105,116,140,.14)", sistemas: "all", permisos: ["Ver"] },
 ];
 
 const rolesDeSistema = (sysId) =>
@@ -48,34 +44,29 @@ const iniciales = (n) => n.split(" ").map((p) => p[0]).slice(0, 2).join("").toUp
 
 const ESTADOS = { active: ["Activo", "badge-active"], inactive: ["Inactivo", "badge-inactive"], pending: ["Pendiente", "badge-pending"] };
 
-/*
- * Usuarios. `accesos` = mapa { sistemaId: rolNombre }. Solo aparecen
- * los sistemas a los que el usuario tiene acceso; el valor es su rol
- * en ESE sistema.
- */
 const USUARIOS_INIT = [
-  { id: 1, nombre: "Mar\u00eda Gonz\u00e1lez", email: "m.gonzalez@mercosur.com.py", estado: "active", ultimo: "Hoy, 09:14",
+  { id: 1, nombre: "María González", email: "m.gonzalez@mercosur.com.py", estado: "active", ultimo: "Hoy, 09:14",
     accesos: { adminmep: "Administrador", rrhh: "Supervisor", tickets: "Supervisor", kb: "Administrador" } },
-  { id: 2, nombre: "Carlos Ben\u00edtez", email: "c.benitez@mercosur.com.py", estado: "active", ultimo: "Hoy, 08:02",
+  { id: 2, nombre: "Carlos Benítez", email: "c.benitez@mercosur.com.py", estado: "active", ultimo: "Hoy, 08:02",
     accesos: { adminmep: "Operador MEP", tickets: "Agente de Soporte" } },
-  { id: 3, nombre: "Luc\u00eda Fern\u00e1ndez", email: "l.fernandez@mercosur.com.py", estado: "active", ultimo: "Ayer, 17:45",
+  { id: 3, nombre: "Lucía Fernández", email: "l.fernandez@mercosur.com.py", estado: "active", ultimo: "Ayer, 17:45",
     accesos: { rrhh: "Gestor RR.HH.", tickets: "Supervisor" } },
-  { id: 4, nombre: "Roberto D\u00edaz", email: "r.diaz@mercosur.com.py", estado: "pending", ultimo: "\u2014",
+  { id: 4, nombre: "Roberto Díaz", email: "r.diaz@mercosur.com.py", estado: "pending", ultimo: "—",
     accesos: { rrhh: "Empleado", kb: "Solo Lectura" } },
   { id: 5, nombre: "Ana Villalba", email: "a.villalba@mercosur.com.py", estado: "active", ultimo: "Hoy, 10:31",
     accesos: { kb: "Editor de Contenido", rrhh: "Empleado" } },
-  { id: 6, nombre: "Jorge Ram\u00edrez", email: "j.ramirez@mercosur.com.py", estado: "inactive", ultimo: "12/09/2026",
+  { id: 6, nombre: "Jorge Ramírez", email: "j.ramirez@mercosur.com.py", estado: "inactive", ultimo: "12/09/2026",
     accesos: { adminmep: "Solo Lectura" } },
 ];
 
-/* ============================ COMPONENTE ============================ */
+/* ============================ COMPONENTE PRINCIPAL ============================ */
 export default function Admin() {
   const [tab, setTab] = useState("usuarios");
   const [usuarios, setUsuarios] = useState(USUARIOS_INIT);
   const [busqueda, setBusqueda] = useState("");
   const [filtroSistema, setFiltroSistema] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("");
-  const [modal, setModal] = useState(null); // {tipo, data}
+  const [modal, setModal] = useState(null);
 
   const usuariosFiltrados = useMemo(() => usuarios.filter((u) => {
     const q = busqueda.toLowerCase();
@@ -94,12 +85,11 @@ export default function Admin() {
   const guardarUsuario = (data) => {
     setUsuarios((prev) => data.id
       ? prev.map((u) => (u.id === data.id ? data : u))
-      : [...prev, { ...data, id: Date.now(), ultimo: "\u2014" }]);
+      : [...prev, { ...data, id: Date.now(), ultimo: "—" }]);
     setModal(null);
   };
   const eliminarUsuario = (id) => { setUsuarios((prev) => prev.filter((u) => u.id !== id)); setModal(null); };
 
-  /* Cambia (o quita con "") el rol de un usuario en un sistema desde la matriz */
   const setAccesoMatriz = (userId, sysId, rol) => {
     setUsuarios((prev) => prev.map((u) => {
       if (u.id !== userId) return u;
@@ -122,17 +112,17 @@ export default function Admin() {
         </div>
         <nav className="ma-nav">
           <span className="ma-nav-label">Principal</span>
-          <a><span className="ic">\u25A6</span> Panel</a>
-          <a className="active"><span className="ic">\uD83D\uDC65</span> Usuarios y Accesos</a>
-          <a><span className="ic">\u2699\uFE0F</span> Sistemas</a>
-          <a><span className="ic">\uD83D\uDCCA</span> Reportes</a>
+          <a><span className="ic">▦</span> Panel</a>
+          <a className="active"><span className="ic">👥</span> Usuarios y Accesos</a>
+          <a><span className="ic">⚙️</span> Sistemas</a>
+          <a><span className="ic">📊</span> Reportes</a>
           <span className="ma-nav-label">Sistema</span>
-          <a><span className="ic">\uD83D\uDD14</span> Auditor\u00eda</a>
-          <a><span className="ic">\u2699\uFE0F</span> Configuraci\u00f3n</a>
+          <a><span className="ic">🔔</span> Auditoría</a>
+          <a><span className="ic">🛠️</span> Configuración</a>
         </nav>
         <div className="ma-side-foot">
           <div className="ma-avatar">MG</div>
-          <div><b>Mar\u00eda Gonz\u00e1lez</b><small>Administrador</small></div>
+          <div><b>María González</b><small>Administrador</small></div>
         </div>
       </aside>
 
@@ -144,7 +134,7 @@ export default function Admin() {
             <p>Cada usuario accede solo a los sistemas asignados, con un rol propio en cada uno.</p>
           </div>
           <div className="ma-search">
-            <span className="ic">\uD83D\uDD0D</span>
+            <span className="ic">🔍</span>
             <input placeholder="Buscar usuario o correo..." value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)} />
           </div>
@@ -152,10 +142,10 @@ export default function Admin() {
 
         <main className="ma-content">
           <div className="ma-stats">
-            <div className="ma-stat"><div className="lbl">Total de usuarios</div><div className="val">{stats.total}</div><span className="chip chip-up">\u2191 activos {stats.activos}</span></div>
-            <div className="ma-stat"><div className="lbl">Roles definidos</div><div className="val">{ROLES.length}</div><span className="chip chip-flat">seg\u00fan sistema</span></div>
-            <div className="ma-stat"><div className="lbl">Sistemas de la plataforma</div><div className="val">{stats.sistemas}</div><span className="chip chip-flat">m\u00f3dulos</span></div>
-            <div className="ma-stat"><div className="lbl">Altas pendientes</div><div className="val">{stats.pendientes}</div><span className="chip chip-up">requieren aprobaci\u00f3n</span></div>
+            <div className="ma-stat"><div className="lbl">Total de usuarios</div><div className="val">{stats.total}</div><span className="chip chip-up">↑ activos {stats.activos}</span></div>
+            <div className="ma-stat"><div className="lbl">Roles definidos</div><div className="val">{ROLES.length}</div><span className="chip chip-flat">según sistema</span></div>
+            <div className="ma-stat"><div className="lbl">Sistemas de la plataforma</div><div className="val">{stats.sistemas}</div><span className="chip chip-flat">módulos</span></div>
+            <div className="ma-stat"><div className="lbl">Altas pendientes</div><div className="val">{stats.pendientes}</div><span className="chip chip-up">requieren aprobación</span></div>
           </div>
 
           <div className="ma-tabs">
@@ -183,7 +173,7 @@ export default function Admin() {
   );
 }
 
-/* ==================== helpers de render compartidos ==================== */
+/* ==================== HELPERS DE RENDER ==================== */
 function AccesosChips({ accesos }) {
   const ids = Object.keys(accesos);
   if (!ids.length) return <span className="access-chip none">Sin accesos</span>;
@@ -192,7 +182,7 @@ function AccesosChips({ accesos }) {
     return (
       <span className="access-chip" key={sid}>
         <span className="ci" style={{ background: s.color }}>{s.ic}</span>
-        {s.nombre} \u00b7 <span className="role">{accesos[sid]}</span>
+        {s.nombre} · <span className="role">{accesos[sid]}</span>
       </span>
     );
   });
@@ -216,7 +206,7 @@ function TabUsuarios({ usuariosFiltrados, filtroSistema, setFiltroSistema, filtr
           </select>
         </div>
         <button className="btn btn-accent" onClick={() => setModal({ tipo: "usuario", data: null })}>
-          <span>\u2795</span> Nuevo usuario
+          <span>➕</span> Nuevo usuario
         </button>
       </div>
 
@@ -225,7 +215,7 @@ function TabUsuarios({ usuariosFiltrados, filtroSistema, setFiltroSistema, filtr
           <thead>
             <tr>
               <th>Usuario</th><th>Accesos y rol por sistema</th>
-              <th>Estado</th><th>\u00daltimo acceso</th><th style={{ textAlign: "right" }}>Acciones</th>
+              <th>Estado</th><th>Último acceso</th><th style={{ textAlign: "right" }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -242,8 +232,8 @@ function TabUsuarios({ usuariosFiltrados, filtroSistema, setFiltroSistema, filtr
                 <td style={{ color: "var(--merco-muted)", fontSize: 13 }}>{u.ultimo}</td>
                 <td>
                   <div className="ma-actions">
-                    <button className="btn-icon" title="Editar" onClick={() => setModal({ tipo: "usuario", data: u })}>\u270F\uFE0F</button>
-                    <button className="btn-icon danger" title="Eliminar" onClick={() => setModal({ tipo: "usuario", data: u })}>\uD83D\uDDD1\uFE0F</button>
+                    <button className="btn-icon" title="Editar" onClick={() => setModal({ tipo: "usuario", data: u })}>✏️</button>
+                    <button className="btn-icon danger" title="Eliminar" onClick={() => setModal({ tipo: "usuario", data: u })}>🗑️</button>
                   </div>
                 </td>
               </tr>
@@ -268,14 +258,14 @@ function TabRoles({ setModal }) {
     <>
       <div className="ma-toolbar">
         <div style={{ color: "var(--merco-muted)", fontSize: 14 }}>Perfiles de permisos. Cada rol aplica a uno o varios sistemas.</div>
-        <button className="btn btn-accent" onClick={() => setModal({ tipo: "rol", data: null })}><span>\u2795</span> Nuevo rol</button>
+        <button className="btn btn-accent" onClick={() => setModal({ tipo: "rol", data: null })}><span>➕</span> Nuevo rol</button>
       </div>
       <div className="ma-roles">
         {ROLES.map((r) => (
           <div className="role-card" key={r.id}>
             <div className="rc-top">
               <div className="role-ic" style={{ background: r.bg, color: r.color }}>{r.ic}</div>
-              <button className="btn-icon" onClick={() => setModal({ tipo: "rol", data: r })}>\u270F\uFE0F</button>
+              <button className="btn-icon" onClick={() => setModal({ tipo: "rol", data: r })}>✏️</button>
             </div>
             <h3>{r.nombre}</h3>
             <p>{r.desc}</p>
@@ -303,8 +293,8 @@ function TabAccesos({ usuarios, setAccesoMatriz }) {
   return (
     <div className="ma-card">
       <div style={{ padding: "16px 18px", borderBottom: "1px solid var(--merco-border)" }}>
-        <b style={{ fontFamily: "var(--font-head)" }}>Matriz de accesos: usuario \u00d7 sistema</b>
-        <p style={{ color: "var(--merco-muted)", fontSize: 13, marginTop: 2 }}>Asigna a cada usuario un rol por sistema. \u201cSin acceso\u201d revoca el ingreso a ese sistema.</p>
+        <b style={{ fontFamily: "var(--font-head)" }}>Matriz de accesos: usuario × sistema</b>
+        <p style={{ color: "var(--merco-muted)", fontSize: 13, marginTop: 2 }}>Asigna a cada usuario un rol por sistema. “Sin acceso” revoca el ingreso a ese sistema.</p>
       </div>
       <div className="ma-matrix-wrap">
         <table className="ma-matrix">
@@ -361,12 +351,12 @@ function ModalUsuario({ data, onSave, onDelete, onClose }) {
   const toggleSistema = (sid) => setAccesos((a) => {
     const n = { ...a };
     if (n[sid]) delete n[sid];
-    else n[sid] = rolesDeSistema(sid)[0]?.nombre || ""; // rol por defecto del sistema
+    else n[sid] = rolesDeSistema(sid)[0]?.nombre || "";
     return n;
   });
   const setRol = (sid, rol) => setAccesos((a) => ({ ...a, [sid]: rol }));
 
-  const guardar = () => onSave({ id: data?.id, nombre, email, estado, accesos, ultimo: data?.ultimo || "\u2014" });
+  const guardar = () => onSave({ id: data?.id, nombre, email, estado, accesos, ultimo: data?.ultimo || "—" });
 
   return (
     <div className="ma-overlay" onClick={onClose}>
@@ -376,13 +366,13 @@ function ModalUsuario({ data, onSave, onDelete, onClose }) {
             <h3>{editar ? "Editar usuario" : "Nuevo usuario"}</h3>
             <p>Marca los sistemas a los que accede y elige su rol en cada uno.</p>
           </div>
-          <button className="btn-icon" onClick={onClose}>\u2715</button>
+          <button className="btn-icon" onClick={onClose}>✕</button>
         </div>
         <div className="ma-modal-body">
           <div className="field-row">
             <div className="field">
               <label>Nombre completo</label>
-              <input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej. Juan P\u00e9rez" />
+              <input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej. Juan Pérez" />
             </div>
             <div className="field">
               <label>Correo corporativo</label>
@@ -415,7 +405,7 @@ function ModalUsuario({ data, onSave, onDelete, onClose }) {
                   </div>
                   <select className={"role-select" + (activo ? "" : " off")} disabled={!activo}
                     value={accesos[s.id] || ""} onChange={(e) => setRol(s.id, e.target.value)}>
-                    {!activo && <option value="">Sin acceso</option>}
+                    {!activo && <Option value="">Sin acceso</Option>}
                     {rolesDeSistema(s.id).map((r) => <option key={r.id} value={r.nombre}>{r.nombre}</option>)}
                   </select>
                 </div>
@@ -454,7 +444,7 @@ function ModalRol({ data, onClose }) {
             <h3>{editar ? "Editar rol" : "Nuevo rol"}</h3>
             <p>Define el nombre, los sistemas donde aplica y sus permisos.</p>
           </div>
-          <button className="btn-icon" onClick={onClose}>\u2715</button>
+          <button className="btn-icon" onClick={onClose}>✕</button>
         </div>
         <div className="ma-modal-body">
           <div className="field">
@@ -462,14 +452,14 @@ function ModalRol({ data, onClose }) {
             <input value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej. Analista de Riesgos" />
           </div>
           <div className="field">
-            <label>Descripci\u00f3n</label>
+            <label>Descripción</label>
             <textarea rows={2} value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Alcance y responsabilidades del rol" />
           </div>
           <div className="field">
-            <label>\u00c1mbito del rol</label>
+            <label>Ámbito del rol</label>
             <select value={ambito} onChange={(e) => setAmbito(e.target.value)} style={{ maxWidth: 260 }}>
               <option value="all">Todos los sistemas</option>
-              <option value="custom">Sistemas espec\u00edficos</option>
+              <option value="custom">Sistemas específicos</option>
             </select>
           </div>
           {ambito === "custom" && (
