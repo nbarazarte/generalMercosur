@@ -1,6 +1,55 @@
 # ==========================================
-# Archivos de Sistema Operativo e IDEs
+# 1. FRONTEND: admin (React + Vite + Tailwind)
 # ==========================================
+admin/node_modules/
+admin/dist/
+admin/dist-ssr/
+admin/.cache/
+admin/.vite/
+admin/*.tsbuildinfo
+admin/.eslintcache
+
+# Variables de entorno del Frontend
+admin/.env
+admin/.env.*
+!admin/.env.example
+!admin/.env.*.example
+
+# ==========================================
+# 2. BACKEND: apiGeneralMercosur (Node + Express + PostgreSQL + Multer)
+# ==========================================
+apiGeneralMercosur/node_modules/
+
+# Archivos subidos por los usuarios / temporales de Multer
+apiGeneralMercosur/uploads/
+apiGeneralMercosur/upload/
+apiGeneralMercosur/tmp/
+apiGeneralMercosur/temp/
+
+# Archivos procesados o generados en la API (archiver / sheetjs / dumps SQL)
+apiGeneralMercosur/*.zip
+apiGeneralMercosur/*.xlsx
+apiGeneralMercosur/*.csv
+apiGeneralMercosur/*.sql
+apiGeneralMercosur/*.dump
+
+# Variables de entorno de la API (dotenv)
+apiGeneralMercosur/.env
+apiGeneralMercosur/.env.*
+!apiGeneralMercosur/.env.example
+!apiGeneralMercosur/.env.*.example
+
+# ==========================================
+# 3. GLOBAL: Reglas comunes, Sistema Operativo e IDEs
+# ==========================================
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Archivos de Sistema Operativo
 .DS_Store
 .DS_Store?
 ._*
@@ -9,6 +58,7 @@
 ehthumbs.db
 Thumbs.db
 
+# Configuración de Editores / IDEs
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
@@ -20,45 +70,3 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
-
-# ==========================================
-# Logs y Archivos Temporales
-# ==========================================
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# ==========================================
-# Dependencias (Cubre cualquier carpeta del proyecto)
-# ==========================================
-node_modules/
-jspm_packages/
-.pnpm-store/
-
-# ==========================================
-# Compilación y Caché (Node.js & Vite)
-# ==========================================
-# Builds de Vite / Frontend
-dist/
-dist-ssr/
-.cache/
-.vite/
-
-# Builds de Node.js / Backend (si usas TypeScript o Babel)
-build/
-out/
-.node_repl_history
-*.tsbuildinfo
-
-# ==========================================
-# Variables de Entorno y Secretos
-# ==========================================
-# Ignora archivos .env en la raíz o en subcarpetas
-.env
-.env.*
-!.env.example
-!.env.*.example
