@@ -1,0 +1,64 @@
+# ==========================================
+# Archivos de Sistema Operativo e IDEs
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ==========================================
+# Logs y Archivos Temporales
+# ==========================================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ==========================================
+# Dependencias (Cubre cualquier carpeta del proyecto)
+# ==========================================
+node_modules/
+jspm_packages/
+.pnpm-store/
+
+# ==========================================
+# Compilación y Caché (Node.js & Vite)
+# ==========================================
+# Builds de Vite / Frontend
+dist/
+dist-ssr/
+.cache/
+.vite/
+
+# Builds de Node.js / Backend (si usas TypeScript o Babel)
+build/
+out/
+.node_repl_history
+*.tsbuildinfo
+
+# ==========================================
+# Variables de Entorno y Secretos
+# ==========================================
+# Ignora archivos .env en la raíz o en subcarpetas
+.env
+.env.*
+!.env.example
+!.env.*.example
