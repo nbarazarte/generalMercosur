@@ -1,6 +1,7 @@
 // src/pages/Main.jsx
-import React from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import StrokeText from "../components/StrokeText";
 
 const sistemas = [
   {
@@ -84,7 +85,6 @@ const sistemas = [
   },
 ];
 
-// Helper para generar el Aside dinámico con el nombre del usuario
 export const getMainAside = () => {
   const getSaludo = () => {
     const hora = new Date().getHours();
@@ -103,7 +103,8 @@ export const getMainAside = () => {
         {usuario}
       </h1>
       <p className="subtitle">
-        Accede a todos los sistemas de la plataforma desde un solo lugar.
+        Accede a todos los sistemas de Mercosur Enterprise Portal desde un solo
+        lugar.
       </p>
 
       <div className="feature-list">
@@ -153,10 +154,59 @@ export const getMainAside = () => {
 const Main = () => {
   const navigate = useNavigate();
 
+  const [theme, setTheme] = useState(() => {
+    return (
+      localStorage.getItem("theme") ||
+      (document.documentElement.classList.contains("dark") ? "dark" : "light")
+    );
+  });
+
+  useEffect(() => {
+    // Sincroniza la clase en <html>
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(theme);
+    document.documentElement.style.colorScheme = theme;
+    localStorage.setItem("theme", theme);
+
+    // Escucha si otra parte de la app cambia la clase en <html>
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setTheme(isDark ? "dark" : "light");
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, [theme]);
+
+  const textColor = theme === "dark" ? "#FFFFFF" : "#0c1f3d";
+
   return (
     <div className="systems-wrapper">
-      <div className="form-header flex flex-col items-center justify-center text-center">
-        <h2>Panel General</h2>
+      <div className="form-header text-center flex flex-col items-center justify-center w-full">
+        <div className="stroke-container">
+          <StrokeText
+            key={theme}
+            text="Sistemas MEP"
+            strokeColor="#2563eb"
+            fillColor={textColor}
+            strokeWidth={3.2}
+            drawDuration={1.6}
+            fillDelay={0.2}
+            stagger={0.05}
+            ease="power2.out"
+            trigger="mount"
+            fillMode="wipe"
+            fontSize={128}
+            fontWeight={800}
+            letterSpacing={-4}
+            reverse={false}
+          />
+        </div>
+
         <p className="subtitle">Selecciona el sistema al que deseas acceder.</p>
       </div>
 

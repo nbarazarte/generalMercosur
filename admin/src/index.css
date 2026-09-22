@@ -1079,3 +1079,48 @@ ol {
   background-size: 32px 32px;
   pointer-events: none;
 }
+
+/* Reduce el margen del contenedor del encabezado */
+.form-header {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Fuerza al SVG interno de StrokeText a no ocupar espacio vertical fantasma */
+.form-header svg {
+  display: block;
+  height: auto;
+  max-height: 80px; /* Ajusta este valor según la altura visual deseada */
+  margin: 0 auto;
+}
+
+/* Reduce el margen superior de la cuadrícula si tiene un gap amplio */
+.systems-grid {
+  margin-top: 1rem; /* O el espaciado deseado */
+}
+
+/* ===== FORZAR CENTRADO DE FORM-HEADER Y COMPONENTES SVG ===== */
+.form-header {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.form-header svg {
+  display: block !important;
+  height: auto !important;
+  max-height: 80px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.form-header svg text,
+.form-header svg tspan {
+  text-anchor: middle !important;
+  x: 50% !important;
+}
