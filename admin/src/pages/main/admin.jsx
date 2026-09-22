@@ -112,13 +112,7 @@ export default function Admin() {
         </div>
         <nav className="ma-nav">
           <span className="ma-nav-label">Principal</span>
-          <a><span className="ic">▦</span> Panel</a>
           <a className="active"><span className="ic">👥</span> Usuarios y Accesos</a>
-          <a><span className="ic">⚙️</span> Sistemas</a>
-          <a><span className="ic">📊</span> Reportes</a>
-          <span className="ma-nav-label">Sistema</span>
-          <a><span className="ic">🔔</span> Auditoría</a>
-          <a><span className="ic">🛠️</span> Configuración</a>
         </nav>
         <div className="ma-side-foot">
           <div className="ma-avatar">MG</div>
