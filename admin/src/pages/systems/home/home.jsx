@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import StrokeText from "../../components/StrokeText";
+import TextType from "../../components/TextType";
 
 const sistemas = [
   {
@@ -88,15 +89,11 @@ const sistemas = [
 
 export const MainAside = () => {
   // Suscripción al estado de Redux
-  // Si tu slice en Redux no se llama 'auth', ajusta 'state.auth' por el nombre de tu slice
   const user = useSelector((state) => state.auth?.user);
 
   // Fallback en cascada: Redux -> localStorage -> "Usuario"
   const usuario =
-    user?.username ||
-    user?.nombre ||
-    localStorage.getItem("cl_username") ||
-    "Usuario";
+    user?.username || localStorage.getItem("cl_username") || "Usuario";
 
   const getSaludo = () => {
     const hora = new Date().getHours();
@@ -108,9 +105,23 @@ export const MainAside = () => {
   return (
     <div className="aside-content">
       <h1>
-        {getSaludo()},
-        <br />
-        {usuario}
+        <TextType
+          text={`${getSaludo()}, \n ${usuario}`}
+          typingSpeed={75}
+          pauseDuration={1500}
+          showCursor
+          cursorCharacter="_"
+          loop={false} // Evita que la animación vuelva a empezar
+          texts={[
+            "Welcome to React Bits! Good to see you!",
+            "Build some amazing experiences!",
+          ]}
+          deletingSpeed={50}
+          variableSpeedEnabled={false}
+          variableSpeedMin={60}
+          variableSpeedMax={120}
+          cursorBlinkDuration={0.5}
+        />
       </h1>
       <p className="subtitle">
         Accede a todos los sistemas de Mercosur Enterprise Portal desde un solo
@@ -167,6 +178,12 @@ export const getMainAside = () => <MainAside />;
 const Home = () => {
   const navigate = useNavigate();
 
+  const user = useSelector((state) => state.auth?.user);
+
+  // Fallback en cascada: Redux -> localStorage -> "Usuario"
+  const usuario =
+    user?.username || localStorage.getItem("cl_username") || "Usuario";
+
   const [theme, setTheme] = useState(() => {
     return (
       localStorage.getItem("theme") ||
@@ -200,27 +217,29 @@ const Home = () => {
   return (
     <div className="systems-wrapper">
       <div className="form-header text-center flex flex-col items-center justify-center w-full">
-        <div className="stroke-container">
+        <h2>Tus Sistemas</h2>
+
+        {/* <div className="stroke-container">
           <StrokeText
             key={theme}
-            text="Sistemas MEP"
+            text="Tus sistemas en un solo lugar"
             strokeColor="#2563eb"
             fillColor={textColor}
-            strokeWidth={3.2}
+            strokeWidth={1.8}
             drawDuration={1.6}
             fillDelay={0.2}
             stagger={0.05}
             ease="power2.out"
             trigger="mount"
             fillMode="wipe"
-            fontSize={128}
+            fontSize={168}
             fontWeight={800}
             letterSpacing={-4}
             reverse={false}
           />
-        </div>
+        </div> */}
 
-        <p className="subtitle">Selecciona el sistema al que deseas acceder.</p>
+        <p className="subtitle">¿A cuál deseas acceder, {usuario}?</p>
       </div>
 
       <div className="systems-grid">

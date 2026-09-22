@@ -1,24 +1,22 @@
 // src/pages/components/LogoutButton.jsx
-import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../../store/authSlice"; // Ajusta la ruta a tu authSlice
 
 const LogoutButton = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
-    // 1. Limpiar datos de autenticación del almacenamiento local
-    localStorage.removeItem("cl_userId");
-    localStorage.removeItem("cl_token");
-    localStorage.removeItem("cl_userEmail");
-    localStorage.removeItem("cl_username");
+    // 1. Limpiar estado en Redux y localStorage mediante la acción logout
+    dispatch(logout());
 
-    // 2. Redirigir al inicio de sesión
-    navigate("/login");
+    // 2. Redirigir al usuario al login
+    navigate("/login", { replace: true });
   };
 
   return (
     <button
-      //className="logout-toggle"
       className="theme-toggle"
       onClick={handleLogout}
       id="logoutToggle"
