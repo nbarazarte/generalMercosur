@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import "../../AdminUsuarios.css";
+import "./AdminUsuarios.css";
 
 /* ------------------------------------------------------------------ *
  *  MercoAdmin — Gestión de Usuarios, Roles y Accesos
