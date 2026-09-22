@@ -1,13 +1,13 @@
-// src/App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import AuthLayout from "./layouts/AuthLayout";
 import Login, { LoginAside } from "./pages/auth/login";
-import Main, { getMainAside } from "./pages/main/main";
+import Home, { getMainAside } from "./pages/systems/home/home";
 
-import Admin from "./pages/main/admin";
-import RRHH from "./pages/rrhh/rrhh";
-import Tickets from "./pages/tickets/tickets";
-import KCS from "./pages/kcs/kcs";
+//Rutas de los sistemas:
+import Admin from "./pages/systems/admin/admin";
+import RRHH from "./pages/systems/rrhh/rrhh";
+import Tickets from "./pages/systems/tickets/tickets";
+import KCS from "./pages/systems/kcs/kcs";
 
 function App() {
   return (
@@ -25,9 +25,10 @@ function App() {
       <Route
         element={<AuthLayout asideContent={getMainAside()} showLogout={true} />}
       >
-        <Route path="/main" element={<Main />} />
+        <Route path="/home" element={<Home />} />
       </Route>
 
+      {/* Rutas para las páginas de los sistemas */}
       <Route path="/admin" element={<Admin />} />
       <Route path="/rrhh" element={<RRHH />} />
       <Route path="/tickets" element={<Tickets />} />

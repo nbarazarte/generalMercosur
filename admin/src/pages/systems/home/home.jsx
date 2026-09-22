@@ -1,7 +1,8 @@
 // src/pages/Main.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import StrokeText from "../components/StrokeText";
+import { useSelector } from "react-redux";
+import StrokeText from "../../components/StrokeText";
 
 const sistemas = [
   {
@@ -85,15 +86,24 @@ const sistemas = [
   },
 ];
 
-export const getMainAside = () => {
+export const MainAside = () => {
+  // Suscripción al estado de Redux
+  // Si tu slice en Redux no se llama 'auth', ajusta 'state.auth' por el nombre de tu slice
+  const user = useSelector((state) => state.auth?.user);
+
+  // Fallback en cascada: Redux -> localStorage -> "Usuario"
+  const usuario =
+    user?.username ||
+    user?.nombre ||
+    localStorage.getItem("cl_username") ||
+    "Usuario";
+
   const getSaludo = () => {
     const hora = new Date().getHours();
     if (hora >= 5 && hora < 12) return "Buenos días";
     if (hora >= 12 && hora < 19) return "Buenas tardes";
     return "Buenas noches";
   };
-
-  const usuario = localStorage.getItem("cl_username") || "Usuario";
 
   return (
     <div className="aside-content">
@@ -151,7 +161,10 @@ export const getMainAside = () => {
   );
 };
 
-const Main = () => {
+// Mantiene compatibilidad con el código anterior por si lo llamas como getMainAside()
+export const getMainAside = () => <MainAside />;
+
+const Home = () => {
   const navigate = useNavigate();
 
   const [theme, setTheme] = useState(() => {
@@ -250,4 +263,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default Home;
