@@ -8,6 +8,8 @@ dropdb -U postgres -h localhost db_general_mercosur
 createdb -U postgres -h localhost db_general_mercosur
 pg_restore -U postgres -h localhost -d db_general_mercosur -v ./sistemadb_general_mercosur-qa.backup
 
+pg_restore -U postgres -h 192.168.12.29 -d db_general_mercosur -v ./sistemadb_general_mercosur-qa.backup
+
 time psql -h localhost -U postgres -d db_general_mercosur -c "SELECT count(*) FROM db_general_mercosur.fichas"
 
 ALTER DATABASE db_general_mercosur SET timezone = 'America/Caracas';
