@@ -127,10 +127,8 @@ const Login = () => {
     setIsLoginLoading(true);
 
     try {
-      if (!API_URL) {
-        throw new Error(
-          "Error de configuración: La variable API_URL no está definida.",
-        );
+      if (!API_URL || !API_TOKEN) {
+        throw new Error("Faltan variables de entorno.");
       }
 
       const { deviceId, deviceName } = await getDeviceInfo();
@@ -145,18 +143,23 @@ const Login = () => {
         { headers: { Authorization: `Bearer ${API_TOKEN}` } },
       );
 
-      //console.log(response.data); // Verifica la respuesta del servidor
-
-      // Despachamos todo a Redux y él se encarga del localStorage
       dispatch(setUser(response.data));
 
       showToast("¡Sesión iniciada correctamente!", "success");
       navigate("/home");
     } catch (error) {
+      // Si Axios no recibió respuesta del servidor (servidor caído o sin red)
+      const isNetworkError =
+        error.message === "Network Error" || !error.response;
+
       const errorMessage =
-        typeof error.response?.data === "string"
+        (typeof error.response?.data === "string"
           ? error.response.data
-          : error.response?.data?.message || "No hay conexión con el servidor.";
+          : error.response?.data?.message) ||
+        (isNetworkError && error.message !== "Faltan variables de entorno."
+          ? "No hay conexión con la API."
+          : error.message);
+
       showToast(errorMessage, "error");
     } finally {
       setIsLoginLoading(false);
