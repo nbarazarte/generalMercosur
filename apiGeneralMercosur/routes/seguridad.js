@@ -270,7 +270,7 @@ router.post("/login", async (req, res) => {
 
     // 6. Buscar Sistemas y opciones del usuario
     const resultado = await pool.query(
-      "SELECT usuario_id, rol, sistema, opcion, tiene_permiso	FROM public.view_usuarios_opciones_sistemas WHERE usuario_id = $1",
+      "SELECT usuario_id, rol, sistema, opcion, tiene_permiso FROM public.view_usuarios_opciones_sistemas WHERE usuario_id = $1",
       [user.id],
     );
 
@@ -278,24 +278,42 @@ router.post("/login", async (req, res) => {
       return res.status(404).send("Usuario sin sistemas asignados");
     }
 
-    const sistemasOpciones = resultado.rows.map((row) => ({
-      usuario_id: row.usuario_id,
-      rol: row.rol,
-      sistema: row.sistema,
-      opcion: row.opcion,
-      tiene_permiso: row.tiene_permiso,
-    }));
+    // Agrupar opciones por cada sistema
+    const sistemasOpciones = Object.values(
+      resultado.rows.reduce((acc, row) => {
+        const { sistema, opcion, tiene_permiso, rol } = row;
 
-    console.log("Sistemas y opciones del usuario:", sistemasOpciones);
+        if (!acc[sistema]) {
+          acc[sistema] = {
+            sistema: sistema,
+            rol: rol,
+            opciones: [],
+          };
+        }
+
+        acc[sistema].opciones.push({
+          opcion: opcion,
+          tiene_permiso: tiene_permiso,
+        });
+
+        return acc;
+      }, {}),
+    );
+
+    console.log(
+      "Sistemas y opciones:",
+      JSON.stringify(sistemasOpciones, null, 2),
+    );
 
     // 7. Respuesta al cliente
     res.json({
       id: user.id,
       username: user.str_usuario,
       email: user.str_email,
-      token: token,
       nombre: user.str_nombre,
-      apellido: user.str_apellido
+      apellido: user.str_apellido,
+      token: token,
+      sistemas: sistemasOpciones,
     });
   } catch (err) {
     console.error(err.message);
