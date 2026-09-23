@@ -14,7 +14,7 @@ export const LoginAside = (
       Enterprise Portal
     </h1>
     <p className="subtitle">
-      Tu portal de acceso centralizado de los sistemas de Mercosur.
+      Tu portal de acceso centralizado a los sistemas de Mercosur Casa de Bolsa.
     </p>
 
     <ul className="feature-list">

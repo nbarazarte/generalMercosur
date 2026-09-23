@@ -44,7 +44,7 @@ const AuthLayout = ({ asideContent, showLogout = false }) => {
           {asideContent}
 
           <p className="aside-footer">
-            &copy; 2026 MERCOSUR Casa de Bolsa C.A.
+            &copy; 2026 MERCOSUR Casa de Bolsa S.A.
             <br />
             GCIA. General de Tecnología de la Información
           </p>
