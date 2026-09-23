@@ -1,14 +1,14 @@
 ############### BD LOCALHOST #########################
 # BK de Produccion:
-pg_dump -U postgres -h 192.168.12.29 -F c -b -v -f ./sistemadb_general_mercosur-produccion.backup db_general_mercosur
-pg_dump -U postgres -h localhost -F c -b -v -f ./sistemadb_general_mercosur-casa.backup db_general_mercosur
+pg_dump -U postgres -h 192.168.12.29 -F c -b -v -f ./sistemadb_general_mercosur.backup db_general_mercosur
+pg_dump -U postgres -h localhost -F c -b -v -f ./sistemadb_general_mercosur.backup db_general_mercosur
 
 # Restore
 dropdb -U postgres -h localhost db_general_mercosur
 createdb -U postgres -h localhost db_general_mercosur
-pg_restore -U postgres -h localhost -d db_general_mercosur -v ./sistemadb_general_mercosur-qa.backup
+pg_restore -U postgres -h localhost -d db_general_mercosur -v ./sistemadb_general_mercosur.backup
 
-pg_restore -U postgres -h 192.168.12.29 -d db_general_mercosur -v ./sistemadb_general_mercosur-qa.backup
+pg_restore -U postgres -h 192.168.12.29 -d db_general_mercosur -v ./sistemadb_general_mercosur.backup
 
 time psql -h localhost -U postgres -d db_general_mercosur -c "SELECT count(*) FROM db_general_mercosur.fichas"
 

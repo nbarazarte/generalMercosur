@@ -1,0 +1,4 @@
+"id","str_nombre","str_descripcion","created_at","updated_at"
+1,"Administrador","Administrador general de los sistemas","2026-09-09 11:28:55.692406-04","2026-09-09 11:28:55.692406-04"
+2,"Usuario","Usuario generico","2026-09-09 11:28:55.692406-04","2026-09-09 11:28:55.692406-04"
+3,"Gerente","Usuario con administración total del sistema","2026-09-09 11:35:03.509297-04","2026-09-09 11:35:03.509297-04"

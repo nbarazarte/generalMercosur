@@ -5,6 +5,8 @@ const initialState = {
     id: localStorage.getItem("cl_userId") || null,
     email: localStorage.getItem("cl_userEmail") || null,
     username: localStorage.getItem("cl_username") || null,
+    nombre: localStorage.getItem("cl_nombre") || null, // Alias para username
+    apellido: localStorage.getItem("cl_apellido") || null,
   },
   token: localStorage.getItem("cl_token") || null,
   isAuthenticated: !!localStorage.getItem("cl_token"),
@@ -15,9 +17,9 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-      const { id, token, email, username } = action.payload;
+      const { id, token, email, username, nombre, apellido } = action.payload;
 
-      state.user = { id, email, username };
+      state.user = { id, email, username, nombre, apellido };
       state.token = token;
       state.isAuthenticated = true;
 
@@ -26,9 +28,11 @@ export const authSlice = createSlice({
       if (token) localStorage.setItem("cl_token", token);
       if (email) localStorage.setItem("cl_userEmail", email);
       if (username) localStorage.setItem("cl_username", username);
+      if (nombre) localStorage.setItem("cl_nombre", nombre);
+      if (apellido) localStorage.setItem("cl_apellido", apellido);
     },
     logout: (state) => {
-      state.user = { id: null, email: null, username: null };
+      state.user = { id: null, email: null, username: null, nombre: null, apellido: null };
       state.token = null;
       state.isAuthenticated = false;
 
@@ -36,6 +40,8 @@ export const authSlice = createSlice({
       localStorage.removeItem("cl_token");
       localStorage.removeItem("cl_userEmail");
       localStorage.removeItem("cl_username");
+      localStorage.removeItem("cl_nombre");
+      localStorage.removeItem("cl_apellido");
     },
   },
 });

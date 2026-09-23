@@ -1,0 +1,2 @@
+"id","departamento_id","str_cedula","str_nombre","str_apellido","str_email","str_password","bol_activo","created_at","updated_at","dmt_fecha_nacimiento","str_direccion","str_usuario","str_telefono","str_contacto_emergencia"
+1,1,"V-00000000","Admin","Mercosur","sistemasmcdb@mercosur.com.ve","$2a$10$0N9CZGs3cq1pMUMt/vOa7e0/TdWyd1ziWgs3zMQC4BvC4PykCLoDW",True,"2026-09-10 13:13:24.007018-04","2026-09-10 13:13:24.007018-04",NULL,NULL,"admin",NULL,NULL

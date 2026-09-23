@@ -91,8 +91,8 @@ export const MainAside = () => {
   const user = useSelector((state) => state.auth?.user);
 
   // Fallback en cascada: Redux -> localStorage -> "Usuario"
-  const usuario =
-    user?.username || localStorage.getItem("cl_username") || "Usuario";
+  const nombre =
+    user?.nombre || localStorage.getItem("cl_nombre");
 
   const getSaludo = () => {
     const hora = new Date().getHours();
@@ -105,7 +105,7 @@ export const MainAside = () => {
     <div className="aside-content">
       <h1>
         <TextType
-          text={`${getSaludo()}, \n ${usuario}`}
+          text={`${getSaludo()}, \n ${nombre}`}
           typingSpeed={75}
           pauseDuration={1500}
           showCursor
@@ -210,8 +210,6 @@ const Home = () => {
 
     return () => observer.disconnect();
   }, [theme]);
-
-  const textColor = theme === "dark" ? "#FFFFFF" : "#0c1f3d";
 
   return (
     <div className="systems-wrapper">

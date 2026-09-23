@@ -268,12 +268,34 @@ router.post("/login", async (req, res) => {
       [user.id, deviceId, deviceName, token],
     );
 
-    // 6. Respuesta al cliente
+    // 6. Buscar Sistemas y opciones del usuario
+    const resultado = await pool.query(
+      "SELECT usuario_id, rol, sistema, opcion, tiene_permiso	FROM public.view_usuarios_opciones_sistemas WHERE usuario_id = $1",
+      [user.id],
+    );
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).send("Usuario sin sistemas asignados");
+    }
+
+    const sistemasOpciones = resultado.rows.map((row) => ({
+      usuario_id: row.usuario_id,
+      rol: row.rol,
+      sistema: row.sistema,
+      opcion: row.opcion,
+      tiene_permiso: row.tiene_permiso,
+    }));
+
+    console.log("Sistemas y opciones del usuario:", sistemasOpciones);
+
+    // 7. Respuesta al cliente
     res.json({
       id: user.id,
       username: user.str_usuario,
       email: user.str_email,
       token: token,
+      nombre: user.str_nombre,
+      apellido: user.str_apellido
     });
   } catch (err) {
     console.error(err.message);
