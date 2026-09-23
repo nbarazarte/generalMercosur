@@ -2,13 +2,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import StrokeText from "../../components/StrokeText";
 import TextType from "../../components/TextType";
 
 const sistemas = [
   {
     id: "admin",
-    nombre: "Admin MEP",
+    nombre: "Administración General",
     descripcion: "Gestiona la configuración del sistema.",
     url: "/admin",
     icon: (
@@ -47,7 +46,7 @@ const sistemas = [
   },
   {
     id: "tickets",
-    nombre: "Sistema Tickets",
+    nombre: "Tickets",
     descripcion: "Centraliza tus tickets.",
     url: "/tickets",
     icon: (
@@ -217,28 +216,7 @@ const Home = () => {
   return (
     <div className="systems-wrapper">
       <div className="form-header text-center flex flex-col items-center justify-center w-full">
-        <h2>Tus Sistemas</h2>
-
-        {/* <div className="stroke-container">
-          <StrokeText
-            key={theme}
-            text="Tus sistemas en un solo lugar"
-            strokeColor="#2563eb"
-            fillColor={textColor}
-            strokeWidth={1.8}
-            drawDuration={1.6}
-            fillDelay={0.2}
-            stagger={0.05}
-            ease="power2.out"
-            trigger="mount"
-            fillMode="wipe"
-            fontSize={168}
-            fontWeight={800}
-            letterSpacing={-4}
-            reverse={false}
-          />
-        </div> */}
-
+        <h2>Menú de Sistemas</h2>
         <p className="subtitle">¿A cuál deseas acceder, {usuario}?</p>
       </div>
 
