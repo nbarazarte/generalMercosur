@@ -199,9 +199,7 @@ function TabUsuarios({ usuariosFiltrados, filtroSistema, setFiltroSistema, filtr
             <option value="pending">Pendiente</option>
           </select>
         </div>
-        <button className="btn btn-accent" onClick={() => setModal({ tipo: "usuario", data: null })}>
-          <span>➕</span> Nuevo usuario
-        </button>
+        <button className="btn btn-accent" onClick={() => setModal({ tipo: "usuario", data: null })}> <span>➕</span> Nuevo usuario </button>
       </div>
 
       <div className="ma-card">
@@ -399,7 +397,7 @@ function ModalUsuario({ data, onSave, onDelete, onClose }) {
                   </div>
                   <select className={"role-select" + (activo ? "" : " off")} disabled={!activo}
                     value={accesos[s.id] || ""} onChange={(e) => setRol(s.id, e.target.value)}>
-                    {!activo && <Option value="">Sin acceso</Option>}
+                    {!activo && <option value="">Sin acceso</option>}
                     {rolesDeSistema(s.id).map((r) => <option key={r.id} value={r.nombre}>{r.nombre}</option>)}
                   </select>
                 </div>
