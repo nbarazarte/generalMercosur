@@ -127,6 +127,12 @@ const Login = () => {
     setIsLoginLoading(true);
 
     try {
+      if (!API_URL) {
+        throw new Error(
+          "Error de configuración: La variable API_URL no está definida.",
+        );
+      }
+
       const { deviceId, deviceName } = await getDeviceInfo();
       const response = await axios.post(
         `${API_URL}/login`,
