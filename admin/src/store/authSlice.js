@@ -17,9 +17,10 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-      const { id, token, email, username, nombre, apellido } = action.payload;
+      const { id, token, email, username, nombre, apellido, sistemasOpciones } =
+        action.payload;
 
-      state.user = { id, email, username, nombre, apellido };
+      state.user = { id, email, username, nombre, apellido, sistemasOpciones };
       state.token = token;
       state.isAuthenticated = true;
 
@@ -32,10 +33,16 @@ export const authSlice = createSlice({
       if (apellido) localStorage.setItem("cl_apellido", apellido);
     },
     logout: (state) => {
-      state.user = { id: null, email: null, username: null, nombre: null, apellido: null };
+      state.user = {
+        id: null,
+        email: null,
+        username: null,
+        nombre: null,
+        apellido: null,
+        sistemasOpciones: [],
+      };
       state.token = null;
       state.isAuthenticated = false;
-
       localStorage.removeItem("cl_userId");
       localStorage.removeItem("cl_token");
       localStorage.removeItem("cl_userEmail");
