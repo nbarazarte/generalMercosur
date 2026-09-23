@@ -1302,3 +1302,29 @@ ol {
     transform: rotate(360deg);
   }
 }
+/* Modo Claro (Por defecto) */
+.system-loader-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+/* Modo Oscuro (se activa cuando el body o html tiene la clase .dark) */
+:root.dark .system-loader-screen,
+body.dark .system-loader-screen {
+  background-color: #121212;
+  color: #f1f1f1;
+}
+
+:root.dark .spinner,
+body.dark .spinner {
+  border-color: rgba(255, 255, 255, 0.2);
+  border-top-color: #3b82f6; /* color primario */
+}
