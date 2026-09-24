@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sistema de Tickets | MERCOSUR Casa de Bolsa — Atención al Cliente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0B1B32;--navy-700:#12294A;--navy-500:#1D3A63;
+  --gold:#D0A24C;--gold-dark:#B0862F;--gold-light:#E0BA6E;
+  --gold-soft:rgba(208,162,76,.16);--gold-ghost:rgba(208,162,76,.10);
+  --blue:#2F6FED;--blue-soft:rgba(47,111,237,.12);
+  --bg:#F8F9FA;--surface:#FFFFFF;--border:#E2E8F0;
+  --text:#1C1C1C;--muted:#6C757D;
+  --success:#28A745;--success-bg:#E6F5EA;--success-t:#1B7A31;
+  --danger:#D1435B;--danger-bg:#FCE8EC;--danger-t:#A12B43;
+  --warning:#FFC107;--warning-bg:#FFF6DC;--warning-t:#8A6D00;
+  --info:#1D3A63;--info-bg:#E7EEFC;--info-t:#1D5891;
+  --r1:8px;--r2:12px;--r3:16px;--pill:999px;
+  --sh1:0 2px 8px rgba(11,27,50,.06);--sh2:0 4px 14px rgba(11,27,50,.08);--sh3:0 10px 30px rgba(11,27,50,.12);
+  --body:'Inter',system-ui,-apple-system,'Segoe UI','Arial',sans-serif;
+  --display:'Poppins','Inter','Arial',sans-serif;
+  --ease:.22s cubic-bezier(.4,0,.2,1);
+  --sidebar-w:264px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--body);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;line-height:1.25}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#c9d2df;border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:#aeb9c9}
+/* ---- LAYOUT ---- */
+.layout{display:flex;min-height:100vh}
+.content{flex:1;display:flex;flex-direction:column;min-width:0}
+.main{flex:1;padding:26px 30px 40px;max-width:1440px;width:100%;margin:0 auto}
+/* ---- SIDEBAR ---- */
+.sidebar{width:var(--sidebar-w);background:var(--navy);color:#e8eef7;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0}
+.sb-brand{display:flex;align-items:center;gap:11px;padding:20px 18px 18px}
+.sb-logo{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--gold-light),var(--gold-dark));display:grid;place-items:center;flex-shrink:0;box-shadow:0 4px 12px rgba(208,162,76,.35)}
+.sb-logo svg{width:24px;height:24px}
+.sb-brand-txt b{font-family:var(--display);font-size:15px;color:#fff;display:block;letter-spacing:.2px}
+.sb-brand-txt span{font-size:11px;color:#9fb2cc}
+.sb-nav{flex:1;overflow-y:auto;padding:8px 12px}
+.sb-sec{font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;color:#6d82a1;margin:16px 10px 7px;font-weight:600}
+.sb-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#c3cfe0;font-weight:500;font-size:13.5px;transition:var(--ease);cursor:pointer;margin-bottom:2px}
+.sb-item svg{width:18px;height:18px;flex-shrink:0;opacity:.85}
+.sb-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.sb-item.active{background:linear-gradient(90deg,var(--gold-soft),transparent);color:#fff;box-shadow:inset 3px 0 0 var(--gold)}
+.sb-item.active svg{opacity:1;color:var(--gold-light)}
+.sb-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:var(--pill)}
+.sb-user{display:flex;align-items:center;gap:10px;padding:14px 16px;border-top:1px solid rgba(255,255,255,.08)}
+.sb-user .av{width:34px;height:34px;border-radius:50%;background:var(--gold);color:var(--navy);display:grid;place-items:center;font-weight:700;font-size:13px}
+.sb-user b{font-size:12.5px;color:#fff;display:block}
+.sb-user span{font-size:11px;color:#9fb2cc}
+/* ---- TOPBAR ---- */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 30px;display:flex;align-items:center;gap:18px;position:sticky;top:0;z-index:30}
+.tb-title h1{font-size:18px;color:var(--navy)}
+.tb-title p{font-size:12.5px;color:var(--muted)}
+.tb-search{margin-left:auto;position:relative;display:flex;align-items:center}
+.tb-search svg{position:absolute;left:12px;width:16px;height:16px;color:var(--muted)}
+.tb-search input{width:280px;padding:9px 12px 9px 36px;border:1px solid var(--border);border-radius:var(--pill);background:#f7f9fc;font-size:13px;font-family:inherit;transition:var(--ease)}
+.tb-search input:focus{outline:none;border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px var(--gold-ghost)}
+.tb-bell{position:relative;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--navy);background:#f1f5fb;transition:var(--ease)}
+.tb-bell:hover{background:var(--gold-ghost)}
+.tb-bell svg{width:19px;height:19px}
+.tb-bell .dot{position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--danger);border:2px solid var(--surface)}
+/* ---- BUTTONS ---- */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:10px;font-weight:600;font-size:13px;transition:var(--ease);white-space:nowrap}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--gold);color:var(--navy)}
+.btn-primary:hover{background:var(--gold-dark);color:#fff;box-shadow:var(--sh2)}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-navy:hover{background:var(--navy-700)}
+.btn-ghost{background:#fff;color:var(--navy);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold-dark)}
+.btn-sm{padding:6px 11px;font-size:12px;border-radius:8px}
+.icon-btn{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--muted);transition:var(--ease)}
+.icon-btn:hover{background:var(--bg);color:var(--navy)}
+.icon-btn svg{width:16px;height:16px}
+/* ---- VIEW / HEADERS ---- */
+.view{display:none;animation:fade .3s var(--ease)}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.view-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.view-head h2{font-size:20px;color:var(--navy)}
+.view-head p{font-size:13px;color:var(--muted);margin-top:2px}
+.view-head .spacer{flex:1}
+/* ---- KPI CARDS ---- */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:22px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:18px;box-shadow:var(--sh1);position:relative;overflow:hidden}
+.kpi .ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;margin-bottom:12px}
+.kpi .ic svg{width:21px;height:21px}
+.kpi .val{font-family:var(--display);font-size:27px;font-weight:700;color:var(--navy);line-height:1}
+.kpi .lbl{font-size:12.5px;color:var(--muted);margin-top:5px}
+.kpi .trend{font-size:11.5px;font-weight:600;margin-top:8px;display:inline-flex;align-items:center;gap:3px}
+.kpi .trend.up{color:var(--success)}.kpi .trend.down{color:var(--danger)}
+.ic-gold{background:var(--gold-soft);color:var(--gold-dark)}
+.ic-blue{background:var(--blue-soft);color:var(--blue)}
+.ic-green{background:var(--success-bg);color:var(--success-t)}
+.ic-amber{background:var(--warning-bg);color:var(--warning-t)}
+.ic-red{background:var(--danger-bg);color:var(--danger-t)}
+.ic-navy{background:rgba(29,58,99,.1);color:var(--navy)}
+/* ---- PANELS / CHARTS ---- */
+.grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:22px}
+.grid-2b{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);box-shadow:var(--sh1)}
+.panel-h{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border)}
+.panel-h h3{font-size:14.5px;color:var(--navy)}
+.panel-h .sub{font-size:11.5px;color:var(--muted)}
+.panel-b{padding:16px 18px}
+.chart-wrap{position:relative;height:260px}
+.chart-wrap.sm{height:230px}
+@media(max-width:960px){.grid-2,.grid-2b{grid-template-columns:1fr}}
+/* ---- BADGES ---- */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:var(--pill);font-size:11.5px;font-weight:600;white-space:nowrap}
+.badge .d{width:7px;height:7px;border-radius:50%;background:currentColor}
+.b-open{background:var(--info-bg);color:var(--info-t)}
+.b-proc{background:var(--warning-bg);color:var(--warning-t)}
+.b-res{background:var(--success-bg);color:var(--success-t)}
+.b-esc{background:var(--danger-bg);color:var(--danger-t)}
+.pri{display:inline-flex;align-items:center;gap:5px;font-weight:600;font-size:12px}
+.pri .d{width:8px;height:8px;border-radius:50%}
+.pri-alta .d{background:var(--danger)}.pri-alta{color:var(--danger-t)}
+.pri-media .d{background:var(--warning)}.pri-media{color:var(--warning-t)}
+.pri-baja .d{background:var(--success)}.pri-baja{color:var(--success-t)}
+.chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:var(--pill);font-size:11px;font-weight:500;background:var(--bg);color:var(--muted);border:1px solid var(--border)}
+.sla-ok{color:var(--success-t);font-weight:600;font-size:12px}
+.sla-warn{color:var(--warning-t);font-weight:600;font-size:12px}
+.sla-late{color:var(--danger-t);font-weight:700;font-size:12px}
+/* ---- FILTERS ---- */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.field{position:relative;display:flex;align-items:center}
+.field>svg{position:absolute;left:11px;width:15px;height:15px;color:var(--muted);pointer-events:none}
+.field input.srch{padding-left:33px}
+input,select,textarea{font-family:inherit;font-size:13px;color:var(--text)}
+.inp,select.sel{padding:8px 12px;border:1px solid var(--border);border-radius:9px;background:#fff;transition:var(--ease);min-height:38px}
+.inp:focus,select.sel:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-ghost)}
+select.sel{cursor:pointer;padding-right:30px}
+/* ---- TABLE ---- */
+.tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);box-shadow:var(--sh1);overflow:hidden}
+.tbl-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--navy);color:#dce6f5;text-align:left;font-weight:600;font-size:11.5px;letter-spacing:.4px;text-transform:uppercase;padding:12px 14px;white-space:nowrap;position:sticky;top:0}
+tbody td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:#f7f9fc}
+tbody tr:last-child td{border-bottom:none}
+.cli{display:flex;align-items:center;gap:10px}
+.cli .av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--navy-500),var(--navy));color:#fff;display:grid;place-items:center;font-weight:600;font-size:12px;flex-shrink:0}
+.cli b{font-size:13px;color:var(--navy);display:block}
+.cli span{font-size:11.5px;color:var(--muted)}
+.tbl-foot{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:12.5px;color:var(--muted)}
+.empty{padding:44px;text-align:center;color:var(--muted)}
+.empty svg{width:40px;height:40px;opacity:.4;margin-bottom:10px}
+/* ---- RANKING / LISTS ---- */
+.rank-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--border)}
+.rank-row:last-child{border-bottom:none}
+.rank-row .pos{width:24px;height:24px;border-radius:7px;background:var(--bg);color:var(--muted);font-weight:700;font-size:12px;display:grid;place-items:center;flex-shrink:0}
+.rank-row.top .pos{background:var(--gold);color:var(--navy)}
+.rank-row .nm{font-weight:600;font-size:13px;color:var(--navy);flex:1;min-width:0}
+.rank-row .bar{flex:1.4;height:8px;background:var(--bg);border-radius:var(--pill);overflow:hidden}
+.rank-row .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-dark));border-radius:var(--pill)}
+.rank-row .qty{font-weight:700;font-size:13px;color:var(--navy);width:34px;text-align:right}
+.alert-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.alert-item:last-child{border-bottom:none}
+.alert-item .ai-ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex-shrink:0}
+.alert-item b{font-size:13px;color:var(--navy)}
+.alert-item p{font-size:12px;color:var(--muted);margin-top:2px}
+.alert-item .t{margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap}
+/* ---- MODAL ---- */
+.overlay{position:fixed;inset:0;background:rgba(11,27,50,.55);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;z-index:200;padding:40px 16px;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r3);width:100%;max-width:720px;box-shadow:var(--sh3);animation:pop .28s var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:none}}
+.modal-h{display:flex;align-items:center;gap:12px;padding:20px 24px;border-bottom:1px solid var(--border)}
+.modal-h h3{font-size:17px;color:var(--navy)}
+.modal-h p{font-size:12.5px;color:var(--muted)}
+.modal-h .icon-btn{margin-left:auto}
+.modal-b{padding:22px 24px;max-height:64vh;overflow-y:auto}
+.modal-f{display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--border);background:#fafbfd;border-radius:0 0 var(--r3) var(--r3)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.form-grid .full{grid-column:1/-1}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg label{font-size:12px;font-weight:600;color:var(--navy)}
+.fg label .req{color:var(--danger)}
+.fg .inp,.fg select.sel,.fg textarea{width:100%}
+.fg textarea{padding:9px 12px;border:1px solid var(--border);border-radius:9px;resize:vertical;min-height:74px;line-height:1.5}
+.fg textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-ghost)}
+.lookup-box{background:var(--info-bg);border:1px solid #cfe0f7;border-radius:var(--r1);padding:12px 14px;font-size:12.5px;color:var(--info-t);display:flex;align-items:center;gap:9px}
+.lookup-box.new{background:var(--warning-bg);border-color:#f0e0b0;color:var(--warning-t)}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+/* ---- TOAST ---- */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:var(--sh3);opacity:0;pointer-events:none;transition:var(--ease);z-index:300;display:flex;align-items:center;gap:9px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast svg{width:17px;height:17px;color:var(--gold-light)}
+.seg{display:inline-flex;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:3px;gap:2px}
+.seg button{padding:6px 13px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);transition:var(--ease)}
+.seg button.on{background:var(--surface);color:var(--navy);box-shadow:var(--sh1)}
+@media(max-width:820px){.sidebar{position:fixed;left:-280px;z-index:100;transition:var(--ease)}.sidebar.show{left:0}.tb-search input{width:150px}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.5 1.2 6.6L12 17.8 6.1 20.1l1.2-6.6L2.5 9l6.6-.9L12 2z" fill="#0B1B32"/></svg>
+      </div>
+      <div class="sb-brand-txt">
+        <b>MERCOSUR</b><span>Sistema de Tickets · ATC</span>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-sec">Principal</div>
+      <div class="sb-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</div>
+      <div class="sb-item" data-view="casos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4zM4 10h16v10H4z"/><path d="M8 14h8M8 17h5"/></svg>Casos / Tickets<span class="sb-badge" id="nav-open">0</span></div>
+      <div class="sb-item" data-view="seguimiento">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>Seguimiento<span class="sb-badge" id="nav-sla">0</span></div>
+      <div class="sb-item" data-view="clientes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 8.5a3 3 0 010 5M18 20c0-2.5-1-4.3-2.5-5.3"/></svg>Clientes</div>
+      <div class="sb-sec">Análisis</div>
+      <div class="sb-item" data-view="reportes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Reportes &amp; Desempeño</div>
+      <div class="sb-item" data-view="config">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>Configuración</div>
+    </nav>
+    <div class="sb-user">
+      <div class="av">EA</div>
+      <div><b>Eleany A.</b><span>Agente ATC · Turno AM</span></div>
+    </div>
+  </aside>
+  <div class="content">
+    <header class="topbar">
+      <button class="icon-btn" id="burger" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <div class="tb-title">
+        <h1 id="tb-title">Dashboard ATC</h1>
+        <p id="tb-sub">Panel general de gestión de casos de Atención al Cliente</p>
+      </div>
+      <div class="tb-search field">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        <input type="text" id="global-search" placeholder="Buscar por cédula, cliente o caso...">
+      </div>
+      <button class="tb-bell" title="Alertas de seguimiento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 01-3.4 0"/></svg><span class="dot"></span></button>
+      <button class="btn btn-primary" id="btn-nuevo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>Nuevo caso</button>
+    </header>
+    <main class="main">
+      <!-- DASHBOARD -->
+      <section class="view active" id="view-dashboard">
+        <div class="kpi-grid" id="kpi-dash"></div>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-h"><h3>Evolución de casos</h3><span class="sub">últimos 7 días</span></div>
+            <div class="panel-b"><div class="chart-wrap"><canvas id="ch-evol"></canvas></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><h3>Casos por estado</h3></div>
+            <div class="panel-b"><div class="chart-wrap"><canvas id="ch-estado"></canvas></div></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-h"><h3>Casos recientes</h3><span class="sub">últimos registros</span><a class="btn btn-ghost btn-sm" style="margin-left:auto" data-goto="casos">Ver todos</a></div>
+            <div class="tbl-scroll"><table><thead><tr><th>Cliente</th><th>Tipo</th><th>Prioridad</th><th>Estado</th><th>Agente</th></tr></thead><tbody id="recent-body"></tbody></table></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><h3>Alertas de seguimiento</h3><span class="sub">SLA</span></div>
+            <div class="panel-b" id="alerts-list"></div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-h"><h3>Distribución por canal</h3></div>
+            <div class="panel-b"><div class="chart-wrap sm"><canvas id="ch-canal"></canvas></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><h3>Ranking de agentes</h3><span class="sub">por atenciones</span></div>
+            <div class="panel-b" id="rank-list"></div>
+          </div>
+        </div>
+      </section>
+      <!-- CASOS -->
+      <section class="view" id="view-casos">
+        <div class="toolbar">
+          <div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input class="inp srch" id="f-buscar" placeholder="Cédula, nombre o descripción..." style="width:260px"></div>
+          <select class="sel" id="f-estado"><option value="">Todos los estados</option><option>Pendiente</option><option>En Proceso</option><option>Resuelto</option><option>Escalado</option></select>
+          <select class="sel" id="f-prioridad"><option value="">Toda prioridad</option><option>Alta</option><option>Media</option><option>Baja</option></select>
+          <select class="sel" id="f-canal"></select>
+          <select class="sel" id="f-agente"></select>
+          <button class="btn btn-ghost btn-sm" id="f-reset">Limpiar</button>
+          <div class="spacer" style="flex:1"></div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Cliente</th><th>Canal</th><th>Tipo de consulta</th><th>Prioridad</th><th>Estado</th><th>Agente</th><th>Fecha</th><th>SLA</th><th></th></tr></thead><tbody id="casos-body"></tbody></table></div>
+          <div class="tbl-foot"><span id="casos-count">0 casos</span></div>
+        </div>
+      </section>
+      <!-- SEGUIMIENTO -->
+      <section class="view" id="view-seguimiento">
+        <div class="kpi-grid" id="kpi-segui"></div>
+        <div class="tbl-wrap">
+          <div class="panel-h"><h3>Casos en seguimiento</h3><span class="sub">ordenados por vencimiento SLA</span></div>
+          <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Cliente</th><th>Tipo</th><th>Prioridad</th><th>Estado</th><th>Agente</th><th>Abierto</th><th>Vence en</th><th></th></tr></thead><tbody id="segui-body"></tbody></table></div>
+        </div>
+      </section>
+      <!-- CLIENTES -->
+      <section class="view" id="view-clientes">
+        <div class="toolbar">
+          <div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input class="inp srch" id="cli-buscar" placeholder="Buscar por cédula o nombre..." style="width:280px"></div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="tbl-scroll"><table><thead><tr><th>Cédula</th><th>Cliente</th><th>Teléfono</th><th>Correo</th><th>Casos</th><th>Última atención</th><th></th></tr></thead><tbody id="cli-body"></tbody></table></div>
+          <div class="tbl-foot"><span id="cli-count">0 clientes</span></div>
+        </div>
+      </section>
+      <!-- REPORTES -->
+      <section class="view" id="view-reportes">
+        <div class="view-head"><div><h2 style="display:none"></h2></div><div class="spacer"></div><div class="seg" id="rep-range"><button class="on" data-r="semana">Esta semana</button><button data-r="mes">Este mes</button><button data-r="total">Total</button></div></div>
+        <div class="kpi-grid" id="kpi-rep"></div>
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-h"><h3>Desempeño por agente</h3><span class="sub">total de atenciones</span></div>
+            <div class="panel-b"><div class="chart-wrap" style="height:320px"><canvas id="ch-agentes"></canvas></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-h"><h3>Consultas más frecuentes</h3></div>
+            <div class="panel-b"><div class="chart-wrap" style="height:320px"><canvas id="ch-tipos"></canvas></div></div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <div class="panel-h"><h3>Tabla de desempeño</h3><span class="sub">por agente</span></div>
+          <div class="tbl-scroll"><table><thead><tr><th>Agente</th><th>Total casos</th><th>Resueltos</th><th>En seguim.</th><th>Escalados</th><th>% Resolución</th></tr></thead><tbody id="rep-body"></tbody></table></div>
+        </div>
+      </section>
+      <!-- CONFIG -->
+      <section class="view" id="view-config">
+        <div class="grid-2b">
+          <div class="panel"><div class="panel-h"><h3>Canales de atención</h3></div><div class="panel-b" id="cfg-canales"></div></div>
+          <div class="panel"><div class="panel-h"><h3>Tipos de consulta</h3></div><div class="panel-b" id="cfg-tipos"></div></div>
+        </div>
+        <div class="grid-2b">
+          <div class="panel"><div class="panel-h"><h3>Agentes ATC</h3></div><div class="panel-b" id="cfg-agentes"></div></div>
+          <div class="panel">
+            <div class="panel-h"><h3>Tiempos máximos de respuesta (SLA)</h3></div>
+            <div class="panel-b">
+              <div class="rank-row"><span class="pri pri-alta"><span class="d"></span>Prioridad Alta</span><div class="spacer" style="flex:1"></div><span class="chip" style="background:var(--danger-bg);color:var(--danger-t);border-color:transparent">4 horas</span></div>
+              <div class="rank-row"><span class="pri pri-media"><span class="d"></span>Prioridad Media</span><div class="spacer" style="flex:1"></div><span class="chip" style="background:var(--warning-bg);color:var(--warning-t);border-color:transparent">24 horas</span></div>
+              <div class="rank-row"><span class="pri pri-baja"><span class="d"></span>Prioridad Baja</span><div class="spacer" style="flex:1"></div><span class="chip" style="background:var(--success-bg);color:var(--success-t);border-color:transparent">72 horas</span></div>
+              <p style="font-size:12px;color:var(--muted);margin-top:14px;line-height:1.6">Al cumplirse el plazo, el sistema marca el caso como <b>vencido</b> y genera una alerta automática de seguimiento. Estos valores son configurables por el administrador.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<div class="overlay" id="modal-nuevo">
+  <div class="modal">
+    <div class="modal-h">
+      <div class="kpi ic ic-gold" style="width:40px;height:40px;margin:0;box-shadow:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div><h3>Nuevo caso de atención</h3><p>Registra un caso de Atención al Cliente (ATC)</p></div>
+      <button class="icon-btn" data-close><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-b">
+      <div class="form-grid">
+        <div class="fg"><label>Cédula del cliente <span class="req">*</span></label><input class="inp" id="m-cedula" placeholder="Ej: 12.345.678"></div>
+        <div class="fg"><label>Nombre del cliente <span class="req">*</span></label><input class="inp" id="m-nombre" placeholder="Nombre y apellido"></div>
+        <div class="fg full" id="m-lookup-wrap" style="display:none"></div>
+        <div class="fg"><label>Teléfono de contacto</label><input class="inp" id="m-tel" placeholder="+58 ..."></div>
+        <div class="fg"><label>Correo electrónico</label><input class="inp" id="m-correo" placeholder="cliente@correo.com"></div>
+        <div class="fg"><label>Canal de atención <span class="req">*</span></label><select class="sel" id="m-canal"></select></div>
+        <div class="fg"><label>Tipo de consulta <span class="req">*</span></label><select class="sel" id="m-tipo"></select></div>
+        <div class="fg"><label>Prioridad <span class="req">*</span></label><select class="sel" id="m-prioridad"><option>Alta</option><option selected>Media</option><option>Baja</option></select></div>
+        <div class="fg"><label>Estado <span class="req">*</span></label><select class="sel" id="m-estado"><option>Pendiente</option><option>En Proceso</option><option>Resuelto</option><option>Escalado</option></select></div>
+        <div class="fg"><label>Agente responsable <span class="req">*</span></label><select class="sel" id="m-agente"></select></div>
+        <div class="fg"><label>Fecha de atención</label><input class="inp" type="date" id="m-fecha"></div>
+        <div class="fg full"><label>Descripción del caso o incidencia <span class="req">*</span></label><textarea id="m-desc" placeholder="Describe el motivo de la consulta o incidencia..."></textarea></div>
+        <div class="fg full"><label>Observaciones y comentarios del agente</label><textarea id="m-obs" placeholder="Notas internas de seguimiento (opcional)..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-f">
+      <button class="btn btn-ghost" data-close>Cancelar</button>
+      <button class="btn btn-primary" id="m-guardar">Registrar caso</button>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+'use strict';
+/* ====== CONFIGURACIÓN (según documento y hoja Config) ====== */
+const CANALES = ['Wasapi','Tickets','Presencial','Telefónico','Correo electrónico','Telegram','Instagram'];
+const TIPOS = ['Firma Electrónica','Generar Certificado','Web App','Legacy','Akkela','Caja Venezolana de Valores','Mercado de Valores','Otros'];
+const AGENTES = ['Eleany 1','Maria J 2','Andrea 3','Ira 4','Moises 5','Vanessa 6','Dayerling 7','Yabelis 8','Cladimar 9','Yetsimar 10','Zulmar 11','Albert 12'];
+const ESTADOS = ['Pendiente','En Proceso','Resuelto','Escalado'];
+const SLA = {Alta:4, Media:24, Baja:72}; // horas máximas de respuesta
+const NOW = new Date('2026-09-24T15:30:00');
+
+/* ====== DATOS DE EJEMPLO ====== */
+let CLIENTES = [
+  {cedula:'12.345.678', nombre:'José Rodríguez', tel:'+58 412-1234567', correo:'jrodriguez@correo.com'},
+  {cedula:'15.987.654', nombre:'María Gómez', tel:'+58 414-9876543', correo:'mgomez@correo.com'},
+  {cedula:'18.223.114', nombre:'Carlos Pérez', tel:'+58 416-5551020', correo:'cperez@correo.com'},
+  {cedula:'20.556.789', nombre:'Ana Fernández', tel:'+58 424-3344556', correo:'afernandez@correo.com'},
+  {cedula:'9.112.334', nombre:'Luis Martínez', tel:'+58 412-7788990', correo:'lmartinez@correo.com'},
+  {cedula:'25.667.001', nombre:'Daniela Suárez', tel:'+58 426-1122334', correo:'dsuarez@correo.com'},
+  {cedula:'14.009.556', nombre:'Pedro Blanco', tel:'+58 414-6677889', correo:'pblanco@correo.com'},
+  {cedula:'22.778.443', nombre:'Gabriela Ríos', tel:'+58 412-2233445', correo:'grios@correo.com'}
+];
+const H = 3600*1000;
+let CASOS = [
+  {id:1042, cedula:'12.345.678', canal:'Wasapi', tipo:'Firma Electrónica', prioridad:'Alta', estado:'En Proceso', agente:'Eleany 1', opened:new Date(NOW-6*H), desc:'Cliente no puede renovar su firma electrónica, el token expiró.', obs:'Escalado a soporte técnico de firma.'},
+  {id:1041, cedula:'15.987.654', canal:'Tickets', tipo:'Generar Certificado', prioridad:'Media', estado:'Pendiente', agente:'Maria J 2', opened:new Date(NOW-3*H), desc:'Solicita certificado de custodia de valores.', obs:''},
+  {id:1040, cedula:'18.223.114', canal:'Telefónico', tipo:'Mercado de Valores', prioridad:'Alta', estado:'Pendiente', agente:'Andrea 3', opened:new Date(NOW-9*H), desc:'Consulta sobre orden de compra no ejecutada.', obs:''},
+  {id:1039, cedula:'20.556.789', canal:'Correo electrónico', tipo:'Web App', prioridad:'Baja', estado:'En Proceso', agente:'Ira 4', opened:new Date(NOW-30*H), desc:'No puede iniciar sesión en la Web App del portal.', obs:'Se envió instructivo de recuperación.'},
+  {id:1038, cedula:'9.112.334', canal:'Presencial', tipo:'Caja Venezolana de Valores', prioridad:'Media', estado:'Resuelto', agente:'Moises 5', opened:new Date(NOW-40*H), desc:'Actualización de datos en la CVV.', obs:'Resuelto en sucursal.'},
+  {id:1037, cedula:'25.667.001', canal:'Instagram', tipo:'Otros', prioridad:'Baja', estado:'Resuelto', agente:'Vanessa 6', opened:new Date(NOW-52*H), desc:'Consulta general de horarios de atención.', obs:''},
+  {id:1036, cedula:'14.009.556', canal:'Wasapi', tipo:'Legacy', prioridad:'Alta', estado:'Escalado', agente:'Dayerling 7', opened:new Date(NOW-20*H), desc:'Error en sistema Legacy al consultar saldo.', obs:'Escalado a área de sistemas.'},
+  {id:1035, cedula:'22.778.443', canal:'Telegram', tipo:'Akkela', prioridad:'Media', estado:'En Proceso', agente:'Yabelis 8', opened:new Date(NOW-14*H), desc:'Problema de acceso a plataforma Akkela.', obs:''},
+  {id:1034, cedula:'12.345.678', canal:'Tickets', tipo:'Generar Certificado', prioridad:'Baja', estado:'Resuelto', agente:'Eleany 1', opened:new Date(NOW-70*H), desc:'Certificado de tenencia solicitado.', obs:'Enviado por correo.'},
+  {id:1033, cedula:'15.987.654', canal:'Telefónico', tipo:'Firma Electrónica', prioridad:'Media', estado:'Pendiente', agente:'Cladimar 9', opened:new Date(NOW-26*H), desc:'Consulta sobre vigencia de firma electrónica.', obs:''},
+  {id:1032, cedula:'18.223.114', canal:'Correo electrónico', tipo:'Mercado de Valores', prioridad:'Baja', estado:'En Proceso', agente:'Yetsimar 10', opened:new Date(NOW-10*H), desc:'Información sobre nuevos instrumentos de renta fija.', obs:''},
+  {id:1031, cedula:'20.556.789', canal:'Presencial', tipo:'Firma Electrónica', prioridad:'Alta', estado:'Resuelto', agente:'Zulmar 11', opened:new Date(NOW-48*H), desc:'Emisión de firma electrónica nueva.', obs:'Completado en sucursal.'},
+  {id:1030, cedula:'9.112.334', canal:'Wasapi', tipo:'Web App', prioridad:'Media', estado:'Resuelto', agente:'Albert 12', opened:new Date(NOW-90*H), desc:'Asistencia para registro en Web App.', obs:''},
+  {id:1029, cedula:'25.667.001', canal:'Tickets', tipo:'Otros', prioridad:'Media', estado:'En Proceso', agente:'Eleany 1', opened:new Date(NOW-2*H), desc:'Solicitud de estado de cuenta detallado.', obs:''}
+];
+
+/* ====== UTILIDADES ====== */
+const $=(s,c)=>(c||document).querySelector(s);
+const $$=(s,c)=>Array.from((c||document).querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function opt(arr){return arr.map(v=>'<option>'+esc(v)+'</option>').join('');}
+function initials(n){return n.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+function fmtDate(d){return d.toLocaleDateString('es-VE',{day:'2-digit',month:'short',year:'numeric'});}
+function fmtDT(d){return d.toLocaleDateString('es-VE',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('es-VE',{hour:'2-digit',minute:'2-digit'});}
+function toast(msg){const t=$('#toast');t.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>'+esc(msg);t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
+const ACTIVE=c=>c.estado!=='Resuelto';
+function slaInfo(c){
+  if(c.estado==='Resuelto') return {state:'ok', label:'Resuelto', mins:0};
+  const due=new Date(c.opened.getTime()+SLA[c.prioridad]*H);
+  const diff=due-NOW; const mins=Math.round(diff/60000);
+  if(diff<=0) return {state:'late', label:'Vencido', mins};
+  if(diff<=2*H) return {state:'warn', label:'Por vencer', mins, due};
+  return {state:'ok', label:'En plazo', mins, due};
+}
+function humanLeft(mins){const a=Math.abs(mins);const h=Math.floor(a/60),m=a%60;const s=(h?h+'h ':'')+(m+'m');return mins<0?('hace '+s):('en '+s);}
+const estadoBadge={'Pendiente':'b-open','En Proceso':'b-proc','Resuelto':'b-res','Escalado':'b-esc'};
+const priClass={'Alta':'pri-alta','Media':'pri-media','Baja':'pri-baja'};
+function clienteDe(ced){return CLIENTES.find(c=>c.cedula===ced)||{nombre:'—',cedula:ced,tel:'',correo:''};}
+/* ====== PALETA CHARTS ====== */
+const C={navy:'#0B1B32',navy5:'#1D3A63',gold:'#D0A24C',goldD:'#B0862F',blue:'#2F6FED',green:'#28A745',amber:'#FFC107',red:'#D1435B',muted:'#6C757D',border:'#E2E8F0'};
+let charts={};
+function kpiCard(ic,cls,val,lbl,trend){
+  return '<div class="kpi"><div class="ic '+cls+'">'+ic+'</div><div class="val">'+val+'</div><div class="lbl">'+esc(lbl)+'</div>'+(trend||'')+'</div>';
+}
+const ICONS={
+  cases:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4zM4 10h16v10H4z"/></svg>',
+  open:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>',
+  follow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg>',
+  done:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg>',
+  late:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>'
+};
+function renderKPIsDash(){
+  const tot=CASOS.length, open=CASOS.filter(ACTIVE).length;
+  const seg=CASOS.filter(c=>c.estado==='En Proceso'||c.estado==='Escalado').length;
+  const res=CASOS.filter(c=>c.estado==='Resuelto').length;
+  const late=CASOS.filter(c=>slaInfo(c).state==='late').length;
+  $('#kpi-dash').innerHTML=
+    kpiCard(ICONS.cases,'ic-navy',tot,'Total de casos','<div class="trend up">▲ activos en el periodo</div>')+
+    kpiCard(ICONS.open,'ic-blue',open,'Casos abiertos')+
+    kpiCard(ICONS.follow,'ic-amber',seg,'En seguimiento')+
+    kpiCard(ICONS.done,'ic-green',res,'Resueltos')+
+    kpiCard(ICONS.late,'ic-red',late,'Vencidos (SLA)', late?'<div class="trend down">▼ requieren atención</div>':'<div class="trend up">▲ al día</div>');
+  $('#nav-open').textContent=open;
+  $('#nav-sla').textContent=CASOS.filter(c=>{const s=slaInfo(c);return ACTIVE(c)&&(s.state==='late'||s.state==='warn');}).length;
+}
+function rowCliente(c){const cl=clienteDe(c.cedula);return '<div class="cli"><div class="av">'+esc(initials(cl.nombre))+'</div><div><b>'+esc(cl.nombre)+'</b><span>'+esc(cl.cedula)+'</span></div></div>';}
+function badgeEstado(e){return '<span class="badge '+estadoBadge[e]+'"><span class="d"></span>'+esc(e)+'</span>';}
+function badgePri(p){return '<span class="pri '+priClass[p]+'"><span class="d"></span>'+esc(p)+'</span>';}
+function renderRecent(){
+  const rows=CASOS.slice().sort((a,b)=>b.opened-a.opened).slice(0,6);
+  $('#recent-body').innerHTML=rows.map(c=>'<tr><td>'+rowCliente(c)+'</td><td><span class="chip">'+esc(c.tipo)+'</span></td><td>'+badgePri(c.prioridad)+'</td><td>'+badgeEstado(c.estado)+'</td><td>'+esc(c.agente)+'</td></tr>').join('');
+}
+function renderAlerts(){
+  const al=CASOS.filter(ACTIVE).map(c=>({c,s:slaInfo(c)})).filter(x=>x.s.state!=='ok').sort((a,b)=>a.s.mins-b.s.mins).slice(0,6);
+  const box=$('#alerts-list');
+  if(!al.length){box.innerHTML='<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><div>Sin alertas de SLA pendientes</div></div>';return;}
+  box.innerHTML=al.map(({c,s})=>{const late=s.state==='late';const cl=clienteDe(c.cedula);
+    return '<div class="alert-item"><div class="ai-ic '+(late?'ic-red':'ic-amber')+'">'+(late?ICONS.late:ICONS.open)+'</div><div><b>#'+c.id+' · '+esc(cl.nombre)+'</b><p>'+esc(c.tipo)+' · '+badgePri(c.prioridad).replace(/<[^>]+>/g,m=>m)+'</p></div><div class="t"><span class="'+(late?'sla-late':'sla-warn')+'">'+esc(s.label)+'</span><br>'+esc(humanLeft(s.mins))+'</div></div>';}).join('');
+}
+function agentTotals(){const m={};AGENTES.forEach(a=>m[a]=0);CASOS.forEach(c=>{m[c.agente]=(m[c.agente]||0)+1;});return m;}
+function renderRank(){
+  const m=agentTotals();const arr=Object.entries(m).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const max=Math.max(1,...arr.map(x=>x[1]));
+  $('#rank-list').innerHTML=arr.map(([a,n],i)=>'<div class="rank-row '+(i===0?'top':'')+'"><span class="pos">'+(i+1)+'</span><span class="nm">'+esc(a)+'</span><span class="bar"><i style="width:'+(n/max*100)+'%"></i></span><span class="qty">'+n+'</span></div>').join('');
+}
+/* ====== CHARTS ====== */
+function mkChart(id,cfg){if(charts[id])charts[id].destroy();const el=$('#'+id);if(!el)return;charts[id]=new Chart(el,cfg);}
+Chart.defaults.font.family="'Inter',sans-serif";Chart.defaults.font.size=12;Chart.defaults.color=C.muted;
+function countBy(fn){const m={};CASOS.forEach(c=>{const k=fn(c);if(k==null)return;m[k]=(m[k]||0)+1;});return m;}
+function renderChartsDash(){
+  // Evolución últimos 7 días
+  const days=[],created=[],resolved=[];
+  for(let i=6;i>=0;i--){const d=new Date(NOW);d.setDate(d.getDate()-i);d.setHours(0,0,0,0);
+    const nd=new Date(d);nd.setDate(nd.getDate()+1);
+    days.push(d.toLocaleDateString('es-VE',{weekday:'short'}));
+    created.push(CASOS.filter(c=>c.opened>=d&&c.opened<nd).length);
+    resolved.push(CASOS.filter(c=>c.estado==='Resuelto'&&c.opened>=d&&c.opened<nd).length);
+  }
+  mkChart('ch-evol',{type:'line',data:{labels:days,datasets:[
+    {label:'Casos recibidos',data:created,borderColor:C.navy5,backgroundColor:'rgba(29,58,99,.12)',fill:true,tension:.35,borderWidth:2,pointRadius:3,pointBackgroundColor:C.navy5},
+    {label:'Resueltos',data:resolved,borderColor:C.gold,backgroundColor:'rgba(208,162,76,.12)',fill:true,tension:.35,borderWidth:2,pointRadius:3,pointBackgroundColor:C.gold}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8}}},scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:C.border}},x:{grid:{display:false}}}}});
+  // Estado doughnut
+  const est=countBy(c=>c.estado);const eL=ESTADOS.filter(e=>est[e]);
+  mkChart('ch-estado',{type:'doughnut',data:{labels:eL,datasets:[{data:eL.map(e=>est[e]),backgroundColor:[C.blue,C.amber,C.green,C.red],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:8,padding:14}}}}});
+  // Canal bar
+  const can=countBy(c=>c.canal);const cL=CANALES.filter(x=>can[x]);
+  mkChart('ch-canal',{type:'bar',data:{labels:cL,datasets:[{data:cL.map(x=>can[x]),backgroundColor:C.gold,borderRadius:6,maxBarThickness:26}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:C.border}},x:{grid:{display:false}}}}});
+}
+function renderChartsRep(){
+  const m=agentTotals();const aL=AGENTES.filter(a=>m[a]>0);
+  mkChart('ch-agentes',{type:'bar',data:{labels:aL,datasets:[{label:'Atenciones',data:aL.map(a=>m[a]),backgroundColor:C.navy5,borderRadius:6,maxBarThickness:22}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0},grid:{color:C.border}},y:{grid:{display:false}}}}});
+  const tp=countBy(c=>c.tipo);const tL=TIPOS.filter(t=>tp[t]).sort((a,b)=>tp[b]-tp[a]);
+  mkChart('ch-tipos',{type:'bar',data:{labels:tL,datasets:[{label:'Casos',data:tL.map(t=>tp[t]),backgroundColor:C.gold,borderRadius:6,maxBarThickness:22}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0},grid:{color:C.border}},y:{grid:{display:false}}}}});
+}
+/* ====== CASOS (tabla + filtros) ====== */
+function slaCell(c){const s=slaInfo(c);const cls=s.state==='late'?'sla-late':s.state==='warn'?'sla-warn':'sla-ok';return '<span class="'+cls+'">'+esc(s.label)+'</span>'+(c.estado!=='Resuelto'?'<br><span style="font-size:11px;color:var(--muted)">'+esc(humanLeft(s.mins))+'</span>':'');}
+function actBtn(c){return '<button class="icon-btn" title="Ver detalle" data-detail="'+c.id+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg></button>';}
+function filteredCasos(){
+  const q=($('#f-buscar').value||'').toLowerCase().trim();
+  const e=$('#f-estado').value,p=$('#f-prioridad').value,ca=$('#f-canal').value,ag=$('#f-agente').value;
+  return CASOS.filter(c=>{const cl=clienteDe(c.cedula);
+    if(e&&c.estado!==e)return false;if(p&&c.prioridad!==p)return false;if(ca&&c.canal!==ca)return false;if(ag&&c.agente!==ag)return false;
+    if(q){const hay=(cl.cedula+' '+cl.nombre+' '+c.desc+' '+c.tipo+' #'+c.id).toLowerCase();if(!hay.includes(q))return false;}
+    return true;});
+}
+function renderCasos(){
+  const rows=filteredCasos().sort((a,b)=>b.opened-a.opened);
+  const b=$('#casos-body');
+  if(!rows.length){b.innerHTML='<tr><td colspan="10"><div class="empty">Sin casos que coincidan con los filtros</div></td></tr>';}
+  else b.innerHTML=rows.map(c=>'<tr><td><b style="color:var(--navy)">#'+c.id+'</b></td><td>'+rowCliente(c)+'</td><td><span class="chip">'+esc(c.canal)+'</span></td><td>'+esc(c.tipo)+'</td><td>'+badgePri(c.prioridad)+'</td><td>'+badgeEstado(c.estado)+'</td><td>'+esc(c.agente)+'</td><td style="white-space:nowrap;color:var(--muted)">'+fmtDT(c.opened)+'</td><td>'+slaCell(c)+'</td><td>'+actBtn(c)+'</td></tr>').join('');
+  $('#casos-count').textContent=rows.length+' caso'+(rows.length!==1?'s':'');
+}
+/* ====== SEGUIMIENTO ====== */
+function renderSegui(){
+  const late=CASOS.filter(c=>slaInfo(c).state==='late').length;
+  const warn=CASOS.filter(c=>slaInfo(c).state==='warn').length;
+  const proc=CASOS.filter(c=>c.estado==='En Proceso').length;
+  const escl=CASOS.filter(c=>c.estado==='Escalado').length;
+  $('#kpi-segui').innerHTML=
+    kpiCard(ICONS.late,'ic-red',late,'Vencidos (SLA)')+
+    kpiCard(ICONS.open,'ic-amber',warn,'Por vencer (<2h)')+
+    kpiCard(ICONS.follow,'ic-blue',proc,'En proceso')+
+    kpiCard(ICONS.cases,'ic-navy',escl,'Escalados');
+  const rows=CASOS.filter(ACTIVE).map(c=>({c,s:slaInfo(c)})).sort((a,b)=>a.s.mins-b.s.mins);
+  $('#segui-body').innerHTML=rows.map(({c,s})=>'<tr><td><b style="color:var(--navy)">#'+c.id+'</b></td><td>'+rowCliente(c)+'</td><td>'+esc(c.tipo)+'</td><td>'+badgePri(c.prioridad)+'</td><td>'+badgeEstado(c.estado)+'</td><td>'+esc(c.agente)+'</td><td style="color:var(--muted);white-space:nowrap">'+fmtDT(c.opened)+'</td><td><span class="'+(s.state==='late'?'sla-late':s.state==='warn'?'sla-warn':'sla-ok')+'">'+esc(humanLeft(s.mins))+'</span></td><td>'+actBtn(c)+'</td></tr>').join('')||'<tr><td colspan="9"><div class="empty">No hay casos en seguimiento</div></td></tr>';
+}
+/* ====== CLIENTES ====== */
+function renderClientes(){
+  const q=($('#cli-buscar').value||'').toLowerCase().trim();
+  const rows=CLIENTES.filter(cl=>!q||(cl.cedula+' '+cl.nombre).toLowerCase().includes(q));
+  $('#cli-body').innerHTML=rows.map(cl=>{const cs=CASOS.filter(c=>c.cedula===cl.cedula);const last=cs.slice().sort((a,b)=>b.opened-a.opened)[0];
+    return '<tr><td><b style="color:var(--navy)">'+esc(cl.cedula)+'</b></td><td>'+rowCliente({cedula:cl.cedula})+'</td><td>'+esc(cl.tel||'—')+'</td><td>'+esc(cl.correo||'—')+'</td><td><span class="chip">'+cs.length+' caso'+(cs.length!==1?'s':'')+'</span></td><td style="color:var(--muted)">'+(last?fmtDate(last.opened):'—')+'</td><td>'+(last?actBtn(last):'')+'</td></tr>';}).join('')||'<tr><td colspan="7"><div class="empty">Sin clientes</div></td></tr>';
+  $('#cli-count').textContent=rows.length+' cliente'+(rows.length!==1?'s':'');
+}
+/* ====== REPORTES ====== */
+function renderReportes(){
+  const tot=CASOS.length,res=CASOS.filter(c=>c.estado==='Resuelto').length;
+  const rate=tot?Math.round(res/tot*100):0;
+  const best=Object.entries(agentTotals()).sort((a,b)=>b[1]-a[1])[0];
+  const canal=Object.entries(countBy(c=>c.canal)).sort((a,b)=>b[1]-a[1])[0];
+  $('#kpi-rep').innerHTML=
+    kpiCard(ICONS.cases,'ic-navy',tot,'Total atenciones')+
+    kpiCard(ICONS.done,'ic-green',rate+'%','Tasa de resolución')+
+    kpiCard(ICONS.user,'ic-gold',best?esc(best[0]):'—','Mejor agente')+
+    kpiCard(ICONS.follow,'ic-blue',canal?esc(canal[0]):'—','Canal más usado');
+  const m={};AGENTES.forEach(a=>m[a]={t:0,r:0,s:0,e:0});
+  CASOS.forEach(c=>{const o=m[c.agente];if(!o)return;o.t++;if(c.estado==='Resuelto')o.r++;if(c.estado==='En Proceso')o.s++;if(c.estado==='Escalado')o.e++;});
+  $('#rep-body').innerHTML=AGENTES.filter(a=>m[a].t>0).sort((a,b)=>m[b].t-m[a].t).map(a=>{const o=m[a];const pc=o.t?Math.round(o.r/o.t*100):0;
+    return '<tr><td><b style="color:var(--navy)">'+esc(a)+'</b></td><td>'+o.t+'</td><td>'+o.r+'</td><td>'+o.s+'</td><td>'+o.e+'</td><td><div class="bar" style="display:inline-block;width:80px;height:7px;background:var(--bg);border-radius:99px;overflow:hidden;vertical-align:middle;margin-right:8px"><i style="display:block;height:100%;width:'+pc+'%;background:linear-gradient(90deg,var(--gold),var(--gold-dark))"></i></div><b style="color:var(--navy)">'+pc+'%</b></td></tr>';}).join('');
+  renderChartsRep();
+}
+/* ====== CONFIG ====== */
+function chipList(arr){return '<div style="display:flex;flex-wrap:wrap;gap:8px">'+arr.map(v=>'<span class="chip" style="padding:6px 12px;font-size:12.5px">'+esc(v)+'</span>').join('')+'</div>';}
+function renderConfig(){
+  $('#cfg-canales').innerHTML=chipList(CANALES);
+  $('#cfg-tipos').innerHTML=chipList(TIPOS);
+  $('#cfg-agentes').innerHTML=chipList(AGENTES);
+}
+/* ====== NAVEGACIÓN ====== */
+const TITLES={dashboard:['Dashboard ATC','Panel general de gestión de casos de Atención al Cliente'],casos:['Casos / Tickets','Gestión y seguimiento de todos los casos'],seguimiento:['Seguimiento','Casos con alertas de tiempo de respuesta (SLA)'],clientes:['Clientes','Base de datos centralizada de clientes'],reportes:['Reportes & Desempeño','Indicadores del área de Atención al Cliente'],config:['Configuración','Parámetros del sistema de tickets']};
+const RENDERERS={dashboard:()=>{renderKPIsDash();renderRecent();renderAlerts();renderRank();renderChartsDash();},casos:renderCasos,seguimiento:renderSegui,clientes:renderClientes,reportes:renderReportes,config:renderConfig};
+function goView(v){
+  $$('.sb-item').forEach(i=>i.classList.toggle('active',i.dataset.view===v));
+  $$('.view').forEach(s=>s.classList.toggle('active',s.id==='view-'+v));
+  $('#tb-title').textContent=TITLES[v][0];$('#tb-sub').textContent=TITLES[v][1];
+  (RENDERERS[v]||(()=>{}))();
+  $('#sidebar').classList.remove('show');window.scrollTo(0,0);
+}
+$$('.sb-item').forEach(i=>i.addEventListener('click',()=>goView(i.dataset.view)));
+$$('[data-goto]').forEach(b=>b.addEventListener('click',()=>goView(b.dataset.goto)));
+$('#burger').addEventListener('click',()=>$('#sidebar').classList.toggle('show'));
+function fixBurger(){$('#burger').style.display=window.innerWidth<=820?'grid':'none';}
+window.addEventListener('resize',fixBurger);fixBurger();
+/* ====== FILTROS ====== */
+['f-buscar','f-estado','f-prioridad','f-canal','f-agente'].forEach(id=>$('#'+id).addEventListener('input',renderCasos));
+$('#f-reset').addEventListener('click',()=>{['f-buscar','f-estado','f-prioridad','f-canal','f-agente'].forEach(id=>$('#'+id).value='');renderCasos();});
+$('#cli-buscar').addEventListener('input',renderClientes);
+$('#global-search').addEventListener('keydown',e=>{if(e.key==='Enter'){$('#f-buscar').value=e.target.value;goView('casos');renderCasos();}});
+$$('#rep-range button').forEach(b=>b.addEventListener('click',()=>{$$('#rep-range button').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderReportes();}));
+/* detalle (prototipo) */
+document.addEventListener('click',e=>{const d=e.target.closest('[data-detail]');if(!d)return;const c=CASOS.find(x=>x.id==d.dataset.detail);if(!c)return;const cl=clienteDe(c.cedula);toast('Caso #'+c.id+' · '+cl.nombre+' · '+c.estado);});
+/* ====== MODAL NUEVO CASO ====== */
+const modal=$('#modal-nuevo');
+function openModal(){
+  ['m-cedula','m-nombre','m-tel','m-correo','m-desc','m-obs'].forEach(id=>$('#'+id).value='');
+  $('#m-prioridad').value='Media';$('#m-estado').value='Pendiente';
+  $('#m-canal').selectedIndex=0;$('#m-tipo').selectedIndex=0;$('#m-agente').selectedIndex=0;
+  $('#m-fecha').value=NOW.toISOString().slice(0,10);
+  $('#m-lookup-wrap').style.display='none';
+  modal.classList.add('open');setTimeout(()=>$('#m-cedula').focus(),80);
+}
+function closeModal(){modal.classList.remove('open');}
+$('#btn-nuevo').addEventListener('click',openModal);
+$$('[data-close]').forEach(b=>b.addEventListener('click',closeModal));
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+$('#m-cedula').addEventListener('input',()=>{
+  const v=$('#m-cedula').value.trim();const w=$('#m-lookup-wrap');
+  const cl=CLIENTES.find(c=>c.cedula===v);
+  if(cl){$('#m-nombre').value=cl.nombre;$('#m-tel').value=cl.tel||'';$('#m-correo').value=cl.correo||'';
+    w.style.display='block';w.innerHTML='<div class="lookup-box"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Cliente existente encontrado: <b style="margin-left:4px">'+esc(cl.nombre)+'</b> · '+CASOS.filter(c=>c.cedula===v).length+' caso(s) previos.</div>';}
+  else if(v.length>=5){w.style.display='block';w.innerHTML='<div class="lookup-box new"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Cédula no registrada. Se creará un <b style="margin:0 4px">nuevo cliente</b> con los datos ingresados.</div>';}
+  else w.style.display='none';
+});
+$('#m-guardar').addEventListener('click',()=>{
+  const ced=$('#m-cedula').value.trim(),nom=$('#m-nombre').value.trim();
+  if(!ced||!nom||!$('#m-desc').value.trim()){toast('Completa cédula, nombre y descripción del caso');return;}
+  if(!CLIENTES.find(c=>c.cedula===ced))CLIENTES.push({cedula:ced,nombre:nom,tel:$('#m-tel').value.trim(),correo:$('#m-correo').value.trim()});
+  const fecha=$('#m-fecha').value?new Date($('#m-fecha').value+'T'+NOW.toTimeString().slice(0,8)):new Date(NOW);
+  const id=Math.max.apply(null,CASOS.map(c=>c.id))+1;
+  CASOS.unshift({id,cedula:ced,canal:$('#m-canal').value,tipo:$('#m-tipo').value,prioridad:$('#m-prioridad').value,estado:$('#m-estado').value,agente:$('#m-agente').value,opened:fecha,desc:$('#m-desc').value.trim(),obs:$('#m-obs').value.trim()});
+  closeModal();toast('Caso #'+id+' registrado correctamente');
+  const active=$('.view.active').id.replace('view-','');goView(active);renderKPIsDash();
+});
+/* ====== INIT ====== */
+function fillSelects(){
+  $('#f-canal').innerHTML='<option value="">Todos los canales</option>'+opt(CANALES);
+  $('#f-agente').innerHTML='<option value="">Todos los agentes</option>'+opt(AGENTES);
+  $('#m-canal').innerHTML=opt(CANALES);$('#m-tipo').innerHTML=opt(TIPOS);$('#m-agente').innerHTML=opt(AGENTES);
+}
+fillSelects();goView('dashboard');
+</script>
+</body>
+</html>
