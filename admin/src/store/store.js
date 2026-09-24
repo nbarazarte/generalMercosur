@@ -1,3 +1,4 @@
+// src/store/store.js
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import { encryptTransform } from 'redux-persist-transform-encrypt';
@@ -10,10 +11,11 @@ const encryptor = encryptTransform({
   },
 });
 
+// Adaptador custom 100% compatible con Vite y Redux Persist
 const storage = {
-  getItem: (key) => Promise.resolve(localStorage.getItem(key)),
-  setItem: (key, value) => Promise.resolve(localStorage.setItem(key, value)),
-  removeItem: (key) => Promise.resolve(localStorage.removeItem(key)),
+  getItem: (key) => Promise.resolve(window.localStorage.getItem(key)),
+  setItem: (key, value) => Promise.resolve(window.localStorage.setItem(key, value)),
+  removeItem: (key) => Promise.resolve(window.localStorage.removeItem(key)),
 };
 
 const persistConfig = {

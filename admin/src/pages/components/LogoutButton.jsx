@@ -1,18 +1,30 @@
 // src/pages/components/LogoutButton.jsx
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { logout } from "../../store/authSlice"; // Ajusta la ruta a tu authSlice
+import { logout } from "../../store/authSlice"; // Ajusta la ruta a tu authSlice[cite: 3]
+import { persistor } from "../../store/store"; // Importa el persistor
 
 const LogoutButton = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogout = () => {
-    // 1. Limpiar estado en Redux y localStorage mediante la acción logout
-    dispatch(logout());
+  const handleLogout = async () => {
+    try {
+      // 1. Limpia el estado en Redux (memoria)[cite: 3]
+      dispatch(logout());
 
-    // 2. Redirigir al usuario al login
-    navigate("/login", { replace: true });
+      // 2. Espera a que Redux Persist vacíe la cola de escrituras pendientes
+      await persistor.flush();
+
+      // 3. Purga y elimina la clave del almacenamiento[cite: 2]
+      await persistor.purge();
+      window.localStorage.removeItem("persist:root");
+    } catch (error) {
+      console.error("Error durante el logout:", error);
+    } finally {
+      // 4. Redirige al login[cite: 3]
+      navigate("/login", { replace: true });
+    }
   };
 
   return (
