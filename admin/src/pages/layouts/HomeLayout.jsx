@@ -7,7 +7,7 @@ import LogoMobile from "../components/LogoMobile";
 import ThemeToggle from "../components/ThemeToggle";
 import LogoutButton from "../components/LogoutButton";
 
-const AuthLayout = ({ asideContent, showLogout = false }) => {
+const HomeLayout = ({ asideContent, showLogout = false }) => {
   const [theme, setTheme] = useState(
     () => localStorage.getItem("theme") || "light",
   );
@@ -73,4 +73,4 @@ const AuthLayout = ({ asideContent, showLogout = false }) => {
   );
 };
 
-export default AuthLayout;
+export default HomeLayout;

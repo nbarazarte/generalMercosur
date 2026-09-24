@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import AuthLayout from "./pages/layouts/AuthLayout";
+import HomeLayout from "./pages/layouts/HomeLayout";
 import Login, { LoginAside } from "./pages/auth/login";
 import Home, { MainAside } from "./pages/systems/home/home";
 
@@ -69,7 +69,7 @@ function App() {
       {/* Rutas Públicas (Solo accesibles si NO estás autenticado) */}
       <Route element={<PublicOnlyRoute />}>
         <Route
-          element={<AuthLayout asideContent={LoginAside} showLogout={false} />}
+          element={<HomeLayout asideContent={LoginAside} showLogout={false} />}
         >
           <Route path="/login" element={<Login />} />
         </Route>
@@ -80,7 +80,7 @@ function App() {
         {/* Vista principal home (Sin pantalla de carga) */}
         <Route
           element={
-            <AuthLayout asideContent={<MainAside />} showLogout={true} />
+            <HomeLayout asideContent={<MainAside />} showLogout={true} />
           }
         >
           <Route path="/home" element={<Home />} />
