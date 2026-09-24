@@ -21,14 +21,18 @@ const allowedOrigins = [
   "http://192.168.1.35:5173",
 ];
 
-// 3. Configuración de CORS Dinámico (Corregido el Scope de 'origin')
+// 3. Configuración de CORS Dinámico (Soporte para Cloudflare Tunnels)
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin) || 
-        origin.startsWith("http://192.168.") || 
-        origin.startsWith("https://192.168.")) {
+    if (
+      allowedOrigins.includes(origin) || 
+      origin.startsWith("http://192.168.") || 
+      origin.startsWith("https://192.168.") ||
+      origin.endsWith(".trycloudflare.com") ||  // Permite subdominios de Cloudflare
+      origin.endsWith(".loca.lt")              // Permite subdominios de Localtunnel
+    ) {
       callback(null, true);
     } else {
       callback(new Error("Error de CORS: Este origen no está autorizado"));

@@ -1,10 +1,20 @@
 para saber si mi version de node es vulnerable
 $ npx is-my-node-vulnerable
 
+por ejemplo si da error:(depende de la version del momento en este caso era esa)
+https://nodejs.org/en/download#debian-and-ubuntu-based-linux-distributions
+
+nvm install 24.21.0
+nvm use 24.21.0
+nvm alias default 24.21.0
+
 
 para compartir mi desarrollo
 npm install -g localtunnel
 lt --port 5173
+
+npx cloudflared tunnel --url http://localhost:3000 (en una consola)
+npx cloudflared tunnel --url http://localhost:3000 (en otra consola)
 
 
 node --watch server.js 
