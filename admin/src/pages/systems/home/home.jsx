@@ -1,4 +1,3 @@
-// src/pages/Main.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -103,7 +102,7 @@ export const MainAside = () => {
   return (
     <div className="aside-content">
       <h1>
-        <TextType
+        {/* <TextType
           text={`${getSaludo()}, \n ${nombre}`}
           typingSpeed={75}
           pauseDuration={1500}
@@ -119,6 +118,19 @@ export const MainAside = () => {
           variableSpeedMin={60}
           variableSpeedMax={120}
           cursorBlinkDuration={0.5}
+        /> */}
+
+        <TextType
+          text={`${getSaludo()}, \n ${nombre}`}
+          typingSpeed={75}
+          pauseDuration={1500}
+          showCursor
+          cursorCharacter="_"
+          loop={false}
+          deletingSpeed={50}
+          cursorBlinkDuration={0.5}
+          // Si en el futuro quieres velocidad variable, el componente espera esto:
+          // variableSpeed={{ min: 60, max: 120 }}
         />
       </h1>
       <p className="subtitle">
@@ -244,7 +256,8 @@ const Home = () => {
       <div className="systems-grid">
         {sistemas.map((sistema, i) => (
           <div
-            key={sistema.id}
+            //key={sistema.id}
+            key={sistema.id ? `${sistema.id}-${i}` : i}
             onClick={() => navigate(sistema.url)}
             className="system-card glass-card animate-rise"
             style={{ animationDelay: `${i * 0.08}s`, cursor: "pointer" }}

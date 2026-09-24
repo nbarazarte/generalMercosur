@@ -302,10 +302,10 @@ router.post("/login", async (req, res) => {
       }, {}),
     );
 
-    /* console.log(
+     console.log(
       "Sistemas y opciones:",
       JSON.stringify(sistemasOpciones, null, 2),
-    ); */
+    ); 
 
     // 7. Respuesta al cliente
     res.json({
