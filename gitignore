@@ -70,3 +70,10 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Excluir package-lock.json en ambas carpetas
+admin/package-lock.json
+apiGeneralMercosur/package-lock.json
+
+# O de forma global para todo el repositorio
+package-lock.json
