@@ -270,7 +270,7 @@ router.post("/login", async (req, res) => {
 
     // 6. Buscar Sistemas y opciones del usuario
     const resultado = await pool.query(
-      "SELECT usuario_id, rol, sistema, ruta, descripcion, opcion, tiene_permiso FROM public.view_usuarios_opciones_sistemas WHERE usuario_id = $1",
+      "SELECT usuario_id, rol, sistema, ruta_sistema, descripcion, opcion, ruta_opcion, tiene_permiso FROM public.view_usuarios_opciones_sistemas WHERE usuario_id = $1",
       [user.id],
     );
 
@@ -281,12 +281,12 @@ router.post("/login", async (req, res) => {
     // Agrupar opciones por cada sistema
     const sistemasOpciones = Object.values(
       resultado.rows.reduce((acc, row) => {
-        const { sistema, ruta, descripcion, opcion, tiene_permiso, rol } = row;
+        const { sistema, ruta_sistema, descripcion, opcion, ruta_opcion, tiene_permiso, rol } = row;
 
         if (!acc[sistema]) {
           acc[sistema] = {
             sistema: sistema,
-            ruta: ruta,
+            ruta_sistema: ruta_sistema,
             descripcion: descripcion,
             rol: rol,
             opciones: [],
@@ -295,6 +295,7 @@ router.post("/login", async (req, res) => {
 
         acc[sistema].opciones.push({
           opcion: opcion,
+          ruta_opcion:ruta_opcion,
           tiene_permiso: tiene_permiso,
         });
 
@@ -302,10 +303,10 @@ router.post("/login", async (req, res) => {
       }, {}),
     );
 
-     console.log(
+    console.log(
       "Sistemas y opciones:",
       JSON.stringify(sistemasOpciones, null, 2),
-    ); 
+    );
 
     // 7. Respuesta al cliente
     res.json({

@@ -5,7 +5,7 @@ const { styleText } = require("node:util");
 
 const app = express();
 
-const onboardingEndpoints = require("./routes/onboarding.js");
+const adminEndpoints = require("./routes/admin.js");
 const seguridadEndpoints = require("./routes/seguridad.js");
 const port = process.env.PORT || 3000;
 
@@ -59,7 +59,7 @@ app.use("/uploads", express.static("/var/www/uploads"));
 
 // 6. Definición de Rutas
 app.use("/seguridad", seguridadEndpoints);
-app.use("/admin", onboardingEndpoints);
+app.use("/admin", adminEndpoints);
 
 app.get("/", (req, res) => {
   res.send("API Mercosur Enterprise Portal!");

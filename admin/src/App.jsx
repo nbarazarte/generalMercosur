@@ -7,7 +7,10 @@ import Login, { LoginAside } from "./pages/auth/login";
 import Home, { MainAside } from "./pages/systems/home/home";
 
 // Rutas de los sistemas:
-import Admin from "./pages/systems/admin/admin";
+import UsuariosAccesos from "./pages/systems/admin/usuariosAccesos";
+import Sistemas from "./pages/systems/admin/sistemas";
+import Dashboard from "./pages/systems/admin/dashboard";
+
 import RRHH from "./pages/systems/rrhh/rrhh";
 import Tickets from "./pages/systems/tickets/tickets";
 import KCS from "./pages/systems/kcs/kcs";
@@ -87,14 +90,29 @@ function App() {
         </Route>
 
         {/* Páginas de los sistemas con pantalla de carga */}
+
+        {/* Sistema de Administración General */}
         <Route
           path="/admin"
           element={
-            <SystemLoaderWrapper systemName="Sistema de Administración">
-              <Admin />
+            <SystemLoaderWrapper systemName="Sistema de Administración General">
+              <Outlet /> {/* Permite renderizar las subrutas hijas */}
             </SystemLoaderWrapper>
           }
-        />
+        >
+          {/* Subruta 0: Dashboard */}
+          <Route path="dashboard" element={<Dashboard />} />
+
+          {/* Subruta 1: Usuarios y Accesos */}
+          <Route path="usuarios-accesos" element={<UsuariosAccesos />} />
+
+          {/* Subruta 2: Sistemas */}
+          <Route path="sistemas" element={<Sistemas />} />
+
+          {/* Redirección por defecto al entrar solo a /admin */}
+          <Route index element={<Navigate to="dashboard" replace />} />
+        </Route>
+
         <Route
           path="/rrhh"
           element={

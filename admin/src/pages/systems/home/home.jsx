@@ -3,94 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import TextType from "../../components/TextType";
 
-/* const sistemas = [
-  {
-    id: "admin",
-    nombre: "Administración General",
-    descripcion: "Gestiona la configuración del sistema.",
-    url: "/admin",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-      </svg>
-    ),
-  },
-  {
-    id: "rrhh",
-    nombre: "Recursos Humanos",
-    descripcion: "Gestiona tu ficha de empleado.",
-    url: "/rrhh",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
-  },
-  {
-    id: "tickets",
-    nombre: "Tickets",
-    descripcion: "Centraliza tus tickets.",
-    url: "/tickets",
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
-      </svg>
-    ),
-  },
-  {
-    id: "kcs",
-    nombre: "Base de Datos de Conocimiento",
-    descripcion: "Accede a información valiosa para nuestros clientes.",
-    url: "/kcs",
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-      </svg>
-    ),
-  },
-]; */
-
 export const MainAside = () => {
   // Suscripción al estado de Redux
   const user = useSelector((state) => state.auth?.user);
-
-  // Fallback en cascada: Redux -> localStorage -> "Usuario"
-  const nombre = user?.nombre || localStorage.getItem("cl_nombre");
+  const nombre = user?.nombre;
 
   const getSaludo = () => {
     const hora = new Date().getHours();
@@ -102,24 +18,6 @@ export const MainAside = () => {
   return (
     <div className="aside-content">
       <h1>
-        {/* <TextType
-          text={`${getSaludo()}, \n ${nombre}`}
-          typingSpeed={75}
-          pauseDuration={1500}
-          showCursor
-          cursorCharacter="_"
-          loop={false} // Evita que la animación vuelva a empezar
-          texts={[
-            "Welcome to React Bits! Good to see you!",
-            "Build some amazing experiences!",
-          ]}
-          deletingSpeed={50}
-          variableSpeedEnabled={false}
-          variableSpeedMin={60}
-          variableSpeedMax={120}
-          cursorBlinkDuration={0.5}
-        /> */}
-
         <TextType
           text={`${getSaludo()}, \n ${nombre}`}
           typingSpeed={75}
@@ -196,7 +94,7 @@ const Home = () => {
     id: sistema.id,
     nombre: sistema.sistema,
     descripcion: sistema.descripcion,
-    url: sistema.ruta,
+    url: sistema.ruta_sistema,
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -215,8 +113,7 @@ const Home = () => {
   //console.log("Sistemas desde Redux:", sistemas);
 
   // Fallback en cascada: Redux -> localStorage -> "Usuario"
-  const usuario =
-    user?.username || localStorage.getItem("cl_username") || "Usuario";
+  const usuario = user?.username;
 
   const [theme, setTheme] = useState(() => {
     return (
