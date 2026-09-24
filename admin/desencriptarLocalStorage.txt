@@ -1,0 +1,34 @@
+// Pegar en la consola del navegador:
+
+// 1. Obtener los datos brutos de localStorage
+const rawData = localStorage.getItem('persist:root');
+
+if (!rawData) {
+  console.log("No hay datos en persist:root");
+} else {
+  const parsedRoot = JSON.parse(rawData);
+  
+  // 2. Escribe tu clave directa en string (sin import.meta)
+  const secretKey = '3594ced6-86ce-4c66-a276-d47399bb4deb';
+
+  // 3. Cargar CryptoJS para desencriptar el bloque
+  const script = document.createElement('script');
+  script.src = "https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js";
+  document.head.appendChild(script);
+
+  script.onload = () => {
+    try {
+      // Extraer el valor encriptado del slice 'auth'
+      const encryptedAuth = JSON.parse(parsedRoot.auth);
+
+      // Desencriptar el valor
+      const bytes = CryptoJS.AES.decrypt(encryptedAuth, secretKey);
+      const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+
+      console.log("=== ESTADO DESENCRIPTADO (AUTH) ===");
+      console.log(JSON.parse(decryptedText));
+    } catch (err) {
+      console.error("Error al desencriptar. Revisa que la clave sea la correcta:", err);
+    }
+  };
+}

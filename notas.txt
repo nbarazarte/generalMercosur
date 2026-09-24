@@ -102,27 +102,25 @@ WHERE table_schema = 'onboarding'
   AND table_name = 'view_reporte_detallado'
 ORDER BY ordinal_position;
 
-#################### Variables API de admin #################### 
-VITE_NOMBRE_SISTEMA=Mercosur Enterprise Portal
-VITE_NOMBRE_SISTEMA_BO=Back Office Mercosur Enterprise Portal
+api:
+DBHOST=localhost
+DBPASSWORD=1123581321
+PORT=3000
+DBUSER=postgres
+DBDATABASE=db_general_mercosur
+DBPORT=5432
+AUTHORIZATION_HEADER=3594ced6-86ce-4c66-a276-d47399bb4deb
+
+front:
+#################### Variables API de General Mercosur #################### 
 
 # URLS API LOCAL
-VITE_URL_API_LOCAL_SEGURIDAD=http://localhost:3000/seguridad/
-VITE_URL_API_LOCAL=http://localhost:3000/admin/
-VITE_URL_API_LOCAL_VER=http://localhost:3000/
-
-# URLS API OFICINA (Corregidas con puerto 3000)
-#VITE_URL_API_LOCAL_SEGURIDAD=http://192.168.12.35:3000/seguridad/
-#VITE_URL_API_LOCAL=http://192.168.12.35:3000/admin/
-#VITE_URL_API_LOCAL_VER=http://192.168.12.35:3000/
-
-#VITE_URL_API_LOCAL_SEGURIDAD=/apiadmin/seguridad/
-#VITE_URL_API_LOCAL=/apiadmin/admin/
-#VITE_URL_API_LOCAL_VER=/apiadmin/
+VITE_URL_API_LOCAL_SEGURIDAD=http://192.168.1.42:3000/seguridad/
+VITE_URL_API_LOCAL=http://192.168.1.42:3000/onboarding/
+VITE_URL_API_LOCAL_VER=http://192.168.1.42:3000/
 
 # TOKEN de la api
-VITE_TOKEN=0117921a-64a2-4676-8d0a-22877bfecaf5
-VITE_DOCUMENTACION_API=
+VITE_TOKEN=3594ced6-86ce-4c66-a276-d47399bb4deb
 
-#Prefijo de la aplicacion
-VITE_PREFIJO=admin
+# para encriptar el token de redux
+VITE_REDUX_SECRET_KEY=3594ced6-86ce-4c66-a276-d47399bb4deb

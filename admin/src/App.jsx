@@ -17,7 +17,6 @@ const SystemLoaderWrapper = ({ systemName, children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simula el tiempo de carga (1.5 segundos)
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1500);
@@ -43,9 +42,8 @@ const SystemLoaderWrapper = ({ systemName, children }) => {
 // Componente Guard/Protector de Rutas
 const ProtectedRoute = () => {
   const isAuthenticated = useSelector((state) => state.auth?.isAuthenticated);
-  const token = localStorage.getItem("cl_token");
 
-  if (isAuthenticated || token) {
+  if (isAuthenticated) {
     return <Outlet />;
   }
 
@@ -55,9 +53,8 @@ const ProtectedRoute = () => {
 // Componente para evitar que usuarios ya autenticados entren de nuevo a /login
 const PublicOnlyRoute = () => {
   const isAuthenticated = useSelector((state) => state.auth?.isAuthenticated);
-  const token = localStorage.getItem("cl_token");
 
-  if (isAuthenticated || token) {
+  if (isAuthenticated) {
     return <Navigate to="/home" replace />;
   }
 
