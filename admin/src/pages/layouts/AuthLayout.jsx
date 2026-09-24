@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 
 // Componentes
-import Logo from "../pages/components/Logo";
-import LogoMobile from "../pages/components/LogoMobile";
-import ThemeToggle from "../pages/components/ThemeToggle";
-import LogoutButton from "../pages/components/LogoutButton";
+import Logo from "../components/Logo";
+import LogoMobile from "../components/LogoMobile";
+import ThemeToggle from "../components/ThemeToggle";
+import LogoutButton from "../components/LogoutButton";
 
 const AuthLayout = ({ asideContent, showLogout = false }) => {
   const [theme, setTheme] = useState(

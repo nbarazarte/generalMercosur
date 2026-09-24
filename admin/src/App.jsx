@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import AuthLayout from "./layouts/AuthLayout";
+import AuthLayout from "./pages/layouts/AuthLayout";
 import Login, { LoginAside } from "./pages/auth/login";
 import Home, { MainAside } from "./pages/systems/home/home";
 
