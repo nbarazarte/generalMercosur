@@ -2,10 +2,9 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 import Logo from "../components/Logo";
 import LogoutButton from "../components/LogoutButton";
 import ThemeToggle from "../components/ThemeToggle";
-
 import { useSelector } from "react-redux";
 
-export default function SystemLayout({ title, subtitle, children }) {
+export default function SystemLayout({ children }) {
   const usuario = useSelector((state) => state.auth?.user);
   const nombre = usuario?.nombre;
   const apellido = usuario?.apellido;
