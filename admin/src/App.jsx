@@ -17,6 +17,7 @@ import RRHH from "./pages/systems/rrhh/rrhh";
 
 //tickets:
 import DashboardTickets from "./pages/systems/tickets/dashboardTickets";
+import CasosTickets from "./pages/systems/tickets/casosTickets";
 
 //kcs:
 import KCS from "./pages/systems/kcs/kcs";
@@ -245,6 +246,9 @@ function App() {
           >
             {/* Subruta 0: Dashboard */}
             <Route path="dashboard" element={<DashboardTickets />} />
+
+             {/* Subruta 1: Casos / Tickets */}
+            <Route path="casos-tickets" element={<CasosTickets />} />
 
             {/* Redirección por defecto al entrar solo a /admin */}
             <Route index element={<Navigate to="dashboard" replace />} />
