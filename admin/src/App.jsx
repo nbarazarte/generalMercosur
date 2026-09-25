@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import HomeLayout from "./pages/layouts/HomeLayout";
@@ -47,40 +47,75 @@ const RouteTracker = () => {
 
 // Componente Wrapper genérico para la pantalla de carga previa
 const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
-  const location = useLocation();
-
-  // Comprobamos el sistema activo en el que el usuario ya se encontraba
   const lastActiveSystem = localStorage.getItem("active_system");
   const loaderSeen =
     localStorage.getItem(`loader_seen_${systemKey}`) === "true";
 
-  // Si el usuario navegó desde otro lugar fuera de este sistema, es una entrada nueva
   const isComingFromOutside = lastActiveSystem !== systemKey;
-
-  // Solo muestra la pantalla de carga si entra desde afuera o nunca ha visto el loader
   const shouldShowLoader = isComingFromOutside || !loaderSeen;
 
   const [loading, setLoading] = useState(shouldShowLoader);
 
   useEffect(() => {
-    if (shouldShowLoader) {
-      localStorage.setItem(`loader_seen_${systemKey}`, "true");
-      localStorage.setItem("active_system", systemKey);
+    if (!shouldShowLoader) return;
 
-      const timer = setTimeout(() => {
-        setLoading(false);
-      }, 1500);
+    localStorage.setItem(`loader_seen_${systemKey}`, "true");
+    localStorage.setItem("active_system", systemKey);
 
-      return () => clearTimeout(timer);
-    }
+    // Oculta el loader tras 1.5 segundos exactos
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, [shouldShowLoader, systemKey]);
 
   if (loading) {
     return (
       <div className="system-loader-screen">
-        <div className="loader-content">
-          <div className="spinner"></div>
-          <h3>{systemName}</h3>
+        <div className="loader-bg-glow glow-1"></div>
+        <div className="loader-bg-glow glow-2"></div>
+
+        <div className="loader-card">
+          <div className="loader-icon-container">
+            <div className="loader-ring"></div>
+            <div className="loader-ring ring-reverse"></div>
+            <div className="loader-core-icon">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="loader-text-group">
+            <span className="loader-badge">Accediendo al entorno</span>
+            <h3 className="loader-title">{systemName}</h3>
+            <p className="loader-subtitle">
+              Cargando módulos y permisos de usuario...
+            </p>
+          </div>
+
+          <div className="loader-progress-wrapper">
+            <div className="loader-progress-bar">
+              {/* Animación fluida controlada directamente por CSS */}
+              <div className="loader-progress-fill-animated"></div>
+            </div>
+            <div className="loader-progress-info">
+              <span>Sincronizando</span>
+              <span className="loader-status-text">Cargando...</span>
+            </div>
+          </div>
         </div>
       </div>
     );

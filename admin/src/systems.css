@@ -6,21 +6,21 @@
   --merco-navy: #0b2545;
   --merco-navy-700: #123a63;
   --merco-navy-500: #1d5891;
-  --merco-accent: #c8a45c;      /* Dorado corporativo */
+  --merco-accent: #c8a45c; /* Dorado corporativo */
   --merco-accent-dark: #a8863f;
   --merco-blue: #2f6fed;
-  
+
   /* Mapeo dinámico a las variables de tema globales de index.css */
   --merco-bg: var(--background);
   --merco-surface: var(--card);
   --merco-border: var(--border);
   --merco-text: var(--foreground);
   --merco-muted: var(--muted-foreground);
-  
+
   --merco-success: #1f9d63;
   --merco-danger: #d1435b;
   --merco-warning: #d8992a;
-  
+
   --ma-radius: 14px;
   --ma-radius-sm: 9px;
   --ma-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -59,21 +59,25 @@
   width: 42px;
   height: 42px;
   border-radius: 11px;
-  background: linear-gradient(135deg, var(--merco-accent), var(--merco-accent-dark));
+  background: linear-gradient(
+    135deg,
+    var(--merco-accent),
+    var(--merco-accent-dark)
+  );
   display: grid;
   place-items: center;
   font-family: var(--font-display, sans-serif);
   font-weight: 700;
   color: #0b2545;
   font-size: 20px;
-  box-shadow: 0 6px 16px rgba(200, 164, 92, .35);
+  box-shadow: 0 6px 16px rgba(200, 164, 92, 0.35);
 }
 
 .ma-brand h1 {
   font-family: var(--font-display, sans-serif);
   font-size: 15px;
   font-weight: 600;
-  letter-spacing: .2px;
+  letter-spacing: 0.2px;
   line-height: 1.1;
   color: #ffffff;
 }
@@ -81,7 +85,7 @@
 .ma-brand span {
   font-size: 11px;
   color: #9fb2cc;
-  letter-spacing: .4px;
+  letter-spacing: 0.4px;
 }
 
 .ma-nav {
@@ -110,22 +114,26 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: .18s;
+  transition: 0.18s;
 }
 
 .ma-nav a .ic {
   width: 18px;
   text-align: center;
-  opacity: .9;
+  opacity: 0.9;
 }
 
 .ma-nav a:hover {
-  background: rgba(255, 255, 255, .06);
+  background: rgba(255, 255, 255, 0.06);
   color: #fff;
 }
 
 .ma-nav a.active {
-  background: linear-gradient(90deg, rgba(200, 164, 92, .22), rgba(200, 164, 92, .04));
+  background: linear-gradient(
+    90deg,
+    rgba(200, 164, 92, 0.22),
+    rgba(200, 164, 92, 0.04)
+  );
   color: #fff;
   box-shadow: inset 3px 0 0 var(--merco-accent);
 }
@@ -133,7 +141,7 @@
 .ma-side-foot {
   margin-top: auto;
   padding: 14px 10px 4px;
-  border-top: 1px solid rgba(255, 255, 255, .08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   gap: 11px;
@@ -217,7 +225,7 @@
 .ma-search input:focus {
   outline: none;
   border-color: var(--merco-blue);
-  box-shadow: 0 0 0 3px rgba(47, 111, 237, .12);
+  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.12);
 }
 
 .ma-search .ic {
@@ -251,7 +259,7 @@
   color: var(--merco-muted);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: .18s;
+  transition: 0.18s;
 }
 
 .ma-tab:hover {
@@ -303,12 +311,12 @@
 }
 
 .chip-up {
-  background: rgba(31, 157, 99, .15);
+  background: rgba(31, 157, 99, 0.15);
   color: var(--merco-success);
 }
 
 .chip-flat {
-  background: rgba(105, 116, 140, .15);
+  background: rgba(105, 116, 140, 0.15);
   color: var(--merco-muted);
 }
 
@@ -350,7 +358,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  transition: .16s;
+  transition: 0.16s;
 }
 
 .btn-primary {
@@ -363,7 +371,11 @@
 }
 
 .btn-accent {
-  background: linear-gradient(135deg, var(--merco-accent), var(--merco-accent-dark));
+  background: linear-gradient(
+    135deg,
+    var(--merco-accent),
+    var(--merco-accent-dark)
+  );
   color: #0b2545;
 }
 
@@ -402,7 +414,7 @@
 }
 
 .btn-icon.danger:hover {
-  background: rgba(209, 67, 91, .15);
+  background: rgba(209, 67, 91, 0.15);
   color: var(--merco-danger);
 }
 
@@ -425,7 +437,7 @@
   text-align: left;
   padding: 13px 18px;
   font-size: 11px;
-  letter-spacing: .6px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   color: var(--merco-muted);
   background: var(--secondary);
@@ -491,7 +503,7 @@
 }
 
 .badge::before {
-  content: '';
+  content: "";
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -499,17 +511,17 @@
 }
 
 .badge-active {
-  background: rgba(31, 157, 99, .15);
+  background: rgba(31, 157, 99, 0.15);
   color: var(--merco-success);
 }
 
 .badge-inactive {
-  background: rgba(105, 116, 140, .15);
+  background: rgba(105, 116, 140, 0.15);
   color: var(--merco-muted);
 }
 
 .badge-pending {
-  background: rgba(216, 153, 42, .15);
+  background: rgba(216, 153, 42, 0.15);
   color: var(--merco-warning);
 }
 
@@ -519,13 +531,13 @@
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 7px;
-  background: rgba(29, 88, 145, .15);
+  background: rgba(29, 88, 145, 0.15);
   color: var(--primary);
   margin: 2px 3px 2px 0;
 }
 
 .tag-accent {
-  background: rgba(200, 164, 92, .18);
+  background: rgba(200, 164, 92, 0.18);
   color: var(--merco-accent-dark);
 }
 
@@ -583,7 +595,7 @@
   padding: 20px;
   box-shadow: var(--ma-shadow-sm);
   position: relative;
-  transition: .18s;
+  transition: 0.18s;
 }
 
 .role-card:hover {
@@ -660,7 +672,7 @@
 .ma-matrix th {
   background: var(--secondary);
   font-size: 11px;
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--merco-muted);
 }
@@ -707,12 +719,12 @@
   inset: 0;
   background: var(--border);
   border-radius: 20px;
-  transition: .2s;
+  transition: 0.2s;
   cursor: pointer;
 }
 
 .toggle .track::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 16px;
   height: 16px;
@@ -720,8 +732,8 @@
   top: 3px;
   background: #fff;
   border-radius: 50%;
-  transition: .2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .25);
+  transition: 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .toggle input:checked + .track {
@@ -742,12 +754,16 @@
   place-items: center;
   z-index: 100;
   padding: 20px;
-  animation: fade .18s ease;
+  animation: fade 0.18s ease;
 }
 
 @keyframes fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .ma-modal {
@@ -760,12 +776,18 @@
   box-shadow: var(--ma-shadow);
   max-height: 92vh;
   overflow: auto;
-  animation: pop .2s ease;
+  animation: pop 0.2s ease;
 }
 
 @keyframes pop {
-  from { transform: translateY(14px) scale(.98); opacity: 0; }
-  to { transform: none; opacity: 1; }
+  from {
+    transform: translateY(14px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
 }
 
 .ma-modal-head {
@@ -832,7 +854,7 @@
 .field textarea:focus {
   outline: none;
   border-color: var(--merco-blue);
-  box-shadow: 0 0 0 3px rgba(47, 111, 237, .12);
+  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.12);
 }
 
 .field-row {
@@ -922,7 +944,7 @@
 .role-select:focus {
   outline: none;
   border-color: var(--merco-blue);
-  box-shadow: 0 0 0 3px rgba(47, 111, 237, .12);
+  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.12);
 }
 
 .sys-access-row {
@@ -967,7 +989,7 @@
     position: fixed;
     left: -280px;
     z-index: 60;
-    transition: .25s;
+    transition: 0.25s;
     width: 264px;
   }
   .ma-side.open {
@@ -988,4 +1010,222 @@
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
   width: 100%;
+}
+
+/* ==========================================================================
+   PANTALLA DE CARGA DEL SISTEMA (SYSTEM LOADER)
+   ========================================================================== */
+.system-loader-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0b0f19;
+  overflow: hidden;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+/* Luces ambientales de fondo */
+.loader-bg-glow {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.glow-1 {
+  top: 15%;
+  left: 20%;
+  background: radial-gradient(circle, #2f6fed, transparent);
+}
+
+.glow-2 {
+  bottom: 15%;
+  right: 20%;
+  background: radial-gradient(circle, #1f9d63, transparent);
+}
+
+/* Tarjeta principal con efecto Glassmorphism */
+.loader-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 20px;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* Spinner / Anillo orbital */
+.loader-icon-container {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.loader-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #2f6fed;
+  border-right-color: rgba(47, 111, 237, 0.3);
+  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.loader-ring.ring-reverse {
+  inset: 6px;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: #1f9d63;
+  border-left-color: rgba(31, 157, 99, 0.3);
+  animation: spin-reverse 1.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.loader-core-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  color: #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+  animation: pulse-icon 2s infinite ease-in-out;
+}
+
+/* Textos */
+.loader-text-group {
+  margin-bottom: 28px;
+}
+
+.loader-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.loader-title {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.loader-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+/* Barra de progreso */
+.loader-progress-wrapper {
+  width: 100%;
+}
+
+.loader-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.loader-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2f6fed, #38bdf8, #1f9d63);
+  border-radius: 10px;
+  transition: width 0.08s ease-out;
+}
+
+.loader-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Animaciones Keyframes */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes pulse-icon {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+  }
+}
+
+.loader-progress-fill-animated {
+  height: 100%;
+  background: linear-gradient(90deg, #2f6fed, #38bdf8, #1f9d63);
+  border-radius: 10px;
+  width: 0%;
+  animation: fillProgress 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fillProgress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
 }
