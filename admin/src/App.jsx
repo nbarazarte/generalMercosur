@@ -18,6 +18,9 @@ import RRHH from "./pages/systems/rrhh/rrhh";
 //tickets:
 import DashboardTickets from "./pages/systems/tickets/dashboardTickets";
 import CasosTickets from "./pages/systems/tickets/casosTickets";
+import Seguimiento from "./pages/systems/tickets/seguimiento";
+import Clientes from "./pages/systems/tickets/clientes";
+import ReportesDesempeño from "./pages/systems/tickets/reportesDesempeño";
 
 //kcs:
 import KCS from "./pages/systems/kcs/kcs";
@@ -250,7 +253,16 @@ function App() {
              {/* Subruta 1: Casos / Tickets */}
             <Route path="casos-tickets" element={<CasosTickets />} />
 
-            {/* Redirección por defecto al entrar solo a /admin */}
+             {/* Subruta 2: Seguimiento */}
+            <Route path="seguimiento" element={<Seguimiento />} />
+
+             {/* Subruta 3: Clientes */}
+            <Route path="clientes" element={<Clientes />} />
+
+             {/* Subruta 4: Reportes - Desempeño */}
+            <Route path="reportes-desempeño" element={<ReportesDesempeño />} />
+
+            {/* Redirección por defecto al entrar solo a /tickets */}
             <Route index element={<Navigate to="dashboard" replace />} />
           </Route>
 
