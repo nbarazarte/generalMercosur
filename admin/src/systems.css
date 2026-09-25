@@ -981,3 +981,11 @@
     grid-template-columns: 1fr;
   }
 }
+
+.systems-grid {
+  display: grid;
+  /* Crea columnas dinámicas de mínimo 280px y rellena el espacio disponible */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
