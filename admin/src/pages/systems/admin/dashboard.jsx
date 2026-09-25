@@ -1,108 +1,152 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
 
-/* IMPORTAMOS EL COMPONENTE DINÁMICO DE ÍCONOS */
-import { DynamicIcon } from "../../components/IconCatalog";
+/* IMPORTAMOS EL COMPONENTE DINÁMICO E ICON PICKER DE ÍCONOS */
+import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
 
-/* ====== CONSTANTES ====== */
-const CASOS_RECIENTES = [
+/* ====== DATOS INICIALES DE SISTEMAS ====== */
+const INITIAL_SISTEMAS = [
   {
-    id: 1042,
-    nombre: "Daniela Suárez",
-    cedula: "25.667.001",
-    tipo: "Otros",
-    prioridad: "Media",
-    estado: "En Proceso",
-    agente: "Eleany 1",
+    id: "adminmep",
+    nombre: "Admin MEP",
+    ic: "FiSettings",
+    color: "#2f6fed",
+    desc: "Configuración del sistema central",
+    opciones: [
+      { id: "opt-1", opcion: "Parámetros Generales", ruta_opcion: "/admin/config", ic: "FiSliders" },
+      { id: "opt-2", opcion: "Auditoría de Logs", ruta_opcion: "/admin/logs", ic: "FiActivity" },
+      { id: "opt-3", opcion: "Mantenimiento", ruta_opcion: "/admin/mantenimiento", ic: "FiTool" },
+    ],
   },
   {
-    id: 1041,
-    nombre: "María Gómez",
-    cedula: "15.987.654",
-    tipo: "Generar Certificado",
-    prioridad: "Media",
-    estado: "Pendiente",
-    agente: "Maria J 2",
+    id: "rrhh",
+    nombre: "Recursos Humanos",
+    ic: "FiUsers",
+    color: "#1f9d63",
+    desc: "Ficha de empleado y licencias",
+    opciones: [
+      { id: "opt-4", opcion: "Fichas de Empleados", ruta_opcion: "/rrhh/empleados", ic: "FiFolder" },
+      { id: "opt-5", opcion: "Solicitudes de Licencia", ruta_opcion: "/rrhh/licencias", ic: "FiCalendar" },
+    ],
   },
   {
-    id: 1040,
-    nombre: "José Rodríguez",
-    cedula: "12.345.678",
-    tipo: "Firma Electrónica",
-    prioridad: "Alta",
-    estado: "En Proceso",
-    agente: "Eleany 1",
+    id: "tickets",
+    nombre: "Sistema Tickets",
+    ic: "FiHeadphones",
+    color: "#d8992a",
+    desc: "Centraliza tus tickets e incidencias",
+    opciones: [
+      { id: "opt-6", opcion: "Mesa de Ayuda", ruta_opcion: "/tickets/mesa", ic: "FiHelpCircle" },
+      { id: "opt-7", opcion: "Mis Tickets", ruta_opcion: "/tickets/mis-tickets", ic: "FiCheckSquare" },
+    ],
   },
   {
-    id: 1039,
-    nombre: "Carlos Pérez",
-    cedula: "18.223.114",
-    tipo: "Mercado de Valores",
-    prioridad: "Alta",
-    estado: "Pendiente",
-    agente: "Andrea 3",
-  },
-  {
-    id: 1038,
-    nombre: "Carlos Pérez",
-    cedula: "18.223.114",
-    tipo: "Mercado de Valores",
-    prioridad: "Baja",
-    estado: "En Proceso",
-    agente: "Yetsimar 10",
-  },
-  {
-    id: 1037,
-    nombre: "Gabriela Ríos",
-    cedula: "22.778.443",
-    tipo: "Akkela",
-    prioridad: "Media",
-    estado: "En Proceso",
-    agente: "Yabelis 8",
+    id: "kb",
+    nombre: "Base de Conocimiento",
+    ic: "FiBook",
+    color: "#8155d8",
+    desc: "Información y documentación",
+    opciones: [
+      { id: "opt-8", opcion: "Artículos", ruta_opcion: "/kb/articulos", ic: "FiFileText" },
+      { id: "opt-9", opcion: "Categorías", ruta_opcion: "/kb/categorias", ic: "FiLayers" },
+    ],
   },
 ];
 
-const ALERTAS_SLA = [
+/* ====== ROLES DEFINIDOS ====== */
+const ROLES = [
+  { id: 1, nombre: "Administrador", color: "#0b2545" },
+  { id: 2, nombre: "Supervisor", color: "#2f6fed" },
+  { id: 3, nombre: "Operador MEP", color: "#123a63" },
+  { id: 4, nombre: "Gestor RR.HH.", color: "#1f9d63" },
+  { id: 5, nombre: "Empleado", color: "#0f7a4c" },
+  { id: 6, nombre: "Agente de Soporte", color: "#d8992a" },
+  { id: 7, nombre: "Editor de Contenido", color: "#8155d8" },
+  { id: 8, nombre: "Solo Lectura", color: "#69748c" },
+];
+
+/* ====== USUARIOS Y SUS ACCESOS ====== */
+const INITIAL_USUARIOS = [
   {
-    id: 1036,
-    nombre: "Pedro Blanco",
-    tipo: "Legacy",
-    prioridad: "Alta",
-    tiempo: "hace 16h 0m",
+    id: 1,
+    nombre: "María González",
+    email: "m.gonzalez@mercosur.com.py",
+    estado: "active",
+    ultimo: "Hoy, 09:14",
+    accesos: { adminmep: "Administrador", rrhh: "Supervisor", tickets: "Supervisor", kb: "Administrador" },
   },
   {
-    id: 1040,
-    nombre: "Carlos Pérez",
-    tipo: "Mercado de Valores",
-    prioridad: "Alta",
-    tiempo: "hace 5h 0m",
+    id: 2,
+    nombre: "Carlos Benítez",
+    email: "c.benitez@mercosur.com.py",
+    estado: "active",
+    ultimo: "Hoy, 08:02",
+    accesos: { adminmep: "Operador MEP", tickets: "Agente de Soporte" },
   },
   {
-    id: 1042,
-    nombre: "José Rodríguez",
-    tipo: "Firma Electrónica",
-    prioridad: "Alta",
-    tiempo: "hace 2h 0m",
+    id: 3,
+    nombre: "Lucía Fernández",
+    email: "l.fernandez@mercosur.com.py",
+    estado: "active",
+    ultimo: "Ayer, 17:45",
+    accesos: { rrhh: "Gestor RR.HH.", tickets: "Supervisor" },
   },
   {
-    id: 1033,
-    nombre: "María Gómez",
-    tipo: "Firma Electrónica",
-    prioridad: "Media",
-    tiempo: "hace 2h 0m",
+    id: 4,
+    nombre: "Roberto Díaz",
+    email: "r.diaz@mercosur.com.py",
+    estado: "pending",
+    ultimo: "—",
+    accesos: { rrhh: "Empleado", kb: "Solo Lectura" },
+  },
+  {
+    id: 5,
+    nombre: "Ana Villalba",
+    email: "a.villalba@mercosur.com.py",
+    estado: "active",
+    ultimo: "Hoy, 10:31",
+    accesos: { kb: "Editor de Contenido", rrhh: "Empleado" },
+  },
+  {
+    id: 6,
+    nombre: "Jorge Ramírez",
+    email: "j.ramirez@mercosur.com.py",
+    estado: "inactive",
+    ultimo: "12/09/2026",
+    accesos: { adminmep: "Solo Lectura" },
   },
 ];
 
-const RANKING_AGENTES = [
-  { nombre: "Eleany 1", count: 3, pct: "100%" },
-  { nombre: "Maria J 2", count: 1, pct: "33%" },
-  { nombre: "Andrea 3", count: 1, pct: "33%" },
-  { nombre: "Ira 4", count: 1, pct: "33%" },
-  { nombre: "Moises 5", count: 1, pct: "33%" },
-  { nombre: "Vanessa 6", count: 1, pct: "33%" },
+/* ====== ALERTAS DE SEGURIDAD / ACCESOS ====== */
+const ALERTAS_ACCESOS = [
+  {
+    id: 101,
+    titulo: "Alta pendiente de aprobación",
+    usuario: "Roberto Díaz",
+    detalle: "Solicitó rol 'Empleado' en Recursos Humanos",
+    tipo: "warning",
+    tiempo: "hace 2h",
+  },
+  {
+    id: 102,
+    titulo: "Usuario inactivo con accesos",
+    usuario: "Jorge Ramírez",
+    detalle: "Cuenta inactiva conserva rol en Admin MEP",
+    tipo: "danger",
+    tiempo: "hace 1d",
+  },
+  {
+    id: 103,
+    titulo: "Asignación de SuperAdmin",
+    usuario: "María González",
+    detalle: "Modificó permisos en el módulo Base de Conocimiento",
+    tipo: "info",
+    tiempo: "hace 3d",
+  },
 ];
 
+/* ====== HELPER FUNCTIONS ====== */
 function initials(n) {
   return n
     ? n
@@ -114,7 +158,6 @@ function initials(n) {
     : "—";
 }
 
-/* HOOK PARA DETECTAR EL MODO OSCURO GLOBAL DESDE SYSTEMS.CSS / INDEX.CSS */
 function useIsDarkMode() {
   const [isDark, setIsDark] = useState(false);
 
@@ -144,8 +187,66 @@ function useIsDarkMode() {
   return isDark;
 }
 
-export default function Dashboard() {
+/* ============================ DASHBOARD COMPONENT ============================ */
+export default function DashboardSistemasUsuarios() {
   const isDark = useIsDarkMode();
+  const [sistemas, setSistemas] = useState(INITIAL_SISTEMAS);
+  const [usuarios, setUsuarios] = useState(INITIAL_USUARIOS);
+  const [modal, setModal] = useState(null);
+
+  // Cálculos dinámicos
+  const totalOpciones = useMemo(
+    () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),
+    [sistemas]
+  );
+
+  const totalUsuariosActivos = useMemo(
+    () => usuarios.filter((u) => u.estado === "active").length,
+    [usuarios]
+  );
+
+  const totalUsuariosPendientes = useMemo(
+    () => usuarios.filter((u) => u.estado === "pending").length,
+    [usuarios]
+  );
+
+  // Cambio dinámico de matriz
+  const handleAccesoChange = (userId, sysId, rol) => {
+    setUsuarios((prev) =>
+      prev.map((u) => {
+        if (u.id !== userId) return u;
+        const accesos = { ...u.accesos };
+        if (rol) accesos[sysId] = rol;
+        else delete accesos[sysId];
+        return { ...u, accesos };
+      })
+    );
+  };
+
+  const guardarOpcionSistema = (sistemaId, opcionData) => {
+    setSistemas((prev) =>
+      prev.map((s) => {
+        if (s.id !== sistemaId) return s;
+        const opcionesActuales = s.opciones || [];
+        const existe = opcionesActuales.some((o) => o.id === opcionData.id);
+
+        let nuevasOpciones;
+        if (existe) {
+          nuevasOpciones = opcionesActuales.map((o) =>
+            o.id === opcionData.id ? { ...o, ...opcionData } : o
+          );
+        } else {
+          nuevasOpciones = [
+            ...opcionesActuales,
+            { ...opcionData, id: Date.now().toString() },
+          ];
+        }
+
+        return { ...s, opciones: nuevasOpciones };
+      })
+    );
+    setModal(null);
+  };
 
   return (
     <SystemLayout identificacion="Administración General">
@@ -155,32 +256,60 @@ export default function Dashboard() {
           padding: "10px 0",
         }}
       >
-        {/* 1. TARJETAS DE MÉTRICAS (KPIs) - Con íconos de Feather */}
+        {/* 1. TARJETAS DE MÉTRICAS GENERALES (KPIs) */}
         <div
           className="ma-stats"
           style={{ gridTemplateColumns: "repeat(5, 1fr)" }}
         >
           <KPICard
-            icon="FiFolder"
-            val="14"
-            label="Total de casos"
-            trend="▲ activos en el periodo"
+            icon="FiGrid"
+            val={sistemas.length}
+            label="Sistemas Registrados"
+            trend="▲ Módulos activos"
             trendColor="var(--merco-success, #16a34a)"
           />
-          <KPICard icon="FiClock" val="9" label="Casos abiertos" />
-          <KPICard icon="FiBell" val="6" label="En seguimiento" />
-          <KPICard icon="FiCheckCircle" val="5" label="Resueltos" />
           <KPICard
-            icon="FiAlertTriangle"
-            val="4"
-            label="Vencidos (SLA)"
-            trend="▼ requieren atención"
-            trendColor="var(--merco-danger, #dc2626)"
-            iconColor="var(--merco-danger, #dc2626)"
+            icon="FiLayers"
+            val={totalOpciones}
+            label="Rutas / Opciones"
+            trend="Rutas de menú"
+          />
+          <KPICard
+            icon="FiUsers"
+            val={usuarios.length}
+            label="Usuarios Totales"
+            trend={`▲ ${totalUsuariosActivos} activos`}
+            trendColor="var(--merco-success, #16a34a)"
+          />
+          <KPICard
+            icon="FiShield"
+            val={ROLES.length}
+            label="Roles Definidos"
+            trend="Matriz global"
+          />
+          <KPICard
+            icon="FiUserCheck"
+            val={totalUsuariosPendientes}
+            label="Altas Pendientes"
+            trend={
+              totalUsuariosPendientes > 0
+                ? "▼ Requieren revisión"
+                : "✔ Al día"
+            }
+            trendColor={
+              totalUsuariosPendientes > 0
+                ? "var(--merco-warning, #d8992a)"
+                : "var(--merco-success, #16a34a)"
+            }
+            iconColor={
+              totalUsuariosPendientes > 0
+                ? "var(--merco-warning, #d8992a)"
+                : "var(--merco-muted)"
+            }
           />
         </div>
 
-        {/* 2. FILA 1 DE GRÁFICOS: EVOLUCIÓN Y POR ESTADO */}
+        {/* 2. FILA 1 DE GRÁFICOS: ACCESOS POR SISTEMA Y DISTRIBUCIÓN DE ROLES */}
         <div
           style={{
             display: "grid",
@@ -198,13 +327,17 @@ export default function Dashboard() {
                   color: "var(--merco-text)",
                 }}
               >
-                Evolución de casos
+                Usuarios asignados por sistema
               </span>{" "}
               <small style={{ color: "var(--merco-muted)" }}>
-                últimos 7 días
+                cobertura de licencias
               </small>
             </div>
-            <ChartLineEvol isDark={isDark} />
+            <ChartBarSistemas
+              isDark={isDark}
+              sistemas={sistemas}
+              usuarios={usuarios}
+            />
           </div>
 
           <div className="ma-card" style={{ padding: 18 }}>
@@ -216,14 +349,14 @@ export default function Dashboard() {
                   color: "var(--merco-text)",
                 }}
               >
-                Casos por estado
+                Distribución de roles
               </span>
             </div>
-            <ChartDoughnutEstado isDark={isDark} />
+            <ChartDoughnutRoles isDark={isDark} usuarios={usuarios} />
           </div>
         </div>
 
-        {/* 3. FILA 2: CASOS RECIENTES Y ALERTAS SLA */}
+        {/* 3. FILA 2: MATRIZ DE ACCESOS RÁPIDOS Y ALERTAS DE SEGURIDAD */}
         <div
           style={{
             display: "grid",
@@ -232,7 +365,7 @@ export default function Dashboard() {
             marginBottom: 20,
           }}
         >
-          {/* TABLA DE CASOS RECIENTES */}
+          {/* MATRIZ RESUMEN DE USUARIOS Y ACCESOS */}
           <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
             <div
               style={{
@@ -250,35 +383,38 @@ export default function Dashboard() {
                     color: "var(--merco-text)",
                   }}
                 >
-                  Casos recientes
+                  Gestión Rápida de Accesos
                 </span>{" "}
                 <small style={{ color: "var(--merco-muted)" }}>
-                  últimos registros
+                  matriz de permisos por usuario
                 </small>
               </div>
-              <button className="btn btn-ghost btn-sm">Ver todos</button>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={() => (window.location.href = "/usuarios-accesos")}
+              >
+                Ver Usuarios
+              </button>
             </div>
 
             <table className="ma-table">
               <thead>
                 <tr>
-                  <th>CLIENTE</th>
-                  <th>TIPO</th>
-                  <th>PRIORIDAD</th>
+                  <th>USUARIO</th>
                   <th>ESTADO</th>
-                  <th>AGENTE</th>
+                  <th>ACCESOS CONFIGURADOS</th>
                 </tr>
               </thead>
               <tbody>
-                {CASOS_RECIENTES.map((c, i) => (
-                  <tr key={i}>
+                {usuarios.slice(0, 5).map((u) => (
+                  <tr key={u.id}>
                     <td style={{ padding: "10px 16px" }}>
                       <div className="ma-user-cell">
                         <div
                           className="ma-ava"
                           style={{ background: "var(--merco-navy, #0B1B32)" }}
                         >
-                          {initials(c.nombre)}
+                          {initials(u.nombre)}
                         </div>
                         <div>
                           <b
@@ -287,56 +423,75 @@ export default function Dashboard() {
                               display: "block",
                             }}
                           >
-                            {c.nombre}
+                            {u.nombre}
                           </b>
                           <small style={{ color: "var(--merco-muted)" }}>
-                            {c.cedula}
+                            {u.email}
                           </small>
                         </div>
                       </div>
-                    </td>
-                    <td style={{ padding: "10px 16px" }}>
-                      <span className="tag">{c.tipo}</span>
-                    </td>
-                    <td style={{ padding: "10px 16px", fontWeight: 600 }}>
-                      <span
-                        style={{
-                          color:
-                            c.prioridad === "Alta"
-                              ? "var(--merco-danger, #DC2626)"
-                              : "var(--merco-warning, #D97706)",
-                        }}
-                      >
-                        ● {c.prioridad}
-                      </span>
                     </td>
                     <td style={{ padding: "10px 16px" }}>
                       <span
                         style={{
                           padding: "3px 10px",
                           borderRadius: 12,
-                          fontSize: 12,
-                          fontWeight: 500,
+                          fontSize: 11,
+                          fontWeight: 600,
                           background:
-                            c.estado === "Pendiente"
-                              ? "rgba(47, 111, 237, 0.15)"
-                              : "rgba(216, 153, 42, 0.15)",
+                            u.estado === "active"
+                              ? "rgba(31, 157, 99, 0.15)"
+                              : u.estado === "pending"
+                              ? "rgba(216, 153, 42, 0.15)"
+                              : "rgba(209, 67, 91, 0.15)",
                           color:
-                            c.estado === "Pendiente"
-                              ? "var(--merco-blue, #2f6fed)"
-                              : "var(--merco-warning, #d8992a)",
+                            u.estado === "active"
+                              ? "#1f9d63"
+                              : u.estado === "pending"
+                              ? "#d8992a"
+                              : "#d1435b",
                         }}
                       >
-                        ● {c.estado}
+                        ●{" "}
+                        {u.estado === "active"
+                          ? "Activo"
+                          : u.estado === "pending"
+                          ? "Pendiente"
+                          : "Inactivo"}
                       </span>
                     </td>
-                    <td
-                      style={{
-                        padding: "10px 16px",
-                        color: "var(--merco-muted)",
-                      }}
-                    >
-                      {c.agente}
+                    <td style={{ padding: "10px 16px" }}>
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        {sistemas.map((sys) => {
+                          const rolActual = u.accesos[sys.id] || "";
+                          return (
+                            <span
+                              key={sys.id}
+                              style={{
+                                fontSize: 11,
+                                padding: "2px 8px",
+                                borderRadius: 4,
+                                border: rolActual
+                                  ? `1px solid ${sys.color}66`
+                                  : "1px solid var(--merco-border, #444)",
+                                background: rolActual
+                                  ? `${sys.color}15`
+                                  : "transparent",
+                                color: rolActual
+                                  ? "var(--merco-text)"
+                                  : "var(--merco-muted)",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 4,
+                              }}
+                            >
+                              <DynamicIcon name={sys.ic} fallback="FiGrid" />
+                              <b>{sys.nombre}:</b>{" "}
+                              {rolActual || "Sin acceso"}
+                            </span>
+                          );
+                        })}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -344,7 +499,7 @@ export default function Dashboard() {
             </table>
           </div>
 
-          {/* ALERTAS DE SEGUIMIENTO (SLA) */}
+          {/* ALERTAS DE SEGURIDAD Y AUDITORÍA DE ACCESOS */}
           <div className="ma-card" style={{ padding: 18 }}>
             <div
               style={{
@@ -360,12 +515,12 @@ export default function Dashboard() {
                   color: "var(--merco-text)",
                 }}
               >
-                Alertas de seguimiento
+                Alertas de Accesos y Seguridad
               </span>{" "}
-              <small style={{ color: "var(--merco-muted)" }}>SLA</small>
+              <small style={{ color: "var(--merco-muted)" }}>Auditoría</small>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {ALERTAS_SLA.map((item) => (
+              {ALERTAS_ACCESOS.map((item) => (
                 <div
                   key={item.id}
                   style={{
@@ -381,15 +536,39 @@ export default function Dashboard() {
                       width: 36,
                       height: 36,
                       borderRadius: 8,
-                      border: "1px solid rgba(209, 67, 91, 0.4)",
-                      background: "rgba(209, 67, 91, 0.12)",
-                      color: "var(--merco-danger, #DC2626)",
+                      border:
+                        item.tipo === "danger"
+                          ? "1px solid rgba(209, 67, 91, 0.4)"
+                          : item.tipo === "warning"
+                          ? "1px solid rgba(216, 153, 42, 0.4)"
+                          : "1px solid rgba(47, 111, 237, 0.4)",
+                      background:
+                        item.tipo === "danger"
+                          ? "rgba(209, 67, 91, 0.12)"
+                          : item.tipo === "warning"
+                          ? "rgba(216, 153, 42, 0.12)"
+                          : "rgba(47, 111, 237, 0.12)",
+                      color:
+                        item.tipo === "danger"
+                          ? "#DC2626"
+                          : item.tipo === "warning"
+                          ? "#D97706"
+                          : "#2F6FED",
                       display: "grid",
                       placeItems: "center",
                       fontSize: 16,
                     }}
                   >
-                    <DynamicIcon name="FiAlertTriangle" fallback="FiAlertTriangle" />
+                    <DynamicIcon
+                      name={
+                        item.tipo === "danger"
+                          ? "FiLock"
+                          : item.tipo === "warning"
+                          ? "FiAlertTriangle"
+                          : "FiInfo"
+                      }
+                      fallback="FiShield"
+                    />
                   </div>
                   <div style={{ flex: 1 }}>
                     <b
@@ -399,33 +578,13 @@ export default function Dashboard() {
                         display: "block",
                       }}
                     >
-                      #{item.id} · {item.nombre}
+                      {item.titulo}
                     </b>
                     <small style={{ color: "var(--merco-muted)" }}>
-                      {item.tipo} ·{" "}
-                      <span
-                        style={{
-                          color:
-                            item.prioridad === "Alta"
-                              ? "var(--merco-danger, #DC2626)"
-                              : "var(--merco-warning, #D97706)",
-                        }}
-                      >
-                        ● {item.prioridad}
-                      </span>
+                      {item.usuario} · {item.detalle}
                     </small>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <span
-                      style={{
-                        fontSize: 12,
-                        fontWeight: "bold",
-                        color: "var(--merco-danger, #DC2626)",
-                        display: "block",
-                      }}
-                    >
-                      Vencido
-                    </span>
                     <small style={{ color: "var(--merco-muted)" }}>
                       {item.tiempo}
                     </small>
@@ -436,108 +595,186 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* 4. FILA 3: CANAL Y RANKING DE AGENTES */}
-        <div
-          style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 20 }}
-        >
-          <div className="ma-card" style={{ padding: 18 }}>
-            <div style={{ marginBottom: 16 }}>
-              <span
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 15,
-                  color: "var(--merco-text)",
-                }}
-              >
-                Distribución por canal
-              </span>
-            </div>
-            <ChartBarCanal isDark={isDark} />
-          </div>
-
-          <div className="ma-card" style={{ padding: 18 }}>
-            <div style={{ marginBottom: 16 }}>
-              <span
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 15,
-                  color: "var(--merco-text)",
-                }}
-              >
-                Ranking de agentes
-              </span>{" "}
+        {/* 4. FILA 3: CATÁLOGO DE SISTEMAS Y RUTAS CONFIGURADAS */}
+        <div style={{ marginBottom: 20 }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 12,
+            }}
+          >
+            <div>
+              <h3 style={{ margin: 0, fontSize: 16, color: "var(--merco-text)" }}>
+                Módulos de Sistemas y Opciones
+              </h3>
               <small style={{ color: "var(--merco-muted)" }}>
-                por atenciones
+                Rutas de navegación activas
               </small>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {RANKING_AGENTES.map((a, idx) => (
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => (window.location.href = "/sistemas")}
+            >
+              Gestionar Sistemas ➔
+            </button>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+              gap: 16,
+            }}
+          >
+            {sistemas.map((sys) => (
+              <div key={sys.id} className="ma-card" style={{ padding: 16 }}>
                 <div
-                  key={a.nombre}
-                  style={{ display: "flex", alignItems: "center", gap: 12 }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    marginBottom: 10,
+                  }}
                 >
-                  <span
-                    style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: 6,
-                      background:
-                        idx === 0
-                          ? "var(--merco-accent, #c8a45c)"
-                          : "var(--secondary, #F1F5F9)",
-                      color: idx === 0 ? "#0b2545" : "var(--merco-muted)",
-                      fontSize: 12,
-                      fontWeight: "bold",
-                      display: "grid",
-                      placeItems: "center",
-                    }}
-                  >
-                    {idx + 1}
-                  </span>
-                  <span
-                    style={{
-                      width: 85,
-                      fontSize: 13,
-                      fontWeight: 500,
-                      color: "var(--merco-text)",
-                    }}
-                  >
-                    {a.nombre}
-                  </span>
                   <div
                     style={{
-                      flex: 1,
-                      height: 8,
-                      background: "var(--secondary, #F1F5F9)",
-                      borderRadius: 4,
-                      overflow: "hidden",
+                      width: 38,
+                      height: 38,
+                      borderRadius: 8,
+                      background: sys.color + "22",
+                      color: sys.color,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 20,
                     }}
                   >
-                    <div
-                      style={{
-                        width: a.pct,
-                        height: "100%",
-                        background: "var(--merco-accent, #c8a45c)",
-                        borderRadius: 4,
-                      }}
-                    />
+                    <DynamicIcon name={sys.ic} fallback="FiGrid" />
                   </div>
-                  <b
+                  <div style={{ flex: 1 }}>
+                    <b style={{ color: "var(--merco-text)", fontSize: 14 }}>
+                      {sys.nombre}
+                    </b>
+                    <small
+                      style={{
+                        display: "block",
+                        color: "var(--merco-muted)",
+                        fontSize: 11,
+                      }}
+                    >
+                      {sys.desc}
+                    </small>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    borderTop: "1px dashed var(--merco-border)",
+                    paddingTop: 10,
+                    marginTop: 8,
+                  }}
+                >
+                  <div
                     style={{
-                      fontSize: 13,
-                      color: "var(--merco-text)",
-                      minWidth: 16,
-                      textAlign: "right",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 6,
                     }}
                   >
-                    {a.count}
-                  </b>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        color: "var(--merco-muted)",
+                      }}
+                    >
+                      OPCIONES ({sys.opciones?.length || 0})
+                    </span>
+                    <button
+                      className="btn btn-ghost"
+                      style={{ padding: "0 6px", fontSize: 11 }}
+                      onClick={() =>
+                        setModal({ sistema: sys, data: null })
+                      }
+                    >
+                      + Añadir Ruta
+                    </button>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 4,
+                    }}
+                  >
+                    {sys.opciones && sys.opciones.length > 0 ? (
+                      sys.opciones.map((opc) => (
+                        <div
+                          key={opc.id}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            background:
+                              "var(--merco-bg-subtle, rgba(255, 255, 255, 0.03))",
+                            padding: "4px 8px",
+                            borderRadius: 4,
+                            fontSize: 12,
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 6,
+                            }}
+                          >
+                            <DynamicIcon name={opc.ic} fallback="FiFolder" />
+                            <span style={{ color: "var(--merco-text)" }}>
+                              {opc.opcion}
+                            </span>
+                          </div>
+                          <code
+                            style={{
+                              fontSize: 10,
+                              color: "var(--merco-muted)",
+                            }}
+                          >
+                            {opc.ruta_opcion}
+                          </code>
+                        </div>
+                      ))
+                    ) : (
+                      <span
+                        style={{
+                          fontSize: 11,
+                          color: "var(--merco-muted)",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        Sin rutas asignadas
+                      </span>
+                    )}
+                  </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* MODAL PARA AGREGAR OPCIÓN / RUTA RÁPIDA */}
+      {modal && (
+        <ModalOpcionRapida
+          sistema={modal.sistema}
+          onSave={(opc) => guardarOpcionSistema(modal.sistema.id, opc)}
+          onClose={() => setModal(null)}
+        />
+      )}
     </SystemLayout>
   );
 }
@@ -574,7 +811,7 @@ function KPICard({ icon, val, label, trend, trendColor, iconColor }) {
           style={{
             fontSize: 11,
             fontWeight: 600,
-            color: trendColor,
+            color: trendColor || "var(--merco-muted)",
             marginTop: 6,
           }}
         >
@@ -585,9 +822,12 @@ function KPICard({ icon, val, label, trend, trendColor, iconColor }) {
   );
 }
 
-/* ====== COMPONENTES DE CHART.JS ADAPTADOS AL MODO OSCURO GLOBAL ====== */
-function ChartLineEvol({ isDark }) {
+/* ====== COMPONENTES DE GRÁFICOS (CHART.JS) ====== */
+
+/* 1. Bar Chart: Usuarios por Sistema */
+function ChartBarSistemas({ isDark, sistemas, usuarios }) {
   const canvasRef = useRef(null);
+
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
     const textColor = isDark ? "#94A3B8" : "#64748B";
@@ -595,47 +835,43 @@ function ChartLineEvol({ isDark }) {
       ? "rgba(255, 255, 255, 0.08)"
       : "rgba(0, 0, 0, 0.05)";
 
+    // Conteo de usuarios con rol en cada sistema
+    const labels = sistemas.map((s) => s.nombre);
+    const data = sistemas.map((sys) => {
+      return usuarios.filter((u) => !!u.accesos[sys.id]).length;
+    });
+    const colors = sistemas.map((s) => s.color);
+
     const chart = new Chart(ctx, {
-      type: "line",
+      type: "bar",
       data: {
-        labels: ["vie", "sáb", "dom", "lun", "mar", "mié", "jue"],
+        labels: labels,
         datasets: [
           {
-            label: "Casos recibidos",
-            data: [0, 0, 1, 1, 3, 3, 6],
-            borderColor: isDark ? "#38bdf8" : "#0B1B32",
-            backgroundColor: isDark
-              ? "rgba(56, 189, 248, 0.15)"
-              : "rgba(11, 27, 50, 0.12)",
-            fill: true,
-            tension: 0.4,
-            pointRadius: 3,
-          },
-          {
-            label: "Resueltos",
-            data: [0, 0, 0, 0, 3, 0, 0],
-            borderColor: "#c8a45c",
-            backgroundColor: "rgba(200, 164, 92, 0.15)",
-            fill: true,
-            tension: 0.4,
-            pointRadius: 3,
+            label: "Usuarios con Acceso",
+            data: data,
+            backgroundColor: colors,
+            borderRadius: 4,
           },
         ],
       },
       options: {
+        indexAxis: "y",
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: { ticks: { color: textColor }, grid: { color: gridColor } },
-          y: { ticks: { color: textColor }, grid: { color: gridColor } },
+          x: {
+            ticks: { color: textColor, precision: 0 },
+            grid: { color: gridColor },
+          },
+          y: { ticks: { color: textColor }, grid: { display: false } },
         },
-        plugins: {
-          legend: { position: "bottom", labels: { color: textColor } },
-        },
+        plugins: { legend: { display: false } },
       },
     });
+
     return () => chart.destroy();
-  }, [isDark]);
+  }, [isDark, sistemas, usuarios]);
 
   return (
     <div style={{ height: 210 }}>
@@ -644,20 +880,42 @@ function ChartLineEvol({ isDark }) {
   );
 }
 
-function ChartDoughnutEstado({ isDark }) {
+/* 2. Doughnut Chart: Distribución de Roles */
+function ChartDoughnutRoles({ isDark, usuarios }) {
   const canvasRef = useRef(null);
+
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
     const textColor = isDark ? "#94A3B8" : "#64748B";
 
+    // Contar concurrencia de cada nombre de rol asignado
+    const conteoRoles = {};
+    usuarios.forEach((u) => {
+      Object.values(u.accesos).forEach((rolNombre) => {
+        conteoRoles[rolNombre] = (conteoRoles[rolNombre] || 0) + 1;
+      });
+    });
+
+    const labels = Object.keys(conteoRoles);
+    const data = Object.values(conteoRoles);
+
     const chart = new Chart(ctx, {
       type: "doughnut",
       data: {
-        labels: ["Pendiente", "En Proceso", "Resuelto", "Escalado"],
+        labels: labels.length ? labels : ["Sin asignación"],
         datasets: [
           {
-            data: [2, 3, 8, 1],
-            backgroundColor: ["#2f6fed", "#d8992a", "#1f9d63", "#d1435b"],
+            data: data.length ? data : [1],
+            backgroundColor: [
+              "#0b2545",
+              "#2f6fed",
+              "#123a63",
+              "#1f9d63",
+              "#0f7a4c",
+              "#d8992a",
+              "#8155d8",
+              "#69748c",
+            ],
             borderColor: isDark ? "#08192f" : "#FFFFFF",
             borderWidth: 2,
           },
@@ -667,12 +925,13 @@ function ChartDoughnutEstado({ isDark }) {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: "bottom", labels: { color: textColor } },
+          legend: { position: "bottom", labels: { color: textColor, boxWidth: 12 } },
         },
       },
     });
+
     return () => chart.destroy();
-  }, [isDark]);
+  }, [isDark, usuarios]);
 
   return (
     <div style={{ height: 210 }}>
@@ -681,51 +940,68 @@ function ChartDoughnutEstado({ isDark }) {
   );
 }
 
-function ChartBarCanal({ isDark }) {
-  const canvasRef = useRef(null);
-  useEffect(() => {
-    const ctx = canvasRef.current.getContext("2d");
-    const textColor = isDark ? "#94A3B8" : "#64748B";
-    const gridColor = isDark
-      ? "rgba(255, 255, 255, 0.08)"
-      : "rgba(0, 0, 0, 0.05)";
-
-    const chart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: [
-          "Wasapi",
-          "Tickets",
-          "Presencial",
-          "Telefónico",
-          "Correo electrónico",
-          "Telegram",
-          "Instagram",
-        ],
-        datasets: [
-          {
-            data: [3, 3, 2, 2, 2, 1, 1],
-            backgroundColor: "#c8a45c",
-            borderRadius: 4,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: { ticks: { color: textColor }, grid: { display: false } },
-          y: { ticks: { color: textColor }, grid: { color: gridColor } },
-        },
-        plugins: { legend: { display: false } },
-      },
-    });
-    return () => chart.destroy();
-  }, [isDark]);
+/* ====== MODAL RÁPIDO PARA CREAR OPCIÓN / RUTA ====== */
+function ModalOpcionRapida({ sistema, onSave, onClose }) {
+  const [opcion, setOpcion] = useState("");
+  const [ruta, setRuta] = useState("");
+  const [ic, setIc] = useState("FiGrid");
 
   return (
-    <div style={{ height: 210 }}>
-      <canvas ref={canvasRef} />
+    <div className="ma-overlay" onClick={onClose}>
+      <div className="ma-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="ma-modal-head">
+          <h3>Nueva Ruta para {sistema?.nombre}</h3>
+          <button className="btn-icon" onClick={onClose}>
+            ✕
+          </button>
+        </div>
+        <div className="ma-modal-body">
+          <div className="field">
+            <label>Nombre de la Opción</label>
+            <input
+              value={opcion}
+              onChange={(e) => setOpcion(e.target.value)}
+              placeholder="ej. Reporte de Accesos"
+            />
+          </div>
+          <div className="field">
+            <label>Ruta (URL)</label>
+            <input
+              value={ruta}
+              onChange={(e) => setRuta(e.target.value)}
+              placeholder="ej. /admin/reportes-accesos"
+            />
+          </div>
+          <div className="field">
+            <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              Seleccionar Ícono:
+              <span style={{ fontSize: 18, display: "inline-flex" }}>
+                <DynamicIcon name={ic} />
+              </span>
+            </label>
+            <IconPicker value={ic} onChange={setIc} />
+          </div>
+        </div>
+        <div className="ma-modal-foot">
+          <button className="btn btn-ghost" onClick={onClose}>
+            Cancelar
+          </button>
+          <button
+            className="btn btn-primary"
+            disabled={!opcion || !ruta}
+            onClick={() =>
+              onSave({
+                opcion,
+                ruta_opcion: ruta,
+                ic,
+                tiene_permiso: true,
+              })
+            }
+          >
+            Guardar Ruta
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
