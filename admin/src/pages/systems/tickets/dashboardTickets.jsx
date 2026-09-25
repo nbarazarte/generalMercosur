@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
 
+/* IMPORTAMOS EL COMPONENTE DINÁMICO DE ÍCONOS */
+import { DynamicIcon } from "../../components/IconCatalog";
+
 /* ====== CONSTANTES ====== */
 const CASOS_RECIENTES = [
   {
@@ -120,7 +123,7 @@ function useIsDarkMode() {
       setIsDark(
         document.documentElement.classList.contains("dark") ||
           document.body.classList.contains("dark") ||
-          document.documentElement.getAttribute("data-theme") === "dark",
+          document.documentElement.getAttribute("data-theme") === "dark"
       );
     };
 
@@ -152,23 +155,23 @@ export default function DashboardTickets() {
           padding: "10px 0",
         }}
       >
-        {/* 1. TARJETAS DE MÉTRICAS (KPIs - Usa la clase global .ma-stat) */}
+        {/* 1. TARJETAS DE MÉTRICAS (KPIs) - Con íconos de Feather */}
         <div
           className="ma-stats"
           style={{ gridTemplateColumns: "repeat(5, 1fr)" }}
         >
           <KPICard
-            icon="📂"
+            icon="FiFolder"
             val="14"
             label="Total de casos"
             trend="▲ activos en el periodo"
             trendColor="var(--merco-success, #16a34a)"
           />
-          <KPICard icon="🕒" val="9" label="Casos abiertos" />
-          <KPICard icon="🔔" val="6" label="En seguimiento" />
-          <KPICard icon="✅" val="5" label="Resueltos" />
+          <KPICard icon="FiClock" val="9" label="Casos abiertos" />
+          <KPICard icon="FiBell" val="6" label="En seguimiento" />
+          <KPICard icon="FiCheckCircle" val="5" label="Resueltos" />
           <KPICard
-            icon="⚠️"
+            icon="FiAlertTriangle"
             val="4"
             label="Vencidos (SLA)"
             trend="▼ requieren atención"
@@ -386,7 +389,7 @@ export default function DashboardTickets() {
                       fontSize: 16,
                     }}
                   >
-                    ⚠️
+                    <DynamicIcon name="FiAlertTriangle" fallback="FiAlertTriangle" />
                   </div>
                   <div style={{ flex: 1 }}>
                     <b
@@ -552,9 +555,14 @@ function KPICard({ icon, val, label, trend, trendColor, iconColor }) {
         }}
       >
         <span
-          style={{ fontSize: 18, color: iconColor || "var(--merco-muted)" }}
+          style={{
+            fontSize: 20,
+            color: iconColor || "var(--merco-muted)",
+            display: "inline-flex",
+            alignItems: "center",
+          }}
         >
-          {icon}
+          <DynamicIcon name={icon} fallback="FiActivity" />
         </span>
       </div>
       <div className="val">{val}</div>
