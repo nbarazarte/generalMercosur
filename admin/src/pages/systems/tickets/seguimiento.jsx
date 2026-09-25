@@ -237,6 +237,22 @@ export default function Seguimiento() {
           padding: "10px 0",
         }}
       >
+        {/* ENCABEZADO */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 20,
+          }}
+        >
+          <div>
+            <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
+              Seguimiento
+            </h2>
+          </div>
+        </div>
+
         {/* 1. TARJETAS KPI DE SEGUIMIENTO CON DYNAMICICON */}
         <div
           className="ma-stats"

@@ -78,7 +78,7 @@ export default function Sistemas() {
 
   const totalOpciones = useMemo(
     () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),
-    [sistemas]
+    [sistemas],
   );
 
   const guardarSistema = (data) => {
@@ -107,7 +107,7 @@ export default function Sistemas() {
         let nuevasOpciones;
         if (existe) {
           nuevasOpciones = opcionesActuales.map((o) =>
-            o.id === opcionData.id ? { ...o, ...opcionData } : o
+            o.id === opcionData.id ? { ...o, ...opcionData } : o,
           );
         } else {
           nuevasOpciones = [
@@ -117,7 +117,7 @@ export default function Sistemas() {
         }
 
         return { ...s, opciones: nuevasOpciones };
-      })
+      }),
     );
     setModal(null);
   };
@@ -130,12 +130,28 @@ export default function Sistemas() {
           ...s,
           opciones: s.opciones.filter((o) => o.id !== opcionId),
         };
-      })
+      }),
     );
   };
 
   return (
     <SystemLayout identificacion="Administración General">
+      {/* ENCABEZADO */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 20,
+        }}
+      >
+        <div>
+          <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
+            Sistemas
+          </h2>
+        </div>
+      </div>
+
       <div className="ma-stats">
         <div className="ma-stat">
           <div className="lbl">Sistemas Registrados</div>
@@ -299,7 +315,7 @@ export default function Sistemas() {
                           onClick={() => {
                             if (
                               window.confirm(
-                                `¿Seguro que deseas quitar la opción "${opc.opcion}" de ${sys.nombre}?`
+                                `¿Seguro que deseas quitar la opción "${opc.opcion}" de ${sys.nombre}?`,
                               )
                             ) {
                               eliminarOpcionSistema(sys.id, opc.id);
@@ -335,7 +351,7 @@ export default function Sistemas() {
           onDelete={(id) => {
             if (
               window.confirm(
-                "¿Seguro que deseas eliminar este sistema completo y todas sus opciones?"
+                "¿Seguro que deseas eliminar este sistema completo y todas sus opciones?",
               )
             ) {
               eliminarSistema(id);

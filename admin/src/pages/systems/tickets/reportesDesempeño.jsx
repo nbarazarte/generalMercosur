@@ -280,7 +280,7 @@ export default function ReportesDesempeno() {
           padding: "10px 0",
         }}
       >
-        {/* ENCABEZADO Y SELECTOR DE RANGO ESTILIZADO */}
+        {/* ENCABEZADO */}
         <div
           style={{
             display: "flex",
@@ -291,17 +291,8 @@ export default function ReportesDesempeno() {
         >
           <div>
             <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
-              Reportes &amp; Desempeño
+              Reportes Desempeño
             </h2>
-            <p
-              style={{
-                fontSize: 13,
-                color: "var(--merco-muted)",
-                margin: "2px 0 0 0",
-              }}
-            >
-              Indicadores globales de rendimiento y métricas de atención
-            </p>
           </div>
 
           {/* GRUPO DE BOTONES CON ESTILOS DE FILTRO */}

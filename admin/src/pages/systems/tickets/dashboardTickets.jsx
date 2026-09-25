@@ -123,7 +123,7 @@ function useIsDarkMode() {
       setIsDark(
         document.documentElement.classList.contains("dark") ||
           document.body.classList.contains("dark") ||
-          document.documentElement.getAttribute("data-theme") === "dark"
+          document.documentElement.getAttribute("data-theme") === "dark",
       );
     };
 
@@ -155,6 +155,22 @@ export default function DashboardTickets() {
           padding: "10px 0",
         }}
       >
+        {/* ENCABEZADO */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 20,
+          }}
+        >
+          <div>
+            <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
+              Dashboard
+            </h2>
+          </div>
+        </div>
+
         {/* 1. TARJETAS DE MÉTRICAS (KPIs) - Con íconos de Feather */}
         <div
           className="ma-stats"
@@ -389,7 +405,10 @@ export default function DashboardTickets() {
                       fontSize: 16,
                     }}
                   >
-                    <DynamicIcon name="FiAlertTriangle" fallback="FiAlertTriangle" />
+                    <DynamicIcon
+                      name="FiAlertTriangle"
+                      fallback="FiAlertTriangle"
+                    />
                   </div>
                   <div style={{ flex: 1 }}>
                     <b

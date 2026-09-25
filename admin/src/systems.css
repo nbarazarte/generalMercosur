@@ -1011,10 +1011,39 @@
   gap: 1.5rem;
   width: 100%;
 }
-
 /* ==========================================================================
-   PANTALLA DE CARGA DEL SISTEMA (SYSTEM LOADER)
+   PANTALLA DE CARGA DEL SISTEMA (SYSTEM LOADER) - MODO CLARO Y OSCURO
    ========================================================================== */
+
+/* Variables dinámicas para el loader */
+:root {
+  /* Modo Claro por defecto */
+  --loader-bg: var(--background, #f8fafc);
+  --loader-card-bg: rgba(255, 255, 255, 0.85);
+  --loader-card-border: var(--merco-border, rgba(0, 0, 0, 0.08));
+  --loader-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+  --loader-core-bg: rgba(47, 111, 237, 0.08);
+  --loader-title-color: var(--merco-text, #0f172a);
+  --loader-subtitle-color: var(--merco-muted, #64748b);
+  --loader-track-bg: rgba(0, 0, 0, 0.08);
+  --loader-info-color: #64748b;
+  --loader-glow-opacity: 0.12;
+}
+
+html.dark {
+  /* Modo Oscuro activo */
+  --loader-bg: var(--background, #0b0f19);
+  --loader-card-bg: rgba(17, 24, 39, 0.75);
+  --loader-card-border: rgba(255, 255, 255, 0.08);
+  --loader-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  --loader-core-bg: rgba(255, 255, 255, 0.03);
+  --loader-title-color: #ffffff;
+  --loader-subtitle-color: #9ca3af;
+  --loader-track-bg: rgba(255, 255, 255, 0.08);
+  --loader-info-color: #9ca3af;
+  --loader-glow-opacity: 0.25;
+}
+
 .system-loader-screen {
   position: fixed;
   inset: 0;
@@ -1022,7 +1051,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #0b0f19;
+  background-color: var(--loader-bg);
   overflow: hidden;
   font-family:
     system-ui,
@@ -1031,6 +1060,7 @@
     "Segoe UI",
     Roboto,
     sans-serif;
+  transition: background-color 0.3s ease;
 }
 
 /* Luces ambientales de fondo */
@@ -1040,23 +1070,28 @@
   height: 350px;
   border-radius: 50%;
   filter: blur(120px);
-  opacity: 0.25;
+  opacity: var(--loader-glow-opacity);
   pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
 .glow-1 {
   top: 15%;
   left: 20%;
-  background: radial-gradient(circle, #2f6fed, transparent);
+  background: radial-gradient(circle, var(--merco-blue, #2f6fed), transparent);
 }
 
 .glow-2 {
   bottom: 15%;
   right: 20%;
-  background: radial-gradient(circle, #1f9d63, transparent);
+  background: radial-gradient(
+    circle,
+    var(--merco-success, #1f9d63),
+    transparent
+  );
 }
 
-/* Tarjeta principal con efecto Glassmorphism */
+/* Tarjeta principal con efecto Glassmorphism adaptable */
 .loader-card {
   position: relative;
   width: 100%;
@@ -1067,12 +1102,16 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background: rgba(17, 24, 39, 0.7);
+  background: var(--loader-card-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--loader-card-border);
   border-radius: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--loader-card-shadow);
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 /* Spinner / Anillo orbital */
@@ -1091,7 +1130,7 @@
   inset: 0;
   border-radius: 50%;
   border: 2px solid transparent;
-  border-top-color: #2f6fed;
+  border-top-color: var(--merco-blue, #2f6fed);
   border-right-color: rgba(47, 111, 237, 0.3);
   animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
@@ -1100,7 +1139,7 @@
   inset: 6px;
   border-top-color: transparent;
   border-right-color: transparent;
-  border-bottom-color: #1f9d63;
+  border-bottom-color: var(--merco-success, #1f9d63);
   border-left-color: rgba(31, 157, 99, 0.3);
   animation: spin-reverse 1.5s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
@@ -1111,11 +1150,12 @@
   justify-content: center;
   width: 52px;
   height: 52px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--loader-core-bg);
   border-radius: 50%;
-  color: #38bdf8;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+  color: var(--merco-blue, #2f6fed);
+  box-shadow: 0 0 20px rgba(47, 111, 237, 0.2);
   animation: pulse-icon 2s infinite ease-in-out;
+  transition: background-color 0.3s ease;
 }
 
 /* Textos */
@@ -1130,9 +1170,9 @@
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.1);
-  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: var(--merco-blue, #2f6fed);
+  background: rgba(47, 111, 237, 0.1);
+  border: 1px solid rgba(47, 111, 237, 0.2);
   border-radius: 20px;
   margin-bottom: 12px;
 }
@@ -1141,15 +1181,17 @@
   margin: 0 0 8px 0;
   font-size: 20px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--loader-title-color);
   letter-spacing: -0.02em;
+  transition: color 0.3s ease;
 }
 
 .loader-subtitle {
   margin: 0;
   font-size: 13px;
-  color: #9ca3af;
+  color: var(--loader-subtitle-color);
   line-height: 1.5;
+  transition: color 0.3s ease;
 }
 
 /* Barra de progreso */
@@ -1160,25 +1202,28 @@
 .loader-progress-bar {
   width: 100%;
   height: 6px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--loader-track-bg);
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 8px;
+  transition: background-color 0.3s ease;
 }
 
-.loader-progress-fill {
+.loader-progress-fill-animated {
   height: 100%;
   background: linear-gradient(90deg, #2f6fed, #38bdf8, #1f9d63);
   border-radius: 10px;
-  transition: width 0.08s ease-out;
+  width: 0%;
+  animation: fillProgress 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .loader-progress-info {
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-  color: #6b7280;
+  color: var(--loader-info-color);
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 /* Animaciones Keyframes */
@@ -1209,16 +1254,8 @@
   50% {
     transform: scale(1.08);
     opacity: 1;
-    box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 25px rgba(47, 111, 237, 0.35);
   }
-}
-
-.loader-progress-fill-animated {
-  height: 100%;
-  background: linear-gradient(90deg, #2f6fed, #38bdf8, #1f9d63);
-  border-radius: 10px;
-  width: 0%;
-  animation: fillProgress 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes fillProgress {

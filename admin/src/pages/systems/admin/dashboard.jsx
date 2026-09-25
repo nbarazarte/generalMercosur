@@ -14,9 +14,24 @@ const INITIAL_SISTEMAS = [
     color: "#2f6fed",
     desc: "Configuración del sistema central",
     opciones: [
-      { id: "opt-1", opcion: "Parámetros Generales", ruta_opcion: "/admin/config", ic: "FiSliders" },
-      { id: "opt-2", opcion: "Auditoría de Logs", ruta_opcion: "/admin/logs", ic: "FiActivity" },
-      { id: "opt-3", opcion: "Mantenimiento", ruta_opcion: "/admin/mantenimiento", ic: "FiTool" },
+      {
+        id: "opt-1",
+        opcion: "Parámetros Generales",
+        ruta_opcion: "/admin/config",
+        ic: "FiSliders",
+      },
+      {
+        id: "opt-2",
+        opcion: "Auditoría de Logs",
+        ruta_opcion: "/admin/logs",
+        ic: "FiActivity",
+      },
+      {
+        id: "opt-3",
+        opcion: "Mantenimiento",
+        ruta_opcion: "/admin/mantenimiento",
+        ic: "FiTool",
+      },
     ],
   },
   {
@@ -26,8 +41,18 @@ const INITIAL_SISTEMAS = [
     color: "#1f9d63",
     desc: "Ficha de empleado y licencias",
     opciones: [
-      { id: "opt-4", opcion: "Fichas de Empleados", ruta_opcion: "/rrhh/empleados", ic: "FiFolder" },
-      { id: "opt-5", opcion: "Solicitudes de Licencia", ruta_opcion: "/rrhh/licencias", ic: "FiCalendar" },
+      {
+        id: "opt-4",
+        opcion: "Fichas de Empleados",
+        ruta_opcion: "/rrhh/empleados",
+        ic: "FiFolder",
+      },
+      {
+        id: "opt-5",
+        opcion: "Solicitudes de Licencia",
+        ruta_opcion: "/rrhh/licencias",
+        ic: "FiCalendar",
+      },
     ],
   },
   {
@@ -37,8 +62,18 @@ const INITIAL_SISTEMAS = [
     color: "#d8992a",
     desc: "Centraliza tus tickets e incidencias",
     opciones: [
-      { id: "opt-6", opcion: "Mesa de Ayuda", ruta_opcion: "/tickets/mesa", ic: "FiHelpCircle" },
-      { id: "opt-7", opcion: "Mis Tickets", ruta_opcion: "/tickets/mis-tickets", ic: "FiCheckSquare" },
+      {
+        id: "opt-6",
+        opcion: "Mesa de Ayuda",
+        ruta_opcion: "/tickets/mesa",
+        ic: "FiHelpCircle",
+      },
+      {
+        id: "opt-7",
+        opcion: "Mis Tickets",
+        ruta_opcion: "/tickets/mis-tickets",
+        ic: "FiCheckSquare",
+      },
     ],
   },
   {
@@ -48,8 +83,18 @@ const INITIAL_SISTEMAS = [
     color: "#8155d8",
     desc: "Información y documentación",
     opciones: [
-      { id: "opt-8", opcion: "Artículos", ruta_opcion: "/kb/articulos", ic: "FiFileText" },
-      { id: "opt-9", opcion: "Categorías", ruta_opcion: "/kb/categorias", ic: "FiLayers" },
+      {
+        id: "opt-8",
+        opcion: "Artículos",
+        ruta_opcion: "/kb/articulos",
+        ic: "FiFileText",
+      },
+      {
+        id: "opt-9",
+        opcion: "Categorías",
+        ruta_opcion: "/kb/categorias",
+        ic: "FiLayers",
+      },
     ],
   },
 ];
@@ -74,7 +119,12 @@ const INITIAL_USUARIOS = [
     email: "m.gonzalez@mercosur.com.py",
     estado: "active",
     ultimo: "Hoy, 09:14",
-    accesos: { adminmep: "Administrador", rrhh: "Supervisor", tickets: "Supervisor", kb: "Administrador" },
+    accesos: {
+      adminmep: "Administrador",
+      rrhh: "Supervisor",
+      tickets: "Supervisor",
+      kb: "Administrador",
+    },
   },
   {
     id: 2,
@@ -166,7 +216,7 @@ function useIsDarkMode() {
       setIsDark(
         document.documentElement.classList.contains("dark") ||
           document.body.classList.contains("dark") ||
-          document.documentElement.getAttribute("data-theme") === "dark"
+          document.documentElement.getAttribute("data-theme") === "dark",
       );
     };
 
@@ -197,17 +247,17 @@ export default function DashboardSistemasUsuarios() {
   // Cálculos dinámicos
   const totalOpciones = useMemo(
     () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),
-    [sistemas]
+    [sistemas],
   );
 
   const totalUsuariosActivos = useMemo(
     () => usuarios.filter((u) => u.estado === "active").length,
-    [usuarios]
+    [usuarios],
   );
 
   const totalUsuariosPendientes = useMemo(
     () => usuarios.filter((u) => u.estado === "pending").length,
-    [usuarios]
+    [usuarios],
   );
 
   // Cambio dinámico de matriz
@@ -219,7 +269,7 @@ export default function DashboardSistemasUsuarios() {
         if (rol) accesos[sysId] = rol;
         else delete accesos[sysId];
         return { ...u, accesos };
-      })
+      }),
     );
   };
 
@@ -233,7 +283,7 @@ export default function DashboardSistemasUsuarios() {
         let nuevasOpciones;
         if (existe) {
           nuevasOpciones = opcionesActuales.map((o) =>
-            o.id === opcionData.id ? { ...o, ...opcionData } : o
+            o.id === opcionData.id ? { ...o, ...opcionData } : o,
           );
         } else {
           nuevasOpciones = [
@@ -243,7 +293,7 @@ export default function DashboardSistemasUsuarios() {
         }
 
         return { ...s, opciones: nuevasOpciones };
-      })
+      }),
     );
     setModal(null);
   };
@@ -256,6 +306,22 @@ export default function DashboardSistemasUsuarios() {
           padding: "10px 0",
         }}
       >
+        {/* ENCABEZADO */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 20,
+          }}
+        >
+          <div>
+            <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
+              Dashboard
+            </h2>
+          </div>
+        </div>
+
         {/* 1. TARJETAS DE MÉTRICAS GENERALES (KPIs) */}
         <div
           className="ma-stats"
@@ -292,9 +358,7 @@ export default function DashboardSistemasUsuarios() {
             val={totalUsuariosPendientes}
             label="Altas Pendientes"
             trend={
-              totalUsuariosPendientes > 0
-                ? "▼ Requieren revisión"
-                : "✔ Al día"
+              totalUsuariosPendientes > 0 ? "▼ Requieren revisión" : "✔ Al día"
             }
             trendColor={
               totalUsuariosPendientes > 0
@@ -442,26 +506,28 @@ export default function DashboardSistemasUsuarios() {
                             u.estado === "active"
                               ? "rgba(31, 157, 99, 0.15)"
                               : u.estado === "pending"
-                              ? "rgba(216, 153, 42, 0.15)"
-                              : "rgba(209, 67, 91, 0.15)",
+                                ? "rgba(216, 153, 42, 0.15)"
+                                : "rgba(209, 67, 91, 0.15)",
                           color:
                             u.estado === "active"
                               ? "#1f9d63"
                               : u.estado === "pending"
-                              ? "#d8992a"
-                              : "#d1435b",
+                                ? "#d8992a"
+                                : "#d1435b",
                         }}
                       >
                         ●{" "}
                         {u.estado === "active"
                           ? "Activo"
                           : u.estado === "pending"
-                          ? "Pendiente"
-                          : "Inactivo"}
+                            ? "Pendiente"
+                            : "Inactivo"}
                       </span>
                     </td>
                     <td style={{ padding: "10px 16px" }}>
-                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      <div
+                        style={{ display: "flex", gap: 6, flexWrap: "wrap" }}
+                      >
                         {sistemas.map((sys) => {
                           const rolActual = u.accesos[sys.id] || "";
                           return (
@@ -486,8 +552,7 @@ export default function DashboardSistemasUsuarios() {
                               }}
                             >
                               <DynamicIcon name={sys.ic} fallback="FiGrid" />
-                              <b>{sys.nombre}:</b>{" "}
-                              {rolActual || "Sin acceso"}
+                              <b>{sys.nombre}:</b> {rolActual || "Sin acceso"}
                             </span>
                           );
                         })}
@@ -540,20 +605,20 @@ export default function DashboardSistemasUsuarios() {
                         item.tipo === "danger"
                           ? "1px solid rgba(209, 67, 91, 0.4)"
                           : item.tipo === "warning"
-                          ? "1px solid rgba(216, 153, 42, 0.4)"
-                          : "1px solid rgba(47, 111, 237, 0.4)",
+                            ? "1px solid rgba(216, 153, 42, 0.4)"
+                            : "1px solid rgba(47, 111, 237, 0.4)",
                       background:
                         item.tipo === "danger"
                           ? "rgba(209, 67, 91, 0.12)"
                           : item.tipo === "warning"
-                          ? "rgba(216, 153, 42, 0.12)"
-                          : "rgba(47, 111, 237, 0.12)",
+                            ? "rgba(216, 153, 42, 0.12)"
+                            : "rgba(47, 111, 237, 0.12)",
                       color:
                         item.tipo === "danger"
                           ? "#DC2626"
                           : item.tipo === "warning"
-                          ? "#D97706"
-                          : "#2F6FED",
+                            ? "#D97706"
+                            : "#2F6FED",
                       display: "grid",
                       placeItems: "center",
                       fontSize: 16,
@@ -564,8 +629,8 @@ export default function DashboardSistemasUsuarios() {
                         item.tipo === "danger"
                           ? "FiLock"
                           : item.tipo === "warning"
-                          ? "FiAlertTriangle"
-                          : "FiInfo"
+                            ? "FiAlertTriangle"
+                            : "FiInfo"
                       }
                       fallback="FiShield"
                     />
@@ -606,7 +671,9 @@ export default function DashboardSistemasUsuarios() {
             }}
           >
             <div>
-              <h3 style={{ margin: 0, fontSize: 16, color: "var(--merco-text)" }}>
+              <h3
+                style={{ margin: 0, fontSize: 16, color: "var(--merco-text)" }}
+              >
                 Módulos de Sistemas y Opciones
               </h3>
               <small style={{ color: "var(--merco-muted)" }}>
@@ -696,9 +763,7 @@ export default function DashboardSistemasUsuarios() {
                     <button
                       className="btn btn-ghost"
                       style={{ padding: "0 6px", fontSize: 11 }}
-                      onClick={() =>
-                        setModal({ sistema: sys, data: null })
-                      }
+                      onClick={() => setModal({ sistema: sys, data: null })}
                     >
                       + Añadir Ruta
                     </button>
@@ -925,7 +990,10 @@ function ChartDoughnutRoles({ isDark, usuarios }) {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: "bottom", labels: { color: textColor, boxWidth: 12 } },
+          legend: {
+            position: "bottom",
+            labels: { color: textColor, boxWidth: 12 },
+          },
         },
       },
     });
