@@ -1,745 +1,732 @@
-import { useMemo, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
 
-const SISTEMAS = [
+/* ====== CONSTANTES ====== */
+const CASOS_RECIENTES = [
   {
-    id: "adminmep",
-    nombre: "Admin MEP",
-    ic: "⚙️",
-    color: "#2f6fed",
-    desc: "Configuración del sistema",
+    id: 1042,
+    nombre: "Daniela Suárez",
+    cedula: "25.667.001",
+    tipo: "Otros",
+    prioridad: "Media",
+    estado: "En Proceso",
+    agente: "Eleany 1",
   },
   {
-    id: "rrhh",
-    nombre: "Recursos Humanos",
-    ic: "👥",
-    color: "#1f9d63",
-    desc: "Ficha de empleado",
+    id: 1041,
+    nombre: "María Gómez",
+    cedula: "15.987.654",
+    tipo: "Generar Certificado",
+    prioridad: "Media",
+    estado: "Pendiente",
+    agente: "Maria J 2",
   },
   {
-    id: "tickets",
-    nombre: "Sistema Tickets",
-    ic: "🎧",
-    color: "#d8992a",
-    desc: "Centraliza tus tickets",
+    id: 1040,
+    nombre: "José Rodríguez",
+    cedula: "12.345.678",
+    tipo: "Firma Electrónica",
+    prioridad: "Alta",
+    estado: "En Proceso",
+    agente: "Eleany 1",
   },
   {
-    id: "kb",
-    nombre: "Base de Conocimiento",
-    ic: "📖",
-    color: "#8155d8",
-    desc: "Información para clientes",
-  },
-];
-const SYS = Object.fromEntries(SISTEMAS.map((s) => [s.id, s]));
-
-const ROLES = [
-  {
-    id: 1,
-    nombre: "Administrador",
-    desc: "Control total del sistema y su configuración.",
-    ic: "🛡️",
-    color: "#0b2545",
-    bg: "rgba(11,37,69,.1)",
-    sistemas: "all",
-    permisos: ["Ver", "Crear", "Editar", "Eliminar", "Aprobar", "Exportar"],
+    id: 1039,
+    nombre: "Carlos Pérez",
+    cedula: "18.223.114",
+    tipo: "Mercado de Valores",
+    prioridad: "Alta",
+    estado: "Pendiente",
+    agente: "Andrea 3",
   },
   {
-    id: 2,
-    nombre: "Supervisor",
-    desc: "Supervisa la operación y aprueba acciones.",
-    ic: "👓",
-    color: "#2f6fed",
-    bg: "rgba(47,111,237,.12)",
-    sistemas: "all",
-    permisos: ["Ver", "Editar", "Aprobar", "Exportar"],
+    id: 1038,
+    nombre: "Carlos Pérez",
+    cedula: "18.223.114",
+    tipo: "Mercado de Valores",
+    prioridad: "Baja",
+    estado: "En Proceso",
+    agente: "Yetsimar 10",
   },
   {
-    id: 3,
-    nombre: "Operador MEP",
-    desc: "Opera la configuración y parámetros de MEP.",
-    ic: "⚡",
-    color: "#123a63",
-    bg: "rgba(18,58,99,.12)",
-    sistemas: ["adminmep"],
-    permisos: ["Ver", "Crear", "Editar"],
-  },
-  {
-    id: 4,
-    nombre: "Gestor RR.HH.",
-    desc: "Administra fichas y datos de empleados.",
-    ic: "📁",
-    color: "#1f9d63",
-    bg: "rgba(31,157,99,.12)",
-    sistemas: ["rrhh"],
-    permisos: ["Ver", "Crear", "Editar", "Exportar"],
-  },
-  {
-    id: 5,
-    nombre: "Empleado",
-    desc: "Consulta y actualiza su propia ficha.",
-    ic: "👤",
-    color: "#0f7a4c",
-    bg: "rgba(31,157,99,.1)",
-    sistemas: ["rrhh"],
-    permisos: ["Ver", "Editar"],
-  },
-  {
-    id: 6,
-    nombre: "Agente de Soporte",
-    desc: "Atiende y resuelve tickets de soporte.",
-    ic: "🎧",
-    color: "#d8992a",
-    bg: "rgba(216,153,42,.14)",
-    sistemas: ["tickets"],
-    permisos: ["Ver", "Crear", "Editar"],
-  },
-  {
-    id: 7,
-    nombre: "Editor de Contenido",
-    desc: "Crea y edita artículos de la base de conocimiento.",
-    ic: "✍️",
-    color: "#8155d8",
-    bg: "rgba(129,85,216,.12)",
-    sistemas: ["kb"],
-    permisos: ["Ver", "Crear", "Editar"],
-  },
-  {
-    id: 8,
-    nombre: "Solo Lectura",
-    desc: "Consulta información sin poder editar.",
-    ic: "👁️",
-    color: "#69748c",
-    bg: "rgba(105,116,140,.14)",
-    sistemas: "all",
-    permisos: ["Ver"],
+    id: 1037,
+    nombre: "Gabriela Ríos",
+    cedula: "22.778.443",
+    tipo: "Akkela",
+    prioridad: "Media",
+    estado: "En Proceso",
+    agente: "Yabelis 8",
   },
 ];
 
-const rolesDeSistema = (sysId) =>
-  ROLES.filter((r) => r.sistemas === "all" || r.sistemas.includes(sysId));
-
-const AVA_COLORS = [
-  "#0b2545",
-  "#2f6fed",
-  "#1f9d63",
-  "#d8992a",
-  "#8155d8",
-  "#d1435b",
-  "#a8863f",
-];
-const avaColor = (n) => AVA_COLORS[(n?.charCodeAt(0) || 0) % AVA_COLORS.length];
-const iniciales = (n) =>
-  n
-    .split(" ")
-    .map((p) => p[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
-const ESTADOS = {
-  active: ["Activo", "badge-active"],
-  inactive: ["Inactivo", "badge-inactive"],
-  pending: ["Pendiente", "badge-pending"],
-};
-
-const USUARIOS_INIT = [
+const ALERTAS_SLA = [
   {
-    id: 1,
-    nombre: "María González",
-    email: "m.gonzalez@mercosur.com.py",
-    estado: "active",
-    ultimo: "Hoy, 09:14",
-    accesos: {
-      adminmep: "Administrador",
-      rrhh: "Supervisor",
-      tickets: "Supervisor",
-      kb: "Administrador",
-    },
+    id: 1036,
+    nombre: "Pedro Blanco",
+    tipo: "Legacy",
+    prioridad: "Alta",
+    tiempo: "hace 16h 0m",
   },
   {
-    id: 2,
-    nombre: "Carlos Benítez",
-    email: "c.benitez@mercosur.com.py",
-    estado: "active",
-    ultimo: "Hoy, 08:02",
-    accesos: { adminmep: "Operador MEP", tickets: "Agente de Soporte" },
+    id: 1040,
+    nombre: "Carlos Pérez",
+    tipo: "Mercado de Valores",
+    prioridad: "Alta",
+    tiempo: "hace 5h 0m",
   },
   {
-    id: 3,
-    nombre: "Lucía Fernández",
-    email: "l.fernandez@mercosur.com.py",
-    estado: "active",
-    ultimo: "Ayer, 17:45",
-    accesos: { rrhh: "Gestor RR.HH.", tickets: "Supervisor" },
+    id: 1042,
+    nombre: "José Rodríguez",
+    tipo: "Firma Electrónica",
+    prioridad: "Alta",
+    tiempo: "hace 2h 0m",
   },
   {
-    id: 4,
-    nombre: "Roberto Díaz",
-    email: "r.diaz@mercosur.com.py",
-    estado: "pending",
-    ultimo: "—",
-    accesos: { rrhh: "Empleado", kb: "Solo Lectura" },
-  },
-  {
-    id: 5,
-    nombre: "Ana Villalba",
-    email: "a.villalba@mercosur.com.py",
-    estado: "active",
-    ultimo: "Hoy, 10:31",
-    accesos: { kb: "Editor de Contenido", rrhh: "Empleado" },
-  },
-  {
-    id: 6,
-    nombre: "Jorge Ramírez",
-    email: "j.ramirez@mercosur.com.py",
-    estado: "inactive",
-    ultimo: "12/09/2026",
-    accesos: { adminmep: "Solo Lectura" },
+    id: 1033,
+    nombre: "María Gómez",
+    tipo: "Firma Electrónica",
+    prioridad: "Media",
+    tiempo: "hace 2h 0m",
   },
 ];
 
-/* MAPEO DE ICONOS PARA OPCIONES DEL MENÚ DINÁMICO */
-const ICONOS_OPCIONES = {
-  "Usuarios y Accesos": "👥",
-  "Roles y Permisos": "🛡️",
-  Configuración: "⚙️",
-  Auditoría: "📜",
-};
+const RANKING_AGENTES = [
+  { nombre: "Eleany 1", count: 3, pct: "100%" },
+  { nombre: "Maria J 2", count: 1, pct: "33%" },
+  { nombre: "Andrea 3", count: 1, pct: "33%" },
+  { nombre: "Ira 4", count: 1, pct: "33%" },
+  { nombre: "Moises 5", count: 1, pct: "33%" },
+  { nombre: "Vanessa 6", count: 1, pct: "33%" },
+];
 
-/* ============================ COMPONENTE PRINCIPAL ============================ */
+function initials(n) {
+  return n
+    ? n
+        .split(" ")
+        .map((w) => w[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "—";
+}
+
+/* HOOK PARA DETECTAR EL MODO OSCURO GLOBAL DESDE SYSTEMS.CSS / INDEX.CSS */
+function useIsDarkMode() {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const checkDark = () => {
+      setIsDark(
+        document.documentElement.classList.contains("dark") ||
+          document.body.classList.contains("dark") ||
+          document.documentElement.getAttribute("data-theme") === "dark",
+      );
+    };
+
+    checkDark();
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "data-theme"],
+    });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return isDark;
+}
+
 export default function Dashboard() {
-  const [tab, setTab] = useState("usuarios");
-  const [usuarios, setUsuarios] = useState(USUARIOS_INIT);
-  const [busqueda, setBusqueda] = useState("");
-  const [filtroSistema, setFiltroSistema] = useState("");
-  const [filtroEstado, setFiltroEstado] = useState("");
-  const [modal, setModal] = useState(null);
-
-  const usuariosFiltrados = useMemo(
-    () =>
-      usuarios.filter((u) => {
-        const q = busqueda.toLowerCase();
-        return (
-          (!q ||
-            u.nombre.toLowerCase().includes(q) ||
-            u.email.toLowerCase().includes(q)) &&
-          (!filtroSistema || u.accesos[filtroSistema]) &&
-          (!filtroEstado || u.estado === filtroEstado)
-        );
-      }),
-    [usuarios, busqueda, filtroSistema, filtroEstado],
-  );
-
-  const stats = useMemo(
-    () => ({
-      total: usuarios.length,
-      activos: usuarios.filter((u) => u.estado === "active").length,
-      pendientes: usuarios.filter((u) => u.estado === "pending").length,
-      sistemas: SISTEMAS.length,
-    }),
-    [usuarios],
-  );
-
-  const guardarUsuario = (data) => {
-    setUsuarios((prev) =>
-      data.id
-        ? prev.map((u) => (u.id === data.id ? data : u))
-        : [...prev, { ...data, id: Date.now(), ultimo: "—" }],
-    );
-    setModal(null);
-  };
-
-  const eliminarUsuario = (id) => {
-    setUsuarios((prev) => prev.filter((u) => u.id !== id));
-    setModal(null);
-  };
-
-  const setAccesoMatriz = (userId, sysId, rol) => {
-    setUsuarios((prev) =>
-      prev.map((u) => {
-        if (u.id !== userId) return u;
-        const accesos = { ...u.accesos };
-        if (rol) accesos[sysId] = rol;
-        else delete accesos[sysId];
-        return { ...u, accesos };
-      }),
-    );
-  };
+  const isDark = useIsDarkMode();
 
   return (
     <SystemLayout identificacion="Administración General">
-      {/* Tarjetas de Métricas / Stats */}
-      <div className="ma-stats">
-        <div className="ma-stat">
-          <div className="lbl">Total de usuarios</div>
-          <div className="val">{stats.total}</div>
-          <span className="chip chip-up">↑ activos {stats.activos}</span>
+      <div
+        style={{
+          fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
+          padding: "10px 0",
+        }}
+      >
+        {/* 1. TARJETAS DE MÉTRICAS (KPIs - Usa la clase global .ma-stat) */}
+        <div
+          className="ma-stats"
+          style={{ gridTemplateColumns: "repeat(5, 1fr)" }}
+        >
+          <KPICard
+            icon="📂"
+            val="14"
+            label="Total de casos"
+            trend="▲ activos en el periodo"
+            trendColor="var(--merco-success, #16a34a)"
+          />
+          <KPICard icon="🕒" val="9" label="Casos abiertos" />
+          <KPICard icon="🔔" val="6" label="En seguimiento" />
+          <KPICard icon="✅" val="5" label="Resueltos" />
+          <KPICard
+            icon="⚠️"
+            val="4"
+            label="Vencidos (SLA)"
+            trend="▼ requieren atención"
+            trendColor="var(--merco-danger, #dc2626)"
+            iconColor="var(--merco-danger, #dc2626)"
+          />
         </div>
-        <div className="ma-stat">
-          <div className="lbl">Roles definidos</div>
-          <div className="val">{ROLES.length}</div>
-          <span className="chip chip-flat">según sistema</span>
-        </div>
-        <div className="ma-stat">
-          <div className="lbl">Sistemas de la plataforma</div>
-          <div className="val">{stats.sistemas}</div>
-          <span className="chip chip-flat">módulos</span>
-        </div>
-        <div className="ma-stat">
-          <div className="lbl">Altas pendientes</div>
-          <div className="val">{stats.pendientes}</div>
-          <span className="chip chip-up">requieren aprobación</span>
-        </div>
-      </div>
 
-      {/* Pestañas de Navegación Interna */}
-      <div className="ma-tabs">
-        <button
-          className={"ma-tab" + (tab === "usuarios" ? " active" : "")}
-          onClick={() => setTab("usuarios")}
-        >
-          Usuarios
-        </button>
-        <button
-          className={"ma-tab" + (tab === "roles" ? " active" : "")}
-          onClick={() => setTab("roles")}
-        >
-          Roles
-        </button>
-        <button
-          className={"ma-tab" + (tab === "accesos" ? " active" : "")}
-          onClick={() => setTab("accesos")}
-        >
-          Accesos por Sistema
-        </button>
-      </div>
-
-      {/* Vistas Dinámicas según Pestaña */}
-      {tab === "usuarios" && (
-        <TabUsuarios
-          {...{
-            usuariosFiltrados,
-            filtroSistema,
-            setFiltroSistema,
-            filtroEstado,
-            setFiltroEstado,
-            setModal,
+        {/* 2. FILA 1 DE GRÁFICOS: EVOLUCIÓN Y POR ESTADO */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.6fr 1fr",
+            gap: 20,
+            marginBottom: 20,
           }}
-        />
-      )}
-      {tab === "roles" && <TabRoles setModal={setModal} />}
-      {tab === "accesos" && (
-        <TabAccesos usuarios={usuarios} setAccesoMatriz={setAccesoMatriz} />
-      )}
+        >
+          <div className="ma-card" style={{ padding: 18 }}>
+            <div style={{ marginBottom: 12 }}>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  color: "var(--merco-text)",
+                }}
+              >
+                Evolución de casos
+              </span>{" "}
+              <small style={{ color: "var(--merco-muted)" }}>
+                últimos 7 días
+              </small>
+            </div>
+            <ChartLineEvol isDark={isDark} />
+          </div>
 
-      {/* Modales */}
-      {modal?.tipo === "usuario" && (
-        <ModalUsuario
-          data={modal.data}
-          onSave={guardarUsuario}
-          onDelete={eliminarUsuario}
-          onClose={() => setModal(null)}
-        />
-      )}
-      {modal?.tipo === "rol" && (
-        <ModalRol data={modal.data} onClose={() => setModal(null)} />
-      )}
+          <div className="ma-card" style={{ padding: 18 }}>
+            <div style={{ marginBottom: 12 }}>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  color: "var(--merco-text)",
+                }}
+              >
+                Casos por estado
+              </span>
+            </div>
+            <ChartDoughnutEstado isDark={isDark} />
+          </div>
+        </div>
+
+        {/* 3. FILA 2: CASOS RECIENTES Y ALERTAS SLA */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1.6fr 1fr",
+            gap: 20,
+            marginBottom: 20,
+          }}
+        >
+          {/* TABLA DE CASOS RECIENTES */}
+          <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
+            <div
+              style={{
+                padding: "16px 20px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    color: "var(--merco-text)",
+                  }}
+                >
+                  Casos recientes
+                </span>{" "}
+                <small style={{ color: "var(--merco-muted)" }}>
+                  últimos registros
+                </small>
+              </div>
+              <button className="btn btn-ghost btn-sm">Ver todos</button>
+            </div>
+
+            <table className="ma-table">
+              <thead>
+                <tr
+                  style={
+                    {
+                      //background: "var(--merco-navy, #0B1B32)",
+                      //color: "#FFFFFF",
+                      // fontSize: 11,
+                      // letterSpacing: "0.5px",
+                    }
+                  }
+                >
+                  <th>CLIENTE</th>
+                  <th>TIPO</th>
+                  <th>PRIORIDAD</th>
+                  <th>ESTADO</th>
+                  <th>AGENTE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {CASOS_RECIENTES.map((c, i) => (
+                  <tr key={i}>
+                    <td style={{ padding: "10px 16px" }}>
+                      <div className="ma-user-cell">
+                        <div
+                          className="ma-ava"
+                          style={{ background: "var(--merco-navy, #0B1B32)" }}
+                        >
+                          {initials(c.nombre)}
+                        </div>
+                        <div>
+                          <b
+                            style={{
+                              color: "var(--merco-text)",
+                              display: "block",
+                            }}
+                          >
+                            {c.nombre}
+                          </b>
+                          <small style={{ color: "var(--merco-muted)" }}>
+                            {c.cedula}
+                          </small>
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ padding: "10px 16px" }}>
+                      <span className="tag">{c.tipo}</span>
+                    </td>
+                    <td style={{ padding: "10px 16px", fontWeight: 600 }}>
+                      <span
+                        style={{
+                          color:
+                            c.prioridad === "Alta"
+                              ? "var(--merco-danger, #DC2626)"
+                              : "var(--merco-warning, #D97706)",
+                        }}
+                      >
+                        ● {c.prioridad}
+                      </span>
+                    </td>
+                    <td style={{ padding: "10px 16px" }}>
+                      <span
+                        style={{
+                          padding: "3px 10px",
+                          borderRadius: 12,
+                          fontSize: 12,
+                          fontWeight: 500,
+                          background:
+                            c.estado === "Pendiente"
+                              ? "rgba(47, 111, 237, 0.15)"
+                              : "rgba(216, 153, 42, 0.15)",
+                          color:
+                            c.estado === "Pendiente"
+                              ? "var(--merco-blue, #2f6fed)"
+                              : "var(--merco-warning, #d8992a)",
+                        }}
+                      >
+                        ● {c.estado}
+                      </span>
+                    </td>
+                    <td
+                      style={{
+                        padding: "10px 16px",
+                        color: "var(--merco-muted)",
+                      }}
+                    >
+                      {c.agente}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* ALERTAS DE SEGUIMIENTO (SLA) */}
+          <div className="ma-card" style={{ padding: 18 }}>
+            <div
+              style={{
+                marginBottom: 16,
+                borderBottom: "1px solid var(--merco-border)",
+                paddingBottom: 10,
+              }}
+            >
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  color: "var(--merco-text)",
+                }}
+              >
+                Alertas de seguimiento
+              </span>{" "}
+              <small style={{ color: "var(--merco-muted)" }}>SLA</small>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {ALERTAS_SLA.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    paddingBottom: 10,
+                    borderBottom: "1px solid var(--merco-border)",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 8,
+                      border: "1px solid rgba(209, 67, 91, 0.4)",
+                      background: "rgba(209, 67, 91, 0.12)",
+                      color: "var(--merco-danger, #DC2626)",
+                      display: "grid",
+                      placeItems: "center",
+                      fontSize: 16,
+                    }}
+                  >
+                    ⚠️
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <b
+                      style={{
+                        fontSize: 13,
+                        color: "var(--merco-text)",
+                        display: "block",
+                      }}
+                    >
+                      #{item.id} · {item.nombre}
+                    </b>
+                    <small style={{ color: "var(--merco-muted)" }}>
+                      {item.tipo} ·{" "}
+                      <span
+                        style={{
+                          color:
+                            item.prioridad === "Alta"
+                              ? "var(--merco-danger, #DC2626)"
+                              : "var(--merco-warning, #D97706)",
+                        }}
+                      >
+                        ● {item.prioridad}
+                      </span>
+                    </small>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        fontWeight: "bold",
+                        color: "var(--merco-danger, #DC2626)",
+                        display: "block",
+                      }}
+                    >
+                      Vencido
+                    </span>
+                    <small style={{ color: "var(--merco-muted)" }}>
+                      {item.tiempo}
+                    </small>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 4. FILA 3: CANAL Y RANKING DE AGENTES */}
+        <div
+          style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 20 }}
+        >
+          <div className="ma-card" style={{ padding: 18 }}>
+            <div style={{ marginBottom: 16 }}>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  color: "var(--merco-text)",
+                }}
+              >
+                Distribución por canal
+              </span>
+            </div>
+            <ChartBarCanal isDark={isDark} />
+          </div>
+
+          <div className="ma-card" style={{ padding: 18 }}>
+            <div style={{ marginBottom: 16 }}>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  color: "var(--merco-text)",
+                }}
+              >
+                Ranking de agentes
+              </span>{" "}
+              <small style={{ color: "var(--merco-muted)" }}>
+                por atenciones
+              </small>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {RANKING_AGENTES.map((a, idx) => (
+                <div
+                  key={a.nombre}
+                  style={{ display: "flex", alignItems: "center", gap: 12 }}
+                >
+                  <span
+                    style={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: 6,
+                      background:
+                        idx === 0
+                          ? "var(--merco-accent, #c8a45c)"
+                          : "var(--secondary, #F1F5F9)",
+                      color: idx === 0 ? "#0b2545" : "var(--merco-muted)",
+                      fontSize: 12,
+                      fontWeight: "bold",
+                      display: "grid",
+                      placeItems: "center",
+                    }}
+                  >
+                    {idx + 1}
+                  </span>
+                  <span
+                    style={{
+                      width: 85,
+                      fontSize: 13,
+                      fontWeight: 500,
+                      color: "var(--merco-text)",
+                    }}
+                  >
+                    {a.nombre}
+                  </span>
+                  <div
+                    style={{
+                      flex: 1,
+                      height: 8,
+                      background: "var(--secondary, #F1F5F9)",
+                      borderRadius: 4,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: a.pct,
+                        height: "100%",
+                        background: "var(--merco-accent, #c8a45c)",
+                        borderRadius: 4,
+                      }}
+                    />
+                  </div>
+                  <b
+                    style={{
+                      fontSize: 13,
+                      color: "var(--merco-text)",
+                      minWidth: 16,
+                      textAlign: "right",
+                    }}
+                  >
+                    {a.count}
+                  </b>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </SystemLayout>
   );
 }
 
-/* ==================== SUB-COMPONENTES Y VISTAS ==================== */
-function AccesosChips({ accesos }) {
-  const ids = Object.keys(accesos);
-  if (!ids.length) return <span className="access-chip none">Sin accesos</span>;
-  return ids.map((sid) => {
-    const s = SYS[sid];
-    return (
-      <span className="access-chip" key={sid}>
-        <span className="ci" style={{ background: s.color }}>
-          {s.ic}
-        </span>
-        {s.nombre} · <span className="role">{accesos[sid]}</span>
-      </span>
-    );
-  });
-}
-
-function TabUsuarios({
-  usuariosFiltrados,
-  filtroSistema,
-  setFiltroSistema,
-  filtroEstado,
-  setFiltroEstado,
-  setModal,
-}) {
+/* ====== COMPONENTE TARJETA KPI ====== */
+function KPICard({ icon, val, label, trend, trendColor, iconColor }) {
   return (
-    <>
-      <div className="ma-toolbar">
-        <div className="ma-filters">
-          <select
-            value={filtroSistema}
-            onChange={(e) => setFiltroSistema(e.target.value)}
-          >
-            <option value="">Todos los sistemas</option>
-            {SISTEMAS.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.nombre}
-              </option>
-            ))}
-          </select>
-          <select
-            value={filtroEstado}
-            onChange={(e) => setFiltroEstado(e.target.value)}
-          >
-            <option value="">Todos los estados</option>
-            <option value="active">Activo</option>
-            <option value="inactive">Inactivo</option>
-            <option value="pending">Pendiente</option>
-          </select>
-        </div>
-        <button
-          className="btn btn-accent"
-          onClick={() => setModal({ tipo: "usuario", data: null })}
-        >
-          {" "}
-          <span>➕</span> Nuevo usuario{" "}
-        </button>
-      </div>
-
-      <div className="ma-card">
-        <table className="ma-table">
-          <thead>
-            <tr>
-              <th>Usuario</th>
-              <th>Accesos y rol por sistema</th>
-              <th>Estado</th>
-              <th>Último acceso</th>
-              <th style={{ textAlign: "right" }}>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuariosFiltrados.map((u) => (
-              <tr key={u.id}>
-                <td>
-                  <div className="ma-user-cell">
-                    <div
-                      className="ma-ava"
-                      style={{ background: avaColor(u.nombre) }}
-                    >
-                      {iniciales(u.nombre)}
-                    </div>
-                    <div>
-                      <b>{u.nombre}</b>
-                      <small>{u.email}</small>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <AccesosChips accesos={u.accesos} />
-                </td>
-                <td>
-                  <span className={"badge " + ESTADOS[u.estado][1]}>
-                    {ESTADOS[u.estado][0]}
-                  </span>
-                </td>
-                <td style={{ color: "var(--merco-muted)", fontSize: 13 }}>
-                  {u.ultimo}
-                </td>
-                <td>
-                  <div className="ma-actions">
-                    <button
-                      className="btn-icon"
-                      title="Editar"
-                      onClick={() => setModal({ tipo: "usuario", data: u })}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="btn-icon danger"
-                      title="Eliminar"
-                      onClick={() => setModal({ tipo: "usuario", data: u })}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {usuariosFiltrados.length === 0 && (
-              <tr>
-                <td
-                  colSpan={5}
-                  style={{
-                    textAlign: "center",
-                    padding: 40,
-                    color: "var(--merco-muted)",
-                  }}
-                >
-                  No se encontraron usuarios con los filtros aplicados.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </>
-  );
-}
-
-function TabRoles({ setModal }) {
-  return (
-    <>
-      <div className="ma-toolbar">
-        <div style={{ color: "var(--merco-muted)", fontSize: 14 }}>
-          Perfiles de permisos. Cada rol aplica a uno o varios sistemas.
-        </div>
-        <button
-          className="btn btn-accent"
-          onClick={() => setModal({ tipo: "rol", data: null })}
-        >
-          <span>➕</span> Nuevo rol
-        </button>
-      </div>
-      <div className="ma-roles">
-        {ROLES.map((r) => (
-          <div className="role-card" key={r.id}>
-            <div className="rc-top">
-              <div
-                className="role-ic"
-                style={{ background: r.bg, color: r.color }}
-              >
-                {r.ic}
-              </div>
-              <button
-                className="btn-icon"
-                onClick={() => setModal({ tipo: "rol", data: r })}
-              >
-                ✏️
-              </button>
-            </div>
-            <h3>{r.nombre}</h3>
-            <p>{r.desc}</p>
-            <div style={{ marginTop: 12 }}>
-              {r.permisos.map((p) => (
-                <span key={p} className="tag">
-                  {p}
-                </span>
-              ))}
-            </div>
-            <div className="role-sys-tags">
-              {r.sistemas === "all" ? (
-                <span className="tag tag-accent">Todos los sistemas</span>
-              ) : (
-                r.sistemas.map((sid) => (
-                  <span key={sid} className="tag tag-accent">
-                    {SYS[sid].ic} {SYS[sid].nombre}
-                  </span>
-                ))
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
-function TabAccesos({ usuarios, setAccesoMatriz }) {
-  return (
-    <div className="ma-card">
+    <div className="ma-stat">
       <div
         style={{
-          padding: "16px 18px",
-          borderBottom: "1px solid var(--merco-border)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 6,
         }}
       >
-        <b>Matriz de accesos: usuario × sistema</b>
-        <p style={{ color: "var(--merco-muted)", fontSize: 13, marginTop: 2 }}>
-          Asigna a cada usuario un rol por sistema. “Sin acceso” revoca el
-          ingreso.
-        </p>
+        <span
+          style={{ fontSize: 18, color: iconColor || "var(--merco-muted)" }}
+        >
+          {icon}
+        </span>
       </div>
-      <div className="ma-matrix-wrap">
-        <table className="ma-matrix">
-          <thead>
-            <tr>
-              <th>Usuario</th>
-              {SISTEMAS.map((s) => (
-                <th key={s.id}>
-                  <div
-                    className="sys-cell"
-                    style={{ justifyContent: "center" }}
-                  >
-                    <div className="sys-ic" style={{ background: s.color }}>
-                      {s.ic}
-                    </div>
-                    {s.nombre}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {usuarios.map((u) => (
-              <tr key={u.id}>
-                <td>
-                  <div className="ma-user-cell">
-                    <div
-                      className="ma-ava"
-                      style={{
-                        background: avaColor(u.nombre),
-                        width: 30,
-                        height: 30,
-                        fontSize: 12,
-                      }}
-                    >
-                      {iniciales(u.nombre)}
-                    </div>
-                    <div>
-                      <b>{u.nombre}</b>
-                    </div>
-                  </div>
-                </td>
-                {SISTEMAS.map((s) => {
-                  const rol = u.accesos[s.id] || "";
-                  return (
-                    <td key={s.id}>
-                      <select
-                        className={"role-select" + (rol ? "" : " off")}
-                        value={rol}
-                        onChange={(e) =>
-                          setAccesoMatriz(u.id, s.id, e.target.value)
-                        }
-                      >
-                        <option value="">Sin acceso</option>
-                        {rolesDeSistema(s.id).map((r) => (
-                          <option key={r.id} value={r.nombre}>
-                            {r.nombre}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="val">{val}</div>
+      <div className="lbl" style={{ marginTop: 2 }}>
+        {label}
       </div>
+      {trend && (
+        <div
+          style={{
+            fontSize: 11,
+            fontWeight: 600,
+            color: trendColor,
+            marginTop: 6,
+          }}
+        >
+          {trend}
+        </div>
+      )}
     </div>
   );
 }
 
-function ModalUsuario({ data, onSave, onDelete, onClose }) {
-  const editar = !!data;
-  const [nombre, setNombre] = useState(data?.nombre || "");
-  const [email, setEmail] = useState(data?.email || "");
-  const [estado, setEstado] = useState(data?.estado || "active");
-  const [accesos, setAccesos] = useState(data?.accesos || {});
+/* ====== COMPONENTES DE CHART.JS ADAPTADOS AL MODO OSCURO GLOBAL ====== */
+function ChartLineEvol({ isDark }) {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const ctx = canvasRef.current.getContext("2d");
+    const textColor = isDark ? "#94A3B8" : "#64748B";
+    const gridColor = isDark
+      ? "rgba(255, 255, 255, 0.08)"
+      : "rgba(0, 0, 0, 0.05)";
+
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: ["vie", "sáb", "dom", "lun", "mar", "mié", "jue"],
+        datasets: [
+          {
+            label: "Casos recibidos",
+            data: [0, 0, 1, 1, 3, 3, 6],
+            borderColor: isDark ? "#38bdf8" : "#0B1B32",
+            backgroundColor: isDark
+              ? "rgba(56, 189, 248, 0.15)"
+              : "rgba(11, 27, 50, 0.12)",
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+          },
+          {
+            label: "Resueltos",
+            data: [0, 0, 0, 0, 3, 0, 0],
+            borderColor: "#c8a45c",
+            backgroundColor: "rgba(200, 164, 92, 0.15)",
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { ticks: { color: textColor }, grid: { color: gridColor } },
+          y: { ticks: { color: textColor }, grid: { color: gridColor } },
+        },
+        plugins: {
+          legend: { position: "bottom", labels: { color: textColor } },
+        },
+      },
+    });
+    return () => chart.destroy();
+  }, [isDark]);
 
   return (
-    <div className="ma-overlay" onClick={onClose}>
-      <div className="ma-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="ma-modal-head">
-          <h3>{editar ? "Editar usuario" : "Nuevo usuario"}</h3>
-          <button className="btn-icon" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-        <div className="ma-modal-body">
-          <div className="field-row">
-            <div className="field">
-              <label>Nombre completo</label>
-              <input
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                placeholder="Ej. Juan Pérez"
-              />
-            </div>
-            <div className="field">
-              <label>Correo corporativo</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="usuario@mercosur.com.py"
-              />
-            </div>
-          </div>
-          <div className="field" style={{ maxWidth: 220 }}>
-            <label>Estado de la cuenta</label>
-            <select value={estado} onChange={(e) => setEstado(e.target.value)}>
-              <option value="active">Activo</option>
-              <option value="inactive">Inactivo</option>
-              <option value="pending">Pendiente</option>
-            </select>
-          </div>
-        </div>
-        <div className="ma-modal-foot">
-          {editar && (
-            <button
-              className="btn btn-ghost"
-              style={{ marginRight: "auto", color: "var(--merco-danger)" }}
-              onClick={() => onDelete(data.id)}
-            >
-              Eliminar
-            </button>
-          )}
-          <button className="btn btn-ghost" onClick={onClose}>
-            Cancelar
-          </button>
-          <button
-            className="btn btn-primary"
-            disabled={!nombre || !email}
-            onClick={() =>
-              onSave({
-                id: data?.id,
-                nombre,
-                email,
-                estado,
-                accesos,
-                ultimo: data?.ultimo || "—",
-              })
-            }
-          >
-            {editar ? "Guardar cambios" : "Crear usuario"}
-          </button>
-        </div>
-      </div>
+    <div style={{ height: 210 }}>
+      <canvas ref={canvasRef} />
     </div>
   );
 }
 
-function ModalRol({ data, onClose }) {
+function ChartDoughnutEstado({ isDark }) {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const ctx = canvasRef.current.getContext("2d");
+    const textColor = isDark ? "#94A3B8" : "#64748B";
+
+    const chart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: ["Pendiente", "En Proceso", "Resuelto", "Escalado"],
+        datasets: [
+          {
+            data: [2, 3, 8, 1],
+            backgroundColor: ["#2f6fed", "#d8992a", "#1f9d63", "#d1435b"],
+            borderColor: isDark ? "#08192f" : "#FFFFFF",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "bottom", labels: { color: textColor } },
+        },
+      },
+    });
+    return () => chart.destroy();
+  }, [isDark]);
+
   return (
-    <div className="ma-overlay" onClick={onClose}>
-      <div className="ma-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="ma-modal-head">
-          <h3>{data ? "Editar rol" : "Nuevo rol"}</h3>
-          <button className="btn-icon" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-        <div className="ma-modal-body">
-          <div className="field">
-            <label>Nombre del rol</label>
-            <input
-              defaultValue={data?.nombre || ""}
-              placeholder="Ej. Analista de Riesgos"
-            />
-          </div>
-        </div>
-        <div className="ma-modal-foot">
-          <button className="btn btn-ghost" onClick={onClose}>
-            Cancelar
-          </button>
-          <button className="btn btn-primary" onClick={onClose}>
-            Guardar
-          </button>
-        </div>
-      </div>
+    <div style={{ height: 210 }}>
+      <canvas ref={canvasRef} />
+    </div>
+  );
+}
+
+function ChartBarCanal({ isDark }) {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const ctx = canvasRef.current.getContext("2d");
+    const textColor = isDark ? "#94A3B8" : "#64748B";
+    const gridColor = isDark
+      ? "rgba(255, 255, 255, 0.08)"
+      : "rgba(0, 0, 0, 0.05)";
+
+    const chart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: [
+          "Wasapi",
+          "Tickets",
+          "Presencial",
+          "Telefónico",
+          "Correo electrónico",
+          "Telegram",
+          "Instagram",
+        ],
+        datasets: [
+          {
+            data: [3, 3, 2, 2, 2, 1, 1],
+            backgroundColor: "#c8a45c",
+            borderRadius: 4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { ticks: { color: textColor }, grid: { display: false } },
+          y: { ticks: { color: textColor }, grid: { color: gridColor } },
+        },
+        plugins: { legend: { display: false } },
+      },
+    });
+    return () => chart.destroy();
+  }, [isDark]);
+
+  return (
+    <div style={{ height: 210 }}>
+      <canvas ref={canvasRef} />
     </div>
   );
 }
