@@ -269,11 +269,7 @@ export default function Dashboard() {
   };
 
   return (
-    <SystemLayout
-      //navItems={opcionesMenu}
-      title="Administración General"
-      subtitle="Administra todos los sistemas, opciones roles y usuarios de Mercosur"
-    >
+    <SystemLayout>
       {/* Tarjetas de Métricas / Stats */}
       <div className="ma-stats">
         <div className="ma-stat">

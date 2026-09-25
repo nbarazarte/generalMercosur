@@ -269,10 +269,7 @@ export default function Sistemas() {
   };
 
   return (
-    <SystemLayout
-      title="Administración General"
-      subtitle="Administra todos los sistemas, opciones roles y usuarios de Mercosur"
-    >
+    <SystemLayout>
       {/* Tarjetas de Métricas / Stats */}
       <div className="ma-stats">
         <div className="ma-stat">

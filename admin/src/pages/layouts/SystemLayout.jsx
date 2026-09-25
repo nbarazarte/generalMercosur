@@ -26,12 +26,17 @@ export default function SystemLayout({ title, subtitle, children }) {
         })) || [];
 
     return {
+      sistemaNombre: sistemaEncontrado?.sistema || "",
+      sistemaDescripcion: sistemaEncontrado?.descripcion || "",
       rol: sistemaEncontrado?.rol || "",
       nav: nav,
     };
   };
 
-  const { rol, nav } = getInfoSistema(sistemas, "Administración General");
+  const { rol, nav, sistemaNombre, sistemaDescripcion } = getInfoSistema(
+    sistemas,
+    "Administración General",
+  );
 
   const iniciales = (n) =>
     n
@@ -46,7 +51,10 @@ export default function SystemLayout({ title, subtitle, children }) {
       {/* ----------------- SIDEBAR ORIGEN ----------------- */}
       <aside className="ma-side">
         <div className="flex flex-col items-center justify-items-center">
-          <Link to="/home" style={{ display: "inline-block", cursor: "pointer" }}>
+          <Link
+            to="/home"
+            style={{ display: "inline-block", cursor: "pointer" }}
+          >
             <Logo />
           </Link>
         </div>
@@ -77,7 +85,7 @@ export default function SystemLayout({ title, subtitle, children }) {
 
       {/* ----------------- MAIN CONTENT ORIGEN ----------------- */}
       <div className="ma-main">
-        <header 
+        <header
           className="ma-topbar"
           style={{
             display: "flex",
@@ -86,15 +94,24 @@ export default function SystemLayout({ title, subtitle, children }) {
             alignItems: "center",
             gap: "12px",
             width: "100%",
-            boxSizing: "border-box"
+            boxSizing: "border-box",
           }}
         >
           <div style={{ flex: "1 1 200px", minWidth: 0 }}>
-            {title && <h2 style={{ wordBreak: "break-word" }}>{title}</h2>}
-            {subtitle && <p>{subtitle}</p>}
+            {sistemaNombre && (
+              <h2 style={{ wordBreak: "break-word" }}>{sistemaNombre}</h2>
+            )}
+            {sistemaDescripcion && <p>{sistemaDescripcion}</p>}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              flexWrap: "wrap",
+            }}
+          >
             <ThemeToggle />
             <LogoutButton />
           </div>
