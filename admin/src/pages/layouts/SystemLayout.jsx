@@ -5,15 +5,36 @@ import ThemeToggle from "../components/ThemeToggle";
 
 import { useSelector } from "react-redux";
 
-export default function SystemLayout({
-  navItems = [],
-  title,
-  subtitle,
-  children,
-}) {
+export default function SystemLayout({ title, subtitle, children }) {
   const usuario = useSelector((state) => state.auth?.user);
   const nombre = usuario?.nombre;
   const apellido = usuario?.apellido;
+  const sistemas = useSelector((state) => state.auth?.user.sistemasOpciones);
+
+  const getInfoSistema = (listaSistemas, nombreSistema) => {
+    const sistemaEncontrado = listaSistemas?.find(
+      (s) => s.sistema === nombreSistema,
+    );
+
+    const nav =
+      sistemaEncontrado?.opciones
+        ?.filter((opcion) => opcion.tiene_permiso)
+        .map((item) => ({
+          to: item.ruta_opcion,
+          label: item.opcion,
+          icon: "",
+        })) || [];
+
+    return {
+      rol: sistemaEncontrado?.rol || "",
+      nav: nav,
+    };
+  };
+
+  const { rol, nav } = getInfoSistema(sistemas, "Administración General");
+
+  //console.log(rol); // "Administrador"
+  //console.log(nav); // [{ to: '/admin/dashboard', ... }, ...]
 
   const iniciales = (n) =>
     n
@@ -32,7 +53,7 @@ export default function SystemLayout({
         </div>
 
         <nav className="ma-nav">
-          {navItems.map((item, idx) => (
+          {nav.map((item, idx) => (
             <NavLink
               key={idx}
               to={item.to}
@@ -50,7 +71,7 @@ export default function SystemLayout({
             <b>
               {nombre} {apellido}
             </b>
-            <small>dfgd</small>
+            <small>{rol}</small>
           </div>
         </div>
       </aside>

@@ -219,52 +219,6 @@ export default function Sistemas() {
   const [filtroEstado, setFiltroEstado] = useState("");
   const [modal, setModal] = useState(null);
 
-  // Inicializado como arreglo con ADMIN_NAV por defecto para evitar errores de renderizado
-  const [opcionesMenu, setOpcionesMenu] = useState([]);
-
-  // Suscripción al estado de Redux
-  const user = useSelector((state) => state.auth?.user);
-  const usuario_id = user?.id;
-
-  const API_URL = import.meta.env.VITE_URL_API_ADMIN;
-  const API_TOKEN = import.meta.env.VITE_TOKEN;
-
-  useEffect(() => {
-    const rolOpciones = async () => {
-      if (!usuario_id) return;
-
-      try {
-        const response = await axios.post(
-          `${API_URL}/rolOpciones`,
-          {
-            usuario_id: usuario_id,
-            sistema: "Administración General",
-          },
-          { headers: { Authorization: `Bearer ${API_TOKEN}` } },
-        );
-
-        const rows = response.data?.rows || [];
-
-        if (rows.length > 0) {
-          // Mapea las filas de la vista SQL al formato de navegación de SystemLayout
-          const adminNav = rows.map((item) => ({
-            to: item.ruta_opcion,
-            label: item.opcion,
-            //icon: ICONOS_OPCIONES[item.opcion] || "👥",
-            icon: "",
-          }));
-
-          setOpcionesMenu(adminNav);
-          //console.log("Menú cargado dinámicamente:", adminNav);
-        }
-      } catch (error) {
-        console.error("Error al obtener las opciones del rol:", error);
-      }
-    };
-
-    rolOpciones();
-  }, [usuario_id, API_URL, API_TOKEN]);
-
   const usuariosFiltrados = useMemo(
     () =>
       usuarios.filter((u) => {
@@ -318,7 +272,6 @@ export default function Sistemas() {
 
   return (
     <SystemLayout
-      navItems={opcionesMenu}
       title="Administración General"
       subtitle="Administra todos los sistemas, opciones roles y usuarios de Mercosur"
     >
