@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import Logo from "../components/Logo";
 import LogoutButton from "../components/LogoutButton";
 import ThemeToggle from "../components/ThemeToggle";
@@ -33,9 +33,6 @@ export default function SystemLayout({ title, subtitle, children }) {
 
   const { rol, nav } = getInfoSistema(sistemas, "Administración General");
 
-  //console.log(rol); // "Administrador"
-  //console.log(nav); // [{ to: '/admin/dashboard', ... }, ...]
-
   const iniciales = (n) =>
     n
       ?.split(" ")
@@ -49,7 +46,9 @@ export default function SystemLayout({ title, subtitle, children }) {
       {/* ----------------- SIDEBAR ORIGEN ----------------- */}
       <aside className="ma-side">
         <div className="flex flex-col items-center justify-items-center">
-          <Logo />
+          <Link to="/home" style={{ display: "inline-block", cursor: "pointer" }}>
+            <Logo />
+          </Link>
         </div>
 
         <nav className="ma-nav">
@@ -78,14 +77,26 @@ export default function SystemLayout({ title, subtitle, children }) {
 
       {/* ----------------- MAIN CONTENT ORIGEN ----------------- */}
       <div className="ma-main">
-        <header className="ma-topbar">
-          <div>
-            {title && <h2>{title}</h2>}
+        <header 
+          className="ma-topbar"
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "12px",
+            width: "100%",
+            boxSizing: "border-box"
+          }}
+        >
+          <div style={{ flex: "1 1 200px", minWidth: 0 }}>
+            {title && <h2 style={{ wordBreak: "break-word" }}>{title}</h2>}
             {subtitle && <p>{subtitle}</p>}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
             <ThemeToggle />
+            <LogoutButton />
           </div>
         </header>
 

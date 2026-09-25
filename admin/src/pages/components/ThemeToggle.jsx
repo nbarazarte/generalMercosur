@@ -1,9 +1,29 @@
-// src/components/ThemeToggle.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const ThemeToggle = ({ theme, onToggle }) => {
+const ThemeToggle = () => {
+  // 1. Inicializa leyendo el tema guardado en localStorage (o 'dark' por defecto)
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("theme") || "dark";
+  });
+
+  // 2. Aplica o remueve la clase .dark en el HTML según el estado
+  useEffect(() => {
+    const root = document.documentElement; // o document.body
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  // 3. Función para alternar el tema al hacer clic
+  const handleToggle = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
   return (
-    <button className="theme-toggle" onClick={onToggle} id="themeToggle">
+    <button className="theme-toggle" onClick={handleToggle} id="themeToggle">
       {theme === "dark" ? (
         <svg
           id="sunIcon"

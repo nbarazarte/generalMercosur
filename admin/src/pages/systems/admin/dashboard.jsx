@@ -1,6 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
-import { useSelector } from "react-redux";
+import { useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 import "../../../systems.css";
 

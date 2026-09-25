@@ -25,9 +25,19 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
 
   return (
     <>
-      {/* BOTÓN DE TEMA - ARRIBA A LA DERECHA */}
-      <div className="top-theme-wrapper">
+      {/* BOTONES SUPERIORES - DERECHA (TEMA + SALIR) */}
+      <div
+        className="top-theme-wrapper"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          flexWrap: "wrap",
+          justifyContent: "flex-end",
+        }}
+      >
         <ThemeToggle theme={theme} onToggle={toggleTheme} />
+        {showLogout && <LogoutButton />}
       </div>
 
       <div className="page-grid">
@@ -62,13 +72,6 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
           </div>
         </main>
       </div>
-
-      {/* BOTÓN DE SALIR - ABAJO A LA DERECHA */}
-      {showLogout && (
-        <div className="bottom-logout-wrapper">
-          <LogoutButton />
-        </div>
-      )}
     </>
   );
 };
