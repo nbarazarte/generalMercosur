@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
-import "../../../systems.css";
 
 const SISTEMAS = [
   {
@@ -269,7 +268,7 @@ export default function Dashboard() {
   };
 
   return (
-    <SystemLayout>
+    <SystemLayout identificacion="Administración General">
       {/* Tarjetas de Métricas / Stats */}
       <div className="ma-stats">
         <div className="ma-stat">

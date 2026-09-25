@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
-import "../../../systems.css";
 
 /* IMPORTAMOS NUESTRO CATÁLOGO DE ÍCONOS */
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
@@ -136,7 +135,7 @@ export default function Sistemas() {
   };
 
   return (
-    <SystemLayout>
+    <SystemLayout identificacion="Administración General">
       <div className="ma-stats">
         <div className="ma-stat">
           <div className="lbl">Sistemas Registrados</div>
@@ -165,7 +164,11 @@ export default function Sistemas() {
 
       <div
         className="ma-roles"
-        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+          gap: "1.5rem",
+        }}
       >
         {sistemas.map((sys) => (
           <div className="role-card" key={sys.id}>
@@ -228,9 +231,9 @@ export default function Sistemas() {
 
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {sys.opciones && sys.opciones.length > 0 ? (
-                  sys.opciones.map((opc) => (
+                  sys.opciones.map((opc, idx) => (
                     <div
-                      key={opc.id}
+                      key={opc.id ? `${opc.id}-${idx}` : idx}
                       style={{
                         display: "flex",
                         justifyContent: "space-between",

@@ -6,16 +6,19 @@ import Login, { LoginAside } from "./pages/auth/login";
 import Home, { MainAside } from "./pages/systems/home/home";
 
 // Rutas de los sistemas:
+
 //admin:
 import UsuariosAccesos from "./pages/systems/admin/usuariosAccesos";
 import Sistemas from "./pages/systems/admin/sistemas";
 import Dashboard from "./pages/systems/admin/dashboard";
 
+//rrhh:
 import RRHH from "./pages/systems/rrhh/rrhh";
 
-
-// tickets
+//tickets:
 import DashboardTickets from "./pages/systems/tickets/dashboardTickets";
+
+//kcs:
 import KCS from "./pages/systems/kcs/kcs";
 
 // Rastreador de navegación para todos los sistemas
@@ -201,7 +204,7 @@ function App() {
                 systemName="Sistema de Tickets"
                 systemKey="/tickets"
               >
-              <Outlet /> {/* Permite renderizar las subrutas hijas */}
+                <Outlet /> {/* Permite renderizar las subrutas hijas */}
               </SystemLoaderWrapper>
             }
           >
@@ -210,8 +213,7 @@ function App() {
 
             {/* Redirección por defecto al entrar solo a /admin */}
             <Route index element={<Navigate to="dashboard" replace />} />
-
-</Route>
+          </Route>
 
           {/* Sistema de Base de Conocimiento (KCS) */}
           <Route

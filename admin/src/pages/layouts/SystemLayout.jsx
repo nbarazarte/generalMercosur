@@ -3,8 +3,9 @@ import Logo from "../components/Logo";
 import LogoutButton from "../components/LogoutButton";
 import ThemeToggle from "../components/ThemeToggle";
 import { useSelector } from "react-redux";
+import "../../../src/systems.css";
 
-export default function SystemLayout({ children }) {
+export default function SystemLayout({ children, identificacion }) {
   const usuario = useSelector((state) => state.auth?.user);
   const nombre = usuario?.nombre;
   const apellido = usuario?.apellido;
@@ -34,7 +35,7 @@ export default function SystemLayout({ children }) {
 
   const { rol, nav, sistemaNombre, sistemaDescripcion } = getInfoSistema(
     sistemas,
-    "Administración General",
+    identificacion,
   );
 
   const iniciales = (n) =>

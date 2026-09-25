@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
-import "../../../systems.css";
 
 /* IMPORTAMOS EL CATÁLOGO DE ÍCONOS DESDE LA RUTA CORRECTA */
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
@@ -271,8 +270,12 @@ export default function UsuariosAccesos() {
           if (!fechaUser) {
             coincideUltimoAcceso = false;
           } else {
-            const desde = fechaDesde ? new Date(fechaDesde + "T00:00:00") : null;
-            const hasta = fechaHasta ? new Date(fechaHasta + "T23:59:59") : null;
+            const desde = fechaDesde
+              ? new Date(fechaDesde + "T00:00:00")
+              : null;
+            const hasta = fechaHasta
+              ? new Date(fechaHasta + "T23:59:59")
+              : null;
 
             if (desde && fechaUser < desde) coincideUltimoAcceso = false;
             if (hasta && fechaUser > hasta) coincideUltimoAcceso = false;
@@ -352,7 +355,7 @@ export default function UsuariosAccesos() {
   };
 
   return (
-    <SystemLayout>
+    <SystemLayout identificacion="Administración General">
       <div className="ma-stats">
         <div className="ma-stat">
           <div className="lbl">Total de usuarios</div>
@@ -468,7 +471,13 @@ function ToolbarFiltros({
     <div className="ma-toolbar" style={{ marginBottom: 16 }}>
       <div
         className="ma-filters"
-        style={{ display: "flex", gap: 10, flexWrap: "wrap", flex: 1, alignItems: "center" }}
+        style={{
+          display: "flex",
+          gap: 10,
+          flexWrap: "wrap",
+          flex: 1,
+          alignItems: "center",
+        }}
       >
         <div style={{ position: "relative", minWidth: 170, flex: "1 1 150px" }}>
           <input
@@ -641,7 +650,12 @@ function AccesosChips({ accesos }) {
 }
 
 /* PESTAÑA UNIFICADA: USUARIOS Y ACCESOS */
-function TabUsuariosYAccesos({ usuariosFiltrados, rolesDeSistema, setAccesoMatriz, setModal }) {
+function TabUsuariosYAccesos({
+  usuariosFiltrados,
+  rolesDeSistema,
+  setAccesoMatriz,
+  setModal,
+}) {
   const [expandidos, setExpandidos] = useState({});
 
   const toggleExpandir = (id) => {
@@ -673,9 +687,15 @@ function TabUsuariosYAccesos({ usuariosFiltrados, rolesDeSistema, setAccesoMatri
                     <button
                       className="btn-icon"
                       onClick={() => toggleExpandir(u.id)}
-                      title={estaAbierto ? "Ocultar gestión de accesos" : "Gestionar accesos"}
+                      title={
+                        estaAbierto
+                          ? "Ocultar gestión de accesos"
+                          : "Gestionar accesos"
+                      }
                       style={{
-                        transform: estaAbierto ? "rotate(90deg)" : "rotate(0deg)",
+                        transform: estaAbierto
+                          ? "rotate(90deg)"
+                          : "rotate(0deg)",
                         transition: "transform 0.2s ease",
                         fontSize: 12,
                         cursor: "pointer",
@@ -733,7 +753,12 @@ function TabUsuariosYAccesos({ usuariosFiltrados, rolesDeSistema, setAccesoMatri
 
                 {/* Fila Desplegable en acordeón exactamente debajo del usuario */}
                 {estaAbierto && (
-                  <tr style={{ background: "var(--merco-bg-subtle, rgba(255, 255, 255, 0.02))" }}>
+                  <tr
+                    style={{
+                      background:
+                        "var(--merco-bg-subtle, rgba(255, 255, 255, 0.02))",
+                    }}
+                  >
                     <td colSpan={6} style={{ padding: "12px 20px 20px 48px" }}>
                       <div
                         style={{
@@ -756,7 +781,8 @@ function TabUsuariosYAccesos({ usuariosFiltrados, rolesDeSistema, setAccesoMatri
                         <div
                           style={{
                             display: "grid",
-                            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                            gridTemplateColumns:
+                              "repeat(auto-fill, minmax(260px, 1fr))",
                             gap: 12,
                           }}
                         >
@@ -781,7 +807,13 @@ function TabUsuariosYAccesos({ usuariosFiltrados, rolesDeSistema, setAccesoMatri
                                   gap: 8,
                                 }}
                               >
-                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                  }}
+                                >
                                   <div
                                     style={{
                                       width: 26,
@@ -795,7 +827,10 @@ function TabUsuariosYAccesos({ usuariosFiltrados, rolesDeSistema, setAccesoMatri
                                       flexShrink: 0,
                                     }}
                                   >
-                                    <DynamicIcon name={s.ic} fallback="FiGrid" />
+                                    <DynamicIcon
+                                      name={s.ic}
+                                      fallback="FiGrid"
+                                    />
                                   </div>
                                   <div style={{ overflow: "hidden" }}>
                                     <b
@@ -813,7 +848,9 @@ function TabUsuariosYAccesos({ usuariosFiltrados, rolesDeSistema, setAccesoMatri
                                 </div>
 
                                 <select
-                                  className={"role-select" + (rolActual ? "" : " off")}
+                                  className={
+                                    "role-select" + (rolActual ? "" : " off")
+                                  }
                                   value={rolActual}
                                   onChange={(e) =>
                                     setAccesoMatriz(u.id, s.id, e.target.value)
@@ -825,7 +862,9 @@ function TabUsuariosYAccesos({ usuariosFiltrados, rolesDeSistema, setAccesoMatri
                                     borderRadius: 4,
                                   }}
                                 >
-                                  <option value="">🚫 Sin acceso (Denegado)</option>
+                                  <option value="">
+                                    🚫 Sin acceso (Denegado)
+                                  </option>
                                   {rolesPermitidos.map((r) => (
                                     <option key={r.id} value={r.nombre}>
                                       🔑 {r.nombre}
@@ -885,7 +924,7 @@ function TabRoles({ roles, setModal }) {
               <div
                 className="role-ic"
                 style={{
-                  background: r.bg || (r.color + "22"),
+                  background: r.bg || r.color + "22",
                   color: r.color,
                   display: "flex",
                   alignItems: "center",
@@ -919,7 +958,11 @@ function TabRoles({ roles, setModal }) {
                   <span
                     key={sid}
                     className="tag tag-accent"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 4,
+                    }}
                   >
                     <DynamicIcon name={SYS[sid]?.ic} fallback="FiGrid" />
                     {SYS[sid]?.nombre || sid}
