@@ -77,7 +77,50 @@ router.get("/descargar-archivo/:nombre", (req, res) => {
 // Uso del middleware para proteger todas las rutas (A PARTIR DE AQUI SON PRIVADAS)
 router.use(autenticarToken);
 
-router.post("/rolOpciones", async (req, res) => {
+router.get("/fetchSistemas", async (req, res) => {
+  try {
+    const query = `SELECT * FROM public.view_sistemas_opciones`;
+
+    const result = await pool.query(query);
+
+    // Agrupamos los datos planos por sistema
+    const sistemasEstructurados = Object.values(
+      result.rows.reduce((acc, row) => {
+        if (!acc[row.sistema_id]) {
+          acc[row.sistema_id] = {
+            id: row.sistema_id,
+            nombre: row.str_sistema,
+            ic: row.str_icono,
+            color: "#d8992a",
+            desc: row.str_descripcion,
+            ruta_sistema: row.str_ruta_sistema,
+            opciones: [],
+          };
+        }
+
+        if (row.opcion_id) {
+          acc[row.sistema_id].opciones.push({
+            id: row.opcion_id,
+            opcion: row.opcion_nombre,
+            ruta_opcion: row.str_ruta_opcion,
+            ic: "FiCheckSquare",
+          });
+        }
+
+        return acc;
+      }, {}),
+    );
+
+    //console.log(JSON.stringify(sistemasEstructurados, null, 2));
+
+    res.json({ sistemas: sistemasEstructurados });
+  } catch (err) {
+    console.error("Error al obtener sistemas:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+/* router.post("/rolOpciones", async (req, res) => {
   try {
     // 1. Obtener los parámetros enviados desde el cuerpo de la petición (POST)
     const { usuario_id, sistema } = req.body;
@@ -101,6 +144,6 @@ router.post("/rolOpciones", async (req, res) => {
     console.error("Error en admin:", err.message);
     res.status(500).json({ error: "Error interno del servidor" });
   }
-});
+}); */
 
 module.exports = router;

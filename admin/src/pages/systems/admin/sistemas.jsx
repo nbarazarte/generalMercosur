@@ -1,80 +1,58 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
-
-/* IMPORTAMOS NUESTRO CATÁLOGO DE ÍCONOS */
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
-
-/* DATOS INICIALES DE SISTEMAS Y OPCIONES */
-const SISTEMAS_INIT = [
-  {
-    id: "rrhh",
-    nombre: "Recursos Humanos",
-    ic: "FiUsers",
-    color: "#1f9d63",
-    desc: "Ficha de empleado",
-    opciones: [
-      {
-        id: "opt-4",
-        opcion: "Fichas de Empleados",
-        ruta_opcion: "/rrhh/empleados",
-        ic: "FiFolder",
-      },
-      {
-        id: "opt-5",
-        opcion: "Solicitudes de Licencia",
-        ruta_opcion: "/rrhh/licencias",
-        ic: "FiCalendar",
-      },
-    ],
-  },
-  {
-    id: "tickets",
-    nombre: "Sistema Tickets",
-    ic: "FiHeadphones",
-    color: "#d8992a",
-    desc: "Centraliza tus tickets",
-    opciones: [
-      {
-        id: "opt-6",
-        opcion: "Mesa de Ayuda",
-        ruta_opcion: "/tickets/mesa",
-        ic: "FiHelpCircle",
-      },
-      {
-        id: "opt-7",
-        opcion: "Mis Tickets",
-        ruta_opcion: "/tickets/mis-tickets",
-        ic: "FiCheckSquare",
-      },
-    ],
-  },
-  {
-    id: "kb",
-    nombre: "Base de Conocimiento",
-    ic: "FiBook",
-    color: "#8155d8",
-    desc: "Información para clientes",
-    opciones: [
-      {
-        id: "opt-8",
-        opcion: "Artículos",
-        ruta_opcion: "/kb/articulos",
-        ic: "FiFileText",
-      },
-      {
-        id: "opt-9",
-        opcion: "Categorías",
-        ruta_opcion: "/kb/categorias",
-        ic: "FiLayers",
-      },
-    ],
-  },
-];
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 /* ============================ COMPONENTE PRINCIPAL ============================ */
 export default function Sistemas() {
-  const [sistemas, setSistemas] = useState(SISTEMAS_INIT);
+  const API_URL = import.meta.env.VITE_URL_API_ADMIN;
+  const API_TOKEN = import.meta.env.VITE_TOKEN;
+
+  const [sistemas, setSistemas] = useState([]);
   const [modal, setModal] = useState(null);
+
+  useEffect(() => {
+    const handleFetchSistemas = async () => {
+      try {
+        if (!API_URL || !API_TOKEN) {
+          throw new Error("Faltan variables de entorno.");
+        }
+
+        const response = await axios.get(`${API_URL}/fetchSistemas`, {
+          headers: { Authorization: `Bearer ${API_TOKEN}` },
+        });
+
+        // Recibimos los sistemas ya estructurados desde el backend
+        const sistemasObtenidos = response.data.sistemas;
+
+        // Filtramos para ignorar "Administración General" (comprobando por nombre)
+        const sistemasFiltrados = sistemasObtenidos.filter(
+          (sis) => sis.nombre !== "Administración General",
+        );
+
+        setSistemas(sistemasFiltrados);
+
+        // setSistemas(sistemas);
+      } catch (error) {
+        const isNetworkError =
+          error.message === "Network Error" || !error.response;
+
+        const errorMessage =
+          (typeof error.response?.data === "string"
+            ? error.response.data
+            : error.response?.data?.message) ||
+          (isNetworkError && error.message !== "Faltan variables de entorno."
+            ? "No hay conexión con la API."
+            : error.message);
+
+        console.error("Error al cargar sistemas:", errorMessage);
+      } finally {
+      }
+    };
+
+    handleFetchSistemas();
+  }, []);
 
   const totalOpciones = useMemo(
     () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),

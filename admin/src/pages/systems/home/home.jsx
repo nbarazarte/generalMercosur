@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import TextType from "../../components/TextType";
+import { DynamicIcon } from "../../components/IconCatalog";
 
 export const MainAside = () => {
   // Suscripción al estado de Redux
@@ -95,19 +96,7 @@ const Home = () => {
     nombre: sistema.sistema,
     descripcion: sistema.descripcion,
     url: sistema.ruta_sistema,
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-      </svg>
-    ),
+    icon: sistema.icono,
   }));
 
   //console.log("Sistemas desde Redux:", sistemas);
@@ -153,7 +142,6 @@ const Home = () => {
       <div className="systems-grid">
         {sistemas.map((sistema, i) => (
           <div
-            //key={sistema.id}
             key={sistema.id ? `${sistema.id}-${i}` : i}
             onClick={() => navigate(sistema.url)}
             className="system-card glass-card animate-rise"
@@ -167,22 +155,15 @@ const Home = () => {
               }
             }}
           >
-            <div className="system-icon">{sistema.icon}</div>
+            <div className="system-icon">
+              <DynamicIcon name={sistema.icon} />
+            </div>
             <div className="system-info">
               <h3>{sistema.nombre}</h3>
               <p>{sistema.descripcion}</p>
             </div>
             <span className="system-arrow" aria-hidden="true">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
+              <DynamicIcon name="FiArrowRight" />
             </span>
           </div>
         ))}
