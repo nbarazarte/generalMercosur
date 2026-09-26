@@ -1,7 +1,5 @@
 import React, { useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
-
-/* IMPORTAMOS EL CATÁLOGO DE ÍCONOS DESDE LA RUTA CORRECTA */
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
 
 const SISTEMAS = [
@@ -496,14 +494,27 @@ function ToolbarFiltros({
         }}
       >
         <div style={{ position: "relative", minWidth: 170, flex: "1 1 150px" }}>
+          <DynamicIcon
+            name="FiSearch"
+            style={{
+              position: "absolute",
+              left: 10,
+              top: "50%",
+              transform: "translateY(-50%)",
+              pointerEvents: "none",
+              color: "var(--merco-text, inherit)",
+              opacity: 0.6,
+              fontSize: 16,
+            }}
+          />
           <input
             type="text"
-            placeholder="🔍 Buscar por nombre o correo..."
+            placeholder="Buscar por nombre o correo..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             style={{
               width: "100%",
-              padding: "8px 12px",
+              padding: "8px 12px 8px 32px", // 32px a la izquierda para dejar espacio al icono
               borderRadius: 6,
               border: "1px solid var(--merco-border, #444)",
               background: "var(--merco-bg-subtle, rgba(255, 255, 255, 0.05))",
@@ -632,7 +643,10 @@ function ToolbarFiltros({
           className="btn btn-accent"
           onClick={() => setModal({ tipo: "usuario", data: null })}
         >
-          <span>➕</span> Nuevo usuario
+          <span>
+            <DynamicIcon name="FiPlus" />
+          </span>{" "}
+          Nuevo usuario
         </button>
       )}
     </div>
@@ -717,7 +731,7 @@ function TabUsuariosYAccesos({
                         cursor: "pointer",
                       }}
                     >
-                      ▶
+                      <DynamicIcon name="FiArrowRight" />
                     </button>
                   </td>
                   <td>
@@ -754,14 +768,14 @@ function TabUsuariosYAccesos({
                         title="Editar usuario"
                         onClick={() => setModal({ tipo: "usuario", data: u })}
                       >
-                        ✏️
+                        <DynamicIcon name="FiEdit" />
                       </button>
                       <button
                         className="btn-icon danger"
                         title="Eliminar usuario"
                         onClick={() => setModal({ tipo: "usuario", data: u })}
                       >
-                        🗑️
+                        <DynamicIcon name="FiTrash2" />
                       </button>
                     </div>
                   </td>
@@ -786,13 +800,19 @@ function TabUsuariosYAccesos({
                       >
                         <div
                           style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
                             fontSize: 13,
                             fontWeight: 600,
                             marginBottom: 12,
                             color: "var(--merco-muted)",
                           }}
                         >
-                          ⚙️ Configuración rápida de roles para {u.nombre}:
+                          <DynamicIcon name="FiSettings" />
+                          <span>
+                            Configuración rápida de roles para {u.nombre}:
+                          </span>
                         </div>
                         <div
                           style={{
@@ -879,11 +899,11 @@ function TabUsuariosYAccesos({
                                   }}
                                 >
                                   <option value="">
-                                    🚫 Sin acceso (Denegado)
+                                    Sin acceso (Denegado)
                                   </option>
                                   {rolesPermitidos.map((r) => (
                                     <option key={r.id} value={r.nombre}>
-                                      🔑 {r.nombre}
+                                      {r.nombre}
                                     </option>
                                   ))}
                                 </select>
@@ -930,7 +950,10 @@ function TabRoles({ roles, setModal }) {
           className="btn btn-accent"
           onClick={() => setModal({ tipo: "rol", data: null })}
         >
-          <span>➕</span> Nuevo rol
+          <span>
+            <DynamicIcon name="FiPlus" />
+          </span>{" "}
+          Nuevo rol
         </button>
       </div>
       <div className="ma-roles">
@@ -954,7 +977,7 @@ function TabRoles({ roles, setModal }) {
                 className="btn-icon"
                 onClick={() => setModal({ tipo: "rol", data: r })}
               >
-                ✏️
+                <DynamicIcon name="FiEdit" />
               </button>
             </div>
             <h3>{r.nombre}</h3>

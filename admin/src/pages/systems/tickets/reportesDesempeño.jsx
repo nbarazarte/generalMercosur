@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
-
-/* IMPORTAMOS EL COMPONENTE DINÁMICO DE ÍCONOS */
 import { DynamicIcon } from "../../components/IconCatalog";
 
 /* ====== CONSTANTES ====== */

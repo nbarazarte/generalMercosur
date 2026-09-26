@@ -174,7 +174,10 @@ export default function Sistemas() {
           className="btn btn-accent"
           onClick={() => setModal({ tipo: "sistema", data: null })}
         >
-          <span>➕</span> Nuevo Sistema
+          <span>
+            <DynamicIcon name="FiPlus" />
+          </span>{" "}
+          Nuevo Sistema
         </button>
       </div>
 
@@ -207,7 +210,7 @@ export default function Sistemas() {
                 title="Editar sistema"
                 onClick={() => setModal({ tipo: "sistema", data: sys })}
               >
-                ✏️
+                <DynamicIcon name="FiEdit" />
               </button>
             </div>
             <h3>{sys.nombre}</h3>
@@ -306,7 +309,7 @@ export default function Sistemas() {
                             })
                           }
                         >
-                          ✏️
+                          <DynamicIcon name="FiEdit" />
                         </button>
                         <button
                           className="btn-icon danger"
@@ -322,7 +325,7 @@ export default function Sistemas() {
                             }
                           }}
                         >
-                          🗑️
+                          <DynamicIcon name="FiTrash2" />
                         </button>
                       </div>
                     </div>
@@ -454,7 +457,7 @@ function ModalSistema({ data, onSave, onDelete, onClose }) {
               style={{ marginRight: "auto", color: "var(--merco-danger)" }}
               onClick={() => onDelete(data.id)}
             >
-              Eliminar Sistema
+              Eliminar
             </button>
           )}
           <button className="btn btn-ghost" onClick={onClose}>

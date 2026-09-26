@@ -209,8 +209,27 @@ export default function Seguimiento() {
   const [casos] = useState(CASOS_INIT);
   const [clientes] = useState(CLIENTES_INIT);
 
+  // Estados para los Filtros
+  const [fBuscar, setFBuscar] = useState("");
+  const [fPrioridad, setFPrioridad] = useState("");
+  const [fEstado, setFEstado] = useState("");
+  const [fSlaEstado, setFSlaEstado] = useState(""); // Filtro para VENCE EN (SLA)
+  const [fApertura, setFApertura] = useState("");
+  const [fFechaDesde, setFFechaDesde] = useState("");
+  const [fFechaHasta, setFFechaHasta] = useState("");
+
   const clienteDe = (ced) =>
     clientes.find((c) => c.cedula === ced) || { nombre: "—", cedula: ced };
+
+  const limpiarFiltros = () => {
+    setFBuscar("");
+    setFPrioridad("");
+    setFEstado("");
+    setFSlaEstado("");
+    setFApertura("");
+    setFFechaDesde("");
+    setFFechaHasta("");
+  };
 
   // Cálculo de KPIs de seguimiento
   const kpis = useMemo(() => {
@@ -221,13 +240,78 @@ export default function Seguimiento() {
     return { late, warn, proc, escl };
   }, [casos]);
 
-  // Casos activos ordenados por urgencia de SLA (los más urgentes/vencidos primero)
+  // Casos activos filtrados y ordenados por urgencia de SLA
   const casosSeguimiento = useMemo(() => {
     return casos
-      .filter((c) => c.estado !== "Resuelto")
+      .filter((c) => {
+        // En seguimiento solo mostramos casos activos (no resueltos)
+        if (c.estado === "Resuelto") return false;
+
+        const s = slaInfo(c);
+
+        // Filtro por Estado de SLA (Vence en)
+        if (fSlaEstado && s.state !== fSlaEstado) return false;
+
+        // Filtro por Prioridad
+        if (fPrioridad && c.prioridad !== fPrioridad) return false;
+
+        // Filtro por Estado
+        if (fEstado && c.estado !== fEstado) return false;
+
+        // Filtro por Fecha de Apertura (Hoy, Ayer, Rango)
+        let coincideFecha = true;
+        const fechaOpened = new Date(c.opened);
+
+        if (fApertura === "hoy") {
+          const hoy = new Date();
+          coincideFecha =
+            fechaOpened.getFullYear() === hoy.getFullYear() &&
+            fechaOpened.getMonth() === hoy.getMonth() &&
+            fechaOpened.getDate() === hoy.getDate();
+        } else if (fApertura === "ayer") {
+          const ayer = new Date();
+          ayer.setDate(ayer.getDate() - 1);
+          coincideFecha =
+            fechaOpened.getFullYear() === ayer.getFullYear() &&
+            fechaOpened.getMonth() === ayer.getMonth() &&
+            fechaOpened.getDate() === ayer.getDate();
+        } else if (fApertura === "rango") {
+          if (fFechaDesde) {
+            const desde = new Date(fFechaDesde + "T00:00:00");
+            if (fechaOpened < desde) coincideFecha = false;
+          }
+          if (fFechaHasta) {
+            const hasta = new Date(fFechaHasta + "T23:59:59");
+            if (fechaOpened > hasta) coincideFecha = false;
+          }
+        }
+
+        if (!coincideFecha) return false;
+
+        // Filtro de búsqueda general (ID, Cliente, Cédula, Agente, Tipo)
+        if (fBuscar) {
+          const q = fBuscar.toLowerCase().trim();
+          const cl = clienteDe(c.cedula);
+          const texto =
+            `#${c.id} ${cl.nombre} ${cl.cedula} ${c.agente || ""} ${c.tipo || ""} ${c.canal || ""}`.toLowerCase();
+          if (!texto.includes(q)) return false;
+        }
+
+        return true;
+      })
       .map((c) => ({ c, s: slaInfo(c) }))
       .sort((a, b) => a.s.mins - b.s.mins);
-  }, [casos]);
+  }, [
+    casos,
+    clientes,
+    fBuscar,
+    fPrioridad,
+    fEstado,
+    fSlaEstado,
+    fApertura,
+    fFechaDesde,
+    fFechaHasta,
+  ]);
 
   return (
     <SystemLayout identificacion="Tickets">
@@ -362,6 +446,156 @@ export default function Seguimiento() {
           </div>
         </div>
 
+        {/* BARRA DE HERRAMIENTAS Y FILTROS */}
+        <div className="ma-toolbar" style={{ marginTop: 0, marginBottom: 16 }}>
+          <div
+            className="ma-filters"
+            style={{
+              display: "flex",
+              gap: 10,
+              flexWrap: "wrap",
+              flex: 1,
+              alignItems: "center",
+            }}
+          >
+            {/* Buscador general con Icono dinámico */}
+            <div
+              className="ma-search"
+              style={{ position: "relative", minWidth: 180, flex: "1 1 150px" }}
+            >
+              <DynamicIcon
+                name="FiSearch"
+                style={{
+                  position: "absolute",
+                  left: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  pointerEvents: "none",
+                  color: "var(--merco-text, inherit)",
+                  opacity: 0.6,
+                  fontSize: 16,
+                }}
+              />
+              <input
+                className="inp"
+                placeholder="Buscar caso, cliente, agente..."
+                value={fBuscar}
+                onChange={(e) => setFBuscar(e.target.value)}
+                style={{
+                  width: "100%",
+                  paddingLeft: 32,
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            {/* Select por Vencimiento SLA (Vence en) */}
+            <select
+              value={fSlaEstado}
+              onChange={(e) => setFSlaEstado(e.target.value)}
+            >
+              <option value="">Vencimiento (Todos)</option>
+              <option value="late">Vencidos</option>
+              <option value="warn">Por vencer (&lt;2h)</option>
+              <option value="ok">En plazo</option>
+            </select>
+
+            {/* Select por Prioridad */}
+            <select
+              value={fPrioridad}
+              onChange={(e) => setFPrioridad(e.target.value)}
+            >
+              <option value="">Prioridad (Todas)</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+
+            {/* Select por Estado */}
+            <select
+              value={fEstado}
+              onChange={(e) => setFEstado(e.target.value)}
+            >
+              <option value="">Estado (Todos)</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="En Proceso">En Proceso</option>
+              <option value="Escalado">Escalado</option>
+            </select>
+
+            {/* Selector de Fecha de Apertura */}
+            <select
+              value={fApertura}
+              onChange={(e) => setFApertura(e.target.value)}
+            >
+              <option value="">Apertura (Cualquiera)</option>
+              <option value="hoy">Hoy</option>
+              <option value="ayer">Ayer</option>
+              <option value="rango">Rango de fechas...</option>
+            </select>
+
+            {/* Inputs desplegables al seleccionar "Rango de fechas..." */}
+            {fApertura === "rango" && (
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  background:
+                    "var(--merco-bg-subtle, rgba(255, 255, 255, 0.03))",
+                  padding: "4px 8px",
+                  borderRadius: 6,
+                  border: "1px solid var(--merco-border, #444)",
+                }}
+              >
+                <label style={{ fontSize: 12, color: "var(--merco-muted)" }}>
+                  Desde:
+                </label>
+                <input
+                  type="date"
+                  value={fFechaDesde}
+                  onChange={(e) => setFFechaDesde(e.target.value)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "inherit",
+                    fontSize: 12,
+                  }}
+                />
+                <label style={{ fontSize: 12, color: "var(--merco-muted)" }}>
+                  Hasta:
+                </label>
+                <input
+                  type="date"
+                  value={fFechaHasta}
+                  onChange={(e) => setFFechaHasta(e.target.value)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "inherit",
+                    fontSize: 12,
+                  }}
+                />
+              </div>
+            )}
+
+            {(fBuscar ||
+              fPrioridad ||
+              fEstado ||
+              fSlaEstado ||
+              fApertura ||
+              fFechaDesde ||
+              fFechaHasta) && (
+              <button
+                className="btn btn-ghost"
+                style={{ padding: "6px 12px", fontSize: 13 }}
+                onClick={limpiarFiltros}
+              >
+                ✕ Limpiar
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* 2. TABLA DE CASOS EN SEGUIMIENTO */}
         <div className="ma-card">
           <div
@@ -426,7 +660,7 @@ export default function Seguimiento() {
                         color: "var(--merco-muted)",
                       }}
                     >
-                      No hay casos activos en seguimiento
+                      No hay casos activos que coincidan con los filtros aplicados
                     </td>
                   </tr>
                 ) : (

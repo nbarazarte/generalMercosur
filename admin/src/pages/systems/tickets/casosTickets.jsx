@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
+import { DynamicIcon } from "../../components/IconCatalog";
 
 /* ====== CONSTANTES DE CONFIGURACIÓN Y VALORES ====== */
 const CANALES = [
@@ -364,12 +365,31 @@ export default function CasosTickets() {
         <div className="ma-toolbar" style={{ marginTop: 0 }}>
           <div className="ma-filters">
             {/* Buscador general */}
-            <div className="ma-search" style={{ maxWidth: 260 }}>
+            <div
+              className="ma-search"
+              style={{ position: "relative", maxWidth: 260 }}
+            >
+              <DynamicIcon
+                name="FiSearch"
+                style={{
+                  position: "absolute",
+                  left: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  pointerEvents: "none",
+                  color: "var(--merco-text, inherit)",
+                  opacity: 0.6,
+                  fontSize: 16,
+                }}
+              />
               <input
                 className="inp"
                 placeholder="Cédula, nombre o descripción..."
                 value={fBuscar}
                 onChange={(e) => setFBuscar(e.target.value)}
+                style={{
+                  paddingLeft: 32, // Espacio para el icono a la izquierda
+                }}
               />
             </div>
 
@@ -583,7 +603,7 @@ export default function CasosTickets() {
                         </td>
                         <td>
                           <button className="btn-icon" title="Ver detalle">
-                            👁️
+                            <DynamicIcon name="FiEye" />
                           </button>
                         </td>
                       </tr>
