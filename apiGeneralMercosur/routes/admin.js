@@ -91,9 +91,9 @@ router.get("/fetchSistemas", async (req, res) => {
             id: row.sistema_id,
             nombre: row.str_sistema,
             ic: row.str_icono,
-            color: "#d8992a",
+            color: row.str_color,
             desc: row.str_descripcion,
-            ruta_sistema: row.str_ruta_sistema,
+            ruta: row.str_ruta_sistema,
             opciones: [],
           };
         }
@@ -120,30 +120,327 @@ router.get("/fetchSistemas", async (req, res) => {
   }
 });
 
-/* router.post("/rolOpciones", async (req, res) => {
+// ==========================================
+// 1. ENDPOINT: GUARDAR SISTEMA (CREAR / EDITAR)
+// ==========================================
+router.post("/guardarSistema", async (req, res) => {
+  const client = await pool.connect();
+
   try {
-    // 1. Obtener los parámetros enviados desde el cuerpo de la petición (POST)
-    const { usuario_id, sistema } = req.body;
+    const { id, nombre, desc, ruta, ic, color } = req.body;
 
-    // 2. Definir los valores de los parámetros en orden ($1, $2)
-    const queryParams = [usuario_id, sistema];
+    if (!nombre || !ruta) {
+      return res.status(400).json({
+        error: "Los campos 'nombre' y 'ruta' son obligatorios.",
+      });
+    }
 
-    // 3. Consulta parametrizada sin comillas en los marcadores de posición
-    const query = `
-      SELECT usuario_id, rol, sistema, ruta_sistema, opcion, ruta_opcion, tiene_permiso
-      FROM public.view_usuarios_opciones_sistemas 
-      WHERE usuario_id = $1
-        AND sistema = $2
-        AND tiene_permiso = true;
+    // Determinar el usuario al que se le asignará la relación
+    const targetUserId = 1;
+
+    await client.query("BEGIN");
+
+    // ------------------------------------------
+    // MODO EDICIÓN (Existe `id`)
+    // ------------------------------------------
+    if (id) {
+      const updateQuery = `
+        UPDATE public.cat_sistemas 
+        SET 
+          str_sistema = $1, 
+          str_descripcion = $2, 
+          str_ruta_sistema = $3, 
+          str_icono = $4, 
+          str_color = $5,
+          updated_at = NOW()
+        WHERE id = $6
+        RETURNING id, str_sistema, str_descripcion, str_ruta_sistema, str_icono, str_color;
+      `;
+
+      const resUpdate = await client.query(updateQuery, [
+        nombre,
+        desc || null,
+        ruta,
+        ic || null,
+        color || "#d8992a",
+        id,
+      ]);
+
+      if (resUpdate.rowCount === 0) {
+        await client.query("ROLLBACK");
+        return res.status(404).json({ error: "El sistema no existe." });
+      }
+
+      const sistemaEditado = resUpdate.rows[0];
+
+      // Si se cuenta con usuario, aseguramos la vinculación y que bol_activo sea true
+      if (targetUserId) {
+        let resRolSys = await client.query(
+          "SELECT id FROM public.tbl_roles_sistemas WHERE sistema_id = $1 AND rol_id = 1 LIMIT 1",
+          [id],
+        );
+
+        let rolSistemaId;
+        if (resRolSys.rowCount === 0) {
+          const insRolSys = await client.query(
+            `INSERT INTO public.tbl_roles_sistemas (rol_id, sistema_id, created_at, updated_at, bol_activo)
+             VALUES (1, $1, NOW(), NOW(), true) RETURNING id;`,
+            [id],
+          );
+          rolSistemaId = insRolSys.rows[0].id;
+        } else {
+          rolSistemaId = resRolSys.rows[0].id;
+        }
+
+        // Se inserta o se fuerza bol_activo = true si ya existía
+        await client.query(
+          `INSERT INTO public.tbl_usuarios_roles_sistemas (usuario_id, rol_sistema_id, bol_activo, created_at, updated_at)
+           VALUES ($1, $2, true, CURRENT_DATE, CURRENT_DATE)
+           ON CONFLICT (usuario_id, rol_sistema_id) 
+           DO UPDATE SET bol_activo = true, updated_at = CURRENT_DATE;`,
+          [targetUserId, rolSistemaId],
+        );
+      }
+
+      await client.query("COMMIT");
+
+      return res.status(200).json({
+        message: "Sistema actualizado exitosamente.",
+        esEdicion: true,
+        sistema: {
+          id: sistemaEditado.id,
+          nombre: sistemaEditado.str_sistema,
+          ic: sistemaEditado.str_icono,
+          color: sistemaEditado.str_color,
+          desc: sistemaEditado.str_descripcion,
+          ruta_sistema: sistemaEditado.str_ruta_sistema,
+        },
+      });
+    }
+
+    // ------------------------------------------
+    // MODO CREACIÓN (No existe `id`)
+    // ------------------------------------------
+
+    // 1. Insertar el nuevo sistema en cat_sistemas
+    const querySistema = `
+      INSERT INTO public.cat_sistemas (
+        str_sistema, 
+        str_descripcion, 
+        str_ruta_sistema, 
+        str_icono, 
+        str_color,
+        bol_activo
+      ) 
+      VALUES ($1, $2, $3, $4, $5, true) 
+      RETURNING id, str_sistema, str_descripcion, str_ruta_sistema, str_icono, str_color;
     `;
+    const resSistema = await client.query(querySistema, [
+      nombre,
+      desc || null,
+      ruta,
+      ic || null,
+      color || "#d8992a",
+    ]);
+    const nuevoSistema = resSistema.rows[0];
 
-    const result = await pool.query(query, queryParams);
+    // 2. Crear el rol de administración para este sistema (rol_id = 1) garantizando bol_activo = true
+    const queryRolSistema = `
+      INSERT INTO public.tbl_roles_sistemas (
+        rol_id, 
+        sistema_id, 
+        created_at, 
+        updated_at, 
+        bol_activo
+      ) 
+      VALUES ($1, $2, NOW(), NOW(), true) 
+      RETURNING id;
+    `;
+    const resRolSistema = await client.query(queryRolSistema, [
+      1,
+      nuevoSistema.id,
+    ]);
+    const nuevoRolSistemaId = resRolSistema.rows[0].id;
 
-    res.json({ rows: result.rows });
+    // 3. Vincular al usuario obligando bol_activo = true
+    if (targetUserId) {
+      const queryUsuarioRolSistema = `
+        INSERT INTO public.tbl_usuarios_roles_sistemas (
+          usuario_id, 
+          rol_sistema_id, 
+          bol_activo,
+          created_at,
+          updated_at
+        ) 
+        VALUES ($1, $2, true, CURRENT_DATE, CURRENT_DATE);
+      `;
+      await client.query(queryUsuarioRolSistema, [
+        targetUserId,
+        nuevoRolSistemaId,
+      ]);
+    }
+
+    // 4. Insertar la opción inicial ("Dashboard")
+    const queryOpcion = `
+      INSERT INTO public.cat_opciones (
+        str_nombre, 
+        str_ruta_opcion, 
+        bol_eliminado
+      ) 
+      VALUES ($1, $2, false) 
+      RETURNING id, str_nombre, str_ruta_opcion;
+    `;
+    const resOpcion = await client.query(queryOpcion, [
+      "Dashboard",
+      `${ruta}/dashboard`,
+    ]);
+    const nuevaOpcion = resOpcion.rows[0];
+
+    // 5. Vincular la opción al rol del sistema en tbl_roles_sistemas_opciones
+    const queryRolSistemaOpcion = `
+      INSERT INTO public.tbl_roles_sistemas_opciones (
+        roles_sistemas_id, 
+        opcion_id
+      ) 
+      VALUES ($1, $2);
+    `;
+    await client.query(queryRolSistemaOpcion, [
+      nuevoRolSistemaId,
+      nuevaOpcion.id,
+    ]);
+
+    await client.query("COMMIT");
+
+    res.status(201).json({
+      message: "Sistema creado exitosamente.",
+      esEdicion: false,
+      sistema: {
+        id: nuevoSistema.id,
+        nombre: nuevoSistema.str_sistema,
+        ic: nuevoSistema.str_icono,
+        color: nuevoSistema.str_color,
+        desc: nuevoSistema.str_descripcion,
+        ruta_sistema: nuevoSistema.str_ruta_sistema,
+        opciones: [
+          {
+            id: nuevaOpcion.id,
+            opcion: nuevaOpcion.str_nombre,
+            ruta_opcion: nuevaOpcion.str_ruta_opcion,
+            ic: "FiCheckSquare",
+          },
+        ],
+      },
+    });
   } catch (err) {
-    console.error("Error en admin:", err.message);
-    res.status(500).json({ error: "Error interno del servidor" });
+    await client.query("ROLLBACK");
+    console.error("Error al procesar el sistema:", err.message);
+    res.status(500).json({ error: "Error interno del servidor." });
+  } finally {
+    client.release();
   }
-}); */
+});
+
+// ==========================================
+// ENDPOINT: ELIMINAR SISTEMA Y SUS OPCIONES
+// ==========================================
+router.delete("/eliminarSistema/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({
+      error: "El ID del sistema es requerido.",
+    });
+  }
+
+  const client = await pool.connect();
+
+  try {
+    // 1. Verificar si el sistema existe
+    const sistemaResult = await client.query(
+      "SELECT id, str_sistema FROM public.cat_sistemas WHERE id = $1",
+      [id],
+    );
+
+    if (sistemaResult.rowCount === 0) {
+      client.release();
+      return res.status(404).json({
+        error: "El sistema especificado no existe.",
+      });
+    }
+
+    const sistema = sistemaResult.rows[0];
+
+    // Validación de seguridad para evitar eliminar la Administración General
+    if (sistema.str_sistema === "Administración General") {
+      client.release();
+      return res.status(403).json({
+        error: "No se permite eliminar el sistema de Administración General.",
+      });
+    }
+
+    await client.query("BEGIN");
+
+    // 2. Obtener las IDs de las opciones (cat_opciones) vinculadas a los roles de este sistema
+    const opcionesResult = await client.query(
+      `SELECT DISTINCT opcion_id 
+       FROM public.tbl_roles_sistemas_opciones 
+       WHERE roles_sistemas_id IN (
+         SELECT id FROM public.tbl_roles_sistemas WHERE sistema_id = $1
+       )`,
+      [id],
+    );
+
+    const opcionIds = opcionesResult.rows.map((row) => row.opcion_id);
+
+    // 3. Eliminar las asignaciones de usuarios vinculadas a los roles del sistema (tbl_usuarios_roles_sistemas)
+    await client.query(
+      `DELETE FROM public.tbl_usuarios_roles_sistemas
+       WHERE rol_sistema_id IN (
+         SELECT id FROM public.tbl_roles_sistemas WHERE sistema_id = $1
+       )`,
+      [id],
+    );
+
+    // 4. Eliminar las relaciones de opciones con los roles del sistema (tbl_roles_sistemas_opciones)
+    await client.query(
+      `DELETE FROM public.tbl_roles_sistemas_opciones
+       WHERE roles_sistemas_id IN (
+         SELECT id FROM public.tbl_roles_sistemas WHERE sistema_id = $1
+       )`,
+      [id],
+    );
+
+    // 5. Eliminar las opciones asociadas de la tabla catálogo cat_opciones
+    if (opcionIds.length > 0) {
+      await client.query(
+        `DELETE FROM public.cat_opciones WHERE id = ANY($1::int[])`,
+        [opcionIds],
+      );
+    }
+
+    // 6. Eliminar los roles asignados al sistema (tbl_roles_sistemas)
+    await client.query(
+      "DELETE FROM public.tbl_roles_sistemas WHERE sistema_id = $1",
+      [id],
+    );
+
+    // 7. Eliminar el registro principal del sistema (cat_sistemas)
+    await client.query("DELETE FROM public.cat_sistemas WHERE id = $1", [id]);
+
+    await client.query("COMMIT");
+
+    return res.status(200).json({
+      message: `El sistema "${sistema.str_sistema}", sus opciones y todas sus configuraciones fueron eliminados exitosamente.`,
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error al eliminar el sistema:", error);
+    return res.status(500).json({
+      error: "Ocurrió un error en el servidor al intentar eliminar el sistema.",
+    });
+  } finally {
+    client.release();
+  }
+});
 
 module.exports = router;

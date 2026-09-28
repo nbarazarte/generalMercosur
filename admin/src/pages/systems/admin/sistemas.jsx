@@ -11,6 +11,17 @@ export default function Sistemas() {
 
   const [sistemas, setSistemas] = useState([]);
   const [modal, setModal] = useState(null);
+  const [flag, setFlag] = useState(true);
+
+  // Estado para las notificaciones (Toast)
+  const [toast, setToast] = useState(null); // { message: string, type: 'success' | 'error' }
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 3500);
+  };
 
   useEffect(() => {
     const handleFetchSistemas = async () => {
@@ -26,14 +37,12 @@ export default function Sistemas() {
         // Recibimos los sistemas ya estructurados desde el backend
         const sistemasObtenidos = response.data.sistemas;
 
-        // Filtramos para ignorar "Administración General" (comprobando por nombre)
+        // Filtramos para ignorar "Administración General"
         const sistemasFiltrados = sistemasObtenidos.filter(
           (sis) => sis.nombre !== "Administración General",
         );
 
         setSistemas(sistemasFiltrados);
-
-        // setSistemas(sistemas);
       } catch (error) {
         const isNetworkError =
           error.message === "Network Error" || !error.response;
@@ -43,36 +52,103 @@ export default function Sistemas() {
             ? error.response.data
             : error.response?.data?.message) ||
           (isNetworkError && error.message !== "Faltan variables de entorno."
-            ? "No hay conexión con la API."
+            ? "No hay conexión con el servidor."
             : error.message);
 
         console.error("Error al cargar sistemas:", errorMessage);
-      } finally {
+        showToast(`Error al cargar los sistemas: ${errorMessage}`, "error");
       }
     };
 
     handleFetchSistemas();
-  }, []);
+  }, [flag]);
 
   const totalOpciones = useMemo(
     () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),
     [sistemas],
   );
 
-  const guardarSistema = (data) => {
-    setSistemas((prev) => {
-      const existe = prev.some((s) => s.id === data.id);
-      if (existe) {
-        return prev.map((s) => (s.id === data.id ? { ...s, ...data } : s));
+  const handleGuardarSistema = async (sistemaData) => {
+    try {
+      if (!API_URL || !API_TOKEN) {
+        throw new Error("Faltan variables de entorno.");
       }
-      return [...prev, { ...data, opciones: [] }];
-    });
-    setModal(null);
+
+      const response = await axios.post(
+        `${API_URL}/guardarSistema`,
+        sistemaData,
+        {
+          headers: {
+            Authorization: `Bearer ${API_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      const { sistema: sistemaProcesado, esEdicion, message } = response.data;
+
+      setFlag((prev) => !prev);
+      setModal(null);
+
+      const mensajeExito =
+        message ||
+        (esEdicion
+          ? "Sistema actualizado exitosamente."
+          : "Sistema creado exitosamente.");
+
+      showToast(mensajeExito, "success");
+      return { success: true, data: sistemaProcesado, message: mensajeExito };
+    } catch (error) {
+      const isNetworkError =
+        error.message === "Network Error" || !error.response;
+
+      const errorMessage =
+        (typeof error.response?.data === "string"
+          ? error.response.data
+          : error.response?.data?.error || error.response?.data?.message) ||
+        (isNetworkError && error.message !== "Faltan variables de entorno."
+          ? "No hay conexión con el servidor."
+          : error.message);
+
+      console.error("Error al guardar sistema:", errorMessage);
+      showToast(`Error: ${errorMessage}`, "error");
+      return { success: false, error: errorMessage };
+    }
   };
 
-  const eliminarSistema = (id) => {
-    setSistemas((prev) => prev.filter((s) => s.id !== id));
-    setModal(null);
+  const eliminarSistema = async (id) => {
+    try {
+      if (!API_URL || !API_TOKEN) {
+        throw new Error("Faltan variables de entorno.");
+      }
+
+      const response = await axios.delete(`${API_URL}/eliminarSistema/${id}`, {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+        },
+      });
+
+      showToast(
+        response.data.message || "Sistema eliminado correctamente.",
+        "success"
+      );
+      setFlag((prev) => !prev);
+      setModal(null);
+    } catch (error) {
+      const isNetworkError =
+        error.message === "Network Error" || !error.response;
+
+      const errorMessage =
+        (typeof error.response?.data === "string"
+          ? error.response.data
+          : error.response?.data?.error || error.response?.data?.message) ||
+        (isNetworkError && error.message !== "Faltan variables de entorno."
+          ? "No hay conexión con el servidor."
+          : error.message);
+
+      console.error("Error al eliminar sistema:", errorMessage);
+      showToast(`Error al eliminar: ${errorMessage}`, "error");
+    }
   };
 
   const guardarOpcionSistema = (sistemaId, opcionData) => {
@@ -98,6 +174,7 @@ export default function Sistemas() {
       }),
     );
     setModal(null);
+    showToast("Opción guardada correctamente.", "success");
   };
 
   const eliminarOpcionSistema = (sistemaId, opcionId) => {
@@ -110,10 +187,40 @@ export default function Sistemas() {
         };
       }),
     );
+    showToast("Opción eliminada correctamente.", "success");
   };
 
   return (
     <SystemLayout identificacion="Administración General">
+      {/* NOTIFICACIÓN TOAST */}
+      {toast && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "12px 20px",
+            borderRadius: 8,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            backgroundColor:
+              toast.type === "success" ? "#10b981" : "#ef4444",
+            color: "#ffffff",
+            fontWeight: 500,
+            fontSize: 14,
+            animation: "fadeIn 0.3s ease-in-out",
+          }}
+        >
+          <DynamicIcon
+            name={toast.type === "success" ? "FiCheckCircle" : "FiAlertTriangle"}
+          />
+          <span>{toast.message}</span>
+        </div>
+      )}
+
       {/* ENCABEZADO */}
       <div
         style={{
@@ -168,7 +275,7 @@ export default function Sistemas() {
         }}
       >
         {sistemas.map((sys) => (
-          <div className="role-card" key={sys.id}>
+          <div className="role-card" key={sys.id || sys.nombre}>
             <div className="rc-top">
               <div
                 className="role-ic"
@@ -193,9 +300,6 @@ export default function Sistemas() {
             </div>
             <h3>{sys.nombre}</h3>
             <p>{sys.desc}</p>
-            <small style={{ color: "var(--merco-muted)", fontSize: 12 }}>
-              ID: {sys.id}
-            </small>
 
             <div
               style={{
@@ -328,7 +432,7 @@ export default function Sistemas() {
       {modal?.tipo === "sistema" && (
         <ModalSistema
           data={modal.data}
-          onSave={guardarSistema}
+          onSave={handleGuardarSistema}
           onDelete={(id) => {
             if (
               window.confirm(
@@ -356,7 +460,7 @@ export default function Sistemas() {
 /* MODAL CREAR / EDITAR SISTEMA */
 function ModalSistema({ data, onSave, onDelete, onClose }) {
   const editar = !!data;
-  const [id, setId] = useState(data?.id || "");
+  const [ruta, setRuta] = useState(data?.ruta || "");
   const [nombre, setNombre] = useState(data?.nombre || "");
   const [desc, setDesc] = useState(data?.desc || "");
   const [ic, setIc] = useState(data?.ic || "FiSettings");
@@ -374,17 +478,6 @@ function ModalSistema({ data, onSave, onDelete, onClose }) {
         <div className="ma-modal-body">
           <div className="field-row">
             <div className="field">
-              <label>ID del sistema (único)</label>
-              <input
-                disabled={editar}
-                value={id}
-                onChange={(e) =>
-                  setId(e.target.value.toLowerCase().replace(/\s+/g, ""))
-                }
-                placeholder="ej. inv_stock"
-              />
-            </div>
-            <div className="field">
               <label>Nombre del sistema</label>
               <input
                 value={nombre}
@@ -392,7 +485,25 @@ function ModalSistema({ data, onSave, onDelete, onClose }) {
                 placeholder="ej. Control de Inventario"
               />
             </div>
+
+            <div className="field">
+              <label>Ruta del sistema</label>
+              <input
+                value={ruta}
+                onChange={(e) =>
+                  setRuta(
+                    e.target.value
+                      .toLowerCase()
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "")
+                      .replace(/[^a-z0-9/_-]/g, ""),
+                  )
+                }
+                placeholder="ej. /sistema"
+              />
+            </div>
           </div>
+
           <div className="field">
             <label>Descripción</label>
             <input
@@ -443,10 +554,11 @@ function ModalSistema({ data, onSave, onDelete, onClose }) {
           </button>
           <button
             className="btn btn-primary"
-            disabled={!id || !nombre}
+            disabled={!nombre || !ruta || !desc || !ic || !color}
             onClick={() =>
               onSave({
-                id,
+                id: data?.id,
+                ruta,
                 nombre,
                 desc,
                 ic,
