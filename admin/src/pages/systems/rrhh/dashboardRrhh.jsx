@@ -230,7 +230,7 @@ export default function DashboardRrhh() {
   };
 
   return (
-    <SystemLayout identificacion="Mi Expediente">
+    <SystemLayout identificacion="Mi Expediente Mercosur">
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",

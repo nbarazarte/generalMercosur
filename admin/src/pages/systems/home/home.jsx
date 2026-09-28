@@ -1,26 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
 import TextType from "../../components/TextType";
 import { DynamicIcon } from "../../components/IconCatalog";
+import { setSistemasOpciones } from "../../../store/authSlice"; // Importar la nueva acción
+
+const API_URL = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;
+const API_TOKEN = import.meta.env.VITE_TOKEN;
 
 export const MainAside = () => {
-  // Suscripción al estado de Redux
   const user = useSelector((state) => state.auth?.user);
   const nombre = user?.nombre;
 
-  const getSaludo = () => {
+  const saludo = useMemo(() => {
     const hora = new Date().getHours();
     if (hora >= 5 && hora < 12) return "Buenos días";
     if (hora >= 12 && hora < 19) return "Buenas tardes";
     return "Buenas noches";
-  };
+  }, []);
 
   return (
     <div className="aside-content">
       <h1>
         <TextType
-          text={`${getSaludo()}, \n ${nombre}`}
+          text={`${saludo}, \n ${nombre}`}
           typingSpeed={75}
           pauseDuration={1500}
           showCursor
@@ -28,8 +32,6 @@ export const MainAside = () => {
           loop={false}
           deletingSpeed={50}
           cursorBlinkDuration={0.5}
-          // Si en el futuro quieres velocidad variable, el componente espera esto:
-          // variableSpeed={{ min: 60, max: 120 }}
         />
       </h1>
       <p className="subtitle">
@@ -81,29 +83,34 @@ export const MainAside = () => {
   );
 };
 
-// Mantiene compatibilidad con el código anterior por si lo llamas como getMainAside()
 export const getMainAside = () => <MainAside />;
 
 const Home = () => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth?.user);
 
-  const sistemasOpciones = user?.sistemasOpciones || [];
+  // Mapear sistemas de Redux
+  const sistemasRedux = useMemo(() => {
+    return (user?.sistemasOpciones || []).map((sistema) => ({
+      id: sistema.id || sistema.sistema,
+      nombre: sistema.sistema,
+      descripcion: sistema.descripcion,
+      url: sistema.ruta_sistema,
+      icon: sistema.icono,
+      color: sistema.color,
+    }));
+  }, [user?.sistemasOpciones]);
 
-  const sistemas = sistemasOpciones.map((sistema) => ({
-    id: sistema.id,
-    nombre: sistema.sistema,
-    descripcion: sistema.descripcion,
-    url: sistema.ruta_sistema,
-    icon: sistema.icono,
-  }));
+  const [sistemas, setSistemas] = useState(sistemasRedux);
 
-  //console.log("Sistemas desde Redux:", sistemas);
+  useEffect(() => {
+    if (sistemasRedux.length > 0) {
+      setSistemas(sistemasRedux);
+    }
+  }, [sistemasRedux]);
 
-  // Fallback en cascada: Redux -> localStorage -> "Usuario"
-  const usuario = user?.username;
-
+  // Manejo del tema (Light/Dark)
   const [theme, setTheme] = useState(() => {
     return (
       localStorage.getItem("theme") ||
@@ -112,13 +119,11 @@ const Home = () => {
   });
 
   useEffect(() => {
-    // Sincroniza la clase en <html>
     document.documentElement.classList.remove("light", "dark");
     document.documentElement.classList.add(theme);
     document.documentElement.style.colorScheme = theme;
     localStorage.setItem("theme", theme);
 
-    // Escucha si otra parte de la app cambia la clase en <html>
     const observer = new MutationObserver(() => {
       const isDark = document.documentElement.classList.contains("dark");
       setTheme(isDark ? "dark" : "light");
@@ -131,6 +136,53 @@ const Home = () => {
 
     return () => observer.disconnect();
   }, [theme]);
+
+  // Carga de sistemas desde la API y sincronización con Redux
+  useEffect(() => {
+    if (!user?.id) return;
+
+    let isMounted = true;
+
+    const fetchSistemas = async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/sistemas-opciones/${user.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token || API_TOKEN}`,
+            },
+          },
+        );
+
+        if (isMounted && response.data) {
+          // 1. Sincronizar el estado global en Redux para toda la app
+          dispatch(setSistemasOpciones(response.data));
+
+          // 2. Formatear para la grilla local
+          const sistemasFormateados = response.data.map((sistema) => ({
+            id: sistema.id || sistema.sistema,
+            nombre: sistema.sistema,
+            descripcion: sistema.descripcion,
+            url: sistema.ruta_sistema,
+            icon: sistema.icono,
+            color: sistema.color,
+          }));
+
+          setSistemas(sistemasFormateados);
+        }
+      } catch (err) {
+        console.error("Error obteniendo sistemas y opciones:", err);
+      }
+    };
+
+    fetchSistemas();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id, user?.token, dispatch]);
+
+  const usuario = user?.username;
 
   return (
     <div className="systems-wrapper">
@@ -155,9 +207,18 @@ const Home = () => {
               }
             }}
           >
-            <div className="system-icon">
+            <div
+              className="system-icon"
+              style={{
+                backgroundColor: sistema.color
+                  ? `${sistema.color}22`
+                  : "rgba(47, 111, 237, 0.15)",
+                color: sistema.color || "#2f6fed",
+              }}
+            >
               <DynamicIcon name={sistema.icon} />
             </div>
+
             <div className="system-info">
               <h3>{sistema.nombre}</h3>
               <p>{sistema.descripcion}</p>

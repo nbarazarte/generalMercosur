@@ -227,7 +227,7 @@ function App() {
             path="/rrhh"
             element={
               <SystemLoaderWrapper
-                systemName="Sistema de Recursos Humanos"
+                systemName="Sistema Mi Expediente Mercosur"
                 systemKey="/rrhh"
               >
                  <Outlet /> {/* Permite renderizar las subrutas hijas */}

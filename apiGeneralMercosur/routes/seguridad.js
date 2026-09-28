@@ -207,7 +207,76 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login de usuario
+//########################################################################################
+// Función auxiliar reutilizable
+async function obtenerSistemasYOpciones(userId) {
+  const resultado = await pool.query(
+    "SELECT * FROM public.view_usuarios_opciones_sistemas WHERE usuario_id = $1",
+    [userId],
+  );
+
+  if (resultado.rows.length === 0) {
+    return null;
+  }
+
+  return Object.values(
+    resultado.rows.reduce((acc, row) => {
+      const {
+        sistema,
+        icono,
+        color,
+        ruta_sistema,
+        descripcion,
+        opcion,
+        ruta_opcion,
+        tiene_permiso,
+        rol,
+      } = row;
+
+      if (!acc[sistema]) {
+        acc[sistema] = {
+          sistema: sistema,
+          icono: icono,
+          color: color,
+          ruta_sistema: ruta_sistema,
+          descripcion: descripcion,
+          rol: rol,
+          opciones: [],
+        };
+      }
+
+      acc[sistema].opciones.push({
+        opcion: opcion,
+        ruta_opcion: ruta_opcion,
+        tiene_permiso: tiene_permiso,
+      });
+
+      return acc;
+    }, {}),
+  );
+}
+
+// Nuevo Endpoint independiente
+router.get("/sistemas-opciones/:usuario_id", async (req, res) => {
+  try {
+    const { usuario_id } = req.params;
+
+    const sistemasOpciones = await obtenerSistemasYOpciones(usuario_id);
+
+    if (!sistemasOpciones) {
+      return res.status(404).send("Usuario sin sistemas asignados");
+    }
+
+    //console.log(sistemasOpciones)
+
+    res.json(sistemasOpciones);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Error en el servidor");
+  }
+});
+
+// Endpoint de Login actualizado
 router.post("/login", async (req, res) => {
   try {
     const { email, password, device_id, device_name } = req.body;
@@ -251,7 +320,7 @@ router.post("/login", async (req, res) => {
         console.error("Error al limpiar tokens expirados:", err.message),
       );
 
-    // 5. UPSERT: Si ya existe un token para este dispositivo, lo reemplaza y fuerza used = false
+    // 5. UPSERT token de dispositivo
     const deviceId = device_id || "default_device";
     const deviceName = device_name || "Dispositivo Desconocido";
 
@@ -268,55 +337,12 @@ router.post("/login", async (req, res) => {
       [user.id, deviceId, deviceName, token],
     );
 
-    // 6. Buscar Sistemas y opciones del usuario
-    const resultado = await pool.query(
-      "SELECT * FROM public.view_usuarios_opciones_sistemas WHERE usuario_id = $1",
-      [user.id],
-    );
+    // 6. Obtener Sistemas y Opciones usando la función auxiliar
+    const sistemasOpciones = await obtenerSistemasYOpciones(user.id);
 
-    if (resultado.rows.length === 0) {
+    if (!sistemasOpciones) {
       return res.status(404).send("Usuario sin sistemas asignados");
     }
-
-    // Agrupar opciones por cada sistema
-    const sistemasOpciones = Object.values(
-      resultado.rows.reduce((acc, row) => {
-        const {
-          sistema,
-          icono,
-          ruta_sistema,
-          descripcion,
-          opcion,
-          ruta_opcion,
-          tiene_permiso,
-          rol,
-        } = row;
-
-        if (!acc[sistema]) {
-          acc[sistema] = {
-            sistema: sistema,
-            icono: icono,
-            ruta_sistema: ruta_sistema,
-            descripcion: descripcion,
-            rol: rol,
-            opciones: [],
-          };
-        }
-
-        acc[sistema].opciones.push({
-          opcion: opcion,
-          ruta_opcion: ruta_opcion,
-          tiene_permiso: tiene_permiso,
-        });
-
-        return acc;
-      }, {}),
-    );
-
-    /* console.log(
-      "Sistemas y opciones:",
-      JSON.stringify(sistemasOpciones, null, 2),
-    ); */
 
     // 7. Respuesta al cliente
     res.json({
@@ -333,6 +359,7 @@ router.post("/login", async (req, res) => {
     res.status(500).send("Error en el servidor");
   }
 });
+//########################################################################################
 
 // Recuperar contraseña
 router.post("/forgot-password", async (req, res) => {

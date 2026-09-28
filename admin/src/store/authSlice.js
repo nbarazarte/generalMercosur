@@ -1,4 +1,3 @@
-// src/store/authSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -26,6 +25,12 @@ export const authSlice = createSlice({
       state.token = token;
       state.isAuthenticated = true;
     },
+    // Nuevo reducer para actualizar solo la lista de sistemas y opciones
+    setSistemasOpciones: (state, action) => {
+      if (state.user) {
+        state.user.sistemasOpciones = action.payload;
+      }
+    },
     logout: (state) => {
       state.user = {
         id: null,
@@ -42,5 +47,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setUser, logout } = authSlice.actions;
+export const { setUser, setSistemasOpciones, logout } = authSlice.actions;
 export default authSlice.reducer;
