@@ -13,7 +13,7 @@ import Sistemas from "./pages/systems/admin/sistemas";
 import Dashboard from "./pages/systems/admin/dashboard";
 
 //rrhh:
-import RRHH from "./pages/systems/rrhh/rrhh";
+import Dashboardrrhh from "./pages/systems/rrhh/dashboardRrhh";
 
 //tickets:
 import DashboardTickets from "./pages/systems/tickets/dashboardTickets";
@@ -230,10 +230,14 @@ function App() {
                 systemName="Sistema de Recursos Humanos"
                 systemKey="/rrhh"
               >
-                <RRHH />
+                 <Outlet /> {/* Permite renderizar las subrutas hijas */}
               </SystemLoaderWrapper>
             }
-          />
+          >
+              {/* Subruta 0: Dashboard */}
+            <Route path="dashboard" element={<Dashboardrrhh />} />
+
+          </Route>
 
           {/* Sistema de Tickets */}
           <Route
