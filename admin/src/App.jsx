@@ -237,6 +237,9 @@ function App() {
               {/* Subruta 0: Dashboard */}
             <Route path="dashboard" element={<Dashboardrrhh />} />
 
+            {/* Redirección por defecto al entrar solo a /admin */}
+            <Route index element={<Navigate to="dashboard" replace />} />
+
           </Route>
 
           {/* Sistema de Tickets */}
