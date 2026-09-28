@@ -155,20 +155,29 @@ const Home = () => {
         );
 
         if (isMounted && response.data) {
-          // 1. Sincronizar el estado global en Redux para toda la app
-          dispatch(setSistemasOpciones(response.data));
+          // Comparamos si la respuesta devuelta por la API es exactamente igual a lo que ya está en Redux
+          const datosActualesJSON = JSON.stringify(
+            user?.sistemasOpciones || [],
+          );
+          const datosNuevosJSON = JSON.stringify(response.data);
 
-          // 2. Formatear para la grilla local
-          const sistemasFormateados = response.data.map((sistema) => ({
-            id: sistema.id || sistema.sistema,
-            nombre: sistema.sistema,
-            descripcion: sistema.descripcion,
-            url: sistema.ruta_sistema,
-            icon: sistema.icono,
-            color: sistema.color,
-          }));
+          // SOLO despachamos si hay diferencias respecto al estado inicial/actual
+          if (datosActualesJSON !== datosNuevosJSON) {
+            // 1. Sincronizar Redux
+            dispatch(setSistemasOpciones(response.data));
 
-          setSistemas(sistemasFormateados);
+            // 2. Formatear para la grilla local
+            const sistemasFormateados = response.data.map((sistema) => ({
+              id: sistema.id || sistema.sistema,
+              nombre: sistema.sistema,
+              descripcion: sistema.descripcion,
+              url: sistema.ruta_sistema,
+              icon: sistema.icono,
+              color: sistema.color,
+            }));
+
+            setSistemas(sistemasFormateados);
+          }
         }
       } catch (err) {
         console.error("Error obteniendo sistemas y opciones:", err);
@@ -180,7 +189,7 @@ const Home = () => {
     return () => {
       isMounted = false;
     };
-  }, [user?.id, user?.token, dispatch]);
+  }, [user?.id, user?.token, user?.sistemasOpciones, dispatch]);
 
   const usuario = user?.username;
 

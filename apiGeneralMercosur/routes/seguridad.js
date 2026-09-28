@@ -256,7 +256,6 @@ async function obtenerSistemasYOpciones(userId) {
   );
 }
 
-// Nuevo Endpoint independiente
 router.get("/sistemas-opciones/:usuario_id", async (req, res) => {
   try {
     const { usuario_id } = req.params;
@@ -276,7 +275,6 @@ router.get("/sistemas-opciones/:usuario_id", async (req, res) => {
   }
 });
 
-// Endpoint de Login actualizado
 router.post("/login", async (req, res) => {
   try {
     const { email, password, device_id, device_name } = req.body;
