@@ -42,7 +42,7 @@ export default function Sistemas() {
           (sis) => sis.nombre !== "Administración General",
         );
 
-        setSistemas(sistemasFiltrados);
+        setSistemas(sistemasObtenidos);
       } catch (error) {
         const isNetworkError =
           error.message === "Network Error" || !error.response;

@@ -5,6 +5,9 @@ import HomeLayout from "./pages/layouts/HomeLayout";
 import Login, { LoginAside } from "./pages/auth/login";
 import Home, { MainAside } from "./pages/systems/home/home";
 
+import { DynamicIcon } from "../src/pages/components/IconCatalog";
+import { setUser } from "../src/store/authSlice";
+
 // Rutas de los sistemas:
 
 //admin:
@@ -60,6 +63,18 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
 
   const [loading, setLoading] = useState(shouldShowLoader);
 
+  const sistemas =
+    useSelector((state) => state.auth?.user.sistemasOpciones) || [];
+
+  // Filtramos el sistema actual basándonos en el systemName recibido por props
+  const currentSystemData = sistemas.find(
+    (sys) => sys.sistema.toLowerCase() === systemName.toLowerCase(),
+  );
+
+  // Extraemos el icono y el color (con valores por defecto por seguridad)
+  const iconName = currentSystemData?.icono || "FiMonitor";
+  const systemColor = currentSystemData?.color || "#2f6fed";
+
   useEffect(() => {
     if (!shouldShowLoader) return;
 
@@ -84,21 +99,20 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
           <div className="loader-icon-container">
             <div className="loader-ring"></div>
             <div className="loader-ring ring-reverse"></div>
-            <div className="loader-core-icon">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                <path d="M2 17l10 5 10-5" />
-                <path d="M2 12l10 5 10-5" />
-              </svg>
+            <div className="loader-core-icon_">
+              <DynamicIcon
+                name={iconName}
+                style={{
+                  background: systemColor + "42", // Color con opacidad para el fondo
+                  color: systemColor, // Color principal para el icono
+                  fontSize: 42,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "12px", // Esquinas redondeadas (ajusta los píxeles a tu gusto)
+                  padding: "10px", // Opcional: añade espacio interno para que el fondo luzca mejor
+                }}
+              />
             </div>
           </div>
 
@@ -112,7 +126,6 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
 
           <div className="loader-progress-wrapper">
             <div className="loader-progress-bar">
-              {/* Animación fluida controlada directamente por CSS */}
               <div className="loader-progress-fill-animated"></div>
             </div>
             <div className="loader-progress-info">
@@ -202,7 +215,7 @@ function App() {
             path="/admin"
             element={
               <SystemLoaderWrapper
-                systemName="Sistema de Administración General"
+                systemName="Administración General"
                 systemKey="/admin"
               >
                 <Outlet /> {/* Permite renderizar las subrutas hijas */}
@@ -226,10 +239,7 @@ function App() {
           <Route
             path="/rrhh"
             element={
-              <SystemLoaderWrapper
-                systemName="Sistema Mi Expediente Mercosur"
-                systemKey="/rrhh"
-              >
+              <SystemLoaderWrapper systemName="Mi Expediente" systemKey="/rrhh">
                 <Outlet /> {/* Permite renderizar las subrutas hijas */}
               </SystemLoaderWrapper>
             }
@@ -245,10 +255,7 @@ function App() {
           <Route
             path="/tickets"
             element={
-              <SystemLoaderWrapper
-                systemName="Sistema de Tickets"
-                systemKey="/tickets"
-              >
+              <SystemLoaderWrapper systemName="Tickets" systemKey="/tickets">
                 <Outlet /> {/* Permite renderizar las subrutas hijas */}
               </SystemLoaderWrapper>
             }
@@ -277,7 +284,7 @@ function App() {
             path="/kcs"
             element={
               <SystemLoaderWrapper
-                systemName="Sistema de Base de Conocimiento (KCS)"
+                systemName="Base de Conocimiento (KCS)"
                 systemKey="/kcs"
               >
                 <Outlet /> {/* Permite renderizar las subrutas hijas */}
