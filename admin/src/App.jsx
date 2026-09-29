@@ -23,7 +23,7 @@ import Clientes from "./pages/systems/tickets/clientes";
 import ReportesDesempeño from "./pages/systems/tickets/reportesDesempeño";
 
 //kcs:
-import KCS from "./pages/systems/kcs/kcs";
+import DashboardKcs from "./pages/systems/kcs/dashboard";
 
 // Rastreador de navegación para todos los sistemas
 const RouteTracker = () => {
@@ -230,16 +230,15 @@ function App() {
                 systemName="Sistema Mi Expediente Mercosur"
                 systemKey="/rrhh"
               >
-                 <Outlet /> {/* Permite renderizar las subrutas hijas */}
+                <Outlet /> {/* Permite renderizar las subrutas hijas */}
               </SystemLoaderWrapper>
             }
           >
-              {/* Subruta 0: Dashboard */}
+            {/* Subruta 0: Dashboard */}
             <Route path="dashboard" element={<Dashboardrrhh />} />
 
-            {/* Redirección por defecto al entrar solo a /admin */}
+            {/* Redirección por defecto al entrar solo a /rrhh */}
             <Route index element={<Navigate to="dashboard" replace />} />
-
           </Route>
 
           {/* Sistema de Tickets */}
@@ -257,16 +256,16 @@ function App() {
             {/* Subruta 0: Dashboard */}
             <Route path="dashboard" element={<DashboardTickets />} />
 
-             {/* Subruta 1: Casos / Tickets */}
+            {/* Subruta 1: Casos / Tickets */}
             <Route path="casos-tickets" element={<CasosTickets />} />
 
-             {/* Subruta 2: Seguimiento */}
+            {/* Subruta 2: Seguimiento */}
             <Route path="seguimiento" element={<Seguimiento />} />
 
-             {/* Subruta 3: Clientes */}
+            {/* Subruta 3: Clientes */}
             <Route path="clientes" element={<Clientes />} />
 
-             {/* Subruta 4: Reportes - Desempeño */}
+            {/* Subruta 4: Reportes - Desempeño */}
             <Route path="reportes-desempeño" element={<ReportesDesempeño />} />
 
             {/* Redirección por defecto al entrar solo a /tickets */}
@@ -281,10 +280,16 @@ function App() {
                 systemName="Sistema de Base de Conocimiento (KCS)"
                 systemKey="/kcs"
               >
-                <KCS />
+                <Outlet /> {/* Permite renderizar las subrutas hijas */}
               </SystemLoaderWrapper>
             }
-          />
+          >
+            {/* Subruta 0: Dashboard */}
+            <Route path="dashboard" element={<DashboardKcs />} />
+
+            {/* Redirección por defecto al entrar solo a /kcs */}
+            <Route index element={<Navigate to="dashboard" replace />} />
+          </Route>
         </Route>
 
         {/* CUALQUIER OTRA RUTA: Redirige al login */}

@@ -260,19 +260,6 @@ export default function DashboardSistemasUsuarios() {
     [usuarios],
   );
 
-  // Cambio dinámico de matriz
-  const handleAccesoChange = (userId, sysId, rol) => {
-    setUsuarios((prev) =>
-      prev.map((u) => {
-        if (u.id !== userId) return u;
-        const accesos = { ...u.accesos };
-        if (rol) accesos[sysId] = rol;
-        else delete accesos[sysId];
-        return { ...u, accesos };
-      }),
-    );
-  };
-
   const guardarOpcionSistema = (sistemaId, opcionData) => {
     setSistemas((prev) =>
       prev.map((s) => {
@@ -323,10 +310,7 @@ export default function DashboardSistemasUsuarios() {
         </div>
 
         {/* 1. TARJETAS DE MÉTRICAS GENERALES (KPIs) */}
-        <div
-          className="ma-stats"
-          style={{ gridTemplateColumns: "repeat(5, 1fr)" }}
-        >
+        <div className="ma-stats">
           <KPICard
             icon="FiGrid"
             val={sistemas.length}
@@ -374,14 +358,7 @@ export default function DashboardSistemasUsuarios() {
         </div>
 
         {/* 2. FILA 1 DE GRÁFICOS: ACCESOS POR SISTEMA Y DISTRIBUCIÓN DE ROLES */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.6fr 1fr",
-            gap: 20,
-            marginBottom: 20,
-          }}
-        >
+        <div className="dashboard-grid-2col">
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
               <span
@@ -421,14 +398,7 @@ export default function DashboardSistemasUsuarios() {
         </div>
 
         {/* 3. FILA 2: MATRIZ DE ACCESOS RÁPIDOS Y ALERTAS DE SEGURIDAD */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.6fr 1fr",
-            gap: 20,
-            marginBottom: 20,
-          }}
-        >
+        <div className="dashboard-grid-2col">
           {/* MATRIZ RESUMEN DE USUARIOS Y ACCESOS */}
           <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
             <div
@@ -437,6 +407,8 @@ export default function DashboardSistemasUsuarios() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                flexWrap: "wrap",
+                gap: 10,
               }}
             >
               <div>
@@ -461,107 +433,109 @@ export default function DashboardSistemasUsuarios() {
               </button>
             </div>
 
-            <table className="ma-table">
-              <thead>
-                <tr>
-                  <th>USUARIO</th>
-                  <th>ESTADO</th>
-                  <th>ACCESOS CONFIGURADOS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {usuarios.slice(0, 5).map((u) => (
-                  <tr key={u.id}>
-                    <td style={{ padding: "10px 16px" }}>
-                      <div className="ma-user-cell">
-                        <div
-                          className="ma-ava"
-                          style={{ background: "var(--merco-navy, #0B1B32)" }}
-                        >
-                          {initials(u.nombre)}
-                        </div>
-                        <div>
-                          <b
-                            style={{
-                              color: "var(--merco-text)",
-                              display: "block",
-                            }}
+            <div className="ma-table-container">
+              <table className="ma-table">
+                <thead>
+                  <tr>
+                    <th>USUARIO</th>
+                    <th>ESTADO</th>
+                    <th>ACCESOS CONFIGURADOS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usuarios.slice(0, 5).map((u) => (
+                    <tr key={u.id}>
+                      <td style={{ padding: "10px 16px" }}>
+                        <div className="ma-user-cell">
+                          <div
+                            className="ma-ava"
+                            style={{ background: "var(--merco-navy, #0B1B32)" }}
                           >
-                            {u.nombre}
-                          </b>
-                          <small style={{ color: "var(--merco-muted)" }}>
-                            {u.email}
-                          </small>
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ padding: "10px 16px" }}>
-                      <span
-                        style={{
-                          padding: "3px 10px",
-                          borderRadius: 12,
-                          fontSize: 11,
-                          fontWeight: 600,
-                          background:
-                            u.estado === "active"
-                              ? "rgba(31, 157, 99, 0.15)"
-                              : u.estado === "pending"
-                                ? "rgba(216, 153, 42, 0.15)"
-                                : "rgba(209, 67, 91, 0.15)",
-                          color:
-                            u.estado === "active"
-                              ? "#1f9d63"
-                              : u.estado === "pending"
-                                ? "#d8992a"
-                                : "#d1435b",
-                        }}
-                      >
-                        ●{" "}
-                        {u.estado === "active"
-                          ? "Activo"
-                          : u.estado === "pending"
-                            ? "Pendiente"
-                            : "Inactivo"}
-                      </span>
-                    </td>
-                    <td style={{ padding: "10px 16px" }}>
-                      <div
-                        style={{ display: "flex", gap: 6, flexWrap: "wrap" }}
-                      >
-                        {sistemas.map((sys) => {
-                          const rolActual = u.accesos[sys.id] || "";
-                          return (
-                            <span
-                              key={sys.id}
+                            {initials(u.nombre)}
+                          </div>
+                          <div>
+                            <b
                               style={{
-                                fontSize: 11,
-                                padding: "2px 8px",
-                                borderRadius: 4,
-                                border: rolActual
-                                  ? `1px solid ${sys.color}66`
-                                  : "1px solid var(--merco-border, #444)",
-                                background: rolActual
-                                  ? `${sys.color}15`
-                                  : "transparent",
-                                color: rolActual
-                                  ? "var(--merco-text)"
-                                  : "var(--merco-muted)",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 4,
+                                color: "var(--merco-text)",
+                                display: "block",
                               }}
                             >
-                              <DynamicIcon name={sys.ic} fallback="FiGrid" />
-                              <b>{sys.nombre}:</b> {rolActual || "Sin acceso"}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                              {u.nombre}
+                            </b>
+                            <small style={{ color: "var(--merco-muted)" }}>
+                              {u.email}
+                            </small>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ padding: "10px 16px" }}>
+                        <span
+                          style={{
+                            padding: "3px 10px",
+                            borderRadius: 12,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            background:
+                              u.estado === "active"
+                                ? "rgba(31, 157, 99, 0.15)"
+                                : u.estado === "pending"
+                                  ? "rgba(216, 153, 42, 0.15)"
+                                  : "rgba(209, 67, 91, 0.15)",
+                            color:
+                              u.estado === "active"
+                                ? "#1f9d63"
+                                : u.estado === "pending"
+                                  ? "#d8992a"
+                                  : "#d1435b",
+                          }}
+                        >
+                          ●{" "}
+                          {u.estado === "active"
+                            ? "Activo"
+                            : u.estado === "pending"
+                              ? "Pendiente"
+                              : "Inactivo"}
+                        </span>
+                      </td>
+                      <td style={{ padding: "10px 16px" }}>
+                        <div
+                          style={{ display: "flex", gap: 6, flexWrap: "wrap" }}
+                        >
+                          {sistemas.map((sys) => {
+                            const rolActual = u.accesos[sys.id] || "";
+                            return (
+                              <span
+                                key={sys.id}
+                                style={{
+                                  fontSize: 11,
+                                  padding: "2px 8px",
+                                  borderRadius: 4,
+                                  border: rolActual
+                                    ? `1px solid ${sys.color}66`
+                                    : "1px solid var(--merco-border, #444)",
+                                  background: rolActual
+                                    ? `${sys.color}15`
+                                    : "transparent",
+                                  color: rolActual
+                                    ? "var(--merco-text)"
+                                    : "var(--merco-muted)",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                }}
+                              >
+                                <DynamicIcon name={sys.ic} fallback="FiGrid" />
+                                <b>{sys.nombre}:</b> {rolActual || "Sin acceso"}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* ALERTAS DE SEGURIDAD Y AUDITORÍA DE ACCESOS */}
@@ -622,6 +596,7 @@ export default function DashboardSistemasUsuarios() {
                       display: "grid",
                       placeItems: "center",
                       fontSize: 16,
+                      flexShrink: 0,
                     }}
                   >
                     <DynamicIcon
@@ -635,21 +610,32 @@ export default function DashboardSistemasUsuarios() {
                       fallback="FiShield"
                     />
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <b
                       style={{
                         fontSize: 13,
                         color: "var(--merco-text)",
                         display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                     >
                       {item.titulo}
                     </b>
-                    <small style={{ color: "var(--merco-muted)" }}>
+                    <small
+                      style={{
+                        color: "var(--merco-muted)",
+                        display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {item.usuario} · {item.detalle}
                     </small>
                   </div>
-                  <div style={{ textAlign: "right" }}>
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
                     <small style={{ color: "var(--merco-muted)" }}>
                       {item.tiempo}
                     </small>
@@ -668,6 +654,8 @@ export default function DashboardSistemasUsuarios() {
               justifyContent: "space-between",
               alignItems: "center",
               marginBottom: 12,
+              flexWrap: "wrap",
+              gap: 10,
             }}
           >
             <div>
@@ -716,12 +704,22 @@ export default function DashboardSistemasUsuarios() {
                       alignItems: "center",
                       justifyContent: "center",
                       fontSize: 20,
+                      flexShrink: 0,
                     }}
                   >
                     <DynamicIcon name={sys.ic} fallback="FiGrid" />
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <b style={{ color: "var(--merco-text)", fontSize: 14 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <b
+                      style={{
+                        color: "var(--merco-text)",
+                        fontSize: 14,
+                        display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {sys.nombre}
                     </b>
                     <small
@@ -729,6 +727,9 @@ export default function DashboardSistemasUsuarios() {
                         display: "block",
                         color: "var(--merco-muted)",
                         fontSize: 11,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                     >
                       {sys.desc}
@@ -789,6 +790,7 @@ export default function DashboardSistemasUsuarios() {
                             padding: "4px 8px",
                             borderRadius: 4,
                             fontSize: 12,
+                            gap: 8,
                           }}
                         >
                           <div
@@ -796,10 +798,18 @@ export default function DashboardSistemasUsuarios() {
                               display: "flex",
                               alignItems: "center",
                               gap: 6,
+                              minWidth: 0,
                             }}
                           >
                             <DynamicIcon name={opc.ic} fallback="FiFolder" />
-                            <span style={{ color: "var(--merco-text)" }}>
+                            <span
+                              style={{
+                                color: "var(--merco-text)",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
                               {opc.opcion}
                             </span>
                           </div>
@@ -807,6 +817,7 @@ export default function DashboardSistemasUsuarios() {
                             style={{
                               fontSize: 10,
                               color: "var(--merco-muted)",
+                              flexShrink: 0,
                             }}
                           >
                             {opc.ruta_opcion}
@@ -900,7 +911,6 @@ function ChartBarSistemas({ isDark, sistemas, usuarios }) {
       ? "rgba(255, 255, 255, 0.08)"
       : "rgba(0, 0, 0, 0.05)";
 
-    // Conteo de usuarios con rol en cada sistema
     const labels = sistemas.map((s) => s.nombre);
     const data = sistemas.map((sys) => {
       return usuarios.filter((u) => !!u.accesos[sys.id]).length;
@@ -939,7 +949,7 @@ function ChartBarSistemas({ isDark, sistemas, usuarios }) {
   }, [isDark, sistemas, usuarios]);
 
   return (
-    <div style={{ height: 210 }}>
+    <div style={{ position: "relative", width: "100%", height: 210 }}>
       <canvas ref={canvasRef} />
     </div>
   );
@@ -953,7 +963,6 @@ function ChartDoughnutRoles({ isDark, usuarios }) {
     const ctx = canvasRef.current.getContext("2d");
     const textColor = isDark ? "#94A3B8" : "#64748B";
 
-    // Contar concurrencia de cada nombre de rol asignado
     const conteoRoles = {};
     usuarios.forEach((u) => {
       Object.values(u.accesos).forEach((rolNombre) => {
@@ -1002,7 +1011,7 @@ function ChartDoughnutRoles({ isDark, usuarios }) {
   }, [isDark, usuarios]);
 
   return (
-    <div style={{ height: 210 }}>
+    <div style={{ position: "relative", width: "100%", height: 210 }}>
       <canvas ref={canvasRef} />
     </div>
   );

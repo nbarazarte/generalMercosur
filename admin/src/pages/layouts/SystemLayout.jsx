@@ -2,6 +2,8 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 import Logo from "../components/Logo";
 import LogoutButton from "../components/LogoutButton";
 import ThemeToggle from "../components/ThemeToggle";
+import { DynamicIcon } from "../components/IconCatalog";
+
 import { useSelector } from "react-redux";
 import "../../../src/systems.css";
 
@@ -22,7 +24,9 @@ export default function SystemLayout({ children, identificacion }) {
         .map((item) => ({
           to: item.ruta_opcion,
           label: item.opcion,
-          icon: "",
+          // 2. EXTRAER EL NOMBRE DEL ÍCONO (item.ic o item.str_icono)
+          icon:
+            item.ic || item.str_icono || item.opcion_icono || "FiCheckSquare",
         })) || [];
 
     return {
@@ -66,7 +70,10 @@ export default function SystemLayout({ children, identificacion }) {
               to={item.to}
               className={({ isActive }) => (isActive ? "active" : "")}
             >
-              {item.icon && <span className="ic">{item.icon}</span>}
+              {/* 3. RENDERIZAR USANDO DYNAMICICON */}
+              <span className="ic">
+                <DynamicIcon name={item.icon} fallback="FiGrid" />
+              </span>
               {item.label}
             </NavLink>
           ))}

@@ -123,7 +123,7 @@ function useIsDarkMode() {
       setIsDark(
         document.documentElement.classList.contains("dark") ||
           document.body.classList.contains("dark") ||
-          document.documentElement.getAttribute("data-theme") === "dark",
+          document.documentElement.getAttribute("data-theme") === "dark"
       );
     };
 
@@ -149,21 +149,9 @@ export default function DashboardTickets() {
 
   return (
     <SystemLayout identificacion="Tickets">
-      <div
-        style={{
-          fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
-          padding: "10px 0",
-        }}
-      >
+      <div className="ma-content" style={{ padding: "10px 0" }}>
         {/* ENCABEZADO */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
+        <div className="ma-toolbar" style={{ marginBottom: 20 }}>
           <div>
             <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
               Dashboard
@@ -171,11 +159,8 @@ export default function DashboardTickets() {
           </div>
         </div>
 
-        {/* 1. TARJETAS DE MÉTRICAS (KPIs) - Con íconos de Feather */}
-        <div
-          className="ma-stats"
-          style={{ gridTemplateColumns: "repeat(5, 1fr)" }}
-        >
+        {/* 1. TARJETAS DE MÉTRICAS (KPIs) - Adaptables mediante la clase .ma-stats */}
+        <div className="ma-stats">
           <KPICard
             icon="FiFolder"
             val="14"
@@ -197,14 +182,7 @@ export default function DashboardTickets() {
         </div>
 
         {/* 2. FILA 1 DE GRÁFICOS: EVOLUCIÓN Y POR ESTADO */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.6fr 1fr",
-            gap: 20,
-            marginBottom: 20,
-          }}
-        >
+        <div className="dashboard-grid-2col">
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
               <span
@@ -240,15 +218,8 @@ export default function DashboardTickets() {
         </div>
 
         {/* 3. FILA 2: CASOS RECIENTES Y ALERTAS SLA */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.6fr 1fr",
-            gap: 20,
-            marginBottom: 20,
-          }}
-        >
-          {/* TABLA DE CASOS RECIENTES */}
+        <div className="dashboard-grid-2col">
+          {/* TABLA DE CASOS RECIENTES CON SCROLL HORIZONTAL RESPONSIVO */}
           <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
             <div
               style={{
@@ -275,89 +246,91 @@ export default function DashboardTickets() {
               <button className="btn btn-ghost btn-sm">Ver todos</button>
             </div>
 
-            <table className="ma-table">
-              <thead>
-                <tr>
-                  <th>CLIENTE</th>
-                  <th>TIPO</th>
-                  <th>PRIORIDAD</th>
-                  <th>ESTADO</th>
-                  <th>AGENTE</th>
-                </tr>
-              </thead>
-              <tbody>
-                {CASOS_RECIENTES.map((c, i) => (
-                  <tr key={i}>
-                    <td style={{ padding: "10px 16px" }}>
-                      <div className="ma-user-cell">
-                        <div
-                          className="ma-ava"
-                          style={{ background: "var(--merco-navy, #0B1B32)" }}
-                        >
-                          {initials(c.nombre)}
-                        </div>
-                        <div>
-                          <b
-                            style={{
-                              color: "var(--merco-text)",
-                              display: "block",
-                            }}
-                          >
-                            {c.nombre}
-                          </b>
-                          <small style={{ color: "var(--merco-muted)" }}>
-                            {c.cedula}
-                          </small>
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ padding: "10px 16px" }}>
-                      <span className="tag">{c.tipo}</span>
-                    </td>
-                    <td style={{ padding: "10px 16px", fontWeight: 600 }}>
-                      <span
-                        style={{
-                          color:
-                            c.prioridad === "Alta"
-                              ? "var(--merco-danger, #DC2626)"
-                              : "var(--merco-warning, #D97706)",
-                        }}
-                      >
-                        ● {c.prioridad}
-                      </span>
-                    </td>
-                    <td style={{ padding: "10px 16px" }}>
-                      <span
-                        style={{
-                          padding: "3px 10px",
-                          borderRadius: 12,
-                          fontSize: 12,
-                          fontWeight: 500,
-                          background:
-                            c.estado === "Pendiente"
-                              ? "rgba(47, 111, 237, 0.15)"
-                              : "rgba(216, 153, 42, 0.15)",
-                          color:
-                            c.estado === "Pendiente"
-                              ? "var(--merco-blue, #2f6fed)"
-                              : "var(--merco-warning, #d8992a)",
-                        }}
-                      >
-                        ● {c.estado}
-                      </span>
-                    </td>
-                    <td
-                      style={{
-                        padding: "10px 16px",
-                        color: "var(--merco-muted)",
-                      }}
-                    >
-                      {c.agente}
-                    </td>
+            <div className="ma-table-container">
+              <table className="ma-table">
+                <thead>
+                  <tr>
+                    <th>CLIENTE</th>
+                    <th>TIPO</th>
+                    <th>PRIORIDAD</th>
+                    <th>ESTADO</th>
+                    <th>AGENTE</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {CASOS_RECIENTES.map((c, i) => (
+                    <tr key={i}>
+                      <td style={{ padding: "10px 16px" }}>
+                        <div className="ma-user-cell">
+                          <div
+                            className="ma-ava"
+                            style={{ background: "var(--merco-navy, #0B1B32)" }}
+                          >
+                            {initials(c.nombre)}
+                          </div>
+                          <div>
+                            <b
+                              style={{
+                                color: "var(--merco-text)",
+                                display: "block",
+                              }}
+                            >
+                              {c.nombre}
+                            </b>
+                            <small style={{ color: "var(--merco-muted)" }}>
+                              {c.cedula}
+                            </small>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ padding: "10px 16px" }}>
+                        <span className="tag">{c.tipo}</span>
+                      </td>
+                      <td style={{ padding: "10px 16px", fontWeight: 600 }}>
+                        <span
+                          style={{
+                            color:
+                              c.prioridad === "Alta"
+                                ? "var(--merco-danger, #DC2626)"
+                                : "var(--merco-warning, #D97706)",
+                          }}
+                        >
+                          ● {c.prioridad}
+                        </span>
+                      </td>
+                      <td style={{ padding: "10px 16px" }}>
+                        <span
+                          style={{
+                            padding: "3px 10px",
+                            borderRadius: 12,
+                            fontSize: 12,
+                            fontWeight: 500,
+                            background:
+                              c.estado === "Pendiente"
+                                ? "rgba(47, 111, 237, 0.15)"
+                                : "rgba(216, 153, 42, 0.15)",
+                            color:
+                              c.estado === "Pendiente"
+                                ? "var(--merco-blue, #2f6fed)"
+                                : "var(--merco-warning, #d8992a)",
+                          }}
+                        >
+                          ● {c.estado}
+                        </span>
+                      </td>
+                      <td
+                        style={{
+                          padding: "10px 16px",
+                          color: "var(--merco-muted)",
+                        }}
+                      >
+                        {c.agente}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* ALERTAS DE SEGUIMIENTO (SLA) */}
@@ -403,6 +376,7 @@ export default function DashboardTickets() {
                       display: "grid",
                       placeItems: "center",
                       fontSize: 16,
+                      flexShrink: 0,
                     }}
                   >
                     <DynamicIcon
@@ -410,12 +384,15 @@ export default function DashboardTickets() {
                       fallback="FiAlertTriangle"
                     />
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <b
                       style={{
                         fontSize: 13,
                         color: "var(--merco-text)",
                         display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                     >
                       #{item.id} · {item.nombre}
@@ -434,7 +411,7 @@ export default function DashboardTickets() {
                       </span>
                     </small>
                   </div>
-                  <div style={{ textAlign: "right" }}>
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
                     <span
                       style={{
                         fontSize: 12,
@@ -456,9 +433,7 @@ export default function DashboardTickets() {
         </div>
 
         {/* 4. FILA 3: CANAL Y RANKING DE AGENTES */}
-        <div
-          style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 20 }}
-        >
+        <div className="dashboard-grid-2col">
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 16 }}>
               <span
@@ -509,6 +484,7 @@ export default function DashboardTickets() {
                       fontWeight: "bold",
                       display: "grid",
                       placeItems: "center",
+                      flexShrink: 0,
                     }}
                   >
                     {idx + 1}
@@ -519,6 +495,9 @@ export default function DashboardTickets() {
                       fontSize: 13,
                       fontWeight: 500,
                       color: "var(--merco-text)",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
                     {a.nombre}
@@ -657,7 +636,7 @@ function ChartLineEvol({ isDark }) {
   }, [isDark]);
 
   return (
-    <div style={{ height: 210 }}>
+    <div style={{ height: 210, position: "relative", width: "100%" }}>
       <canvas ref={canvasRef} />
     </div>
   );
@@ -694,7 +673,7 @@ function ChartDoughnutEstado({ isDark }) {
   }, [isDark]);
 
   return (
-    <div style={{ height: 210 }}>
+    <div style={{ height: 210, position: "relative", width: "100%" }}>
       <canvas ref={canvasRef} />
     </div>
   );
@@ -717,7 +696,7 @@ function ChartBarCanal({ isDark }) {
           "Tickets",
           "Presencial",
           "Telefónico",
-          "Correo electrónico",
+          "Correo",
           "Telegram",
           "Instagram",
         ],
@@ -743,7 +722,7 @@ function ChartBarCanal({ isDark }) {
   }, [isDark]);
 
   return (
-    <div style={{ height: 210 }}>
+    <div style={{ height: 210, position: "relative", width: "100%" }}>
       <canvas ref={canvasRef} />
     </div>
   );

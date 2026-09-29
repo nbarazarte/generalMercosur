@@ -130,7 +130,7 @@ export default function Sistemas() {
 
       showToast(
         response.data.message || "Sistema eliminado correctamente.",
-        "success"
+        "success",
       );
       setFlag((prev) => !prev);
       setModal(null);
@@ -151,43 +151,85 @@ export default function Sistemas() {
     }
   };
 
-  const guardarOpcionSistema = (sistemaId, opcionData) => {
-    setSistemas((prev) =>
-      prev.map((s) => {
-        if (s.id !== sistemaId) return s;
-        const opcionesActuales = s.opciones || [];
-        const existe = opcionesActuales.some((o) => o.id === opcionData.id);
+  const guardarOpcionSistema = async (sistemaId, opcionData) => {
+    try {
+      if (!API_URL || !API_TOKEN) {
+        throw new Error("Faltan variables de entorno.");
+      }
 
-        let nuevasOpciones;
-        if (existe) {
-          nuevasOpciones = opcionesActuales.map((o) =>
-            o.id === opcionData.id ? { ...o, ...opcionData } : o,
-          );
-        } else {
-          nuevasOpciones = [
-            ...opcionesActuales,
-            { ...opcionData, id: Date.now().toString() },
-          ];
-        }
+      const payload = {
+        id: opcionData.id,
+        sistemaId: sistemaId,
+        opcion: opcionData.opcion,
+        ruta_opcion: opcionData.ruta_opcion,
+        ic: opcionData.ic,
+      };
 
-        return { ...s, opciones: nuevasOpciones };
-      }),
-    );
-    setModal(null);
-    showToast("Opción guardada correctamente.", "success");
+      const response = await axios.post(`${API_URL}/guardarOpcion`, payload, {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      showToast(
+        response.data.message || "Opción guardada correctamente.",
+        "success",
+      );
+      setFlag((prev) => !prev);
+      setModal(null);
+    } catch (error) {
+      const isNetworkError =
+        error.message === "Network Error" || !error.response;
+
+      const errorMessage =
+        (typeof error.response?.data === "string"
+          ? error.response.data
+          : error.response?.data?.error || error.response?.data?.message) ||
+        (isNetworkError && error.message !== "Faltan variables de entorno."
+          ? "No hay conexión con el servidor."
+          : error.message);
+
+      console.error("Error al guardar opción:", errorMessage);
+      showToast(`Error: ${errorMessage}`, "error");
+    }
   };
 
-  const eliminarOpcionSistema = (sistemaId, opcionId) => {
-    setSistemas((prev) =>
-      prev.map((s) => {
-        if (s.id !== sistemaId) return s;
-        return {
-          ...s,
-          opciones: s.opciones.filter((o) => o.id !== opcionId),
-        };
-      }),
-    );
-    showToast("Opción eliminada correctamente.", "success");
+  const eliminarOpcionSistema = async (sistemaId, opcionId) => {
+    try {
+      if (!API_URL || !API_TOKEN) {
+        throw new Error("Faltan variables de entorno.");
+      }
+
+      const response = await axios.delete(
+        `${API_URL}/eliminarOpcion/${opcionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${API_TOKEN}`,
+          },
+        },
+      );
+
+      showToast(
+        response.data.message || "Opción eliminada correctamente.",
+        "success",
+      );
+      setFlag((prev) => !prev);
+    } catch (error) {
+      const isNetworkError =
+        error.message === "Network Error" || !error.response;
+
+      const errorMessage =
+        (typeof error.response?.data === "string"
+          ? error.response.data
+          : error.response?.data?.error || error.response?.data?.message) ||
+        (isNetworkError && error.message !== "Faltan variables de entorno."
+          ? "No hay conexión con el servidor."
+          : error.message);
+
+      console.error("Error al eliminar opción:", errorMessage);
+      showToast(`Error al eliminar: ${errorMessage}`, "error");
+    }
   };
 
   return (
@@ -206,8 +248,7 @@ export default function Sistemas() {
             padding: "12px 20px",
             borderRadius: 8,
             boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-            backgroundColor:
-              toast.type === "success" ? "#10b981" : "#ef4444",
+            backgroundColor: toast.type === "success" ? "#10b981" : "#ef4444",
             color: "#ffffff",
             fontWeight: 500,
             fontSize: 14,
@@ -215,7 +256,9 @@ export default function Sistemas() {
           }}
         >
           <DynamicIcon
-            name={toast.type === "success" ? "FiCheckCircle" : "FiAlertTriangle"}
+            name={
+              toast.type === "success" ? "FiCheckCircle" : "FiAlertTriangle"
+            }
           />
           <span>{toast.message}</span>
         </div>

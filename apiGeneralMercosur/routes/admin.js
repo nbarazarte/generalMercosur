@@ -103,7 +103,7 @@ router.get("/fetchSistemas", async (req, res) => {
             id: row.opcion_id,
             opcion: row.opcion_nombre,
             ruta_opcion: row.str_ruta_opcion,
-            ic: "FiCheckSquare",
+            ic: row.opcion_icono || "FiCheckSquare",
           });
         }
 
@@ -282,18 +282,21 @@ router.post("/guardarSistema", async (req, res) => {
 
     // 4. Insertar la opción inicial ("Dashboard")
     const queryOpcion = `
-      INSERT INTO public.cat_opciones (
-        str_nombre, 
-        str_ruta_opcion, 
-        bol_eliminado
-      ) 
-      VALUES ($1, $2, false) 
-      RETURNING id, str_nombre, str_ruta_opcion;
-    `;
+  INSERT INTO public.cat_opciones (
+    str_nombre, 
+    str_ruta_opcion, 
+    str_icono,
+    bol_eliminado
+  ) 
+  VALUES ($1, $2, $3, false) 
+  RETURNING id, str_nombre, str_ruta_opcion, str_icono;
+`;
     const resOpcion = await client.query(queryOpcion, [
       "Dashboard",
       `${ruta}/dashboard`,
+      "FiCheckSquare", // Ícono predeterminado para Dashboard
     ]);
+
     const nuevaOpcion = resOpcion.rows[0];
 
     // 5. Vincular la opción al rol del sistema en tbl_roles_sistemas_opciones
@@ -437,6 +440,177 @@ router.delete("/eliminarSistema/:id", async (req, res) => {
     console.error("Error al eliminar el sistema:", error);
     return res.status(500).json({
       error: "Ocurrió un error en el servidor al intentar eliminar el sistema.",
+    });
+  } finally {
+    client.release();
+  }
+});
+
+// ==========================================
+// ENDPOINT: GUARDAR OPCIÓN (CREAR / EDITAR)
+// ==========================================
+router.post("/guardarOpcion", async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    const { id, sistemaId, opcion, ruta_opcion, ic } = req.body;
+
+    if (!sistemaId || !opcion || !ruta_opcion) {
+      return res.status(400).json({
+        error:
+          "El ID del sistema, el nombre de la opción y la ruta son obligatorios.",
+      });
+    }
+
+    await client.query("BEGIN");
+
+    // ------------------------------------------
+    // MODO EDICIÓN (Existe `id` de la opción)
+    // ------------------------------------------
+    if (id) {
+      const updateQuery = `
+        UPDATE public.cat_opciones
+        SET 
+          str_nombre = $1,
+          str_ruta_opcion = $2,
+          str_icono = $3
+        WHERE id = $4
+        RETURNING id, str_nombre, str_ruta_opcion, str_icono;
+      `;
+
+      const resUpdate = await client.query(updateQuery, [
+        opcion,
+        ruta_opcion,
+        ic || "FiCheckSquare",
+        id,
+      ]);
+
+      if (resUpdate.rowCount === 0) {
+        await client.query("ROLLBACK");
+        return res.status(404).json({ error: "La opción no existe." });
+      }
+
+      await client.query("COMMIT");
+
+      return res.status(200).json({
+        message: "Opción actualizada exitosamente.",
+        esEdicion: true,
+        opcion: {
+          id: resUpdate.rows[0].id,
+          opcion: resUpdate.rows[0].str_nombre,
+          ruta_opcion: resUpdate.rows[0].str_ruta_opcion,
+          ic: resUpdate.rows[0].str_icono || "FiCheckSquare",
+        },
+      });
+    }
+
+    // ------------------------------------------
+    // MODO CREACIÓN (No existe `id`)
+    // ------------------------------------------
+
+    // 1. Obtener el rol_sistema asociado al sistema (por defecto rol_id = 1)
+    const rolSysRes = await client.query(
+      `SELECT id FROM public.tbl_roles_sistemas WHERE sistema_id = $1 AND rol_id = 1 LIMIT 1`,
+      [sistemaId],
+    );
+
+    let rolesSistemasId;
+    if (rolSysRes.rowCount === 0) {
+      const insRolSys = await client.query(
+        `INSERT INTO public.tbl_roles_sistemas (rol_id, sistema_id, created_at, updated_at, bol_activo)
+         VALUES (1, $1, NOW(), NOW(), true) RETURNING id;`,
+        [sistemaId],
+      );
+      rolesSistemasId = insRolSys.rows[0].id;
+    } else {
+      rolesSistemasId = rolSysRes.rows[0].id;
+    }
+
+    // 2. Insertar nueva opción en cat_opciones con str_icono
+    const insertOpcionQuery = `
+      INSERT INTO public.cat_opciones (str_nombre, str_ruta_opcion, str_icono, bol_eliminado)
+      VALUES ($1, $2, $3, false)
+      RETURNING id, str_nombre, str_ruta_opcion, str_icono;
+    `;
+    const resOpcion = await client.query(insertOpcionQuery, [
+      opcion,
+      ruta_opcion,
+      ic || "FiCheckSquare",
+    ]);
+    const nuevaOpcion = resOpcion.rows[0];
+
+    // 3. Vincular con tbl_roles_sistemas_opciones
+    const insertRelacionQuery = `
+      INSERT INTO public.tbl_roles_sistemas_opciones (roles_sistemas_id, opcion_id)
+      VALUES ($1, $2);
+    `;
+    await client.query(insertRelacionQuery, [rolesSistemasId, nuevaOpcion.id]);
+
+    await client.query("COMMIT");
+
+    return res.status(201).json({
+      message: "Opción agregada exitosamente.",
+      esEdicion: false,
+      opcion: {
+        id: nuevaOpcion.id,
+        opcion: nuevaOpcion.str_nombre,
+        ruta_opcion: nuevaOpcion.str_ruta_opcion,
+        ic: nuevaOpcion.str_icono || "FiCheckSquare",
+      },
+    });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error al guardar opción:", err.message);
+    res.status(500).json({ error: "Error interno del servidor." });
+  } finally {
+    client.release();
+  }
+});
+
+// ==========================================
+// ENDPOINT: ELIMINAR OPCIÓN DE UN SISTEMA
+// ==========================================
+router.delete("/eliminarOpcion/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: "El ID de la opción es requerido." });
+  }
+
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // 1. Eliminar relaciones en tbl_roles_sistemas_opciones
+    await client.query(
+      "DELETE FROM public.tbl_roles_sistemas_opciones WHERE opcion_id = $1",
+      [id],
+    );
+
+    // 2. Eliminar la opción de cat_opciones
+    const resOpcion = await client.query(
+      "DELETE FROM public.cat_opciones WHERE id = $1 RETURNING str_nombre",
+      [id],
+    );
+
+    if (resOpcion.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return res
+        .status(404)
+        .json({ error: "La opción especificada no existe." });
+    }
+
+    await client.query("COMMIT");
+
+    return res.status(200).json({
+      message: `La opción "${resOpcion.rows[0].str_nombre}" fue eliminada correctamente.`,
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error al eliminar opción:", error);
+    return res.status(500).json({
+      error: "Ocurrió un error al intentar eliminar la opción.",
     });
   } finally {
     client.release();

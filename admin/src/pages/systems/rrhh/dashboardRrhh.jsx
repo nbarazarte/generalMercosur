@@ -230,22 +230,10 @@ export default function DashboardRrhh() {
   };
 
   return (
-    <SystemLayout identificacion="Mi Expediente Mercosur">
-      <div
-        style={{
-          fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
-          padding: "10px 0",
-        }}
-      >
+    <SystemLayout identificacion="Mi Expediente">
+      <div className="ma-content" style={{ padding: "10px 0" }}>
         {/* ENCABEZADO */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
+        <div className="ma-toolbar" style={{ marginBottom: 20 }}>
           <div>
             <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
               Dashboard de Recursos Humanos
@@ -253,11 +241,8 @@ export default function DashboardRrhh() {
           </div>
         </div>
 
-        {/* 1. TARJETAS DE MÉTRICAS GENERALES (KPIs) */}
-        <div
-          className="ma-stats"
-          style={{ gridTemplateColumns: "repeat(5, 1fr)" }}
-        >
+        {/* 1. TARJETAS DE MÉTRICAS GENERALES (KPIs) - Adaptables con .ma-stats */}
+        <div className="ma-stats">
           <KPICard
             icon="FiUsers"
             val={stats.total}
@@ -298,14 +283,7 @@ export default function DashboardRrhh() {
         </div>
 
         {/* 2. FILA 1 DE GRÁFICOS: ESTADO DE EXPEDIENTES Y DISTRIBUCIÓN DE DEPARTAMENTOS */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.6fr 1fr",
-            gap: 20,
-            marginBottom: 20,
-          }}
-        >
+        <div className="dashboard-grid-2col">
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
               <span
@@ -341,15 +319,8 @@ export default function DashboardRrhh() {
         </div>
 
         {/* 3. FILA 2: MATRIZ DE EXPEDIENTES RECIENTES Y ALERTAS DE DOCUMENTACIÓN */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.6fr 1fr",
-            gap: 20,
-            marginBottom: 20,
-          }}
-        >
-          {/* MATRIZ RESUMEN DE EXPEDIENTES RECIENTES */}
+        <div className="dashboard-grid-2col">
+          {/* MATRIZ RESUMEN DE EXPEDIENTES RECIENTES CON SCROLL RESPONSIVO */}
           <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
             <div
               style={{
@@ -381,99 +352,101 @@ export default function DashboardRrhh() {
               </button>
             </div>
 
-            <table className="ma-table">
-              <thead>
-                <tr>
-                  <th>COLABORADOR</th>
-                  <th>CÉDULA / REGISTRO</th>
-                  <th>ESTADO COLABORADOR</th>
-                  <th>EXPEDIENTE</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ultimosExpedientes.map((emp) => (
-                  <tr key={emp.id}>
-                    <td style={{ padding: "10px 16px" }}>
-                      <div className="ma-user-cell">
-                        <div
-                          className="ma-ava"
-                          style={{ background: "var(--merco-navy, #0B1B32)" }}
-                        >
-                          {initials(emp.nombres)}
-                        </div>
-                        <div>
-                          <b
-                            style={{
-                              color: "var(--merco-text)",
-                              display: "block",
-                            }}
-                          >
-                            {emp.nombres}
-                          </b>
-                          <small style={{ color: "var(--merco-muted)" }}>
-                            Ingreso: {emp.f_ingreso}
-                          </small>
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ padding: "10px 16px" }}>
-                      <code style={{ fontSize: 12, color: "var(--merco-text)" }}>
-                        {emp.cedula}
-                      </code>
-                    </td>
-                    <td style={{ padding: "10px 16px" }}>
-                      <span
-                        style={{
-                          padding: "3px 10px",
-                          borderRadius: 12,
-                          fontSize: 11,
-                          fontWeight: 600,
-                          background:
-                            emp.estado_colaborador === "Activo"
-                              ? "rgba(31, 157, 99, 0.15)"
-                              : emp.estado_colaborador === "Inactivo"
-                              ? "rgba(209, 67, 91, 0.15)"
-                              : "rgba(216, 153, 42, 0.15)",
-                          color:
-                            emp.estado_colaborador === "Activo"
-                              ? "#1f9d63"
-                              : emp.estado_colaborador === "Inactivo"
-                              ? "#d1435b"
-                              : "#d8992a",
-                        }}
-                      >
-                        ● {emp.estado_colaborador}
-                      </span>
-                    </td>
-                    <td style={{ padding: "10px 16px" }}>
-                      <span
-                        style={{
-                          fontSize: 11,
-                          padding: "3px 8px",
-                          borderRadius: 4,
-                          fontWeight: 600,
-                          textTransform: "capitalize",
-                          background:
-                            emp.estado === "completo"
-                              ? "rgba(31, 157, 99, 0.15)"
-                              : emp.estado === "incompleto"
-                              ? "rgba(216, 153, 42, 0.15)"
-                              : "rgba(209, 67, 91, 0.15)",
-                          color:
-                            emp.estado === "completo"
-                              ? "#1f9d63"
-                              : emp.estado === "incompleto"
-                              ? "#d8992a"
-                              : "#d1435b",
-                        }}
-                      >
-                        {emp.estado}
-                      </span>
-                    </td>
+            <div className="ma-table-container">
+              <table className="ma-table">
+                <thead>
+                  <tr>
+                    <th>COLABORADOR</th>
+                    <th>CÉDULA / REGISTRO</th>
+                    <th>ESTADO COLABORADOR</th>
+                    <th>EXPEDIENTE</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {ultimosExpedientes.map((emp) => (
+                    <tr key={emp.id}>
+                      <td style={{ padding: "10px 16px" }}>
+                        <div className="ma-user-cell">
+                          <div
+                            className="ma-ava"
+                            style={{ background: "var(--merco-navy, #0B1B32)" }}
+                          >
+                            {initials(emp.nombres)}
+                          </div>
+                          <div>
+                            <b
+                              style={{
+                                color: "var(--merco-text)",
+                                display: "block",
+                              }}
+                            >
+                              {emp.nombres}
+                            </b>
+                            <small style={{ color: "var(--merco-muted)" }}>
+                              Ingreso: {emp.f_ingreso}
+                            </small>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ padding: "10px 16px" }}>
+                        <code style={{ fontSize: 12, color: "var(--merco-text)" }}>
+                          {emp.cedula}
+                        </code>
+                      </td>
+                      <td style={{ padding: "10px 16px" }}>
+                        <span
+                          style={{
+                            padding: "3px 10px",
+                            borderRadius: 12,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            background:
+                              emp.estado_colaborador === "Activo"
+                                ? "rgba(31, 157, 99, 0.15)"
+                                : emp.estado_colaborador === "Inactivo"
+                                ? "rgba(209, 67, 91, 0.15)"
+                                : "rgba(216, 153, 42, 0.15)",
+                            color:
+                              emp.estado_colaborador === "Activo"
+                                ? "#1f9d63"
+                                : emp.estado_colaborador === "Inactivo"
+                                ? "#d1435b"
+                                : "#d8992a",
+                          }}
+                        >
+                          ● {emp.estado_colaborador}
+                        </span>
+                      </td>
+                      <td style={{ padding: "10px 16px" }}>
+                        <span
+                          style={{
+                            fontSize: 11,
+                            padding: "3px 8px",
+                            borderRadius: 4,
+                            fontWeight: 600,
+                            textTransform: "capitalize",
+                            background:
+                              emp.estado === "completo"
+                                ? "rgba(31, 157, 99, 0.15)"
+                                : emp.estado === "incompleto"
+                                ? "rgba(216, 153, 42, 0.15)"
+                                : "rgba(209, 67, 91, 0.15)",
+                            color:
+                              emp.estado === "completo"
+                                ? "#1f9d63"
+                                : emp.estado === "incompleto"
+                                ? "#d8992a"
+                                : "#d1435b",
+                          }}
+                        >
+                          {emp.estado}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* ALERTAS DE DOCUMENTACIÓN Y AUDITORÍA */}
@@ -534,6 +507,7 @@ export default function DashboardRrhh() {
                       display: "grid",
                       placeItems: "center",
                       fontSize: 16,
+                      flexShrink: 0,
                     }}
                   >
                     <DynamicIcon
@@ -547,21 +521,32 @@ export default function DashboardRrhh() {
                       fallback="FiFile"
                     />
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <b
                       style={{
                         fontSize: 13,
                         color: "var(--merco-text)",
                         display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                     >
                       {item.titulo}
                     </b>
-                    <small style={{ color: "var(--merco-muted)" }}>
+                    <small
+                      style={{
+                        color: "var(--merco-muted)",
+                        display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {item.usuario} · {item.detalle}
                     </small>
                   </div>
-                  <div style={{ textAlign: "right" }}>
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
                     <small style={{ color: "var(--merco-muted)" }}>
                       {item.tiempo}
                     </small>
@@ -580,6 +565,8 @@ export default function DashboardRrhh() {
               justifyContent: "space-between",
               alignItems: "center",
               marginBottom: 12,
+              flexWrap: "wrap",
+              gap: 8,
             }}
           >
             <div>
@@ -628,12 +615,22 @@ export default function DashboardRrhh() {
                       alignItems: "center",
                       justifyContent: "center",
                       fontSize: 20,
+                      flexShrink: 0,
                     }}
                   >
                     <DynamicIcon name={sec.ic} fallback="FiFolder" />
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <b style={{ color: "var(--merco-text)", fontSize: 14 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <b
+                      style={{
+                        color: "var(--merco-text)",
+                        fontSize: 14,
+                        display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
                       {sec.nombre}
                     </b>
                     <small
@@ -641,6 +638,9 @@ export default function DashboardRrhh() {
                         display: "block",
                         color: "var(--merco-muted)",
                         fontSize: 11,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                       }}
                     >
                       {sec.desc}
@@ -701,6 +701,7 @@ export default function DashboardRrhh() {
                             padding: "4px 8px",
                             borderRadius: 4,
                             fontSize: 12,
+                            gap: 8,
                           }}
                         >
                           <div
@@ -708,10 +709,18 @@ export default function DashboardRrhh() {
                               display: "flex",
                               alignItems: "center",
                               gap: 6,
+                              minWidth: 0,
                             }}
                           >
                             <DynamicIcon name={opc.ic} fallback="FiFolder" />
-                            <span style={{ color: "var(--merco-text)" }}>
+                            <span
+                              style={{
+                                color: "var(--merco-text)",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
                               {opc.opcion}
                             </span>
                           </div>
@@ -719,6 +728,8 @@ export default function DashboardRrhh() {
                             style={{
                               fontSize: 10,
                               color: "var(--merco-muted)",
+                              whiteSpace: "nowrap",
+                              flexShrink: 0,
                             }}
                           >
                             {opc.ruta_opcion}
@@ -844,7 +855,7 @@ function ChartBarExpedientes({ isDark, stats }) {
   }, [isDark, stats]);
 
   return (
-    <div style={{ height: 210 }}>
+    <div style={{ height: 210, position: "relative", width: "100%" }}>
       <canvas ref={canvasRef} />
     </div>
   );
@@ -903,7 +914,7 @@ function ChartDoughnutDepartamentos({ isDark, empleados }) {
   }, [isDark, empleados]);
 
   return (
-    <div style={{ height: 210 }}>
+    <div style={{ height: 210, position: "relative", width: "100%" }}>
       <canvas ref={canvasRef} />
     </div>
   );

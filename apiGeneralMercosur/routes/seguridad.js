@@ -231,6 +231,7 @@ async function obtenerSistemasYOpciones(userId) {
         ruta_opcion,
         tiene_permiso,
         rol,
+        opcion_icono,
       } = row;
 
       if (!acc[sistema]) {
@@ -249,6 +250,7 @@ async function obtenerSistemasYOpciones(userId) {
         opcion: opcion,
         ruta_opcion: ruta_opcion,
         tiene_permiso: tiene_permiso,
+        opcion_icono: opcion_icono,
       });
 
       return acc;

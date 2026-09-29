@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import TextType from "../../components/TextType";
 import { DynamicIcon } from "../../components/IconCatalog";
-import { setSistemasOpciones } from "../../../store/authSlice"; // Importar la nueva acción
+import { setSistemasOpciones } from "../../../store/authSlice";
 
 const API_URL = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;
 const API_TOKEN = import.meta.env.VITE_TOKEN;
@@ -155,18 +155,14 @@ const Home = () => {
         );
 
         if (isMounted && response.data) {
-          // Comparamos si la respuesta devuelta por la API es exactamente igual a lo que ya está en Redux
           const datosActualesJSON = JSON.stringify(
             user?.sistemasOpciones || [],
           );
           const datosNuevosJSON = JSON.stringify(response.data);
 
-          // SOLO despachamos si hay diferencias respecto al estado inicial/actual
           if (datosActualesJSON !== datosNuevosJSON) {
-            // 1. Sincronizar Redux
             dispatch(setSistemasOpciones(response.data));
 
-            // 2. Formatear para la grilla local
             const sistemasFormateados = response.data.map((sistema) => ({
               id: sistema.id || sistema.sistema,
               nombre: sistema.sistema,
@@ -193,50 +189,66 @@ const Home = () => {
 
   const usuario = user?.username;
 
+  // Función encargada de redirigir según si la URL es absoluta o relativa
+  const handleNavigate = (url) => {
+    if (!url) return;
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      window.location.href = url;
+    } else {
+      navigate(url);
+    }
+  };
+
   return (
-    <div className="systems-wrapper">
-      <div className="form-header text-center flex flex-col items-center justify-center w-full">
+    <div className="systems-wrapper w-full flex flex-col items-center">
+      <div className="form-header text-center flex flex-col items-center justify-center w-full mb-6">
         <h2>Menú de Sistemas</h2>
         <p className="subtitle">¿A cuál deseas acceder, {usuario}?</p>
       </div>
 
-      <div className="systems-grid">
-        {sistemas.map((sistema, i) => (
-          <div
-            key={sistema.id ? `${sistema.id}-${i}` : i}
-            onClick={() => navigate(sistema.url)}
-            className="system-card glass-card animate-rise"
-            style={{ animationDelay: `${i * 0.08}s`, cursor: "pointer" }}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                navigate(sistema.url);
-              }
-            }}
-          >
+      <div className="systems-grid grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl mx-auto justify-center">
+        {sistemas && sistemas.length > 0 ? (
+          sistemas.map((sistema, i) => (
             <div
-              className="system-icon"
-              style={{
-                backgroundColor: sistema.color
-                  ? `${sistema.color}22`
-                  : "rgba(47, 111, 237, 0.15)",
-                color: sistema.color || "#2f6fed",
+              key={sistema.id ? `${sistema.id}-${i}` : i}
+              onClick={() => handleNavigate(sistema.url)}
+              className="system-card glass-card animate-rise"
+              style={{ animationDelay: `${i * 0.08}s`, cursor: "pointer" }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleNavigate(sistema.url);
+                }
               }}
             >
-              <DynamicIcon name={sistema.icon} />
-            </div>
+              <div
+                className="system-icon"
+                style={{
+                  backgroundColor: sistema.color
+                    ? `${sistema.color}22`
+                    : "rgba(47, 111, 237, 0.15)",
+                  color: sistema.color || "#2f6fed",
+                }}
+              >
+                <DynamicIcon name={sistema.icon || "FiGrid"} />
+              </div>
 
-            <div className="system-info">
-              <h3>{sistema.nombre}</h3>
-              <p>{sistema.descripcion}</p>
+              <div className="system-info">
+                <h3>{sistema.nombre}</h3>
+                <p>{sistema.descripcion}</p>
+              </div>
+              <span className="system-arrow" aria-hidden="true">
+                <DynamicIcon name="FiArrowRight" />
+              </span>
             </div>
-            <span className="system-arrow" aria-hidden="true">
-              <DynamicIcon name="FiArrowRight" />
-            </span>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-center w-full text-gray-500 col-span-full">
+            No hay sistemas disponibles para mostrar.
+          </p>
+        )}
       </div>
     </div>
   );
