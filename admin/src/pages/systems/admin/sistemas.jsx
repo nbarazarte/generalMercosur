@@ -65,7 +65,7 @@ export default function Sistemas() {
         `${API_URL2}/sistemas-opciones/${user.id}`,
         {
           headers: {
-            Authorization: `Bearer ${user?.token || API_TOKEN}`,
+            Authorization: `Bearer ${API_TOKEN}`,
           },
         },
       );

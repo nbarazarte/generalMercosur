@@ -1,6 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_URL_API_ADMIN;
+const API_TOKEN = import.meta.env.VITE_TOKEN;
 
 const SISTEMAS = [
   {
@@ -54,66 +58,6 @@ const ROLES_INIT = [
     bg: "rgba(47,111,237,.12)",
     sistemas: "all",
     permisos: ["Ver", "Editar", "Aprobar", "Exportar"],
-  },
-  {
-    id: 3,
-    nombre: "Operador MEP",
-    desc: "Opera la configuración y parámetros de MEP.",
-    ic: "FiZap",
-    color: "#123a63",
-    bg: "rgba(18,58,99,.12)",
-    sistemas: ["adminmep"],
-    permisos: ["Ver", "Crear", "Editar"],
-  },
-  {
-    id: 4,
-    nombre: "Gestor RR.HH.",
-    desc: "Administra fichas y datos de empleados.",
-    ic: "FiFolder",
-    color: "#1f9d63",
-    bg: "rgba(31,157,99,.12)",
-    sistemas: ["rrhh"],
-    permisos: ["Ver", "Crear", "Editar", "Exportar"],
-  },
-  {
-    id: 5,
-    nombre: "Empleado",
-    desc: "Consulta y actualiza su propia ficha.",
-    ic: "FiUser",
-    color: "#0f7a4c",
-    bg: "rgba(31,157,99,.1)",
-    sistemas: ["rrhh"],
-    permisos: ["Ver", "Editar"],
-  },
-  {
-    id: 6,
-    nombre: "Agente de Soporte",
-    desc: "Atiende y resuelve tickets de soporte.",
-    ic: "FiHeadphones",
-    color: "#d8992a",
-    bg: "rgba(216,153,42,.14)",
-    sistemas: ["tickets"],
-    permisos: ["Ver", "Crear", "Editar"],
-  },
-  {
-    id: 7,
-    nombre: "Editor de Contenido",
-    desc: "Crea y edita artículos de la base de conocimiento.",
-    ic: "FiFileText",
-    color: "#8155d8",
-    bg: "rgba(129,85,216,.12)",
-    sistemas: ["kb"],
-    permisos: ["Ver", "Crear", "Editar"],
-  },
-  {
-    id: 8,
-    nombre: "Solo Lectura",
-    desc: "Consulta información sin poder editar.",
-    ic: "FiLock",
-    color: "#69748c",
-    bg: "rgba(105,116,140,.14)",
-    sistemas: "all",
-    permisos: ["Ver"],
   },
 ];
 
@@ -225,7 +169,52 @@ const parsearFechaUltimoAcceso = (str) => {
 export default function UsuariosAccesos() {
   const [tab, setTab] = useState("usuarios"); // 'usuarios' o 'roles'
   const [usuarios, setUsuarios] = useState(USUARIOS_INIT);
-  const [roles, setRoles] = useState(ROLES_INIT);
+
+  const [roles, setRoles] = useState([]);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/fetchRoles`, {
+          headers: {
+            Authorization: `Bearer ${API_TOKEN}`,
+          },
+        });
+
+        const rolesMapeados = response.data.map((row) => ({
+          id: row.id || row.sistema_id,
+          nombre: row.nombre || row.rol,
+          desc: row.desc || row.str_descripcion,
+          ic: row.ic || row.str_icono || "FiShield",
+          color: row.color || row.str_color || "#2f6fed",
+          bg:
+            row.bg ||
+            (row.color || row.str_color
+              ? `${row.color || row.str_color}22`
+              : "rgba(47,111,237,.12)"),
+          sistemas: Array.isArray(row.sistemas)
+            ? row.sistemas
+            : typeof row.sistemas === "string" && row.sistemas !== "all"
+              ? [row.sistemas]
+              : row.sistemas || "all",
+          permisos: Array.isArray(row.permisos)
+            ? row.permisos
+            : typeof row.permisos === "string" && row.permisos.trim() !== ""
+              ? row.permisos.split(",").map((p) => p.trim())
+              : typeof row.opciones_asignadas === "string" &&
+                  row.opciones_asignadas.trim() !== ""
+                ? row.opciones_asignadas.split(",").map((p) => p.trim())
+                : [],
+        }));
+
+        setRoles(rolesMapeados);
+      } catch (err) {
+        console.error("Error obteniendo roles:", err);
+      }
+    };
+
+    fetchRoles();
+  }, []);
 
   const [busqueda, setBusqueda] = useState("");
   const [filtroSistema, setFiltroSistema] = useState("");
@@ -971,7 +960,7 @@ function TabRoles({ roles, setModal }) {
                   fontSize: 20,
                 }}
               >
-                <DynamicIcon name={r.ic} fallback="FiShield" />
+                <DynamicIcon name={r.ic} />
               </div>
               <button
                 className="btn-icon"
@@ -990,24 +979,19 @@ function TabRoles({ roles, setModal }) {
               ))}
             </div>
             <div className="role-sys-tags">
-              {r.sistemas === "all" ? (
-                <span className="tag tag-accent">Todos los sistemas</span>
-              ) : (
-                r.sistemas.map((sid) => (
-                  <span
-                    key={sid}
-                    className="tag tag-accent"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 4,
-                    }}
-                  >
-                    <DynamicIcon name={SYS[sid]?.ic} fallback="FiGrid" />
-                    {SYS[sid]?.nombre || sid}
-                  </span>
-                ))
-              )}
+              {r.sistemas.map((sid) => (
+                <span
+                  key={sid}
+                  className="tag tag-accent"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                  }}
+                >
+                  {SYS[sid]?.nombre || sid}
+                </span>
+              ))}
             </div>
           </div>
         ))}

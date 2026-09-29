@@ -77,6 +77,9 @@ router.get("/descargar-archivo/:nombre", (req, res) => {
 // Uso del middleware para proteger todas las rutas (A PARTIR DE AQUI SON PRIVADAS)
 router.use(autenticarToken);
 
+// ==========================================
+// 0. ENDPOINT: OBTIENE LA LISTA DE SISTEMAS
+// ==========================================
 router.get("/fetchSistemas", async (req, res) => {
   try {
     const query = `SELECT * FROM public.view_sistemas_opciones`;
@@ -614,6 +617,54 @@ router.delete("/eliminarOpcion/:id", async (req, res) => {
     });
   } finally {
     client.release();
+  }
+});
+
+// ==========================================
+// ENDPOINT: OBTIENE LA LISTA DE ROLES
+// ==========================================
+router.get("/fetchRoles", async (req, res) => {
+  try {
+    const query = `SELECT DISTINCT * FROM public.view_matriz_roles_opciones`;
+    const result = await pool.query(query);
+
+    // Función auxiliar para convertir HEX a RGBA con opacidad
+    const hexToRgba = (hex, alpha = 0.12) => {
+      if (!hex || !hex.startsWith("#")) return hex;
+      let cleanHex = hex.replace("#", "");
+      if (cleanHex.length === 3) {
+        cleanHex = cleanHex
+          .split("")
+          .map((c) => c + c)
+          .join("");
+      }
+      const r = parseInt(cleanHex.substring(0, 2), 16);
+      const g = parseInt(cleanHex.substring(2, 4), 16);
+      const b = parseInt(cleanHex.substring(4, 6), 16);
+      return `rgba(${r},${g},${b},${alpha})`;
+    };
+
+    // Mapeo dinámico
+    const roles = result.rows.map((row) => ({
+      id: row.sistema_id,
+      nombre: row.rol,
+      desc: row.str_descripcion,
+      ic: row.str_icono,
+      color: row.str_color,
+      bg: hexToRgba(row.str_color, 0.12), // Aplica la opacidad del 12% igual que tu inicial
+      sistemas: row.str_sistema,
+      // Convierte 'Dashboard, Sistemas, Usuarios' en ['Dashboard', 'Sistemas', 'Usuarios']
+      permisos: row.opciones_asignadas
+        ? row.opciones_asignadas.split(",").map((p) => p.trim())
+        : [],
+    }));
+
+    //console.log(roles);
+
+    res.json(roles);
+  } catch (err) {
+    console.error("Error al obtener sistemas:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
