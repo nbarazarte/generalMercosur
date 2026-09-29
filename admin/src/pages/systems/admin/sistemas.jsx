@@ -583,9 +583,10 @@ function ModalSistema({ data, onSave, onDelete, onClose }) {
           </div>
         </div>
         <div className="ma-modal-foot">
-          {editar && (
+          {editar && nombre !== "Administración General" && (
             <button
               className="btn btn-ghost"
+              //disabled={nombre == "Administración General" ? true : false}
               style={{ marginRight: "auto", color: "var(--merco-danger)" }}
               onClick={() => onDelete(data.id)}
             >
