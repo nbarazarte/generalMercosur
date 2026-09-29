@@ -46,7 +46,7 @@
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-accent-foreground: oklch(0.145 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
@@ -351,7 +351,7 @@ ol {
 
 .aside-footer {
   position: relative;
-  font-size: 0.875rem;
+  font-size: 0.575rem;
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -1127,13 +1127,13 @@ ol {
 .form-header svg {
   display: block;
   height: auto;
-  max-height: 80px; /* Ajusta este valor según la altura visual deseada */
+  max-height: 80px;
   margin: 0 auto;
 }
 
 /* Reduce el margen superior de la cuadrícula si tiene un gap amplio */
 .systems-grid {
-  margin-top: 1rem; /* O el espaciado deseado */
+  margin-top: 1rem;
 }
 
 /* ===== FORZAR CENTRADO DE FORM-HEADER Y COMPONENTES SVG ===== */
@@ -1287,7 +1287,6 @@ ol {
   margin: 0;
 }
 
-/* Spinner básico si no usas uno global */
 .system-loader-screen .spinner {
   width: 48px;
   height: 48px;
@@ -1302,7 +1301,7 @@ ol {
     transform: rotate(360deg);
   }
 }
-/* Modo Claro (Por defecto) */
+
 .system-loader-screen {
   display: flex;
   justify-content: center;
@@ -1316,7 +1315,6 @@ ol {
     color 0.3s;
 }
 
-/* Modo Oscuro (se activa cuando el body o html tiene la clase .dark) */
 :root.dark .system-loader-screen,
 body.dark .system-loader-screen {
   background-color: #121212;
@@ -1326,5 +1324,117 @@ body.dark .system-loader-screen {
 :root.dark .spinner,
 body.dark .spinner {
   border-color: rgba(255, 255, 255, 0.2);
-  border-top-color: #3b82f6; /* color primario */
+  border-top-color: #3b82f6;
+}
+
+/* ===== BOTÓN HAMBURGUESA MÓVIL ===== */
+.mobile-menu-toggle {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-menu-toggle:hover {
+  color: var(--foreground);
+  border-color: var(--muted-foreground);
+}
+
+.mobile-menu-toggle svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .mobile-menu-toggle {
+    display: none;
+  }
+}
+
+/* ===== PANEL LATERAL MÓVIL (DRAWER) ===== */
+@media (max-width: 1023px) {
+  .aside-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex !important;
+    padding: 3rem 1.5rem 2rem 1.5rem;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .aside-panel.mobile-open {
+    transform: translateX(0);
+  }
+  
+  /* Centrar exclusivamente el logo en el panel móvil */
+  .aside-logo {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
+/* ===== BACKDROP Y BOTÓN DE CIERRE (LA "X") ===== */
+.mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.mobile-close-btn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  z-index: 1010;
+}
+
+.mobile-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.mobile-close-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .mobile-close-btn {
+    display: none;
+  }
 }

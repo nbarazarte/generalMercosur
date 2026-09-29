@@ -3,7 +3,11 @@ import logoImgDark from "../../assets/images/Logo - original.png";
 
 const LogoMobile = ({ theme }) => {
   return (
-    <img src={theme === "dark" ? logoImg : logoImgDark} alt="Mercosur Casa de Bolsa" className="w-32 h-auto" />
+    <img
+      src={theme === "dark" ? logoImg : logoImgDark}
+      alt="Mercosur Casa de Bolsa"
+      className="w-32 h-auto"
+    />
   );
 };
 

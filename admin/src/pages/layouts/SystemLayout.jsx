@@ -4,6 +4,7 @@ import Logo from "../components/Logo";
 import LogoutButton from "../components/LogoutButton";
 import ThemeToggle from "../components/ThemeToggle";
 import { DynamicIcon } from "../components/IconCatalog";
+import Footer from "../components/Footer";
 
 import { useSelector } from "react-redux";
 import "../../../src/systems.css";
@@ -89,17 +90,35 @@ export default function SystemLayout({ children, identificacion }) {
         </div>
 
         {/* Menú de navegación solo con las rutas de páginas */}
-        <nav className="ma-nav">
+        <nav className="">
           {nav.map((item, idx) => (
             <NavLink
               key={idx}
               to={item.to}
               className={({ isActive }) => (isActive ? "active" : "")}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                width: "100%",
+                padding: "10px 14px",
+                textDecoration: "none",
+                color: "#ffffff",
+              }}
             >
-              <span className="ic">
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "18px",
+                  height: "18px",
+                  flexShrink: 0,
+                }}
+              >
                 <DynamicIcon name={item.icon} fallback="FiGrid" />
               </span>
-              {item.label}
+              <span>{item.label}</span>
             </NavLink>
           ))}
         </nav>
@@ -162,7 +181,14 @@ export default function SystemLayout({ children, identificacion }) {
       </aside>
 
       {/* ----------------- MAIN CONTENT ----------------- */}
-      <div className="ma-main">
+      <div
+        className="ma-main"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+        }}
+      >
         <header
           className="ma-topbar"
           style={{
@@ -220,7 +246,12 @@ export default function SystemLayout({ children, identificacion }) {
           </div>
         </header>
 
-        <main className="ma-content">{children ? children : <Outlet />}</main>
+        <main className="ma-content" style={{ flex: "1 0 auto" }}>
+          {children ? children : <Outlet />}
+        </main>
+
+        {/* Footer integrado */}
+        {/* <Footer /> */}
       </div>
     </div>
   );
