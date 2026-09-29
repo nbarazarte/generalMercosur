@@ -110,33 +110,6 @@ const Home = () => {
     }
   }, [sistemasRedux]);
 
-  // Manejo del tema (Light/Dark)
-  const [theme, setTheme] = useState(() => {
-    return (
-      localStorage.getItem("theme") ||
-      (document.documentElement.classList.contains("dark") ? "dark" : "light")
-    );
-  });
-
-  useEffect(() => {
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(theme);
-    document.documentElement.style.colorScheme = theme;
-    localStorage.setItem("theme", theme);
-
-    const observer = new MutationObserver(() => {
-      const isDark = document.documentElement.classList.contains("dark");
-      setTheme(isDark ? "dark" : "light");
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, [theme]);
-
   // Carga de sistemas desde la API y sincronización con Redux
   useEffect(() => {
     if (!user?.id) return;
@@ -186,6 +159,33 @@ const Home = () => {
       isMounted = false;
     };
   }, [user?.id, user?.token, user?.sistemasOpciones, dispatch]);
+
+  // Manejo del tema (Light/Dark)
+  const [theme, setTheme] = useState(() => {
+    return (
+      localStorage.getItem("theme") ||
+      (document.documentElement.classList.contains("dark") ? "dark" : "light")
+    );
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(theme);
+    document.documentElement.style.colorScheme = theme;
+    localStorage.setItem("theme", theme);
+
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setTheme(isDark ? "dark" : "light");
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, [theme]);
 
   const usuario = user?.username;
 

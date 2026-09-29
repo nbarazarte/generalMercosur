@@ -1,20 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
+
+import { setSistemasOpciones } from "../../../store/authSlice";
+
+const API_URL = import.meta.env.VITE_URL_API_ADMIN;
+const API_URL2 = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;
+const API_TOKEN = import.meta.env.VITE_TOKEN;
 
 /* ============================ COMPONENTE PRINCIPAL ============================ */
 export default function Sistemas() {
-  const API_URL = import.meta.env.VITE_URL_API_ADMIN;
-  const API_TOKEN = import.meta.env.VITE_TOKEN;
-
-  const [sistemas, setSistemas] = useState([]);
   const [modal, setModal] = useState(null);
-  const [flag, setFlag] = useState(true);
+  const [toast, setToast] = useState(null);
+  const [sistemas, setSistemas] = useState([]);
 
-  // Estado para las notificaciones (Toast)
-  const [toast, setToast] = useState(null); // { message: string, type: 'success' | 'error' }
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth?.user);
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
@@ -23,45 +26,72 @@ export default function Sistemas() {
     }, 3500);
   };
 
-  useEffect(() => {
-    const handleFetchSistemas = async () => {
-      try {
-        if (!API_URL || !API_TOKEN) {
-          throw new Error("Faltan variables de entorno.");
-        }
-
-        const response = await axios.get(`${API_URL}/fetchSistemas`, {
-          headers: { Authorization: `Bearer ${API_TOKEN}` },
-        });
-
-        // Recibimos los sistemas ya estructurados desde el backend
-        const sistemasObtenidos = response.data.sistemas;
-
-        // Filtramos para ignorar "Administración General"
-        const sistemasFiltrados = sistemasObtenidos.filter(
-          (sis) => sis.nombre !== "Administración General",
-        );
-
-        setSistemas(sistemasObtenidos);
-      } catch (error) {
-        const isNetworkError =
-          error.message === "Network Error" || !error.response;
-
-        const errorMessage =
-          (typeof error.response?.data === "string"
-            ? error.response.data
-            : error.response?.data?.message) ||
-          (isNetworkError && error.message !== "Faltan variables de entorno."
-            ? "No hay conexión con el servidor."
-            : error.message);
-
-        console.error("Error al cargar sistemas:", errorMessage);
-        showToast(`Error al cargar los sistemas: ${errorMessage}`, "error");
+  // Función reutilizable para obtener los sistemas de la API principal
+  const fetchSistemasGlobales = async () => {
+    try {
+      if (!API_URL || !API_TOKEN) {
+        throw new Error("Faltan variables de entorno.");
       }
-    };
 
-    handleFetchSistemas();
-  }, [flag]);
+      const response = await axios.get(`${API_URL}/fetchSistemas`, {
+        headers: { Authorization: `Bearer ${API_TOKEN}` },
+      });
+
+      const sistemasObtenidos = response.data.sistemas || [];
+
+      setSistemas(sistemasObtenidos);
+    } catch (error) {
+      const isNetworkError =
+        error.message === "Network Error" || !error.response;
+
+      const errorMessage =
+        (typeof error.response?.data === "string"
+          ? error.response.data
+          : error.response?.data?.message) ||
+        (isNetworkError && error.message !== "Faltan variables de entorno."
+          ? "No hay conexión con el servidor."
+          : error.message);
+
+      console.error("Error al cargar sistemas:", errorMessage);
+      showToast(`Error al cargar los sistemas: ${errorMessage}`, "error");
+    }
+  };
+
+  // Función opcional para refrescar el estado de Redux de las opciones del usuario
+  const fetchSistemasUsuario = async () => {
+    if (!user?.id) return;
+    try {
+      const response = await axios.get(
+        `${API_URL2}/sistemas-opciones/${user.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user?.token || API_TOKEN}`,
+          },
+        },
+      );
+
+      if (response.data) {
+        const datosActualesJSON = JSON.stringify(user?.sistemasOpciones || []);
+        const datosNuevosJSON = JSON.stringify(response.data);
+
+        if (datosActualesJSON !== datosNuevosJSON) {
+          dispatch(setSistemasOpciones(response.data));
+        }
+      }
+    } catch (err) {
+      console.error("Error obteniendo sistemas y opciones del usuario:", err);
+    }
+  };
+
+  // 1. Carga inicial de datos globales
+  useEffect(() => {
+    fetchSistemasGlobales();
+  }, []);
+
+  // 2. Sincronización secundaria con Redux/API de seguridad local al cargar usuario
+  useEffect(() => {
+    fetchSistemasUsuario();
+  }, [user?.id, user?.token]);
 
   const totalOpciones = useMemo(
     () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),
@@ -74,6 +104,19 @@ export default function Sistemas() {
         throw new Error("Faltan variables de entorno.");
       }
 
+      // 1. Actualización optimista local (evita parpadeo de íconos/datos)
+      setSistemas((prevSistemas) => {
+        if (sistemaData.id) {
+          return prevSistemas.map((sys) =>
+            sys.id === sistemaData.id ? { ...sys, ...sistemaData } : sys,
+          );
+        }
+        return prevSistemas;
+      });
+
+      setModal(null);
+
+      // 2. Envío a la API
       const response = await axios.post(
         `${API_URL}/guardarSistema`,
         sistemaData,
@@ -87,8 +130,9 @@ export default function Sistemas() {
 
       const { sistema: sistemaProcesado, esEdicion, message } = response.data;
 
-      setFlag((prev) => !prev);
-      setModal(null);
+      // 3. Sincronización backend en segundo plano
+      await fetchSistemasGlobales();
+      await fetchSistemasUsuario();
 
       const mensajeExito =
         message ||
@@ -99,6 +143,9 @@ export default function Sistemas() {
       showToast(mensajeExito, "success");
       return { success: true, data: sistemaProcesado, message: mensajeExito };
     } catch (error) {
+      // Revertir en caso de error pidiendo el estado real del backend
+      await fetchSistemasGlobales();
+
       const isNetworkError =
         error.message === "Network Error" || !error.response;
 
@@ -122,19 +169,26 @@ export default function Sistemas() {
         throw new Error("Faltan variables de entorno.");
       }
 
+      // Actualización optimista
+      setSistemas((prev) => prev.filter((s) => s.id !== id));
+      setModal(null);
+
       const response = await axios.delete(`${API_URL}/eliminarSistema/${id}`, {
         headers: {
           Authorization: `Bearer ${API_TOKEN}`,
         },
       });
 
+      await fetchSistemasGlobales();
+      await fetchSistemasUsuario();
+
       showToast(
         response.data.message || "Sistema eliminado correctamente.",
         "success",
       );
-      setFlag((prev) => !prev);
-      setModal(null);
     } catch (error) {
+      await fetchSistemasGlobales();
+
       const isNetworkError =
         error.message === "Network Error" || !error.response;
 
@@ -157,6 +211,26 @@ export default function Sistemas() {
         throw new Error("Faltan variables de entorno.");
       }
 
+      // 1. Actualización optimista de la opción e ícono en pantalla
+      setSistemas((prevSistemas) =>
+        prevSistemas.map((sys) => {
+          if (sys.id !== sistemaId) return sys;
+
+          const opcionesActuales = sys.opciones || [];
+          const existe = opcionesActuales.some((o) => o.id === opcionData.id);
+
+          const nuevasOpciones = existe
+            ? opcionesActuales.map((o) =>
+                o.id === opcionData.id ? { ...o, ...opcionData } : o,
+              )
+            : [...opcionesActuales, opcionData];
+
+          return { ...sys, opciones: nuevasOpciones };
+        }),
+      );
+
+      setModal(null);
+
       const payload = {
         id: opcionData.id,
         sistemaId: sistemaId,
@@ -165,6 +239,7 @@ export default function Sistemas() {
         ic: opcionData.ic,
       };
 
+      // 2. Envío a la API
       const response = await axios.post(`${API_URL}/guardarOpcion`, payload, {
         headers: {
           Authorization: `Bearer ${API_TOKEN}`,
@@ -172,13 +247,17 @@ export default function Sistemas() {
         },
       });
 
+      // 3. Sincronización en segundo plano
+      await fetchSistemasGlobales();
+      await fetchSistemasUsuario();
+
       showToast(
         response.data.message || "Opción guardada correctamente.",
         "success",
       );
-      setFlag((prev) => !prev);
-      setModal(null);
     } catch (error) {
+      await fetchSistemasGlobales();
+
       const isNetworkError =
         error.message === "Network Error" || !error.response;
 
@@ -201,6 +280,17 @@ export default function Sistemas() {
         throw new Error("Faltan variables de entorno.");
       }
 
+      // Actualización optimista local
+      setSistemas((prevSistemas) =>
+        prevSistemas.map((sys) => {
+          if (sys.id !== sistemaId) return sys;
+          return {
+            ...sys,
+            opciones: (sys.opciones || []).filter((o) => o.id !== opcionId),
+          };
+        }),
+      );
+
       const response = await axios.delete(
         `${API_URL}/eliminarOpcion/${opcionId}`,
         {
@@ -210,12 +300,16 @@ export default function Sistemas() {
         },
       );
 
+      await fetchSistemasGlobales();
+      await fetchSistemasUsuario();
+
       showToast(
         response.data.message || "Opción eliminada correctamente.",
         "success",
       );
-      setFlag((prev) => !prev);
     } catch (error) {
+      await fetchSistemasGlobales();
+
       const isNetworkError =
         error.message === "Network Error" || !error.response;
 
@@ -586,7 +680,6 @@ function ModalSistema({ data, onSave, onDelete, onClose }) {
           {editar && nombre !== "Administración General" && (
             <button
               className="btn btn-ghost"
-              //disabled={nombre == "Administración General" ? true : false}
               style={{ marginRight: "auto", color: "var(--merco-danger)" }}
               onClick={() => onDelete(data.id)}
             >

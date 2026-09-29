@@ -19,6 +19,7 @@ export default function SystemLayout({ children, identificacion }) {
   const sistemas = useSelector((state) => state.auth?.user.sistemasOpciones);
 
   const getInfoSistema = (listaSistemas, nombreSistema) => {
+    //console.log(nombreSistema)
     const sistemaEncontrado = listaSistemas?.find(
       (s) => s.sistema === nombreSistema,
     );

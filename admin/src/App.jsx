@@ -284,7 +284,7 @@ function App() {
             path="/kcs"
             element={
               <SystemLoaderWrapper
-                systemName="Base de Conocimiento (KCS)"
+                systemName="Base de Conocimiento"
                 systemKey="/kcs"
               >
                 <Outlet /> {/* Permite renderizar las subrutas hijas */}
@@ -294,7 +294,7 @@ function App() {
             {/* Subruta 0: Dashboard */}
             <Route path="dashboard" element={<DashboardKcs />} />
 
-            {/* Redirección por defecto al entrar solo a /kcs */}
+            {/* Redirección por defecto al entrar solo a /rrhh */}
             <Route index element={<Navigate to="dashboard" replace />} />
           </Route>
         </Route>

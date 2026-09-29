@@ -125,7 +125,7 @@ export default function DashboardKcs() {
   const [categorias] = useState(CATEGORIAS_KB);
 
   return (
-    <SystemLayout identificacion="Base de Conocimiento (KCS)">
+    <SystemLayout identificacion="Base de Conocimiento">
       <div
         className="ma-content"
         style={{
