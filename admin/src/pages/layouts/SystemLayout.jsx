@@ -1,4 +1,5 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import Logo from "../components/Logo";
 import LogoutButton from "../components/LogoutButton";
 import ThemeToggle from "../components/ThemeToggle";
@@ -8,6 +9,9 @@ import { useSelector } from "react-redux";
 import "../../../src/systems.css";
 
 export default function SystemLayout({ children, identificacion }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+
   const usuario = useSelector((state) => state.auth?.user);
   const nombre = usuario?.nombre;
   const apellido = usuario?.apellido;
@@ -24,7 +28,6 @@ export default function SystemLayout({ children, identificacion }) {
         .map((item) => ({
           to: item.ruta_opcion,
           label: item.opcion,
-          // 2. EXTRAER EL NOMBRE DEL ÍCONO (item.ic o item.str_icono)
           icon:
             item.ic || item.str_icono || item.opcion_icono || "FiCheckSquare",
         })) || [];
@@ -42,6 +45,10 @@ export default function SystemLayout({ children, identificacion }) {
     identificacion,
   );
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   const iniciales = (n) =>
     n
       ?.split(" ")
@@ -52,17 +59,36 @@ export default function SystemLayout({ children, identificacion }) {
 
   return (
     <div className="ma-shell">
-      {/* ----------------- SIDEBAR ORIGEN ----------------- */}
-      <aside className="ma-side">
-        <div className="flex flex-col items-center justify-items-center">
+      {/* Overlay oscuro para móvil */}
+      <div
+        className={`ma-side-overlay ${mobileOpen ? "open" : ""}`}
+        onClick={() => setMobileOpen(false)}
+      />
+
+      {/* ----------------- SIDEBAR ----------------- */}
+      <aside className={`ma-side ${mobileOpen ? "open" : ""}`}>
+        <div className="ma-side-header-mobile">
           <Link
             to="/home"
-            style={{ display: "inline-block", cursor: "pointer" }}
+            style={{
+              display: "inline-flex",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
+            onClick={() => setMobileOpen(false)}
           >
             <Logo />
           </Link>
+          <button
+            className="ma-close-btn"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Cerrar menú"
+          >
+            <DynamicIcon name="FiX" fallback="FiX" />
+          </button>
         </div>
 
+        {/* Menú de navegación solo con las rutas de páginas */}
         <nav className="ma-nav">
           {nav.map((item, idx) => (
             <NavLink
@@ -70,7 +96,6 @@ export default function SystemLayout({ children, identificacion }) {
               to={item.to}
               className={({ isActive }) => (isActive ? "active" : "")}
             >
-              {/* 3. RENDERIZAR USANDO DYNAMICICON */}
               <span className="ic">
                 <DynamicIcon name={item.icon} fallback="FiGrid" />
               </span>
@@ -79,48 +104,119 @@ export default function SystemLayout({ children, identificacion }) {
           ))}
         </nav>
 
-        <div className="ma-side-foot">
-          <div className="ma-avatar">{iniciales(`${nombre} ${apellido}`)}</div>
-          <div>
-            <b>
-              {nombre} {apellido}
-            </b>
-            <small>{rol}</small>
+        {/* Zona inferior: Botones de control + Información del usuario */}
+        <div
+          className="ma-side-foot"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            marginTop: "auto",
+            paddingTop: "12px",
+          }}
+        >
+          {/* Botones colocados inmediatamente arriba del usuario */}
+          <div className="ma-nav" style={{ width: "100%", margin: 0 }}>
+            <ThemeToggle />
+            <LogoutButton />
+          </div>
+
+          <div className="ma-nav-divider" style={{ margin: "4px 0" }} />
+
+          {/* Tarjeta del usuario */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              width: "100%",
+            }}
+          >
+            <div className="ma-avatar">
+              {iniciales(`${nombre} ${apellido}`)}
+            </div>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <b
+                style={{
+                  display: "block",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {nombre} {apellido}
+              </b>
+              <small
+                style={{
+                  display: "block",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {rol}
+              </small>
+            </div>
           </div>
         </div>
       </aside>
 
-      {/* ----------------- MAIN CONTENT ORIGEN ----------------- */}
+      {/* ----------------- MAIN CONTENT ----------------- */}
       <div className="ma-main">
         <header
           className="ma-topbar"
           style={{
             display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
             alignItems: "center",
             gap: "12px",
             width: "100%",
             boxSizing: "border-box",
+            paddingTop: "10px",
+            paddingBottom: "8px",
           }}
         >
-          <div style={{ flex: "1 1 200px", minWidth: 0 }}>
-            {sistemaNombre && (
-              <h2 style={{ wordBreak: "break-word" }}>{sistemaNombre}</h2>
-            )}
-            {sistemaDescripcion && <p>{sistemaDescripcion}</p>}
-          </div>
-
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "8px",
-              flexWrap: "wrap",
+              gap: "12px",
+              flex: "1 1 auto",
+              minWidth: 0,
             }}
           >
-            <ThemeToggle />
-            <LogoutButton />
+            <button
+              className="ma-burger-btn"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Abrir menú"
+            >
+              <DynamicIcon name="FiMenu" fallback="FiMenu" />
+            </button>
+
+            <div style={{ minWidth: 0 }}>
+              {sistemaNombre && (
+                <h2
+                  style={{
+                    wordBreak: "break-word",
+                    margin: 0,
+                    lineHeight: 1.2,
+                    fontSize: "1.15rem",
+                  }}
+                >
+                  {sistemaNombre}
+                </h2>
+              )}
+              {sistemaDescripcion && (
+                <p
+                  style={{
+                    margin: "2px 0 0 0",
+                    lineHeight: 1.2,
+                    fontSize: "0.825rem",
+                  }}
+                >
+                  {sistemaDescripcion}
+                </p>
+              )}
+            </div>
           </div>
         </header>
 

@@ -1473,3 +1473,188 @@ html.dark {
     justify-content: flex-start;
   }
 }
+
+
+          /* Topbar pegajoso con zona de enmascaramiento inferior */
+          .ma-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            min-height: auto !important;
+            backdrop-filter: blur(8px);
+            background-color: var(--merco-bg, #0d1117);
+          }
+
+          /* Extensión invisible por debajo del header para que las cards se oculten ANTES */
+          .ma-topbar::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -10px;
+            height: 20px;
+            background: var(--merco-bg, #0d1117);
+            pointer-events: none;
+          }
+
+          .ma-content {
+            padding-top: 10px;
+          }
+
+          /* Base común para enlaces (NavLink) y botones (ThemeToggle, LogoutButton, .ma-nav-btn) */
+          .ma-nav a,
+          .ma-nav button,
+          .ma-nav-btn {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            width: 100% !important;
+            padding: 10px 14px !important;
+            background: transparent;
+            border: none !important;
+            border-radius: 6px !important;
+
+            /* Tipografía fina y homogénea */
+            font-family: inherit !important;
+            font-size: 14px !important;
+            font-weight: 400 !important;
+            line-height: 1.2 !important;
+            text-decoration: none !important;
+            text-align: left !important;
+
+            /* Blanco permanente forzado (inmune a cambios de modo) */
+            color: #ffffff !important;
+            cursor: pointer !important;
+            transition: background-color 0.2s ease !important;
+            box-sizing: border-box !important;
+          }
+
+          /* Forzar color blanco absoluto en íconos, textos e hijos internos */
+          .ma-nav a *,
+          .ma-nav button *,
+          .ma-nav-btn * {
+            font-size: 14px !important;
+            font-weight: 400 !important;
+            color: #ffffff !important;
+            fill: #ffffff !important;
+            stroke: #ffffff !important;
+            opacity: 1 !important;
+          }
+
+          /* Normalización de tamaño y alineación para contenedores de íconos y SVG */
+          .ma-nav a .ic,
+          .ma-nav button .ic,
+          .ma-nav-btn .ic,
+          .ma-nav a svg,
+          .ma-nav button svg,
+          .ma-nav-btn svg {
+            width: 18px !important;
+            height: 18px !important;
+            font-size: 18px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+            color: #ffffff !important;
+            fill: currentColor !important;
+            stroke: currentColor !important;
+          }
+
+          /* Estado Hover uniforme manteniendo texto blanco */
+          .ma-nav a:hover,
+          .ma-nav button:hover,
+          .ma-nav-btn:hover {
+            background-color: var(--merco-hover, rgba(255, 255, 255, 0.08)) !important;
+            color: #ffffff !important;
+          }
+
+          .ma-nav-divider {
+            height: 1px;
+            background: var(--merco-border, rgba(255, 255, 255, 0.1));
+            margin: 8px 0;
+          }
+
+          /* Botón Hamburguesa */
+          .ma-burger-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--merco-text, inherit);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 2px;
+            align-items: center;
+            justify-content: center;
+          }
+
+          /* Overlay para móvil */
+          .ma-side-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 998;
+          }
+
+          /* Encabezado del Sidebar (Logo centrado + X a la derecha) */
+          .ma-side-header-mobile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            margin-bottom: 12px;
+          }
+
+          .ma-close-btn {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--merco-text, inherit);
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+          }
+
+          @media (max-width: 768px) {
+            .ma-burger-btn {
+              display: flex;
+            }
+
+            .ma-side-overlay.open {
+              display: block;
+            }
+
+            .ma-side {
+              position: fixed;
+              top: 0;
+              left: 0;
+              height: 100vh;
+              z-index: 999;
+              transform: translateX(-100%);
+              transition: transform 0.3s ease-in-out;
+              box-shadow: 2px 0 12px rgba(0,0,0,0.25);
+            }
+
+            .ma-side.open {
+              transform: translateX(0);
+            }
+          }
+
+          @media (min-width: 769px) {
+            .ma-close-btn {
+              display: none;
+            }
+          }
