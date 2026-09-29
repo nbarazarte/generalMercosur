@@ -970,26 +970,22 @@ function TabRoles({ roles, setModal }) {
               </button>
             </div>
             <h3>{r.nombre}</h3>
-            <p>{r.desc}</p>
+
+            <span
+              className="tag tag-accent"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              {r.sistemas}
+            </span>
+
             <div style={{ marginTop: 12 }}>
               {r.permisos.map((p) => (
                 <span key={p} className="tag">
                   {p}
-                </span>
-              ))}
-            </div>
-            <div className="role-sys-tags">
-              {r.sistemas.map((sid) => (
-                <span
-                  key={sid}
-                  className="tag tag-accent"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 4,
-                  }}
-                >
-                  {SYS[sid]?.nombre || sid}
                 </span>
               ))}
             </div>
@@ -1084,8 +1080,8 @@ function ModalRol({ data, onSave, onClose }) {
   const editar = !!data;
   const [nombre, setNombre] = useState(data?.nombre || "");
   const [desc, setDesc] = useState(data?.desc || "");
-  const [ic, setIc] = useState(data?.ic || "FiShield");
-  const [color, setColor] = useState(data?.color || "#2f6fed");
+  const [nombreSistema, setNombreSistema] = useState("");
+
   const [sistemas] = useState(data?.sistemas || "all");
 
   return (
@@ -1116,37 +1112,11 @@ function ModalRol({ data, onSave, onClose }) {
           </div>
 
           <div className="field">
-            <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              Seleccionar Ícono del Rol:
-              <span
-                style={{
-                  fontSize: 18,
-                  display: "inline-flex",
-                  padding: "4px 8px",
-                  borderRadius: 6,
-                  background: color + "22",
-                  color: color,
-                }}
-              >
-                <DynamicIcon name={ic} fallback="FiShield" />
-              </span>
-            </label>
-            <IconPicker value={ic} onChange={setIc} />
-          </div>
-
-          <div className="field">
-            <label>Color distintivo del Rol</label>
+            <label>Sistema</label>
             <input
-              type="color"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              style={{ height: 40, cursor: "pointer", width: "100%" }}
+              value={nombreSistema}
+              onChange={(e) => setNombreSistema(e.target.value)}
+              placeholder="Ej. Sistema XYZ"
             />
           </div>
         </div>
