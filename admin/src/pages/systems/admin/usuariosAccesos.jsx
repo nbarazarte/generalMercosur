@@ -117,6 +117,17 @@ export default function UsuariosAccesos() {
 
   const [sistemas, setSistemas] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [toast, setToast] = useState(null); // <-- 1. Estado para el toast agregado
+
+  const [flag, setFlag] = useState(false);
+
+  // <-- 2. Función showToast agregada
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 3500);
+  };
 
   useEffect(() => {
     const fetchSistemas = async () => {
@@ -141,10 +152,9 @@ export default function UsuariosAccesos() {
         setSistemas(sistemasMapeados);
       } catch (err) {
         console.error("Error obteniendo sistemas:", err);
+        showToast("Error al obtener los sistemas.", "error"); // Toast opcional de error
       }
     };
-
-    fetchSistemas();
 
     const fetchRoles = async () => {
       try {
@@ -153,7 +163,7 @@ export default function UsuariosAccesos() {
             Authorization: `Bearer ${API_TOKEN}`,
           },
         });
-
+        setRoles([]);
         const rolesMapeados = response.data.map((row) => ({
           id: row.id || row.sistema_id,
           nombre: row.nombre || row.rol,
@@ -183,11 +193,13 @@ export default function UsuariosAccesos() {
         setRoles(rolesMapeados);
       } catch (err) {
         console.error("Error obteniendo roles:", err);
+        showToast("Error al obtener los roles.", "error"); // Toast opcional de error
       }
     };
 
+    fetchSistemas();
     fetchRoles();
-  }, []);
+  }, [flag]);
 
   const [busqueda, setBusqueda] = useState("");
   const [filtroSistema, setFiltroSistema] = useState("");
@@ -279,43 +291,66 @@ export default function UsuariosAccesos() {
         : [...prev, { ...data, id: Date.now(), ultimo: "—" }],
     );
     setModal(null);
+    showToast(
+      data.id
+        ? "Usuario actualizado correctamente."
+        : "Usuario creado exitosamente.",
+    ); // <-- Toast de éxito
   };
 
   const eliminarUsuario = (id) => {
     setUsuarios((prev) => prev.filter((u) => u.id !== id));
     setModal(null);
+    showToast("Usuario eliminado correctamente."); // <-- Toast de éxito
   };
 
   const guardarRol = async (data) => {
     try {
-      console.log("Datos enviados a guardarRol:", data);
-
       const response = await axios.post(`${API_URL}/guardarRol`, data, {
         headers: {
           Authorization: `Bearer ${API_TOKEN}`,
         },
       });
 
-      setRoles((prev) =>
-        data.id
-          ? prev.map((r) => (r.id === data.id ? { ...r, ...data } : r))
-          : [
-              ...(Array.isArray(prev) ? prev : []),
-              {
-                ...data,
-                id: response.data?.id || Date.now(),
-                permisos: data.permisos || [],
-                sistemas: [data.sistemaId],
-                color: "#2f6fed",
-                ic: "FiShield"
-              },
-            ],
-      );
+      setFlag(!flag);
       setModal(null);
+      showToast(
+        response.data?.message || "Rol guardado correctamente.",
+        "success",
+      ); // <-- Toast de éxito
     } catch (err) {
       console.error("Error completo de Axios:", err);
       const mensajeBackend = err.response?.data?.error || err.message;
-      alert(`Error del servidor: ${mensajeBackend}`);
+      showToast(`Error al guardar el rol: ${mensajeBackend}`, "error"); // <-- Toast de error
+    }
+  };
+
+  const handleEliminarRol = async (rolId) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este rol?"))
+      return;
+
+    try {
+      const response = await axios.post(
+        `${API_URL}/eliminarRol/${rolId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${API_TOKEN}`,
+          },
+        },
+      );
+
+      const data = response.data;
+      setFlag(!flag);
+      setModal(null);
+      showToast(data.message || "Rol eliminado correctamente.", "success"); // <-- Toast de éxito
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.error ||
+        error.message ||
+        "Error al eliminar el rol";
+      console.error("Error:", errorMessage);
+      showToast(`No se pudo eliminar: ${errorMessage}`, "error"); // <-- Toast de error
     }
   };
 
@@ -329,10 +364,41 @@ export default function UsuariosAccesos() {
         return { ...u, accesos };
       }),
     );
+    showToast("Accesos actualizados localmente.", "success"); // <-- Toast opcional de éxito
   };
 
   return (
     <SystemLayout identificacion="Administración General">
+      {/* <-- 3. Notificación Toast JSX agregado */}
+      {toast && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "12px 20px",
+            borderRadius: 8,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            backgroundColor: toast.type === "success" ? "#10b981" : "#ef4444",
+            color: "#ffffff",
+            fontWeight: 500,
+            fontSize: 14,
+            animation: "fadeIn 0.3s ease-in-out",
+          }}
+        >
+          <DynamicIcon
+            name={
+              toast.type === "success" ? "FiCheckCircle" : "FiAlertTriangle"
+            }
+          />
+          <span>{toast.message}</span>
+        </div>
+      )}
+
       <div
         style={{
           display: "flex",
@@ -435,6 +501,7 @@ export default function UsuariosAccesos() {
           data={modal.data}
           sistemas={sistemas}
           onSave={guardarRol}
+          onDelete={handleEliminarRol}
           onClose={() => setModal(null)}
         />
       )}
@@ -511,8 +578,8 @@ function ToolbarFiltros({
           onChange={(e) => setFiltroSistema(e.target.value)}
         >
           <option value="">Todos los sistemas</option>
-          {sistemas.map((s) => (
-            <option key={s.id} value={s.id}>
+          {sistemas.map((s, index) => (
+            <option key={s.id ? `${s.id}-${index}` : index} value={s.id}>
               {s.nombre}
             </option>
           ))}
@@ -523,8 +590,8 @@ function ToolbarFiltros({
           onChange={(e) => setFiltroRol(e.target.value)}
         >
           <option value="">Todos los roles</option>
-          {roles.map((r) => (
-            <option key={r.id} value={r.nombre}>
+          {roles.map((r, index) => (
+            <option key={r.id ? `${r.id}-${index}` : index} value={r.nombre}>
               {r.nombre}
             </option>
           ))}
@@ -804,13 +871,13 @@ function TabUsuariosYAccesos({
                             gap: 12,
                           }}
                         >
-                          {sistemas.map((s) => {
+                          {sistemas.map((s, index) => {
                             const rolActual = u.accesos[s.id] || "";
                             const rolesPermitidos = rolesDeSistema(s.id);
 
                             return (
                               <div
-                                key={s.id}
+                                key={s.id ? `${s.id}-${index}` : index}
                                 style={{
                                   padding: "10px 12px",
                                   borderRadius: 6,
@@ -928,6 +995,7 @@ function TabRoles({ roles, setModal }) {
         <div style={{ color: "var(--merco-muted)", fontSize: 14 }}>
           Catálogo de roles y opciones configurados para los diferentes sistemas
         </div>
+
         <button
           className="btn btn-accent"
           onClick={() => setModal({ tipo: "rol", data: null })}
@@ -935,20 +1003,19 @@ function TabRoles({ roles, setModal }) {
           <span>
             <DynamicIcon name="FiPlus" />
           </span>{" "}
-          Nuevo rol
+          Crear rol
         </button>
       </div>
       <div className="ma-roles">
-        {roles?.map((r) => {
+        {roles?.map((r, indexRol) => {
           const sistemasArr = Array.isArray(r.sistemas)
             ? r.sistemas
             : [r.sistemas];
 
-          // CORRECCIÓN: Aseguramos que r.permisos sea un array válido antes de mapear
           const permisosArray = Array.isArray(r.permisos) ? r.permisos : [];
 
           return (
-            <div className="role-card" key={r.id}>
+            <div className="role-card" key={indexRol}>
               <div className="rc-top">
                 <div
                   className="role-ic"
@@ -1027,8 +1094,8 @@ function TabRoles({ roles, setModal }) {
                   Opciones ({permisosArray.length})
                 </span>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {permisosArray.map((p) => (
-                    <span key={p} className="tag">
+                  {permisosArray.map((p, idxPermiso) => (
+                    <span key={idxPermiso} className="tag">
                       {p}
                     </span>
                   ))}
@@ -1122,16 +1189,16 @@ function ModalUsuario({ data, sistemas, onSave, onDelete, onClose }) {
   );
 }
 
-function ModalRol({ data, sistemas, onSave, onClose }) {
+function ModalRol({ data, sistemas, onSave, onDelete, onClose }) {
   const editar = !!data;
   const [nombre, setNombre] = useState(data?.nombre || "");
   const [sistemaSeleccionado, setSistemaSeleccionado] = useState(
-    editar ? data.sistemas?.[0] || "" : ""
+    editar ? data.sistemas?.[0] || "" : "",
   );
 
   const permisos = Array.isArray(data?.permisos) ? data.permisos : [];
   const [permisosSeleccionados, setPermisosSeleccionados] = useState(
-    Array.isArray(data?.permisos) ? data.permisos : []
+    Array.isArray(data?.permisos) ? data.permisos : [],
   );
 
   const todosSeleccionados =
@@ -1161,7 +1228,11 @@ function ModalRol({ data, sistemas, onSave, onClose }) {
     <div className="ma-overlay" onClick={onClose}>
       <div className="ma-modal" onClick={(e) => e.stopPropagation()}>
         <div className="ma-modal-head">
-          <h3>{editar ? `Editar rol: ${nombre}` : "Nuevo rol"}</h3>
+          <h3>
+            {editar
+              ? `Editar rol: ${nombre} (${data.sistemas?.[0]})`
+              : "Nuevo rol"}
+          </h3>
           <button className="btn-icon" onClick={onClose}>
             ✕
           </button>
@@ -1175,8 +1246,8 @@ function ModalRol({ data, sistemas, onSave, onClose }) {
                 onChange={(e) => setSistemaSeleccionado(e.target.value)}
               >
                 <option value="">Selecciona un sistema...</option>
-                {sistemas?.map((s) => (
-                  <option key={s.id} value={s.id}>
+                {sistemas?.map((s, index) => (
+                  <option key={s.id ? `${s.id}-${index}` : index} value={s.id}>
                     {s.nombre}
                   </option>
                 ))}
@@ -1193,137 +1264,162 @@ function ModalRol({ data, sistemas, onSave, onClose }) {
             />
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <label style={{ fontSize: 12, fontWeight: 500 }}>Opciones</label>
-              {permisos.length > 0 && (
-                <label
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6,
-                    fontSize: 12,
-                    color: "var(--merco-accent, #2f6fed)",
-                    cursor: "pointer",
-                    userSelect: "none",
-                    fontWeight: 500,
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={todosSeleccionados}
-                    ref={(input) => {
-                      if (input) input.indeterminate = algunosSeleccionados;
-                    }}
-                    onChange={toggleSeleccionarTodo}
-                    style={{
-                      cursor: "pointer",
-                      accentColor: "var(--merco-accent, #2f6fed)",
-                    }}
-                  />
-                  Seleccionar todo
+          {permisos.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <label style={{ fontSize: 12, fontWeight: 500 }}>
+                  Opciones
                 </label>
-              )}
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: 6,
-                background:
-                  "var(--merco-bg-subtle, rgba(255, 255, 255, 0.015))",
-                padding: 10,
-                borderRadius: 8,
-                border:
-                  "1px solid var(--merco-border, rgba(255, 255, 255, 0.06))",
-              }}
-            >
-              {permisos.length > 0 ? (
-                permisos.map((permiso) => {
-                  const activo = permisosSeleccionados.includes(permiso);
-                  return (
-                    <label
-                      key={permiso}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        padding: "8px 10px",
-                        borderRadius: 6,
-                        background: activo
-                          ? "var(--merco-accent-subtle, rgba(47, 111, 237, 0.1))"
-                          : "transparent",
-                        cursor: "pointer",
-                        fontSize: 13,
-                        userSelect: "none",
-                        transition: "background 0.15s ease",
+                {permisos.length > 0 && (
+                  <label
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      fontSize: 12,
+                      color: "var(--merco-accent, #2f6fed)",
+                      cursor: "pointer",
+                      userSelect: "none",
+                      fontWeight: 500,
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={todosSeleccionados}
+                      ref={(input) => {
+                        if (input) input.indeterminate = algunosSeleccionados;
                       }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={activo}
-                        onChange={() => togglePermiso(permiso)}
+                      onChange={toggleSeleccionarTodo}
+                      style={{
+                        cursor: "pointer",
+                        accentColor: "var(--merco-accent, #2f6fed)",
+                      }}
+                    />
+                    Seleccionar todo
+                  </label>
+                )}
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, 1fr)",
+                  gap: 6,
+                  background:
+                    "var(--merco-bg-subtle, rgba(255, 255, 255, 0.015))",
+                  padding: 10,
+                  borderRadius: 8,
+                  border:
+                    "1px solid var(--merco-border, rgba(255, 255, 255, 0.06))",
+                }}
+              >
+                {permisos.length > 0 &&
+                  permisos.map((permiso) => {
+                    const activo = permisosSeleccionados.includes(permiso);
+                    return (
+                      <label
+                        key={permiso}
                         style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          padding: "8px 10px",
+                          borderRadius: 6,
+                          background: activo
+                            ? "var(--merco-accent-subtle, rgba(47, 111, 237, 0.1))"
+                            : "transparent",
                           cursor: "pointer",
-                          accentColor: "var(--merco-accent, #2f6fed)",
-                          flexShrink: 0,
-                        }}
-                      />
-                      <span
-                        style={{
-                          color: activo
-                            ? "var(--merco-text, inherit)"
-                            : "var(--merco-muted, #aaa)",
-                          fontWeight: activo ? 500 : 400,
-                          lineHeight: 1.2,
+                          fontSize: 13,
+                          userSelect: "none",
+                          transition: "background 0.15s ease",
                         }}
                       >
-                        {permiso}
-                      </span>
-                    </label>
-                  );
-                })
-              ) : (
-                <div
-                  style={{
-                    gridColumn: "1 / -1",
-                    textAlign: "center",
-                    padding: "12px 0",
-                    color: "var(--merco-muted, #777)",
-                    fontSize: 13,
-                  }}
-                >
-                  No hay opciones disponibles para este rol.
-                </div>
-              )}
+                        <input
+                          type="checkbox"
+                          checked={activo}
+                          onChange={() => togglePermiso(permiso)}
+                          style={{
+                            cursor: "pointer",
+                            accentColor: "var(--merco-accent, #2f6fed)",
+                            flexShrink: 0,
+                          }}
+                        />
+                        <span
+                          style={{
+                            color: activo
+                              ? "var(--merco-text, inherit)"
+                              : "var(--merco-muted, #aaa)",
+                            fontWeight: activo ? 500 : 400,
+                            lineHeight: 1.2,
+                          }}
+                        >
+                          {permiso}
+                        </span>
+                      </label>
+                    );
+                  })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
-        <div className="ma-modal-foot">
-          <button className="btn btn-ghost" onClick={onClose}>
-            Cancelar
-          </button>
-          <button
-            className="btn btn-primary"
-            disabled={!nombre || !sistemaSeleccionado}
-            onClick={() =>
-              onSave({
-                id: data?.id,
-                nombre,
-                sistemaId: sistemaSeleccionado,
-                permisos: permisosSeleccionados,
-              })
-            }
-          >
-            {editar ? "Guardar cambios" : "Crear rol"}
-          </button>
+        <div
+          className="ma-modal-foot"
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          {editar ? (
+            <button
+              type="button"
+              className="btn btn-danger"
+              style={{
+                backgroundColor: "#dc3545",
+                color: "#fff",
+                border: "none",
+              }}
+              onClick={() => {
+                if (typeof onDelete === "function") {
+                  onDelete(data.id);
+                } else {
+                  console.warn(
+                    "Falta pasar la función onDelete al componente ModalRol",
+                  );
+                }
+              }}
+            >
+              Eliminar rol
+            </button>
+          ) : (
+            <div />
+          )}
+
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button className="btn btn-ghost" onClick={onClose}>
+              Cancelar
+            </button>
+            <button
+              className="btn btn-primary"
+              disabled={!nombre || !sistemaSeleccionado}
+              onClick={() =>
+                onSave({
+                  id: data?.id,
+                  nombre,
+                  sistemaId: sistemaSeleccionado,
+                  permisos: permisosSeleccionados,
+                })
+              }
+            >
+              {editar ? "Guardar cambios" : "Crear rol"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

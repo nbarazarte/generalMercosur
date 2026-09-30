@@ -646,7 +646,7 @@ router.get("/fetchRoles", async (req, res) => {
 
     // Mapeo dinámico
     const roles = result.rows.map((row) => ({
-      id: row.sistema_id,
+      id: row.rol_sistema_id,
       nombre: row.rol,
       desc: row.str_descripcion,
       ic: row.str_icono,
@@ -677,6 +677,8 @@ router.post("/guardarRol", async (req, res) => {
   try {
     const { nombre, sistemaId } = req.body;
 
+    //console.log(nombre, sistemaId);
+
     if (!nombre || !sistemaId) {
       return res.status(400).json({
         error: "El nombre del rol y el sistema son obligatorios.",
@@ -685,30 +687,19 @@ router.post("/guardarRol", async (req, res) => {
 
     await client.query("BEGIN");
 
-    // 1. Verificar si el rol ya existe en cat_roles usando 'str_nombre'
-    let rolRes = await client.query(
-      `SELECT id FROM public.cat_roles WHERE LOWER(str_nombre) = LOWER($1);`,
-      [nombre.trim()]
-    );
-
     let rolId;
-    if (rolRes.rows.length > 0) {
-      rolId = rolRes.rows[0].id;
-    } else {
-      // 2. Si no existe, lo insertamos usando 'str_nombre'
-      const nuevoRol = await client.query(
-        `INSERT INTO public.cat_roles (str_nombre, created_at, updated_at) 
-         VALUES ($1, NOW(), NOW()) RETURNING id;`,
-        [nombre.trim()]
-      );
-      rolId = nuevoRol.rows[0].id;
-    }
+    // 1. Si no existe, lo insertamos usando 'str_nombre' en minúsculas
+    const nuevoRol = await client.query(
+      `INSERT INTO public.cat_roles (str_nombre, created_at, updated_at) 
+         VALUES (LOWER(TRIM($1)), NOW(), NOW()) RETURNING id;`,
+      [nombre],
+    );
+    rolId = nuevoRol.rows[0].id;
 
-    // 3. Insertar la relación en tbl_roles_sistemas
+    // 2. Insertar la relación en tbl_roles_sistemas
     const insRolSys = await client.query(
-      `INSERT INTO public.tbl_roles_sistemas (rol_id, sistema_id, created_at, updated_at, bol_activo)
-       VALUES ($1, $2, NOW(), NOW(), true) RETURNING id;`,
-      [rolId, sistemaId]
+      `INSERT INTO public.tbl_roles_sistemas (rol_id, sistema_id) VALUES ($1, $2) RETURNING id;`,
+      [rolId, sistemaId],
     );
 
     await client.query("COMMIT");
@@ -721,6 +712,71 @@ router.post("/guardarRol", async (req, res) => {
     await client.query("ROLLBACK");
     console.error("Error al crear rol:", err.message);
     res.status(500).json({ error: `Error en base de datos: ${err.message}` });
+  } finally {
+    client.release();
+  }
+});
+// ==========================================
+// ENDPOINT: ELIMINAR ROL
+// ==========================================
+router.post("/eliminarRol/:id", async (req, res) => {
+  const client = await pool.connect();
+  const { id } = req.params; // Este id corresponde al registro de tbl_roles_sistemas
+
+  console.log(id);
+
+  if (!id) {
+    return res.status(400).json({
+      error: "El ID del rol es obligatorio.",
+    });
+  }
+
+  try {
+    await client.query("BEGIN");
+
+    // 1. Consultar el 'rol_id' real desde tbl_roles_sistemas usando el ID recibido
+    const queryRelacion = `SELECT rol_id FROM public.tbl_roles_sistemas WHERE id = $1`;
+    const resultRelacion = await client.query(queryRelacion, [id]);
+
+    if (resultRelacion.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res
+        .status(404)
+        .json({ error: "No se encontró la relación del rol en el sistema." });
+    }
+
+    const rolIdReal = resultRelacion.rows[0].rol_id;
+
+    // 2. Eliminar la relación en tbl_roles_sistemas
+    await client.query(`DELETE FROM public.tbl_roles_sistemas WHERE id = $1;`, [
+      id,
+    ]);
+
+    // 3. Eliminar el rol de la tabla principal cat_roles usando el rol_id obtenido
+    const deleteRol = await client.query(
+      `DELETE FROM public.cat_roles WHERE id = $1 RETURNING id;`,
+      [rolIdReal],
+    );
+
+    if (deleteRol.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res
+        .status(404)
+        .json({ error: "El rol principal no fue encontrado en cat_roles." });
+    }
+
+    await client.query("COMMIT");
+
+    return res.status(200).json({
+      message: "Rol eliminado exitosamente.",
+      id: Number(rolIdReal),
+    });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error al eliminar rol:", err.message);
+    return res
+      .status(500)
+      .json({ error: `Error en base de datos: ${err.message}` });
   } finally {
     client.release();
   }
