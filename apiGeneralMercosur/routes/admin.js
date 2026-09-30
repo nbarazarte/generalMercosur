@@ -734,42 +734,21 @@ router.post("/eliminarRol/:id", async (req, res) => {
   try {
     await client.query("BEGIN");
 
-    // 1. Consultar el 'rol_id' real desde tbl_roles_sistemas usando el ID recibido
-    const queryRelacion = `SELECT rol_id FROM public.tbl_roles_sistemas WHERE id = $1`;
-    const resultRelacion = await client.query(queryRelacion, [id]);
+    // 2. Eliminar la relación en tbl_roles_sistemas_opciones
+    await client.query(
+      `DELETE FROM public.tbl_roles_sistemas_opciones WHERE roles_sistemas_id = $1;`,
+      [id],
+    );
 
-    if (resultRelacion.rows.length === 0) {
-      await client.query("ROLLBACK");
-      return res
-        .status(404)
-        .json({ error: "No se encontró la relación del rol en el sistema." });
-    }
-
-    const rolIdReal = resultRelacion.rows[0].rol_id;
-
-    // 2. Eliminar la relación en tbl_roles_sistemas
+    // 3. Eliminar la relación en tbl_roles_sistemas
     await client.query(`DELETE FROM public.tbl_roles_sistemas WHERE id = $1;`, [
       id,
     ]);
-
-    // 3. Eliminar el rol de la tabla principal cat_roles usando el rol_id obtenido
-    const deleteRol = await client.query(
-      `DELETE FROM public.cat_roles WHERE id = $1 RETURNING id;`,
-      [rolIdReal],
-    );
-
-    if (deleteRol.rows.length === 0) {
-      await client.query("ROLLBACK");
-      return res
-        .status(404)
-        .json({ error: "El rol principal no fue encontrado en cat_roles." });
-    }
 
     await client.query("COMMIT");
 
     return res.status(200).json({
       message: "Rol eliminado exitosamente.",
-      id: Number(rolIdReal),
     });
   } catch (err) {
     await client.query("ROLLBACK");
