@@ -668,4 +668,62 @@ router.get("/fetchRoles", async (req, res) => {
   }
 });
 
+// ==========================================
+// ENDPOINT: GUARDAR ROL (BÁSICO)
+// ==========================================
+router.post("/guardarRol", async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    const { nombre, sistemaId } = req.body;
+
+    if (!nombre || !sistemaId) {
+      return res.status(400).json({
+        error: "El nombre del rol y el sistema son obligatorios.",
+      });
+    }
+
+    await client.query("BEGIN");
+
+    // 1. Verificar si el rol ya existe en cat_roles usando 'str_nombre'
+    let rolRes = await client.query(
+      `SELECT id FROM public.cat_roles WHERE LOWER(str_nombre) = LOWER($1);`,
+      [nombre.trim()]
+    );
+
+    let rolId;
+    if (rolRes.rows.length > 0) {
+      rolId = rolRes.rows[0].id;
+    } else {
+      // 2. Si no existe, lo insertamos usando 'str_nombre'
+      const nuevoRol = await client.query(
+        `INSERT INTO public.cat_roles (str_nombre, created_at, updated_at) 
+         VALUES ($1, NOW(), NOW()) RETURNING id;`,
+        [nombre.trim()]
+      );
+      rolId = nuevoRol.rows[0].id;
+    }
+
+    // 3. Insertar la relación en tbl_roles_sistemas
+    const insRolSys = await client.query(
+      `INSERT INTO public.tbl_roles_sistemas (rol_id, sistema_id, created_at, updated_at, bol_activo)
+       VALUES ($1, $2, NOW(), NOW(), true) RETURNING id;`,
+      [rolId, sistemaId]
+    );
+
+    await client.query("COMMIT");
+
+    return res.status(200).json({
+      message: "Rol creado exitosamente.",
+      id: insRolSys.rows[0].id,
+    });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error al crear rol:", err.message);
+    res.status(500).json({ error: `Error en base de datos: ${err.message}` });
+  } finally {
+    client.release();
+  }
+});
+
 module.exports = router;

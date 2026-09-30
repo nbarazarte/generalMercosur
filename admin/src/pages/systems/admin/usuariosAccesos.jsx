@@ -119,6 +119,33 @@ export default function UsuariosAccesos() {
   const [roles, setRoles] = useState([]);
 
   useEffect(() => {
+    const fetchSistemas = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/fetchSistemas`, {
+          headers: {
+            Authorization: `Bearer ${API_TOKEN}`,
+          },
+        });
+
+        const dataArray = Array.isArray(response.data)
+          ? response.data
+          : Array.isArray(response.data?.data)
+            ? response.data.data
+            : response.data?.sistemas || [];
+
+        const sistemasMapeados = dataArray.map((row) => ({
+          id: row.id,
+          nombre: row.nombre,
+        }));
+
+        setSistemas(sistemasMapeados);
+      } catch (err) {
+        console.error("Error obteniendo sistemas:", err);
+      }
+    };
+
+    fetchSistemas();
+
     const fetchRoles = async () => {
       try {
         const response = await axios.get(`${API_URL}/fetchRoles`, {
@@ -259,19 +286,37 @@ export default function UsuariosAccesos() {
     setModal(null);
   };
 
-  const guardarRol = (data) => {
-    setRoles((prev) =>
-      data.id
-        ? prev.map((r) => (r.id === data.id ? { ...r, ...data } : r))
-        : [
-            ...prev,
-            {
-              ...data,
-              id: Date.now(),
-            },
-          ],
-    );
-    setModal(null);
+  const guardarRol = async (data) => {
+    try {
+      console.log("Datos enviados a guardarRol:", data);
+
+      const response = await axios.post(`${API_URL}/guardarRol`, data, {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+        },
+      });
+
+      setRoles((prev) =>
+        data.id
+          ? prev.map((r) => (r.id === data.id ? { ...r, ...data } : r))
+          : [
+              ...(Array.isArray(prev) ? prev : []),
+              {
+                ...data,
+                id: response.data?.id || Date.now(),
+                permisos: data.permisos || [],
+                sistemas: [data.sistemaId],
+                color: "#2f6fed",
+                ic: "FiShield"
+              },
+            ],
+      );
+      setModal(null);
+    } catch (err) {
+      console.error("Error completo de Axios:", err);
+      const mensajeBackend = err.response?.data?.error || err.message;
+      alert(`Error del servidor: ${mensajeBackend}`);
+    }
   };
 
   const setAccesoMatriz = (userId, sysId, rol) => {
@@ -288,7 +333,6 @@ export default function UsuariosAccesos() {
 
   return (
     <SystemLayout identificacion="Administración General">
-      {/* ENCABEZADO */}
       <div
         style={{
           display: "flex",
@@ -389,6 +433,7 @@ export default function UsuariosAccesos() {
       {modal?.tipo === "rol" && (
         <ModalRol
           data={modal.data}
+          sistemas={sistemas}
           onSave={guardarRol}
           onClose={() => setModal(null)}
         />
@@ -397,7 +442,6 @@ export default function UsuariosAccesos() {
   );
 }
 
-/* ==================== BARRA DE FILTROS ==================== */
 function ToolbarFiltros({
   roles,
   sistemas,
@@ -590,7 +634,6 @@ function ToolbarFiltros({
   );
 }
 
-/* ==================== SUB-COMPONENTES ==================== */
 function AccesosChips({ accesos, sysMap }) {
   const ids = Object.keys(accesos);
   if (!ids.length) return <span className="access-chip none">Sin accesos</span>;
@@ -616,7 +659,6 @@ function AccesosChips({ accesos, sysMap }) {
   });
 }
 
-/* PESTAÑA UNIFICADA: USUARIOS Y ACCESOS */
 function TabUsuariosYAccesos({
   usuariosFiltrados,
   rolesDeSistema,
@@ -653,7 +695,6 @@ function TabUsuariosYAccesos({
 
             return (
               <React.Fragment key={u.id}>
-                {/* Fila principal del usuario */}
                 <tr style={{ borderBottom: estaAbierto ? "none" : undefined }}>
                   <td style={{ textAlign: "center", paddingRight: 0 }}>
                     <button
@@ -723,7 +764,6 @@ function TabUsuariosYAccesos({
                   </td>
                 </tr>
 
-                {/* Fila Desplegable en acordeón exactamente debajo del usuario */}
                 {estaAbierto && (
                   <tr
                     style={{
@@ -899,10 +939,13 @@ function TabRoles({ roles, setModal }) {
         </button>
       </div>
       <div className="ma-roles">
-        {roles.map((r) => {
+        {roles?.map((r) => {
           const sistemasArr = Array.isArray(r.sistemas)
             ? r.sistemas
             : [r.sistemas];
+
+          // CORRECCIÓN: Aseguramos que r.permisos sea un array válido antes de mapear
+          const permisosArray = Array.isArray(r.permisos) ? r.permisos : [];
 
           return (
             <div className="role-card" key={r.id}>
@@ -910,15 +953,15 @@ function TabRoles({ roles, setModal }) {
                 <div
                   className="role-ic"
                   style={{
-                    background: `${r.color}22`,
-                    color: r.color,
+                    background: `${r.color || "#2f6fed"}22`,
+                    color: r.color || "#2f6fed",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     fontSize: 20,
                   }}
                 >
-                  <DynamicIcon name={r.ic} />
+                  <DynamicIcon name={r.ic || "FiShield"} />
                 </div>
                 <button
                   className="btn-icon"
@@ -944,8 +987,8 @@ function TabRoles({ roles, setModal }) {
                     key={idx}
                     className="tag tag-accent"
                     style={{
-                      background: `${r.color}22`,
-                      color: r.color,
+                      background: `${r.color || "#2f6fed"}22`,
+                      color: r.color || "#2f6fed",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -981,10 +1024,10 @@ function TabRoles({ roles, setModal }) {
                     fontWeight: 600,
                   }}
                 >
-                  Opciones ({r.permisos?.length || 0})
+                  Opciones ({permisosArray.length})
                 </span>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {r.permisos.map((p) => (
+                  {permisosArray.map((p) => (
                     <span key={p} className="tag">
                       {p}
                     </span>
@@ -999,7 +1042,7 @@ function TabRoles({ roles, setModal }) {
   );
 }
 
-function ModalUsuario({ data, onSave, onDelete, onClose }) {
+function ModalUsuario({ data, sistemas, onSave, onDelete, onClose }) {
   const editar = !!data;
   const [nombre, setNombre] = useState(data?.nombre || "");
   const [email, setEmail] = useState(data?.email || "");
@@ -1079,21 +1122,16 @@ function ModalUsuario({ data, onSave, onDelete, onClose }) {
   );
 }
 
-function ModalRol({ data, onSave, onClose }) {
+function ModalRol({ data, sistemas, onSave, onClose }) {
   const editar = !!data;
   const [nombre, setNombre] = useState(data?.nombre || "");
+  const [sistemaSeleccionado, setSistemaSeleccionado] = useState(
+    editar ? data.sistemas?.[0] || "" : ""
+  );
 
-  const nombreSistema = data.sistemas[0];
-  const sistema_id = data.id;
-
-  //console.log(data.id);
-
-  // Los permisos provienen estrictamente de los datos recibidos
   const permisos = Array.isArray(data?.permisos) ? data.permisos : [];
-
-  // Estado para manejar múltiples opciones seleccionadas mediante checkboxes
   const [permisosSeleccionados, setPermisosSeleccionados] = useState(
-    Array.isArray(data?.permisos) ? data.permisos : [],
+    Array.isArray(data?.permisos) ? data.permisos : []
   );
 
   const todosSeleccionados =
@@ -1123,12 +1161,29 @@ function ModalRol({ data, onSave, onClose }) {
     <div className="ma-overlay" onClick={onClose}>
       <div className="ma-modal" onClick={(e) => e.stopPropagation()}>
         <div className="ma-modal-head">
-          <h3>{editar ? `Editar rol de: ${nombreSistema}` : "Nuevo rol"}</h3>
+          <h3>{editar ? `Editar rol: ${nombre}` : "Nuevo rol"}</h3>
           <button className="btn-icon" onClick={onClose}>
             ✕
           </button>
         </div>
         <div className="ma-modal-body">
+          {!editar && (
+            <div className="field">
+              <label>Sistema</label>
+              <select
+                value={sistemaSeleccionado}
+                onChange={(e) => setSistemaSeleccionado(e.target.value)}
+              >
+                <option value="">Selecciona un sistema...</option>
+                {sistemas?.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div className="field">
             <label>Rol</label>
             <input
@@ -1139,9 +1194,14 @@ function ModalRol({ data, onSave, onClose }) {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {/* Cabecera de la sección */}
-            <div className="field">
-              <label>Opciones</label>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <label style={{ fontSize: 12, fontWeight: 500 }}>Opciones</label>
               {permisos.length > 0 && (
                 <label
                   style={{
@@ -1149,7 +1209,7 @@ function ModalRol({ data, onSave, onClose }) {
                     alignItems: "center",
                     gap: 6,
                     fontSize: 12,
-
+                    color: "var(--merco-accent, #2f6fed)",
                     cursor: "pointer",
                     userSelect: "none",
                     fontWeight: 500,
@@ -1167,12 +1227,11 @@ function ModalRol({ data, onSave, onClose }) {
                       accentColor: "var(--merco-accent, #2f6fed)",
                     }}
                   />
-                  Todas
+                  Seleccionar todo
                 </label>
               )}
             </div>
 
-            {/* Lista en dos columnas */}
             <div
               style={{
                 display: "grid",
@@ -1253,12 +1312,12 @@ function ModalRol({ data, onSave, onClose }) {
           </button>
           <button
             className="btn btn-primary"
-            disabled={!nombre}
+            disabled={!nombre || !sistemaSeleccionado}
             onClick={() =>
               onSave({
                 id: data?.id,
                 nombre,
-                desc,
+                sistemaId: sistemaSeleccionado,
                 permisos: permisosSeleccionados,
               })
             }
