@@ -436,7 +436,21 @@ export default function Sistemas() {
               </button>
             </div>
             <h3>{sys.nombre}</h3>
-            <p>{sys.desc}</p>
+
+            <span
+              style={{
+                background: sys.color + "22",
+                color: sys.color,
+                fontSize: 12,
+                display: "flex",
+                alignItems: "left",
+                justifyContent: "left",
+                borderRadius: "6px",
+                padding: "6px",
+              }}
+            >
+              {sys.desc}
+            </span>
 
             <div
               style={{

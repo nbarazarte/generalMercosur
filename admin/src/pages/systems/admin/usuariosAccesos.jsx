@@ -6,61 +6,6 @@ import axios from "axios";
 const API_URL = import.meta.env.VITE_URL_API_ADMIN;
 const API_TOKEN = import.meta.env.VITE_TOKEN;
 
-const SISTEMAS = [
-  {
-    id: "adminmep",
-    nombre: "Admin MEP",
-    ic: "FiSettings",
-    color: "#2f6fed",
-    desc: "Configuración del sistema",
-  },
-  {
-    id: "rrhh",
-    nombre: "Recursos Humanos",
-    ic: "FiUsers",
-    color: "#1f9d63",
-    desc: "Ficha de empleado",
-  },
-  {
-    id: "tickets",
-    nombre: "Sistema Tickets",
-    ic: "FiHeadphones",
-    color: "#d8992a",
-    desc: "Centraliza tus tickets",
-  },
-  {
-    id: "kb",
-    nombre: "Base de Conocimiento",
-    ic: "FiBook",
-    color: "#8155d8",
-    desc: "Información para clientes",
-  },
-];
-const SYS = Object.fromEntries(SISTEMAS.map((s) => [s.id, s]));
-
-const ROLES_INIT = [
-  {
-    id: 1,
-    nombre: "Administrador",
-    desc: "Control total del sistema y su configuración.",
-    ic: "FiShield",
-    color: "#0b2545",
-    bg: "rgba(11,37,69,.12)",
-    sistemas: "all",
-    permisos: ["Ver", "Crear", "Editar", "Eliminar", "Aprobar", "Exportar"],
-  },
-  {
-    id: 2,
-    nombre: "Supervisor",
-    desc: "Supervisa la operación y aprueba acciones.",
-    ic: "FiEye",
-    color: "#2f6fed",
-    bg: "rgba(47,111,237,.12)",
-    sistemas: "all",
-    permisos: ["Ver", "Editar", "Aprobar", "Exportar"],
-  },
-];
-
 const AVA_COLORS = [
   "#0b2545",
   "#2f6fed",
@@ -170,6 +115,7 @@ export default function UsuariosAccesos() {
   const [tab, setTab] = useState("usuarios"); // 'usuarios' o 'roles'
   const [usuarios, setUsuarios] = useState(USUARIOS_INIT);
 
+  const [sistemas, setSistemas] = useState([]);
   const [roles, setRoles] = useState([]);
 
   useEffect(() => {
@@ -294,9 +240,9 @@ export default function UsuariosAccesos() {
       total: usuarios.length,
       activos: usuarios.filter((u) => u.estado === "active").length,
       pendientes: usuarios.filter((u) => u.estado === "pending").length,
-      sistemas: SISTEMAS.length,
+      sistemas: sistemas.length,
     }),
-    [usuarios],
+    [usuarios, sistemas],
   );
 
   const guardarUsuario = (data) => {
@@ -322,7 +268,6 @@ export default function UsuariosAccesos() {
             {
               ...data,
               id: Date.now(),
-              permisos: ["Ver"],
             },
           ],
     );
@@ -402,6 +347,7 @@ export default function UsuariosAccesos() {
           <ToolbarFiltros
             {...{
               roles,
+              sistemas,
               busqueda,
               setBusqueda,
               filtroSistema,
@@ -423,6 +369,7 @@ export default function UsuariosAccesos() {
           <TabUsuariosYAccesos
             usuariosFiltrados={usuariosFiltrados}
             rolesDeSistema={rolesDeSistema}
+            sistemas={sistemas}
             setAccesoMatriz={setAccesoMatriz}
             setModal={setModal}
           />
@@ -453,6 +400,7 @@ export default function UsuariosAccesos() {
 /* ==================== BARRA DE FILTROS ==================== */
 function ToolbarFiltros({
   roles,
+  sistemas,
   busqueda,
   setBusqueda,
   filtroSistema,
@@ -503,7 +451,7 @@ function ToolbarFiltros({
             onChange={(e) => setBusqueda(e.target.value)}
             style={{
               width: "100%",
-              padding: "8px 12px 8px 32px", // 32px a la izquierda para dejar espacio al icono
+              padding: "8px 12px 8px 32px",
               borderRadius: 6,
               border: "1px solid var(--merco-border, #444)",
               background: "var(--merco-bg-subtle, rgba(255, 255, 255, 0.05))",
@@ -519,7 +467,7 @@ function ToolbarFiltros({
           onChange={(e) => setFiltroSistema(e.target.value)}
         >
           <option value="">Todos los sistemas</option>
-          {SISTEMAS.map((s) => (
+          {sistemas.map((s) => (
             <option key={s.id} value={s.id}>
               {s.nombre}
             </option>
@@ -643,24 +591,24 @@ function ToolbarFiltros({
 }
 
 /* ==================== SUB-COMPONENTES ==================== */
-function AccesosChips({ accesos }) {
+function AccesosChips({ accesos, sysMap }) {
   const ids = Object.keys(accesos);
   if (!ids.length) return <span className="access-chip none">Sin accesos</span>;
   return ids.map((sid) => {
-    const s = SYS[sid];
+    const s = sysMap[sid];
     if (!s) return null;
     return (
       <span className="access-chip" key={sid}>
         <span
           className="ci"
           style={{
-            background: s.color,
+            background: s.color || "#2f6fed",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <DynamicIcon name={s.ic} fallback="FiGrid" />
+          <DynamicIcon name={s.ic || "FiGrid"} fallback="FiGrid" />
         </span>
         {s.nombre} · <span className="role">{accesos[sid]}</span>
       </span>
@@ -672,10 +620,15 @@ function AccesosChips({ accesos }) {
 function TabUsuariosYAccesos({
   usuariosFiltrados,
   rolesDeSistema,
+  sistemas,
   setAccesoMatriz,
   setModal,
 }) {
   const [expandidos, setExpandidos] = useState({});
+
+  const sysMap = useMemo(() => {
+    return Object.fromEntries(sistemas.map((s) => [s.id, s]));
+  }, [sistemas]);
 
   const toggleExpandir = (id) => {
     setExpandidos((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -739,7 +692,7 @@ function TabUsuariosYAccesos({
                   </td>
                   <td>
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                      <AccesosChips accesos={u.accesos} />
+                      <AccesosChips accesos={u.accesos} sysMap={sysMap} />
                     </div>
                   </td>
                   <td>
@@ -811,7 +764,7 @@ function TabUsuariosYAccesos({
                             gap: 12,
                           }}
                         >
-                          {SISTEMAS.map((s) => {
+                          {sistemas.map((s) => {
                             const rolActual = u.accesos[s.id] || "";
                             const rolesPermitidos = rolesDeSistema(s.id);
 
@@ -822,10 +775,10 @@ function TabUsuariosYAccesos({
                                   padding: "10px 12px",
                                   borderRadius: 6,
                                   border: rolActual
-                                    ? `1px solid ${s.color}66`
+                                    ? `1px solid ${s.color || "#2f6fed"}66`
                                     : "1px solid var(--merco-border, #333)",
                                   background: rolActual
-                                    ? `${s.color}0d`
+                                    ? `${s.color || "#2f6fed"}0d`
                                     : "transparent",
                                   display: "flex",
                                   flexDirection: "column",
@@ -844,7 +797,7 @@ function TabUsuariosYAccesos({
                                       width: 26,
                                       height: 26,
                                       borderRadius: 4,
-                                      background: s.color,
+                                      background: s.color || "#2f6fed",
                                       color: "#fff",
                                       display: "flex",
                                       alignItems: "center",
@@ -853,7 +806,7 @@ function TabUsuariosYAccesos({
                                     }}
                                   >
                                     <DynamicIcon
-                                      name={s.ic}
+                                      name={s.ic || "FiGrid"}
                                       fallback="FiGrid"
                                     />
                                   </div>
@@ -933,7 +886,7 @@ function TabRoles({ roles, setModal }) {
     <>
       <div className="ma-toolbar">
         <div style={{ color: "var(--merco-muted)", fontSize: 14 }}>
-          Perfiles de permisos. Cada rol aplica a uno o varios sistemas.
+          Catálogo de roles y opciones configurados para los diferentes sistemas
         </div>
         <button
           className="btn btn-accent"
@@ -946,51 +899,101 @@ function TabRoles({ roles, setModal }) {
         </button>
       </div>
       <div className="ma-roles">
-        {roles.map((r) => (
-          <div className="role-card" key={r.id}>
-            <div className="rc-top">
+        {roles.map((r) => {
+          const sistemasArr = Array.isArray(r.sistemas)
+            ? r.sistemas
+            : [r.sistemas];
+
+          return (
+            <div className="role-card" key={r.id}>
+              <div className="rc-top">
+                <div
+                  className="role-ic"
+                  style={{
+                    background: `${r.color}22`,
+                    color: r.color,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 20,
+                  }}
+                >
+                  <DynamicIcon name={r.ic} />
+                </div>
+                <button
+                  className="btn-icon"
+                  title="Editar rol"
+                  onClick={() => setModal({ tipo: "rol", data: r })}
+                >
+                  <DynamicIcon name="FiEdit" />
+                </button>
+              </div>
+
+              <h3>{r.nombre}</h3>
+
               <div
-                className="role-ic"
                 style={{
-                  background: r.bg || r.color + "22",
-                  color: r.color,
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 20,
+                  gap: 4,
+                  flexWrap: "wrap",
+                  margin: "4px 0 8px 0",
                 }}
               >
-                <DynamicIcon name={r.ic} />
+                {sistemasArr.map((sys, idx) => (
+                  <span
+                    key={idx}
+                    className="tag tag-accent"
+                    style={{
+                      background: `${r.color}22`,
+                      color: r.color,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 12,
+                    }}
+                  >
+                    {sys}
+                  </span>
+                ))}
               </div>
-              <button
-                className="btn-icon"
-                onClick={() => setModal({ tipo: "rol", data: r })}
-              >
-                <DynamicIcon name="FiEdit" />
-              </button>
-            </div>
-            <h3>{r.nombre}</h3>
 
-            <span
-              className="tag tag-accent"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              {r.sistemas}
-            </span>
+              {r.desc && (
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: "var(--merco-muted)",
+                    margin: "0 0 10px 0",
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {r.desc}
+                </p>
+              )}
 
-            <div style={{ marginTop: 12 }}>
-              {r.permisos.map((p) => (
-                <span key={p} className="tag">
-                  {p}
+              <div style={{ marginTop: "auto" }}>
+                <span
+                  style={{
+                    fontSize: 11,
+                    letterSpacing: "0.5px",
+                    color: "var(--merco-muted)",
+                    display: "block",
+                    marginBottom: 6,
+                    fontWeight: 600,
+                  }}
+                >
+                  Opciones ({r.permisos?.length || 0})
                 </span>
-              ))}
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {r.permisos.map((p) => (
+                    <span key={p} className="tag">
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );
@@ -1079,45 +1082,169 @@ function ModalUsuario({ data, onSave, onDelete, onClose }) {
 function ModalRol({ data, onSave, onClose }) {
   const editar = !!data;
   const [nombre, setNombre] = useState(data?.nombre || "");
-  const [desc, setDesc] = useState(data?.desc || "");
-  const [nombreSistema, setNombreSistema] = useState("");
 
-  const [sistemas] = useState(data?.sistemas || "all");
+  const nombreSistema = data.sistemas[0];
+  const sistema_id = data.id;
+
+  //console.log(data.id);
+
+  // Los permisos provienen estrictamente de los datos recibidos
+  const permisos = Array.isArray(data?.permisos) ? data.permisos : [];
+
+  // Estado para manejar múltiples opciones seleccionadas mediante checkboxes
+  const [permisosSeleccionados, setPermisosSeleccionados] = useState(
+    Array.isArray(data?.permisos) ? data.permisos : [],
+  );
+
+  const todosSeleccionados =
+    permisos.length > 0 &&
+    permisos.every((p) => permisosSeleccionados.includes(p));
+  const algunosSeleccionados =
+    permisos.some((p) => permisosSeleccionados.includes(p)) &&
+    !todosSeleccionados;
+
+  const togglePermiso = (permiso) => {
+    setPermisosSeleccionados((prev) =>
+      prev.includes(permiso)
+        ? prev.filter((p) => p !== permiso)
+        : [...prev, permiso],
+    );
+  };
+
+  const toggleSeleccionarTodo = () => {
+    if (todosSeleccionados) {
+      setPermisosSeleccionados([]);
+    } else {
+      setPermisosSeleccionados([...permisos]);
+    }
+  };
 
   return (
     <div className="ma-overlay" onClick={onClose}>
       <div className="ma-modal" onClick={(e) => e.stopPropagation()}>
         <div className="ma-modal-head">
-          <h3>{editar ? "Editar rol" : "Nuevo rol"}</h3>
+          <h3>{editar ? `Editar rol de: ${nombreSistema}` : "Nuevo rol"}</h3>
           <button className="btn-icon" onClick={onClose}>
             ✕
           </button>
         </div>
         <div className="ma-modal-body">
           <div className="field">
-            <label>Nombre del rol</label>
+            <label>Rol</label>
             <input
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
-              placeholder="Ej. Analista de Riesgos"
-            />
-          </div>
-          <div className="field">
-            <label>Descripción</label>
-            <input
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-              placeholder="Ej. Acceso a reportes y configuraciones generales"
+              placeholder="Ej. Analista"
             />
           </div>
 
-          <div className="field">
-            <label>Sistema</label>
-            <input
-              value={nombreSistema}
-              onChange={(e) => setNombreSistema(e.target.value)}
-              placeholder="Ej. Sistema XYZ"
-            />
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {/* Cabecera de la sección */}
+            <div className="field">
+              <label>Opciones</label>
+              {permisos.length > 0 && (
+                <label
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    fontSize: 12,
+
+                    cursor: "pointer",
+                    userSelect: "none",
+                    fontWeight: 500,
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={todosSeleccionados}
+                    ref={(input) => {
+                      if (input) input.indeterminate = algunosSeleccionados;
+                    }}
+                    onChange={toggleSeleccionarTodo}
+                    style={{
+                      cursor: "pointer",
+                      accentColor: "var(--merco-accent, #2f6fed)",
+                    }}
+                  />
+                  Todas
+                </label>
+              )}
+            </div>
+
+            {/* Lista en dos columnas */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: 6,
+                background:
+                  "var(--merco-bg-subtle, rgba(255, 255, 255, 0.015))",
+                padding: 10,
+                borderRadius: 8,
+                border:
+                  "1px solid var(--merco-border, rgba(255, 255, 255, 0.06))",
+              }}
+            >
+              {permisos.length > 0 ? (
+                permisos.map((permiso) => {
+                  const activo = permisosSeleccionados.includes(permiso);
+                  return (
+                    <label
+                      key={permiso}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        padding: "8px 10px",
+                        borderRadius: 6,
+                        background: activo
+                          ? "var(--merco-accent-subtle, rgba(47, 111, 237, 0.1))"
+                          : "transparent",
+                        cursor: "pointer",
+                        fontSize: 13,
+                        userSelect: "none",
+                        transition: "background 0.15s ease",
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={activo}
+                        onChange={() => togglePermiso(permiso)}
+                        style={{
+                          cursor: "pointer",
+                          accentColor: "var(--merco-accent, #2f6fed)",
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span
+                        style={{
+                          color: activo
+                            ? "var(--merco-text, inherit)"
+                            : "var(--merco-muted, #aaa)",
+                          fontWeight: activo ? 500 : 400,
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {permiso}
+                      </span>
+                    </label>
+                  );
+                })
+              ) : (
+                <div
+                  style={{
+                    gridColumn: "1 / -1",
+                    textAlign: "center",
+                    padding: "12px 0",
+                    color: "var(--merco-muted, #777)",
+                    fontSize: 13,
+                  }}
+                >
+                  No hay opciones disponibles para este rol.
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className="ma-modal-foot">
@@ -1132,10 +1259,7 @@ function ModalRol({ data, onSave, onClose }) {
                 id: data?.id,
                 nombre,
                 desc,
-                ic,
-                color,
-                bg: color + "22",
-                sistemas,
+                permisos: permisosSeleccionados,
               })
             }
           >
