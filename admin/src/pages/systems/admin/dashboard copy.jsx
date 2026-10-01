@@ -1,11 +1,200 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
-import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
-import axios from "axios";
 
-const API_URL = import.meta.env.VITE_URL_API_ADMIN;
-const API_TOKEN = import.meta.env.VITE_TOKEN;
+/* IMPORTAMOS EL COMPONENTE DINÁMICO E ICON PICKER DE ÍCONOS */
+import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
+
+/* ====== DATOS INICIALES DE SISTEMAS ====== */
+const INITIAL_SISTEMAS = [
+  {
+    id: "adminmep",
+    nombre: "Admin MEP",
+    ic: "FiSettings",
+    color: "#2f6fed",
+    desc: "Configuración del sistema central",
+    opciones: [
+      {
+        id: "opt-1",
+        opcion: "Parámetros Generales",
+        ruta_opcion: "/admin/config",
+        ic: "FiSliders",
+      },
+      {
+        id: "opt-2",
+        opcion: "Auditoría de Logs",
+        ruta_opcion: "/admin/logs",
+        ic: "FiActivity",
+      },
+      {
+        id: "opt-3",
+        opcion: "Mantenimiento",
+        ruta_opcion: "/admin/mantenimiento",
+        ic: "FiTool",
+      },
+    ],
+  },
+  {
+    id: "rrhh",
+    nombre: "Recursos Humanos",
+    ic: "FiUsers",
+    color: "#1f9d63",
+    desc: "Ficha de empleado y licencias",
+    opciones: [
+      {
+        id: "opt-4",
+        opcion: "Fichas de Empleados",
+        ruta_opcion: "/rrhh/empleados",
+        ic: "FiFolder",
+      },
+      {
+        id: "opt-5",
+        opcion: "Solicitudes de Licencia",
+        ruta_opcion: "/rrhh/licencias",
+        ic: "FiCalendar",
+      },
+    ],
+  },
+  {
+    id: "tickets",
+    nombre: "Sistema Tickets",
+    ic: "FiHeadphones",
+    color: "#d8992a",
+    desc: "Centraliza tus tickets e incidencias",
+    opciones: [
+      {
+        id: "opt-6",
+        opcion: "Mesa de Ayuda",
+        ruta_opcion: "/tickets/mesa",
+        ic: "FiHelpCircle",
+      },
+      {
+        id: "opt-7",
+        opcion: "Mis Tickets",
+        ruta_opcion: "/tickets/mis-tickets",
+        ic: "FiCheckSquare",
+      },
+    ],
+  },
+  {
+    id: "kb",
+    nombre: "Base de Conocimiento",
+    ic: "FiBook",
+    color: "#8155d8",
+    desc: "Información y documentación",
+    opciones: [
+      {
+        id: "opt-8",
+        opcion: "Artículos",
+        ruta_opcion: "/kb/articulos",
+        ic: "FiFileText",
+      },
+      {
+        id: "opt-9",
+        opcion: "Categorías",
+        ruta_opcion: "/kb/categorias",
+        ic: "FiLayers",
+      },
+    ],
+  },
+];
+
+/* ====== ROLES DEFINIDOS ====== */
+const ROLES = [
+  { id: 1, nombre: "Administrador", color: "#0b2545" },
+  { id: 2, nombre: "Supervisor", color: "#2f6fed" },
+  { id: 3, nombre: "Operador MEP", color: "#123a63" },
+  { id: 4, nombre: "Gestor RR.HH.", color: "#1f9d63" },
+  { id: 5, nombre: "Empleado", color: "#0f7a4c" },
+  { id: 6, nombre: "Agente de Soporte", color: "#d8992a" },
+  { id: 7, nombre: "Editor de Contenido", color: "#8155d8" },
+  { id: 8, nombre: "Solo Lectura", color: "#69748c" },
+];
+
+/* ====== USUARIOS Y SUS ACCESOS ====== */
+const INITIAL_USUARIOS = [
+  {
+    id: 1,
+    nombre: "María González",
+    email: "m.gonzalez@mercosur.com.py",
+    estado: "active",
+    ultimo: "Hoy, 09:14",
+    accesos: {
+      adminmep: "Administrador",
+      rrhh: "Supervisor",
+      tickets: "Supervisor",
+      kb: "Administrador",
+    },
+  },
+  {
+    id: 2,
+    nombre: "Carlos Benítez",
+    email: "c.benitez@mercosur.com.py",
+    estado: "active",
+    ultimo: "Hoy, 08:02",
+    accesos: { adminmep: "Operador MEP", tickets: "Agente de Soporte" },
+  },
+  {
+    id: 3,
+    nombre: "Lucía Fernández",
+    email: "l.fernandez@mercosur.com.py",
+    estado: "active",
+    ultimo: "Ayer, 17:45",
+    accesos: { rrhh: "Gestor RR.HH.", tickets: "Supervisor" },
+  },
+  {
+    id: 4,
+    nombre: "Roberto Díaz",
+    email: "r.diaz@mercosur.com.py",
+    estado: "pending",
+    ultimo: "—",
+    accesos: { rrhh: "Empleado", kb: "Solo Lectura" },
+  },
+  {
+    id: 5,
+    nombre: "Ana Villalba",
+    email: "a.villalba@mercosur.com.py",
+    estado: "active",
+    ultimo: "Hoy, 10:31",
+    accesos: { kb: "Editor de Contenido", rrhh: "Empleado" },
+  },
+  {
+    id: 6,
+    nombre: "Jorge Ramírez",
+    email: "j.ramirez@mercosur.com.py",
+    estado: "inactive",
+    ultimo: "12/09/2026",
+    accesos: { adminmep: "Solo Lectura" },
+  },
+];
+
+/* ====== ALERTAS DE SEGURIDAD / ACCESOS ====== */
+const ALERTAS_ACCESOS = [
+  {
+    id: 101,
+    titulo: "Alta pendiente de aprobación",
+    usuario: "Roberto Díaz",
+    detalle: "Solicitó rol 'Empleado' en Recursos Humanos",
+    tipo: "warning",
+    tiempo: "hace 2h",
+  },
+  {
+    id: 102,
+    titulo: "Usuario inactivo con accesos",
+    usuario: "Jorge Ramírez",
+    detalle: "Cuenta inactiva conserva rol en Admin MEP",
+    tipo: "danger",
+    tiempo: "hace 1d",
+  },
+  {
+    id: 103,
+    titulo: "Asignación de SuperAdmin",
+    usuario: "María González",
+    detalle: "Modificó permisos en el módulo Base de Conocimiento",
+    tipo: "info",
+    tiempo: "hace 3d",
+  },
+];
 
 /* ====== HELPER FUNCTIONS ====== */
 function initials(n) {
@@ -51,67 +240,19 @@ function useIsDarkMode() {
 /* ============================ DASHBOARD COMPONENT ============================ */
 export default function DashboardSistemasUsuarios() {
   const isDark = useIsDarkMode();
-  const [sistemas, setSistemas] = useState([]);
-  const [usuarios, setUsuarios] = useState([]);
-  const [kpis, setKpis] = useState({
-    total_sistemas: 0,
-    total_opciones: 0,
-    total_usuarios: 0,
-    total_usuarios_activos: 0,
-    total_usuarios_inactivos: 0,
-    total_roles: 0,
-  });
+  const [sistemas, setSistemas] = useState(INITIAL_SISTEMAS);
+  const [usuarios, setUsuarios] = useState(INITIAL_USUARIOS);
   const [modal, setModal] = useState(null);
-  const [toast, setToast] = useState(null);
-  const [flag, setFlag] = useState(false);
 
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3500);
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [resSistemas, resUsuarios, resKpis] = await Promise.all([
-          axios.get(`${API_URL}/fetchSistemas`, {
-            headers: { Authorization: `Bearer ${API_TOKEN}` },
-          }),
-          axios.get(`${API_URL}/fetchUsuarios`, {
-            headers: { Authorization: `Bearer ${API_TOKEN}` },
-          }),
-          axios
-            .get(`${API_URL}/dashboard/kpis`, {
-              headers: { Authorization: `Bearer ${API_TOKEN}` },
-            })
-            .catch(() => ({ data: { data: {} } })),
-        ]);
-
-        const dataArray = Array.isArray(resSistemas.data)
-          ? resSistemas.data
-          : Array.isArray(resSistemas.data?.data)
-            ? resSistemas.data.data
-            : resSistemas.data?.sistemas || [];
-
-        setSistemas(dataArray);
-        setUsuarios(resUsuarios.data || []);
-        if (resKpis.data?.data) {
-          setKpis(resKpis.data.data);
-        } else if (resKpis.data) {
-          setKpis(resKpis.data);
-        }
-      } catch (err) {
-        console.error("Error al cargar datos del dashboard:", err);
-        showToast("Error al obtener los datos del sistema.", "error");
-      }
-    };
-
-    fetchData();
-  }, [flag]);
-
+  // Cálculos dinámicos
   const totalOpciones = useMemo(
     () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),
     [sistemas],
+  );
+
+  const totalUsuariosActivos = useMemo(
+    () => usuarios.filter((u) => u.estado === "active").length,
+    [usuarios],
   );
 
   const totalUsuariosPendientes = useMemo(
@@ -119,51 +260,33 @@ export default function DashboardSistemasUsuarios() {
     [usuarios],
   );
 
-  const guardarOpcionSistema = async (sistemaId, opcionData) => {
-    try {
-      const response = await axios.post(
-        `${API_URL}/guardarOpcion`,
-        { sistemaId, ...opcionData },
-        { headers: { Authorization: `Bearer ${API_TOKEN}` } },
-      );
-      showToast(
-        response.data?.message || "Ruta guardada correctamente.",
-        "success",
-      );
-      setFlag(!flag);
-      setModal(null);
-    } catch (err) {
-      console.error("Error al guardar opción:", err);
-      const msg = err.response?.data?.error || err.message;
-      showToast(`Error al guardar opción: ${msg}`, "error");
-    }
+  const guardarOpcionSistema = (sistemaId, opcionData) => {
+    setSistemas((prev) =>
+      prev.map((s) => {
+        if (s.id !== sistemaId) return s;
+        const opcionesActuales = s.opciones || [];
+        const existe = opcionesActuales.some((o) => o.id === opcionData.id);
+
+        let nuevasOpciones;
+        if (existe) {
+          nuevasOpciones = opcionesActuales.map((o) =>
+            o.id === opcionData.id ? { ...o, ...opcionData } : o,
+          );
+        } else {
+          nuevasOpciones = [
+            ...opcionesActuales,
+            { ...opcionData, id: Date.now().toString() },
+          ];
+        }
+
+        return { ...s, opciones: nuevasOpciones };
+      }),
+    );
+    setModal(null);
   };
 
   return (
     <SystemLayout identificacion="Administración General">
-      {toast && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: 24,
-            right: 24,
-            zIndex: 9999,
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: "12px 20px",
-            borderRadius: 8,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-            backgroundColor: toast.type === "success" ? "#10b981" : "#ef4444",
-            color: "#ffffff",
-            fontWeight: 500,
-            fontSize: 14,
-          }}
-        >
-          <span>{toast.message}</span>
-        </div>
-      )}
-
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
@@ -190,31 +313,31 @@ export default function DashboardSistemasUsuarios() {
         <div className="ma-stats">
           <KPICard
             icon="FiGrid"
-            val={kpis.total_sistemas || sistemas.length}
+            val={sistemas.length}
             label="Sistemas Registrados"
             trend="▲ Módulos activos"
             trendColor="var(--merco-success, #16a34a)"
           />
           <KPICard
             icon="FiLayers"
-            val={kpis.total_opciones || totalOpciones}
+            val={totalOpciones}
             label="Rutas / Opciones"
             trend="Rutas de menú"
           />
           <KPICard
             icon="FiUsers"
-            val={kpis.total_usuarios || usuarios.length}
+            val={usuarios.length}
             label="Usuarios Totales"
-            trend={`▲ ${kpis.total_usuarios_activos || usuarios.filter((u) => u.estado === "active").length} activos`}
+            trend={`▲ ${totalUsuariosActivos} activos`}
             trendColor="var(--merco-success, #16a34a)"
           />
           <KPICard
             icon="FiShield"
-            val={kpis.total_roles || 8}
+            val={ROLES.length}
             label="Roles Definidos"
             trend="Matriz global"
           />
-          {/* <KPICard
+          <KPICard
             icon="FiUserCheck"
             val={totalUsuariosPendientes}
             label="Altas Pendientes"
@@ -231,7 +354,7 @@ export default function DashboardSistemasUsuarios() {
                 ? "var(--merco-warning, #d8992a)"
                 : "var(--merco-muted)"
             }
-          /> */}
+          />
         </div>
 
         {/* 2. FILA 1 DE GRÁFICOS: ACCESOS POR SISTEMA Y DISTRIBUCIÓN DE ROLES */}
@@ -251,7 +374,11 @@ export default function DashboardSistemasUsuarios() {
                 cobertura de licencias
               </small>
             </div>
-            <ChartBarSistemas isDark={isDark} />
+            <ChartBarSistemas
+              isDark={isDark}
+              sistemas={sistemas}
+              usuarios={usuarios}
+            />
           </div>
 
           <div className="ma-card" style={{ padding: 18 }}>
@@ -266,11 +393,11 @@ export default function DashboardSistemasUsuarios() {
                 Distribución de roles
               </span>
             </div>
-            <ChartDoughnutRoles usuarios={usuarios} isDark={isDark} />
+            <ChartDoughnutRoles isDark={isDark} usuarios={usuarios} />
           </div>
         </div>
 
-        {/* 3. FILA 2: MATRIZ DE ACCESOS RÁPIDOS Y ÚLTIMOS ACCESOS */}
+        {/* 3. FILA 2: MATRIZ DE ACCESOS RÁPIDOS Y ALERTAS DE SEGURIDAD */}
         <div className="dashboard-grid-2col">
           {/* MATRIZ RESUMEN DE USUARIOS Y ACCESOS */}
           <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
@@ -300,7 +427,7 @@ export default function DashboardSistemasUsuarios() {
               </div>
               <button
                 className="btn btn-ghost btn-sm"
-                onClick={() => (window.location.href = "/admin/permisos")}
+                onClick={() => (window.location.href = "/usuarios-accesos")}
               >
                 Ver Usuarios
               </button>
@@ -370,52 +497,38 @@ export default function DashboardSistemasUsuarios() {
                               : "Inactivo"}
                         </span>
                       </td>
-
                       <td style={{ padding: "10px 16px" }}>
                         <div
                           style={{ display: "flex", gap: 6, flexWrap: "wrap" }}
                         >
-                          {sistemas.filter(
-                            (sys) => u.accesos && u.accesos[sys.id],
-                          ).length > 0 ? (
-                            sistemas
-                              .filter((sys) => u.accesos && u.accesos[sys.id])
-                              .map((sys) => {
-                                const rolActual = u.accesos[sys.id];
-                                return (
-                                  <span
-                                    key={sys.id}
-                                    style={{
-                                      fontSize: 11,
-                                      padding: "2px 8px",
-                                      borderRadius: 4,
-                                      border: `1px solid ${sys.color}66`,
-                                      background: `${sys.color}15`,
-                                      color: "var(--merco-text)",
-                                      display: "inline-flex",
-                                      alignItems: "center",
-                                      gap: 4,
-                                    }}
-                                  >
-                                    <DynamicIcon
-                                      name={sys.ic}
-                                      fallback="FiGrid"
-                                    />
-                                    <b>{sys.nombre}:</b> {rolActual}
-                                  </span>
-                                );
-                              })
-                          ) : (
-                            <span
-                              style={{
-                                fontSize: 11,
-                                color: "var(--merco-muted)",
-                                fontStyle: "italic",
-                              }}
-                            >
-                              Sin accesos configurados
-                            </span>
-                          )}
+                          {sistemas.map((sys) => {
+                            const rolActual = u.accesos[sys.id] || "";
+                            return (
+                              <span
+                                key={sys.id}
+                                style={{
+                                  fontSize: 11,
+                                  padding: "2px 8px",
+                                  borderRadius: 4,
+                                  border: rolActual
+                                    ? `1px solid ${sys.color}66`
+                                    : "1px solid var(--merco-border, #444)",
+                                  background: rolActual
+                                    ? `${sys.color}15`
+                                    : "transparent",
+                                  color: rolActual
+                                    ? "var(--merco-text)"
+                                    : "var(--merco-muted)",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                }}
+                              >
+                                <DynamicIcon name={sys.ic} fallback="FiGrid" />
+                                <b>{sys.nombre}:</b> {rolActual || "Sin acceso"}
+                              </span>
+                            );
+                          })}
                         </div>
                       </td>
                     </tr>
@@ -425,8 +538,112 @@ export default function DashboardSistemasUsuarios() {
             </div>
           </div>
 
-          {/* ÚLTIMOS ACCESOS DE USUARIOS (DESDE LA BASE DE DATOS) */}
-          <UltimosAccesosCard isDark={isDark} />
+          {/* ALERTAS DE SEGURIDAD Y AUDITORÍA DE ACCESOS */}
+          <div className="ma-card" style={{ padding: 18 }}>
+            <div
+              style={{
+                marginBottom: 16,
+                borderBottom: "1px solid var(--merco-border)",
+                paddingBottom: 10,
+              }}
+            >
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  color: "var(--merco-text)",
+                }}
+              >
+                Alertas de Accesos y Seguridad
+              </span>{" "}
+              <small style={{ color: "var(--merco-muted)" }}>Auditoría</small>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {ALERTAS_ACCESOS.map((item) => (
+                <div
+                  key={item.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    paddingBottom: 10,
+                    borderBottom: "1px solid var(--merco-border)",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 8,
+                      border:
+                        item.tipo === "danger"
+                          ? "1px solid rgba(209, 67, 91, 0.4)"
+                          : item.tipo === "warning"
+                            ? "1px solid rgba(216, 153, 42, 0.4)"
+                            : "1px solid rgba(47, 111, 237, 0.4)",
+                      background:
+                        item.tipo === "danger"
+                          ? "rgba(209, 67, 91, 0.12)"
+                          : item.tipo === "warning"
+                            ? "rgba(216, 153, 42, 0.12)"
+                            : "rgba(47, 111, 237, 0.12)",
+                      color:
+                        item.tipo === "danger"
+                          ? "#DC2626"
+                          : item.tipo === "warning"
+                            ? "#D97706"
+                            : "#2F6FED",
+                      display: "grid",
+                      placeItems: "center",
+                      fontSize: 16,
+                      flexShrink: 0,
+                    }}
+                  >
+                    <DynamicIcon
+                      name={
+                        item.tipo === "danger"
+                          ? "FiLock"
+                          : item.tipo === "warning"
+                            ? "FiAlertTriangle"
+                            : "FiInfo"
+                      }
+                      fallback="FiShield"
+                    />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <b
+                      style={{
+                        fontSize: 13,
+                        color: "var(--merco-text)",
+                        display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {item.titulo}
+                    </b>
+                    <small
+                      style={{
+                        color: "var(--merco-muted)",
+                        display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {item.usuario} · {item.detalle}
+                    </small>
+                  </div>
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <small style={{ color: "var(--merco-muted)" }}>
+                      {item.tiempo}
+                    </small>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* 4. FILA 3: CATÁLOGO DE SISTEMAS Y RUTAS CONFIGURADAS */}
@@ -453,9 +670,9 @@ export default function DashboardSistemasUsuarios() {
             </div>
             <button
               className="btn btn-ghost btn-sm"
-              onClick={() => (window.location.href = "/admin/sistemas")}
+              onClick={() => (window.location.href = "/sistemas")}
             >
-              Gestionar Sistemas
+              Gestionar Sistemas ➔
             </button>
           </div>
 
@@ -481,8 +698,8 @@ export default function DashboardSistemasUsuarios() {
                       width: 38,
                       height: 38,
                       borderRadius: 8,
-                      background: (sys.color || "#2f6fed") + "22",
-                      color: sys.color || "#2f6fed",
+                      background: sys.color + "22",
+                      color: sys.color,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -490,7 +707,7 @@ export default function DashboardSistemasUsuarios() {
                       flexShrink: 0,
                     }}
                   >
-                    <DynamicIcon name={sys.ic || sys.icono} fallback="FiGrid" />
+                    <DynamicIcon name={sys.ic} fallback="FiGrid" />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <b
@@ -584,10 +801,7 @@ export default function DashboardSistemasUsuarios() {
                               minWidth: 0,
                             }}
                           >
-                            <DynamicIcon
-                              name={opc.ic || opc.opcion_icono}
-                              fallback="FiFolder"
-                            />
+                            <DynamicIcon name={opc.ic} fallback="FiFolder" />
                             <span
                               style={{
                                 color: "var(--merco-text)",
@@ -684,162 +898,24 @@ function KPICard({ icon, val, label, trend, trendColor, iconColor }) {
   );
 }
 
-/* ====== COMPONENTE DE ÚLTIMOS ACCESOS DE USUARIOS DESDE LA BD ====== */
-function UltimosAccesosCard({ isDark }) {
-  const [accesos, setAccesos] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get(`${API_URL}/dashboard/ultimos-accesos`, {
-        headers: { Authorization: `Bearer ${API_TOKEN}` },
-      })
-      .then((res) => {
-        const data = res.data?.data || res.data || [];
-        setAccesos(data);
-      })
-      .catch((err) => console.error("Error al obtener últimos accesos:", err));
-  }, []);
-
-  return (
-    <div className="ma-card" style={{ padding: 18 }}>
-      <div
-        style={{
-          marginBottom: 16,
-          borderBottom: "1px solid var(--merco-border)",
-          paddingBottom: 10,
-        }}
-      >
-        <span
-          style={{
-            fontWeight: "bold",
-            fontSize: 15,
-            color: "var(--merco-text)",
-          }}
-        >
-          Últimos Accesos de Usuarios
-        </span>{" "}
-        <small style={{ color: "var(--merco-muted)" }}>
-          Auditoría (Base de Datos)
-        </small>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 12,
-          maxHeight: 240,
-          overflowY: "auto",
-        }}
-      >
-        {accesos.length > 0 ? (
-          accesos.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                paddingBottom: 10,
-                borderBottom: "1px solid var(--merco-border)",
-              }}
-            >
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 8,
-                  border: "1px solid rgba(31, 157, 99, 0.4)",
-                  background: "rgba(31, 157, 99, 0.12)",
-                  color: "#1F9D63",
-                  display: "grid",
-                  placeItems: "center",
-                  fontSize: 16,
-                  flexShrink: 0,
-                }}
-              >
-                <DynamicIcon name="FiUserCheck" fallback="FiUser" />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <b
-                  style={{
-                    fontSize: 13,
-                    color: "var(--merco-text)",
-                    display: "block",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {item.usuario}
-                </b>
-                <small
-                  style={{
-                    color: "var(--merco-muted)",
-                    display: "block",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {item.email} · {item.detalle}
-                </small>
-              </div>
-              <div style={{ textAlign: "right", flexShrink: 0 }}>
-                <small style={{ color: "var(--merco-muted)" }}>
-                  {item.tiempo}
-                </small>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div
-            style={{
-              color: "var(--merco-muted)",
-              fontSize: 13,
-              textAlign: "center",
-              padding: "20px 0",
-            }}
-          >
-            No hay registros de accesos recientes en la base de datos.
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ====== COMPONENTES DE GRÁFICOS (CHART.JS CON AXIOS) ====== */
+/* ====== COMPONENTES DE GRÁFICOS (CHART.JS) ====== */
 
 /* 1. Bar Chart: Usuarios por Sistema */
-function ChartBarSistemas({ isDark }) {
+function ChartBarSistemas({ isDark, sistemas, usuarios }) {
   const canvasRef = useRef(null);
-  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/usuarios-por-sistema`, {
-        headers: { Authorization: `Bearer ${API_TOKEN}` },
-      })
-      .then((res) => {
-        const data = res.data?.data || res.data || [];
-        setChartData(data);
-      })
-      .catch((err) =>
-        console.error("Error al obtener usuarios por sistema:", err),
-      );
-  }, []);
-
-  useEffect(() => {
-    if (!canvasRef.current || chartData.length === 0) return;
     const ctx = canvasRef.current.getContext("2d");
     const textColor = isDark ? "#94A3B8" : "#64748B";
     const gridColor = isDark
       ? "rgba(255, 255, 255, 0.08)"
       : "rgba(0, 0, 0, 0.05)";
 
-    const labels = chartData.map((s) => s.nombre);
-    const data = chartData.map((s) => s.total_usuarios);
-    const colors = chartData.map((s) => s.color || "#2f6fed");
+    const labels = sistemas.map((s) => s.nombre);
+    const data = sistemas.map((sys) => {
+      return usuarios.filter((u) => !!u.accesos[sys.id]).length;
+    });
+    const colors = sistemas.map((s) => s.color);
 
     const chart = new Chart(ctx, {
       type: "bar",
@@ -870,7 +946,7 @@ function ChartBarSistemas({ isDark }) {
     });
 
     return () => chart.destroy();
-  }, [isDark, chartData]);
+  }, [isDark, sistemas, usuarios]);
 
   return (
     <div style={{ position: "relative", width: "100%", height: 210 }}>
@@ -879,39 +955,23 @@ function ChartBarSistemas({ isDark }) {
   );
 }
 
-/* 2. Doughnut Chart: Distribución de Roles por Usuario Único */
-function ChartDoughnutRoles({ usuarios, isDark }) {
+/* 2. Doughnut Chart: Distribución de Roles */
+function ChartDoughnutRoles({ isDark, usuarios }) {
   const canvasRef = useRef(null);
 
-  const roleData = useMemo(() => {
-    const conteo = {};
-    usuarios.forEach((u) => {
-      if (u.accesos) {
-        // Obtenemos los roles únicos de este usuario para evitar duplicar
-        // si tiene el mismo rol en varios sistemas
-        const rolesUnicosDelUsuario = new Set(
-          Object.values(u.accesos).filter((r) => r && r.trim() !== ""),
-        );
-
-        rolesUnicosDelUsuario.forEach((rolNombre) => {
-          conteo[rolNombre] = (conteo[rolNombre] || 0) + 1;
-        });
-      }
-    });
-
-    return Object.keys(conteo).map((nombre) => ({
-      nombre,
-      total_asignaciones: conteo[nombre],
-    }));
-  }, [usuarios]);
-
   useEffect(() => {
-    if (!canvasRef.current) return;
     const ctx = canvasRef.current.getContext("2d");
     const textColor = isDark ? "#94A3B8" : "#64748B";
 
-    const labels = roleData.map((r) => r.nombre);
-    const data = roleData.map((r) => r.total_asignaciones);
+    const conteoRoles = {};
+    usuarios.forEach((u) => {
+      Object.values(u.accesos).forEach((rolNombre) => {
+        conteoRoles[rolNombre] = (conteoRoles[rolNombre] || 0) + 1;
+      });
+    });
+
+    const labels = Object.keys(conteoRoles);
+    const data = Object.values(conteoRoles);
 
     const chart = new Chart(ctx, {
       type: "doughnut",
@@ -948,7 +1008,7 @@ function ChartDoughnutRoles({ usuarios, isDark }) {
     });
 
     return () => chart.destroy();
-  }, [isDark, roleData]);
+  }, [isDark, usuarios]);
 
   return (
     <div style={{ position: "relative", width: "100%", height: 210 }}>
@@ -1011,6 +1071,7 @@ function ModalOpcionRapida({ sistema, onSave, onClose }) {
                 opcion,
                 ruta_opcion: ruta,
                 ic,
+                tiene_permiso: true,
               })
             }
           >

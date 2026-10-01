@@ -344,6 +344,14 @@ router.post("/login", async (req, res) => {
       [user.id, deviceId, deviceName, token],
     );
 
+    // Ejemplo en tu controlador de Login en el backend cuando las credenciales son correctas:
+    await pool.query(
+      `UPDATE public.tbl_usuarios 
+   SET fec_ultimo_acceso = CURRENT_TIMESTAMP 
+   WHERE id = $1`,
+      [user.id],
+    );
+
     // 6. Obtener Sistemas y Opciones usando la función auxiliar
     const sistemasOpciones = await obtenerSistemasYOpciones(user.id);
 

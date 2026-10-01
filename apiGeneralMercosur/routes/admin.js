@@ -1240,4 +1240,74 @@ router.post("/actualizarAccesoUsuario", async (req, res) => {
   }
 });
 
+// ==========================================
+// ENDPOINTS PARA EL DASHBOARD Y GRÁFICOS
+// ==========================================
+
+// 1. Obtener KPIs generales
+router.get("/dashboard/kpis", async (req, res) => {
+  try {
+    const query = `SELECT * FROM public.view_dashboard_kpis;`;
+    const result = await pool.query(query);
+    res.json({ success: true, data: result.rows[0] || {} });
+  } catch (err) {
+    console.error("Error al obtener KPIs del dashboard:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+// 2. Obtener Usuarios por Sistema (Gráfico de Barras)
+router.get("/usuarios-por-sistema", async (req, res) => {
+  try {
+    const query = `SELECT * FROM public.view_dashboard_usuarios_por_sistema;`;
+    const result = await pool.query(query);
+    res.json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error("Error al obtener usuarios por sistema:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+// 3. Obtener Distribución de Roles (Gráfico de Dona)
+router.get("/distribucion-roles", async (req, res) => {
+  try {
+    const query = `SELECT * FROM public.view_dashboard_distribucion_roles;`;
+    const result = await pool.query(query);
+    res.json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error("Error al obtener distribución de roles:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+// ==========================================
+// ENDPOINT: ALERTAS DE ACCESOS Y SEGURIDAD
+// ==========================================
+router.get("/dashboard/alertas", async (req, res) => {
+  try {
+    const query = `SELECT * FROM public.view_dashboard_alertas_seguridad LIMIT 10;`;
+    const result = await pool.query(query);
+    res.json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error("Error al obtener alertas de seguridad:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+
+// ==========================================
+// ENDPOINT: ÚLTIMOS ACCESOS DE USUARIOS
+// ==========================================
+router.get("/dashboard/ultimos-accesos", async (req, res) => {
+  try {
+    const query = `SELECT * FROM public.view_dashboard_ultimos_accesos;`;
+    const result = await pool.query(query);
+    res.json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error("Error al obtener últimos accesos:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+
 module.exports = router;
