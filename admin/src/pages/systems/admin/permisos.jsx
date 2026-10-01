@@ -396,7 +396,11 @@ export default function Permisos() {
   };
 
   const handleEliminarRol = async (rolId) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este rol de este sistema?"))
+    if (
+      !window.confirm(
+        "¿Estás seguro de que deseas eliminar este rol de este sistema?",
+      )
+    )
       return;
 
     try {
@@ -1626,12 +1630,14 @@ function ModalRol({
                         if (el) {
                           el.indeterminate =
                             opcionIdsSeleccionados.length > 0 &&
-                            opcionIdsSeleccionados.length < opcionesDelSistema.length;
+                            opcionIdsSeleccionados.length <
+                              opcionesDelSistema.length;
                         }
                       }}
                       checked={
                         opcionesDelSistema.length > 0 &&
-                        opcionIdsSeleccionados.length === opcionesDelSistema.length
+                        opcionIdsSeleccionados.length ===
+                          opcionesDelSistema.length
                       }
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -1647,7 +1653,9 @@ function ModalRol({
                         cursor: "pointer",
                       }}
                     />
-                    <span style={{ color: "var(--merco-text)" }}>Seleccionar todos</span>
+                    <span style={{ color: "var(--merco-text)" }}>
+                      Seleccionar todos
+                    </span>
                   </label>
                 )}
               </div>
@@ -1865,9 +1873,8 @@ function ModalRol({
                 >
                   {estaVinculadoCat ? (
                     <span style={{ color: "#ef4444" }}>
-                      ⚠️ Este rol está vinculado a{" "}
-                      {sistemasVinculadosCat.length} sistema(s).{" "}
-                      <b>No se puede eliminar.</b>
+                      Este rol está vinculado a {sistemasVinculadosCat.length}{" "}
+                      sistema(s). <b>No se puede eliminar.</b>
                     </span>
                   ) : (
                     <span style={{ color: "#10b981" }}>
@@ -1914,7 +1921,7 @@ function ModalRol({
               }
               onClick={() => onDelete(data.id)}
             >
-              Eliminar rol de {data.sistemas }
+              Eliminar rol de {data.sistemas}
             </button>
           )}
 

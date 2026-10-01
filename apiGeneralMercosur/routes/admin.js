@@ -276,7 +276,7 @@ router.post("/guardarSistema", async (req, res) => {
 
     const queryRolSistemaOpcion = `
       INSERT INTO public.tbl_roles_sistemas_opciones (
-        roles_sistemas_id, 
+        rol_sistema_id, 
         opcion_id
       ) 
       VALUES ($1, $2);
@@ -358,7 +358,7 @@ router.delete("/eliminarSistema/:id", async (req, res) => {
     const opcionesResult = await client.query(
       `SELECT DISTINCT opcion_id 
        FROM public.tbl_roles_sistemas_opciones 
-       WHERE roles_sistemas_id IN (
+       WHERE rol_sistema_id IN (
          SELECT id FROM public.tbl_roles_sistemas WHERE sistema_id = $1
        )`,
       [id],
@@ -376,7 +376,7 @@ router.delete("/eliminarSistema/:id", async (req, res) => {
 
     await client.query(
       `DELETE FROM public.tbl_roles_sistemas_opciones
-       WHERE roles_sistemas_id IN (
+       WHERE rol_sistema_id IN (
          SELECT id FROM public.tbl_roles_sistemas WHERE sistema_id = $1
        )`,
       [id],
@@ -497,7 +497,7 @@ router.post("/guardarOpcion", async (req, res) => {
     const nuevaOpcion = resOpcion.rows[0];
 
     const insertRelacionQuery = `
-      INSERT INTO public.tbl_roles_sistemas_opciones (roles_sistemas_id, opcion_id)
+      INSERT INTO public.tbl_roles_sistemas_opciones (rol_sistema_id, opcion_id)
       VALUES ($1, $2);
     `;
     await client.query(insertRelacionQuery, [rolesSistemasId, nuevaOpcion.id]);
@@ -591,7 +591,7 @@ router.get("/fetchRolesSistemasOpciones", async (req, res) => {
       FROM public.tbl_roles_sistemas rs
       JOIN public.cat_sistemas s ON rs.sistema_id = s.id
       JOIN public.cat_roles r ON rs.rol_id = r.id
-      LEFT JOIN public.tbl_roles_sistemas_opciones rso ON rs.id = rso.roles_sistemas_id
+      LEFT JOIN public.tbl_roles_sistemas_opciones rso ON rs.id = rso.rol_sistema_id
       LEFT JOIN public.cat_opciones o ON rso.opcion_id = o.id
       GROUP BY rs.id, rs.rol_id, s.id, r.str_nombre;
     `;
@@ -653,13 +653,13 @@ router.post("/actualizarRolSistemaOpciones", async (req, res) => {
     await client.query("BEGIN");
 
     await client.query(
-      `DELETE FROM public.tbl_roles_sistemas_opciones WHERE roles_sistemas_id = $1;`,
+      `DELETE FROM public.tbl_roles_sistemas_opciones WHERE rol_sistema_id = $1;`,
       [rolSistemaId],
     );
 
     if (Array.isArray(opcionIds) && opcionIds.length > 0) {
       const insertQuery = `
-        INSERT INTO public.tbl_roles_sistemas_opciones (roles_sistemas_id, opcion_id)
+        INSERT INTO public.tbl_roles_sistemas_opciones (rol_sistema_id, opcion_id)
         SELECT $1, UNNEST($2::integer[]);
       `;
       await client.query(insertQuery, [rolSistemaId, opcionIds]);
@@ -778,7 +778,7 @@ router.post("/eliminarRol/:id", async (req, res) => {
 
     // Validar si tiene opciones asociadas antes de eliminar
     const checkOpciones = await client.query(
-      `SELECT id FROM public.tbl_roles_sistemas_opciones WHERE roles_sistemas_id = $1 LIMIT 1;`,
+      `SELECT id FROM public.tbl_roles_sistemas_opciones WHERE rol_sistema_id = $1 LIMIT 1;`,
       [id]
     );
 
@@ -790,7 +790,7 @@ router.post("/eliminarRol/:id", async (req, res) => {
     }
 
     await client.query(
-      `DELETE FROM public.tbl_roles_sistemas_opciones WHERE roles_sistemas_id = $1;`,
+      `DELETE FROM public.tbl_roles_sistemas_opciones WHERE rol_sistema_id = $1;`,
       [id],
     );
 

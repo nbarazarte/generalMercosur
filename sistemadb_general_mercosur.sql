@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict CtGhlWSHEFS92ewkIiFmQ8AgxiCS0K8huNOH3MJIrkNsA6nvSkJgKD3edlwopGq
+\restrict dtPGIQZNlhLDW3sGpiTOngRXocnaq2cVkyy4bbY5aeAzECkbltMgdZFdLxhDo2P
 
 -- Dumped from database version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 -- Dumped by pg_dump version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 
--- Started on 2026-10-01 00:23:57 -04
+-- Started on 2026-10-01 07:13:51 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -540,7 +540,7 @@ ALTER SEQUENCE public.tbl_roles_opciones_id_seq OWNED BY public.tbl_roles_sistem
 
 CREATE TABLE public.tbl_roles_sistemas_opciones (
     id integer NOT NULL,
-    roles_sistemas_id integer NOT NULL,
+    rol_sistema_id integer NOT NULL,
     opcion_id integer NOT NULL
 );
 
@@ -808,7 +808,7 @@ CREATE VIEW public.view_sistemas_opciones AS
     rso.id AS rol_sistema_opcion_id
    FROM (((public.cat_sistemas s
      LEFT JOIN public.tbl_roles_sistemas rs ON (((s.id = rs.sistema_id) AND (rs.bol_activo = true))))
-     LEFT JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.roles_sistemas_id)))
+     LEFT JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.rol_sistema_id)))
      LEFT JOIN public.cat_opciones o ON (((rso.opcion_id = o.id) AND (o.bol_eliminado = false))))
   WHERE (s.bol_activo = true);
 
@@ -843,7 +843,7 @@ CREATE VIEW public.view_usuarios_opciones_sistemas AS
    FROM (((((((public.tbl_usuarios u
      JOIN public.tbl_usuarios_roles_sistemas urs ON (((u.id = urs.usuario_id) AND (urs.bol_activo = true))))
      JOIN public.tbl_roles_sistemas rs ON (((urs.rol_sistema_id = rs.id) AND (rs.bol_activo = true))))
-     JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.roles_sistemas_id)))
+     JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.rol_sistema_id)))
      JOIN public.cat_opciones o ON (((rso.opcion_id = o.id) AND (o.bol_eliminado = false))))
      JOIN public.cat_sistemas s ON ((rs.sistema_id = s.id)))
      JOIN public.cat_roles r ON ((rs.rol_id = r.id)))
@@ -881,7 +881,7 @@ CREATE VIEW public.view_usuarios_permisos_detallados AS
      JOIN public.tbl_roles_sistemas rs ON ((urs.rol_sistema_id = rs.id)))
      JOIN public.cat_sistemas s ON ((rs.sistema_id = s.id)))
      JOIN public.cat_roles r ON ((rs.rol_id = r.id)))
-     JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.roles_sistemas_id)))
+     JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.rol_sistema_id)))
      JOIN public.cat_opciones o ON ((rso.opcion_id = o.id)))
   WHERE ((u.bol_activo = true) AND (urs.bol_activo = true) AND (rs.bol_activo = true) AND (o.bol_eliminado = false));
 
@@ -1620,8 +1620,8 @@ COPY public.cat_opciones (id, str_nombre, bol_eliminado, fecha_creacion, str_rut
 --
 
 COPY public.cat_roles (id, str_nombre, str_descripcion, created_at, updated_at) FROM stdin;
-1	admin	Administrador general de los sistemas	2026-09-09 11:28:55.692406-04	2026-09-30 23:34:46.428663-04
-38	analista	\N	2026-09-30 23:53:36.785435-04	2026-09-30 23:53:36.785435-04
+1	administrador	Administrador general de los sistemas	2026-09-09 11:28:55.692406-04	2026-10-01 06:53:16.880272-04
+40	gerente	\N	2026-10-01 07:12:53.086651-04	2026-10-01 07:12:53.086651-04
 \.
 
 
@@ -1646,7 +1646,7 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 --
 
 COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, str_device_id, str_device_name) FROM stdin;
-208	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDgyNTU0MCwiZXhwIjoxNzkwODI5MTQwfQ.L_IxwUE6Vi3VAKrPlkJLSUi7ZZpTMF-RSVyngYxeTMc	2026-09-30 23:32:20.177321-04	2026-10-01 00:32:20.177321-04	f	8b405812-3f18-41f2-a63a-204d8afc554e	Chrome en Linux PC
+209	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg1MTkwNSwiZXhwIjoxNzkwODU1NTA1fQ.P5iABRwlYfetSR5TZs5tQGQQQuY54BDC8dLmIKhbrxM	2026-10-01 06:51:45.451406-04	2026-10-01 07:51:45.451406-04	f	3feb8522-47bc-45ab-8c88-4c8ec43465b6	Chrome en Linux PC
 \.
 
 
@@ -1661,7 +1661,7 @@ COPY public.tbl_roles_sistemas (id, rol_id, sistema_id, created_at, updated_at, 
 2	1	2	2026-09-25 00:00:00-04	2026-09-25 00:00:00-04	t
 44	1	32	2026-09-30 21:51:37.316914-04	2026-09-30 21:51:37.316914-04	t
 45	1	33	2026-09-30 21:52:08.924663-04	2026-09-30 21:52:08.924663-04	t
-57	38	1	2026-10-01 00:18:16.637131-04	2026-10-01 00:18:16.637131-04	t
+60	40	2	2026-10-01 07:12:59.48021-04	2026-10-01 07:12:59.48021-04	t
 \.
 
 
@@ -1671,7 +1671,7 @@ COPY public.tbl_roles_sistemas (id, rol_id, sistema_id, created_at, updated_at, 
 -- Data for Name: tbl_roles_sistemas_opciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tbl_roles_sistemas_opciones (id, roles_sistemas_id, opcion_id) FROM stdin;
+COPY public.tbl_roles_sistemas_opciones (id, rol_sistema_id, opcion_id) FROM stdin;
 1	1	1
 2	1	2
 3	1	3
@@ -1683,6 +1683,11 @@ COPY public.tbl_roles_sistemas_opciones (id, roles_sistemas_id, opcion_id) FROM 
 48	44	41
 49	45	42
 71	44	44
+78	60	4
+79	60	5
+80	60	6
+81	60	7
+82	60	8
 \.
 
 
@@ -1883,7 +1888,7 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 1, true);
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 208, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 209, true);
 
 
 --
@@ -1901,7 +1906,7 @@ SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 45, true);
 -- Name: tbl_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_id_seq', 38, true);
+SELECT pg_catalog.setval('public.tbl_roles_id_seq', 40, true);
 
 
 --
@@ -1910,7 +1915,7 @@ SELECT pg_catalog.setval('public.tbl_roles_id_seq', 38, true);
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 57, true);
+SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 60, true);
 
 
 --
@@ -1919,7 +1924,7 @@ SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 57, true);
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 76, true);
+SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 82, true);
 
 
 --
@@ -2386,7 +2391,7 @@ CREATE OR REPLACE VIEW public.view_matriz_roles_sistemas_opciones AS
    FROM ((((public.tbl_roles_sistemas rs
      JOIN public.cat_sistemas s ON ((rs.sistema_id = s.id)))
      JOIN public.cat_roles r ON ((rs.rol_id = r.id)))
-     LEFT JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.roles_sistemas_id)))
+     LEFT JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.rol_sistema_id)))
      LEFT JOIN public.cat_opciones o ON (((rso.opcion_id = o.id) AND (o.bol_eliminado = false))))
   WHERE (rs.bol_activo = true)
   GROUP BY rs.id, s.id, s.str_sistema, r.id, r.str_nombre;
@@ -2443,7 +2448,7 @@ COMMENT ON CONSTRAINT fk_rol ON public.tbl_roles_sistemas IS 'Relaciona la colum
 --
 
 ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
-    ADD CONSTRAINT fk_roles_sistemas FOREIGN KEY (roles_sistemas_id) REFERENCES public.tbl_roles_sistemas(id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_roles_sistemas FOREIGN KEY (rol_sistema_id) REFERENCES public.tbl_roles_sistemas(id) ON DELETE CASCADE;
 
 
 --
@@ -2635,11 +2640,11 @@ ALTER TABLE ONLY tickets.tbl_tickets_kcs_articulos
     ADD CONSTRAINT fk_ticket_kcs_usuario FOREIGN KEY (usuario_id) REFERENCES public.tbl_usuarios(id) ON DELETE RESTRICT;
 
 
--- Completed on 2026-10-01 00:24:02 -04
+-- Completed on 2026-10-01 07:13:56 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict CtGhlWSHEFS92ewkIiFmQ8AgxiCS0K8huNOH3MJIrkNsA6nvSkJgKD3edlwopGq
+\unrestrict dtPGIQZNlhLDW3sGpiTOngRXocnaq2cVkyy4bbY5aeAzECkbltMgdZFdLxhDo2P
 
