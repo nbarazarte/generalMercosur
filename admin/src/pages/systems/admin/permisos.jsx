@@ -30,62 +30,6 @@ const ESTADOS = {
   pending: ["Pendiente", "badge-pending"],
 };
 
-const USUARIOS_INIT = [
-  {
-    id: 1,
-    nombre: "María González",
-    email: "m.gonzalez@mercosur.com.py",
-    estado: "active",
-    ultimo: "Hoy, 09:14",
-    accesos: {
-      adminmep: "Administrador",
-      rrhh: "Supervisor",
-      tickets: "Supervisor",
-      kb: "Administrador",
-    },
-  },
-  {
-    id: 2,
-    nombre: "Carlos Benítez",
-    email: "c.benitez@mercosur.com.py",
-    estado: "active",
-    ultimo: "Hoy, 08:02",
-    accesos: { adminmep: "Operador MEP", tickets: "Agente de Soporte" },
-  },
-  {
-    id: 3,
-    nombre: "Lucía Fernández",
-    email: "l.fernandez@mercosur.com.py",
-    estado: "active",
-    ultimo: "Ayer, 17:45",
-    accesos: { rrhh: "Gestor RR.HH.", tickets: "Supervisor" },
-  },
-  {
-    id: 4,
-    nombre: "Roberto Díaz",
-    email: "r.diaz@mercosur.com.py",
-    estado: "pending",
-    ultimo: "—",
-    accesos: { rrhh: "Empleado", kb: "Solo Lectura" },
-  },
-  {
-    id: 5,
-    nombre: "Ana Villalba",
-    email: "a.villalba@mercosur.com.py",
-    estado: "active",
-    ultimo: "Hoy, 10:31",
-    accesos: { kb: "Editor de Contenido", rrhh: "Empleado" },
-  },
-  {
-    id: 6,
-    nombre: "Jorge Ramírez",
-    email: "j.ramirez@mercosur.com.py",
-    estado: "inactive",
-    ultimo: "12/09/2026",
-    accesos: { adminmep: "Solo Lectura" },
-  },
-];
-
 const parsearFechaUltimoAcceso = (str) => {
   if (!str || str === "—") return null;
   const hoy = new Date();
@@ -113,11 +57,12 @@ const parsearFechaUltimoAcceso = (str) => {
 /* ============================ COMPONENTE PRINCIPAL ============================ */
 export default function Permisos() {
   const [tab, setTab] = useState("usuarios"); // 'usuarios' o 'roles'
-  const [usuarios, setUsuarios] = useState(USUARIOS_INIT);
+  const [usuarios, setUsuarios] = useState([]);
 
   const [sistemas, setSistemas] = useState([]);
   const [roles, setRoles] = useState([]);
   const [catRoles, setCatRoles] = useState([]); // Catálogo de roles/permisos
+  const [departamentos, setDepartamentos] = useState([]); // Catálogo de departamentos
   const [toast, setToast] = useState(null);
 
   const [flag, setFlag] = useState(false);
@@ -130,45 +75,44 @@ export default function Permisos() {
   };
 
   useEffect(() => {
-    const fetchSistemas = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/fetchSistemas`, {
-          headers: {
-            Authorization: `Bearer ${API_TOKEN}`,
-          },
-        });
+        const [resSistemas, resRoles, resCatRoles, resUsuarios, resDeptos] =
+          await Promise.all([
+            axios.get(`${API_URL}/fetchSistemas`, {
+              headers: { Authorization: `Bearer ${API_TOKEN}` },
+            }),
+            axios.get(`${API_URL}/fetchRolesSistemasOpciones`, {
+              headers: { Authorization: `Bearer ${API_TOKEN}` },
+            }),
+            axios.get(`${API_URL}/fetchCatRoles`, {
+              headers: { Authorization: `Bearer ${API_TOKEN}` },
+            }),
+            axios.get(`${API_URL}/fetchUsuarios`, {
+              headers: { Authorization: `Bearer ${API_TOKEN}` },
+            }),
+            axios.get(`${API_URL}/fetchDepartamentos`, {
+              headers: { Authorization: `Bearer ${API_TOKEN}` },
+            }),
+          ]);
 
-        const dataArray = Array.isArray(response.data)
-          ? response.data
-          : Array.isArray(response.data?.data)
-            ? response.data.data
-            : response.data?.sistemas || [];
+        const dataArray = Array.isArray(resSistemas.data)
+          ? resSistemas.data
+          : Array.isArray(resSistemas.data?.data)
+            ? resSistemas.data.data
+            : resSistemas.data?.sistemas || [];
 
+        // Mapeo de sistemas incluyendo iconos (ic) y colores[cite: 1, 2]
         const sistemasMapeados = dataArray.map((row) => ({
           id: row.id,
           nombre: row.nombre,
+          ic: row.ic || "FiGrid",
+          color: row.color || "#2f6fed",
           opciones: row.opciones || [],
         }));
-
         setSistemas(sistemasMapeados);
-      } catch (err) {
-        console.error("Error obteniendo sistemas:", err);
-        showToast("Error al obtener los sistemas.", "error");
-      }
-    };
 
-    const fetchRolesSistemasOpciones = async () => {
-      try {
-        const response = await axios.get(
-          `${API_URL}/fetchRolesSistemasOpciones`,
-          {
-            headers: {
-              Authorization: `Bearer ${API_TOKEN}`,
-            },
-          },
-        );
-        setRoles([]);
-        const rolesMapeados = response.data.map((row) => ({
+        const rolesMapeados = resRoles.data.map((row) => ({
           id: row.id || row.rol_sistema_id,
           rol_id: row.rol_id,
           sistema_id: row.sistema_id,
@@ -190,38 +134,22 @@ export default function Permisos() {
             ? row.permisos
             : typeof row.permisos === "string" && row.permisos.trim() !== ""
               ? row.permisos.split(",").map((p) => p.trim())
-              : typeof row.opciones_asignadas === "string" &&
-                  row.opciones_asignadas.trim() !== ""
-                ? row.opciones_asignadas.split(",").map((p) => p.trim())
-                : [],
+              : [],
           opcion_ids: Array.isArray(row.opcion_ids)
             ? row.opcion_ids.map(Number)
             : [],
         }));
-
         setRoles(rolesMapeados);
+        setCatRoles(resCatRoles.data);
+        setUsuarios(resUsuarios.data);
+        setDepartamentos(resDeptos.data);
       } catch (err) {
-        console.error("Error obteniendo roles:", err);
-        showToast("Error al obtener los roles.", "error");
+        console.error("Error obteniendo datos:", err);
+        showToast("Error al obtener los datos del sistema.", "error");
       }
     };
 
-    const fetchCatRoles = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/fetchCatRoles`, {
-          headers: {
-            Authorization: `Bearer ${API_TOKEN}`,
-          },
-        });
-        setCatRoles(response.data);
-      } catch (err) {
-        console.error("Error obteniendo catálogo de roles:", err);
-      }
-    };
-
-    fetchSistemas();
-    fetchRolesSistemasOpciones();
-    fetchCatRoles();
+    fetchData();
   }, [flag]);
 
   const [busqueda, setBusqueda] = useState("");
@@ -234,7 +162,15 @@ export default function Permisos() {
   const [modal, setModal] = useState(null);
 
   const rolesDeSistema = (sysId) =>
-    roles.filter((r) => r.sistemas === "all" || r.sistemas.includes(sysId));
+    roles.filter(
+      (r) =>
+        r.sistemas === "all" ||
+        r.sistema_id === sysId ||
+        String(r.sistema_id) === String(sysId) ||
+        (Array.isArray(r.sistemas)
+          ? r.sistemas.includes(sysId)
+          : r.sistemas === sysId)
+    );
 
   const usuariosFiltrados = useMemo(
     () =>
@@ -245,7 +181,11 @@ export default function Permisos() {
           u.nombre.toLowerCase().includes(q) ||
           u.email.toLowerCase().includes(q);
 
-        const coincideSistema = !filtroSistema || u.accesos[filtroSistema];
+        const coincideSistema =
+          !filtroSistema ||
+          u.accesos[filtroSistema] ||
+          u.accesos[Number(filtroSistema)] ||
+          u.accesos[String(filtroSistema)];
 
         const coincideRol =
           !filtroRol ||
@@ -307,24 +247,42 @@ export default function Permisos() {
     [usuarios, sistemas],
   );
 
-  const guardarUsuario = (data) => {
-    setUsuarios((prev) =>
-      data.id
-        ? prev.map((u) => (u.id === data.id ? data : u))
-        : [...prev, { ...data, id: Date.now(), ultimo: "—" }],
-    );
-    setModal(null);
-    showToast(
-      data.id
-        ? "Usuario actualizado correctamente."
-        : "Usuario creado exitosamente.",
-    );
+  const guardarUsuario = async (data) => {
+    try {
+      const response = await axios.post(`${API_URL}/guardarUsuario`, data, {
+        headers: { Authorization: `Bearer ${API_TOKEN}` },
+      });
+      setFlag(!flag);
+      setModal(null);
+      showToast(
+        response.data?.message || "Usuario guardado correctamente.",
+        "success",
+      );
+    } catch (err) {
+      console.error("Error al guardar usuario:", err);
+      const msg = err.response?.data?.error || err.message;
+      showToast(`Error al guardar usuario: ${msg}`, "error");
+    }
   };
 
-  const eliminarUsuario = (id) => {
-    setUsuarios((prev) => prev.filter((u) => u.id !== id));
-    setModal(null);
-    showToast("Usuario eliminado correctamente.");
+  const eliminarUsuario = async (id) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este usuario?"))
+      return;
+    try {
+      const response = await axios.delete(`${API_URL}/eliminarUsuario/${id}`, {
+        headers: { Authorization: `Bearer ${API_TOKEN}` },
+      });
+      setFlag(!flag);
+      setModal(null);
+      showToast(
+        response.data?.message || "Usuario eliminado correctamente.",
+        "success",
+      );
+    } catch (err) {
+      console.error("Error al eliminar usuario:", err);
+      const msg = err.response?.data?.error || err.message;
+      showToast(`Error al eliminar usuario: ${msg}`, "error");
+    }
   };
 
   const guardarRol = async (data) => {
@@ -428,17 +386,40 @@ export default function Permisos() {
     }
   };
 
-  const setAccesoMatriz = (userId, sysId, rol) => {
-    setUsuarios((prev) =>
-      prev.map((u) => {
-        if (u.id !== userId) return u;
-        const accesos = { ...u.accesos };
-        if (rol) accesos[sysId] = rol;
-        else delete accesos[sysId];
-        return { ...u, accesos };
-      }),
-    );
-    showToast("Accesos actualizados localmente.", "success");
+  const setAccesoMatriz = async (userId, sysId, rol) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/actualizarAccesoUsuario`,
+        {
+          usuarioId: userId,
+          sistemaId: sysId,
+          rolNombre: rol, // Si viene vacío "", el backend limpia el acceso
+        },
+        {
+          headers: { Authorization: `Bearer ${API_TOKEN}` },
+        },
+      );
+
+      // Actualizamos el estado localmente para reflejar el cambio de inmediato
+      setUsuarios((prev) =>
+        prev.map((u) => {
+          if (u.id !== userId) return u;
+          const accesos = { ...u.accesos };
+          if (rol) accesos[sysId] = rol;
+          else delete accesos[sysId];
+          return { ...u, accesos };
+        }),
+      );
+
+      showToast(
+        response.data?.message || "Acceso actualizado correctamente.",
+        "success",
+      );
+    } catch (err) {
+      console.error("Error al actualizar acceso:", err);
+      const msg = err.response?.data?.error || err.message;
+      showToast(`Error al actualizar acceso: ${msg}`, "error");
+    }
   };
 
   return (
@@ -564,6 +545,7 @@ export default function Permisos() {
       {modal?.tipo === "usuario" && (
         <ModalUsuario
           data={modal.data}
+          departamentos={departamentos}
           onSave={guardarUsuario}
           onDelete={eliminarUsuario}
           onClose={() => setModal(null)}
@@ -812,10 +794,11 @@ function ToolbarFiltros({
 }
 
 function AccesosChips({ accesos, sysMap }) {
-  const ids = Object.keys(accesos);
+  const ids = Object.keys(accesos || {});
   if (!ids.length) return <span className="access-chip none">Sin accesos</span>;
   return ids.map((sid) => {
-    const s = sysMap[sid];
+    // Búsqueda flexible de sistema por ID (soporta string y número)
+    const s = sysMap[sid] || sysMap[Number(sid)] || sysMap[String(sid)];
     if (!s) return null;
     return (
       <span className="access-chip" key={sid}>
@@ -823,9 +806,14 @@ function AccesosChips({ accesos, sysMap }) {
           className="ci"
           style={{
             background: s.color || "#2f6fed",
+            color: "#ffffff",
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
+            width: 20,
+            height: 20,
+            borderRadius: 4,
+            fontSize: 12,
           }}
         >
           <DynamicIcon name={s.ic || "FiGrid"} fallback="FiGrid" />
@@ -839,13 +827,14 @@ function AccesosChips({ accesos, sysMap }) {
 function TabUsuariosYAccesos({
   usuariosFiltrados,
   rolesDeSistema,
+  sysMap,
   sistemas,
   setAccesoMatriz,
   setModal,
 }) {
   const [expandidos, setExpandidos] = useState({});
 
-  const sysMap = useMemo(() => {
+  const sistemaMap = useMemo(() => {
     return Object.fromEntries(sistemas.map((s) => [s.id, s]));
   }, [sistemas]);
 
@@ -910,7 +899,7 @@ function TabUsuariosYAccesos({
                   </td>
                   <td>
                     <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                      <AccesosChips accesos={u.accesos} sysMap={sysMap} />
+                      <AccesosChips accesos={u.accesos} sysMap={sistemaMap} />
                     </div>
                   </td>
                   <td>
@@ -982,7 +971,11 @@ function TabUsuariosYAccesos({
                           }}
                         >
                           {sistemas.map((s, index) => {
-                            const rolActual = u.accesos[s.id] || "";
+                            const rolActual =
+                              u.accesos[s.id] ||
+                              u.accesos[String(s.id)] ||
+                              u.accesos[Number(s.id)] ||
+                              "";
                             const rolesPermitidos = rolesDeSistema(s.id);
 
                             return (
@@ -1102,12 +1095,10 @@ function TabRoles({ roles, setModal }) {
   const [rolFiltro, setRolFiltro] = useState("todos");
   const [sistemaFiltro, setSistemaFiltro] = useState("todos");
 
-  // 1. Obtener una lista única de roles disponibles para el select
   const rolesDisponibles = Array.from(
     new Set(roles?.map((r) => r.nombre) || []),
   ).filter(Boolean);
 
-  // 2. Obtener una lista única de sistemas disponibles para el select
   const sistemasDisponibles = Array.from(
     new Set(
       roles?.flatMap((r) =>
@@ -1116,7 +1107,6 @@ function TabRoles({ roles, setModal }) {
     ),
   ).filter(Boolean);
 
-  // 3. Filtrar los roles según el rol y el sistema seleccionados
   const rolesFiltrados = roles?.filter((r) => {
     const matchRol = rolFiltro === "todos" || r.nombre === rolFiltro;
 
@@ -1157,7 +1147,6 @@ function TabRoles({ roles, setModal }) {
         </div>
       </div>
 
-      {/* Selectores de Filtro */}
       <div
         style={{
           display: "flex",
@@ -1335,32 +1324,77 @@ function TabRoles({ roles, setModal }) {
   );
 }
 
-function ModalUsuario({ data, sistemas, onSave, onDelete, onClose }) {
+function ModalUsuario({ data, departamentos, onSave, onDelete, onClose }) {
   const editar = !!data;
-  const [nombre, setNombre] = useState(data?.nombre || "");
+  const [cedula, setCedula] = useState(data?.cedula || "");
+  const [nombre, setNombre] = useState(
+    data?.nombres || data?.nombre?.split(" ")[0] || "",
+  );
+  const [apellido, setApellido] = useState(
+    data?.apellidos || data?.nombre?.split(" ").slice(1).join(" ") || "",
+  );
   const [email, setEmail] = useState(data?.email || "");
+  const [usuario, setUsuario] = useState(data?.usuario || "");
+  const [password, setPassword] = useState("");
+  const [departamentoId, setDepartamentoId] = useState(
+    data?.departamento_id || departamentos[0]?.id || "",
+  );
   const [estado, setEstado] = useState(data?.estado || "active");
-  const [accesos] = useState(data?.accesos || {});
 
   return (
     <div className="ma-overlay" onClick={onClose}>
-      <div className="ma-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="ma-modal"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: 550 }}
+      >
         <div className="ma-modal-head">
           <h3>{editar ? "Editar usuario" : "Nuevo usuario"}</h3>
           <button className="btn-icon" onClick={onClose}>
             ✕
           </button>
         </div>
-        <div className="ma-modal-body">
+        <div
+          className="ma-modal-body"
+          style={{ display: "flex", flexDirection: "column", gap: 12 }}
+        >
           <div className="field-row">
             <div className="field">
-              <label>Nombre completo</label>
+              <label>Cédula</label>
+              <input
+                value={cedula}
+                onChange={(e) => setCedula(e.target.value)}
+                placeholder="Ej. V-12345678"
+              />
+            </div>
+            <div className="field">
+              <label>Nombre de usuario (Alias)</label>
+              <input
+                value={usuario}
+                onChange={(e) => setUsuario(e.target.value)}
+                placeholder="ej. jperez"
+              />
+            </div>
+          </div>
+          <div className="field-row">
+            <div className="field">
+              <label>Nombre</label>
               <input
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                placeholder="Ej. Juan Pérez"
+                placeholder="Ej. Juan"
               />
             </div>
+            <div className="field">
+              <label>Apellido</label>
+              <input
+                value={apellido}
+                onChange={(e) => setApellido(e.target.value)}
+                placeholder="Ej. Pérez"
+              />
+            </div>
+          </div>
+          <div className="field-row">
             <div className="field">
               <label>Correo corporativo</label>
               <input
@@ -1370,14 +1404,43 @@ function ModalUsuario({ data, sistemas, onSave, onDelete, onClose }) {
                 placeholder="usuario@mercosur.com.py"
               />
             </div>
+            <div className="field">
+              <label>Departamento</label>
+              <select
+                value={departamentoId}
+                onChange={(e) => setDepartamentoId(e.target.value)}
+              >
+                <option value="">Selecciona un departamento...</option>
+                {departamentos.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.str_nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div className="field" style={{ maxWidth: 220 }}>
-            <label>Estado de la cuenta</label>
-            <select value={estado} onChange={(e) => setEstado(e.target.value)}>
-              <option value="active">Activo</option>
-              <option value="inactive">Inactivo</option>
-              <option value="pending">Pendiente</option>
-            </select>
+          <div className="field-row">
+            <div className="field">
+              <label>
+                Contraseña {editar && "(Dejar en blanco para mantener)"}
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+            </div>
+            <div className="field">
+              <label>Estado de la cuenta</label>
+              <select
+                value={estado}
+                onChange={(e) => setEstado(e.target.value)}
+              >
+                <option value="active">Activo</option>
+                <option value="inactive">Inactivo</option>
+              </select>
+            </div>
           </div>
         </div>
         <div className="ma-modal-foot">
@@ -1395,15 +1458,25 @@ function ModalUsuario({ data, sistemas, onSave, onDelete, onClose }) {
           </button>
           <button
             className="btn btn-primary"
-            disabled={!nombre || !email}
+            disabled={
+              !cedula ||
+              !nombre ||
+              !apellido ||
+              !email ||
+              !departamentoId ||
+              (!editar && !password)
+            }
             onClick={() =>
               onSave({
                 id: data?.id,
+                cedula,
                 nombre,
+                apellido,
                 email,
+                usuario,
+                password,
+                departamento_id: departamentoId,
                 estado,
-                accesos,
-                ultimo: data?.ultimo || "—",
               })
             }
           >
@@ -1543,7 +1616,6 @@ function ModalRol({
 
   const estaVinculadoCat = sistemasVinculadosCat.length > 0;
 
-  // Filtrar opciones duplicadas utilizando un Set basado en su ID o nombre
   const opcionesDelSistema = useMemo(() => {
     const sys = sistemas.find(
       (s) => s.id === data?.sistema_id || s.nombre === data?.sistemas,

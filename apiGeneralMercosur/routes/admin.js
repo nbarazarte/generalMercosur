@@ -6,6 +6,7 @@ const axios = require("axios");
 const router = express.Router();
 const pool = require("../db");
 const autenticarToken = require("../middlewares/autenticarToken");
+const bcrypt = require("bcryptjs");
 const upload = require("../middlewares/multerConfig");
 const fs = require("fs");
 const fsp = fs.promises;
@@ -86,7 +87,7 @@ router.get("/fetchSistemas", async (req, res) => {
         if (row.opcion_id) {
           const opcionesSistema = acc[row.sistema_id].opciones;
           const existeOpcion = opcionesSistema.some(
-            (op) => op.id === row.opcion_id
+            (op) => op.id === row.opcion_id,
           );
           if (!existeOpcion) {
             opcionesSistema.push({
@@ -779,13 +780,14 @@ router.post("/eliminarRol/:id", async (req, res) => {
     // Validar si tiene opciones asociadas antes de eliminar
     const checkOpciones = await client.query(
       `SELECT id FROM public.tbl_roles_sistemas_opciones WHERE rol_sistema_id = $1 LIMIT 1;`,
-      [id]
+      [id],
     );
 
     if (checkOpciones.rowCount > 0) {
       await client.query("ROLLBACK");
       return res.status(400).json({
-        error: "No se puede eliminar el rol del sistema porque tiene opciones asociadas.",
+        error:
+          "No se puede eliminar el rol del sistema porque tiene opciones asociadas.",
       });
     }
 
@@ -916,12 +918,288 @@ router.post("/eliminarRolCat/:id", async (req, res) => {
     return res.status(200).json({
       message: `El rol "${deleteRol.rows[0].str_nombre}" fue eliminado del catálogo exitosamente.`,
     });
-  } catch (err)  {
+  } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error al eliminar rol del catálogo:", err.message);
     return res
       .status(500)
       .json({ error: `Error en base de datos: ${err.message}` });
+  } finally {
+    client.release();
+  }
+});
+
+// ==========================================
+// ENDPOINT: OBTIENE LA LISTA DE USUARIOS CON SUS ACCESOS
+// ==========================================
+router.get("/fetchUsuarios", async (req, res) => {
+  try {
+    const usuariosQuery = `
+      SELECT 
+        u.id,
+        u.str_nombre,
+        u.str_apellido,
+        u.str_email,
+        u.str_usuario,
+        u.str_cedula,
+        u.bol_activo,
+        u.departamento_id,
+        d.str_nombre AS departamento
+      FROM public.tbl_usuarios u
+      LEFT JOIN public.cat_departamentos d ON u.departamento_id = d.id
+      ORDER BY u.id ASC;
+    `;
+    const usuariosRes = await pool.query(usuariosQuery);
+
+    const rolesQuery = `
+      SELECT 
+        urs.usuario_id,
+        s.id AS sistema_id,
+        r.str_nombre AS rol_nombre
+      FROM public.tbl_usuarios_roles_sistemas urs
+      JOIN public.tbl_roles_sistemas rs ON urs.rol_sistema_id = rs.id
+      JOIN public.cat_sistemas s ON rs.sistema_id = s.id
+      JOIN public.cat_roles r ON rs.rol_id = r.id
+      WHERE urs.bol_activo = true AND rs.bol_activo = true;
+    `;
+    const rolesRes = await pool.query(rolesQuery);
+
+    const accesosPorUsuario = {};
+    rolesRes.rows.forEach((row) => {
+      if (!accesosPorUsuario[row.usuario_id]) {
+        accesosPorUsuario[row.usuario_id] = {};
+      }
+      accesosPorUsuario[row.usuario_id][row.sistema_id] = row.rol_nombre;
+    });
+
+    const usuariosMapeados = usuariosRes.rows.map((u) => ({
+      id: u.id,
+      nombre: `${u.str_nombre} ${u.str_apellido}`,
+      nombres: u.str_nombre,
+      apellidos: u.str_apellido,
+      email: u.str_email,
+      usuario: u.str_usuario,
+      cedula: u.str_cedula,
+      departamento_id: u.departamento_id,
+      departamento: u.departamento,
+      estado: u.bol_activo ? "active" : "inactive",
+      ultimo: "—",
+      accesos: accesosPorUsuario[u.id] || {},
+    }));
+
+    res.json(usuariosMapeados);
+  } catch (err) {
+    console.error("Error al obtener usuarios:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+// ==========================================
+// ENDPOINT: OBTIENE EL CATÁLOGO DE DEPARTAMENTOS
+// ==========================================
+router.get("/fetchDepartamentos", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, str_nombre FROM public.cat_departamentos ORDER BY id ASC;",
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error al obtener departamentos:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+// ==========================================
+// ENDPOINT: GUARDAR USUARIO (CREAR / EDITAR)
+// ==========================================
+router.post("/guardarUsuario", async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const {
+      id,
+      cedula,
+      nombre,
+      apellido,
+      email,
+      usuario,
+      password,
+      departamento_id,
+      estado,
+    } = req.body;
+
+    if (!cedula || !nombre || !apellido || !email || !departamento_id) {
+      return res
+        .status(400)
+        .json({ error: "Faltan campos obligatorios para el usuario." });
+    }
+
+    const bol_activo = estado === "active";
+
+    await client.query("BEGIN");
+
+    if (id) {
+      let query = `
+        UPDATE public.tbl_usuarios 
+        SET str_cedula = $1, str_nombre = $2, str_apellido = $3, str_email = $4, 
+            str_usuario = $5, departamento_id = $6, bol_activo = $7, updated_at = NOW()
+      `;
+      let params = [
+        cedula,
+        nombre,
+        apellido,
+        email,
+        usuario || null,
+        departamento_id,
+        bol_activo,
+      ];
+
+      if (password && password.trim() !== "") {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        query += `, str_password = $8 WHERE id = $9 RETURNING id;`;
+        params.push(hashedPassword, id);
+      } else {
+        query += ` WHERE id = $8 RETURNING id;`;
+        params.push(id);
+      }
+
+      const updateRes = await client.query(query, params);
+      if (updateRes.rowCount === 0) {
+        await client.query("ROLLBACK");
+        return res.status(404).json({ error: "El usuario no existe." });
+      }
+
+      await client.query("COMMIT");
+      return res
+        .status(200)
+        .json({ message: "Usuario actualizado exitosamente." });
+    } else {
+      if (!password) {
+        await client.query("ROLLBACK");
+        return res.status(400).json({
+          error: "La contraseña es obligatoria para nuevos usuarios.",
+        });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      const insertQuery = `
+        INSERT INTO public.tbl_usuarios 
+        (departamento_id, str_cedula, str_nombre, str_apellido, str_email, str_password, str_usuario, bol_activo, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+        RETURNING id;
+      `;
+      await client.query(insertQuery, [
+        departamento_id,
+        cedula,
+        nombre,
+        apellido,
+        email,
+        hashedPassword,
+        usuario || null,
+        bol_activo,
+      ]);
+
+      await client.query("COMMIT");
+      return res.status(201).json({ message: "Usuario creado exitosamente." });
+    }
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error al guardar usuario:", err.message);
+    res.status(500).json({ error: `Error en base de datos: ${err.message}` });
+  } finally {
+    client.release();
+  }
+});
+
+// ==========================================
+// ENDPOINT: ELIMINAR USUARIO
+// ==========================================
+router.delete("/eliminarUsuario/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "DELETE FROM public.tbl_usuarios WHERE id = $1 RETURNING id;",
+      [id],
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Usuario no encontrado." });
+    }
+    res.json({ message: "Usuario eliminado correctamente." });
+  } catch (err) {
+    console.error("Error al eliminar usuario:", err.message);
+    res.status(500).json({ error: "Error interno del servidor." });
+  }
+});
+
+// ==========================================
+// ENDPOINT: ASIGNAR / ACTUALIZAR ROL DE USUARIO EN UN SISTEMA
+// ==========================================
+router.post("/actualizarAccesoUsuario", async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { usuarioId, sistemaId, rolNombre } = req.body;
+
+    if (!usuarioId || !sistemaId) {
+      return res
+        .status(400)
+        .json({ error: "El usuario y el sistema son obligatorios." });
+    }
+
+    await client.query("BEGIN");
+
+    // 1. Limpiar el rol previo que tuviera este usuario en este sistema específico
+    await client.query(
+      `DELETE FROM public.tbl_usuarios_roles_sistemas 
+       WHERE usuario_id = $1 
+       AND rol_sistema_id IN (
+         SELECT id FROM public.tbl_roles_sistemas WHERE sistema_id = $2
+       )`,
+      [usuarioId, sistemaId],
+    );
+
+    // 2. Si se seleccionó un rol (si no viene vacío), buscamos su ID correspondiente en tbl_roles_sistemas
+    if (rolNombre && rolNombre.trim() !== "") {
+      const rolSysRes = await client.query(
+        `SELECT rs.id 
+         FROM public.tbl_roles_sistemas rs
+         JOIN public.cat_roles r ON rs.rol_id = r.id
+         WHERE rs.sistema_id = $1 AND r.str_nombre = $2 AND rs.bol_activo = true
+         LIMIT 1`,
+        [sistemaId, rolNombre],
+      );
+
+      if (rolSysRes.rowCount === 0) {
+        await client.query("ROLLBACK");
+        return res.status(404).json({
+          error: `El rol "${rolNombre}" no está asignado a este sistema. Debes asignarlo primero en la pestaña "Roles y Sistemas".`,
+        });
+      }
+
+      const rolSistemaId = rolSysRes.rows[0].id;
+
+      // 3. Insertar la relación definitiva en tbl_usuarios_roles_sistemas
+      await client.query(
+        `INSERT INTO public.tbl_usuarios_roles_sistemas (usuario_id, rol_sistema_id, bol_activo, created_at, updated_at)
+         VALUES ($1, $2, true, CURRENT_DATE, CURRENT_DATE)
+         ON CONFLICT (usuario_id, rol_sistema_id) 
+         DO UPDATE SET bol_activo = true, updated_at = CURRENT_DATE`,
+        [usuarioId, rolSistemaId],
+      );
+    }
+
+    await client.query("COMMIT");
+    return res
+      .status(200)
+      .json({
+        message:
+          "Acceso del usuario actualizado correctamente en la base de datos.",
+      });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error al actualizar acceso de usuario:", err.message);
+    res.status(500).json({ error: `Error en base de datos: ${err.message}` });
   } finally {
     client.release();
   }
