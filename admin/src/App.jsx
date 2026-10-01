@@ -19,6 +19,8 @@ import Dashboard from "./pages/systems/admin/dashboard";
 
 //rrhh:
 import Dashboardrrhh from "./pages/systems/rrhh/dashboardRrhh";
+import MiFicha from "./pages/systems/rrhh/miFicha";
+import Empleados from "./pages/systems/rrhh/empleados";
 
 //tickets:
 import DashboardTickets from "./pages/systems/tickets/dashboardTickets";
@@ -264,6 +266,12 @@ function App() {
           >
             {/* Subruta 0: Dashboard */}
             <Route path="dashboard" element={<Dashboardrrhh />} />
+
+             {/* Subruta 1: Empleados */}
+            <Route path="empleados" element={<Empleados />} />
+
+             {/* Subruta 2: Mi Ficha */}
+            <Route path="miFicha" element={<MiFicha />} />
 
             {/* Redirección por defecto al entrar solo a /rrhh */}
             <Route index element={<Navigate to="dashboard" replace />} />

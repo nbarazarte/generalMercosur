@@ -117,7 +117,7 @@ function fmtDT(d) {
 }
 
 /* ============================ COMPONENTE EXPEDIENTE ============================ */
-export default function Expediente() {
+export default function Empleados() {
   const [expedientes] = useState(EXPEDIENTES_INIT);
 
   // Estados para los Filtros
