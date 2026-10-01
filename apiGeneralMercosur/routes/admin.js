@@ -761,7 +761,7 @@ router.post("/guardarRol", async (req, res) => {
 });
 
 // ==========================================
-// ENDPOINT: ELIMINAR ROL
+// ENDPOINT: ELIMINAR ROL (DE TBL_ROLES_SISTEMAS)
 // ==========================================
 router.post("/eliminarRol/:id", async (req, res) => {
   const client = await pool.connect();
@@ -776,6 +776,19 @@ router.post("/eliminarRol/:id", async (req, res) => {
   try {
     await client.query("BEGIN");
 
+    // Validar si tiene opciones asociadas antes de eliminar
+    const checkOpciones = await client.query(
+      `SELECT id FROM public.tbl_roles_sistemas_opciones WHERE roles_sistemas_id = $1 LIMIT 1;`,
+      [id]
+    );
+
+    if (checkOpciones.rowCount > 0) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        error: "No se puede eliminar el rol del sistema porque tiene opciones asociadas.",
+      });
+    }
+
     await client.query(
       `DELETE FROM public.tbl_roles_sistemas_opciones WHERE roles_sistemas_id = $1;`,
       [id],
@@ -788,7 +801,7 @@ router.post("/eliminarRol/:id", async (req, res) => {
     await client.query("COMMIT");
 
     return res.status(200).json({
-      message: "Rol eliminado exitosamente.",
+      message: "Rol eliminado exitosamente del sistema.",
     });
   } catch (err) {
     await client.query("ROLLBACK");
@@ -903,7 +916,7 @@ router.post("/eliminarRolCat/:id", async (req, res) => {
     return res.status(200).json({
       message: `El rol "${deleteRol.rows[0].str_nombre}" fue eliminado del catálogo exitosamente.`,
     });
-  } catch (err) {
+  } catch (err)  {
     await client.query("ROLLBACK");
     console.error("Error al eliminar rol del catálogo:", err.message);
     return res

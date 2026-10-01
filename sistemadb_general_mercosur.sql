@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict hFCW4Tpxcfe0arXt2PoZ0UcIUfDrRNsfbttjMy2xIX1D8Y6djBIXw4w3RGUEO0M
+\restrict CtGhlWSHEFS92ewkIiFmQ8AgxiCS0K8huNOH3MJIrkNsA6nvSkJgKD3edlwopGq
 
 -- Dumped from database version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 -- Dumped by pg_dump version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 
--- Started on 2026-09-30 23:59:13 -04
+-- Started on 2026-10-01 00:23:57 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1609,6 +1609,7 @@ COPY public.cat_opciones (id, str_nombre, bol_eliminado, fecha_creacion, str_rut
 41	Dashboard	f	21:51:37.316914-04	/rrhh/dashboard	FiCheckSquare
 42	Dashboard	f	21:52:08.924663-04	/kcs/dashboard	FiCheckSquare
 3	Permisos	f	17:39:32.17236-04	/admin/permisos	FiShield
+44	Reportes	f	00:16:34.376031-04	/rrhh/reportes	FiAlignCenter
 \.
 
 
@@ -1660,7 +1661,7 @@ COPY public.tbl_roles_sistemas (id, rol_id, sistema_id, created_at, updated_at, 
 2	1	2	2026-09-25 00:00:00-04	2026-09-25 00:00:00-04	t
 44	1	32	2026-09-30 21:51:37.316914-04	2026-09-30 21:51:37.316914-04	t
 45	1	33	2026-09-30 21:52:08.924663-04	2026-09-30 21:52:08.924663-04	t
-54	38	32	2026-09-30 23:53:43.387063-04	2026-09-30 23:53:43.387063-04	t
+57	38	1	2026-10-01 00:18:16.637131-04	2026-10-01 00:18:16.637131-04	t
 \.
 
 
@@ -1681,7 +1682,7 @@ COPY public.tbl_roles_sistemas_opciones (id, roles_sistemas_id, opcion_id) FROM 
 8	2	8
 48	44	41
 49	45	42
-66	54	41
+71	44	44
 \.
 
 
@@ -1891,7 +1892,7 @@ SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 208, true);
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 43, true);
+SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 45, true);
 
 
 --
@@ -1909,7 +1910,7 @@ SELECT pg_catalog.setval('public.tbl_roles_id_seq', 38, true);
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 54, true);
+SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 57, true);
 
 
 --
@@ -1918,7 +1919,7 @@ SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 54, true);
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 66, true);
+SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 76, true);
 
 
 --
@@ -2634,11 +2635,11 @@ ALTER TABLE ONLY tickets.tbl_tickets_kcs_articulos
     ADD CONSTRAINT fk_ticket_kcs_usuario FOREIGN KEY (usuario_id) REFERENCES public.tbl_usuarios(id) ON DELETE RESTRICT;
 
 
--- Completed on 2026-09-30 23:59:19 -04
+-- Completed on 2026-10-01 00:24:02 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict hFCW4Tpxcfe0arXt2PoZ0UcIUfDrRNsfbttjMy2xIX1D8Y6djBIXw4w3RGUEO0M
+\unrestrict CtGhlWSHEFS92ewkIiFmQ8AgxiCS0K8huNOH3MJIrkNsA6nvSkJgKD3edlwopGq
 

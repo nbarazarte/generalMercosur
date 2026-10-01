@@ -396,7 +396,7 @@ export default function Permisos() {
   };
 
   const handleEliminarRol = async (rolId) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este rol?"))
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este rol de este sistema?"))
       return;
 
     try {
@@ -1606,7 +1606,7 @@ function ModalRol({
                     color: "var(--merco-text)",
                   }}
                 >
-                  Seleccione las opciones activas para este rol:
+                  Seleccione las opciones y permisos activos para este sistema:
                 </label>
                 {opcionesDelSistema.length > 0 && (
                   <label
@@ -1884,13 +1884,40 @@ function ModalRol({
         <div
           style={{
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: editar ? "space-between" : "flex-end",
             alignItems: "center",
             padding: "16px 20px",
             borderTop:
               "1px solid var(--merco-border, rgba(255, 255, 255, 0.08))",
           }}
         >
+          {editar && (
+            <button
+              type="button"
+              className="btn btn-danger"
+              disabled={opcionIdsSeleccionados.length > 0}
+              style={{
+                backgroundColor:
+                  opcionIdsSeleccionados.length > 0 ? "#6c757d" : "#dc3545",
+                color: "#fff",
+                border: "none",
+                padding: "8px 16px",
+                borderRadius: 6,
+                cursor:
+                  opcionIdsSeleccionados.length > 0 ? "not-allowed" : "pointer",
+                fontSize: 13,
+              }}
+              title={
+                opcionIdsSeleccionados.length > 0
+                  ? "No se puede eliminar porque tiene opciones asociadas"
+                  : "Eliminar rol de este sistema"
+              }
+              onClick={() => onDelete(data.id)}
+            >
+              Eliminar rol de {data.sistemas }
+            </button>
+          )}
+
           <div style={{ display: "flex", gap: "8px" }}>
             <button className="btn btn-ghost" onClick={onClose}>
               Cancelar
