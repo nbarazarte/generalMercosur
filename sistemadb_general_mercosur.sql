@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict eptE7ZADTqGQglkpZvdU6LPQjmtzQEfYzYB9eOCynbdhDb7lQrFpYfI7E7ID0RT
+\restrict D58ql2bovDXY1KZfbeeI0VW4CboYH5HRQv0bKOaUUhQJ6vvyzoVFawhexdf6gZs
 
 -- Dumped from database version 18.6 (Ubuntu 18.6-1.pgdg22.04+2)
 -- Dumped by pg_dump version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 
--- Started on 2026-10-01 16:42:17 -04
+-- Started on 2026-10-01 16:56:03 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -876,10 +876,10 @@ CREATE VIEW public.view_dashboard_ultimos_accesos AS
     str_email AS email,
     'Sesión activa'::text AS detalle,
     'success'::text AS tipo,
-    COALESCE(to_char(fec_ultimo_acceso, 'DD/MM/YYYY HH24:MI'::text), to_char(updated_at, 'DD/MM/YYYY HH24:MI'::text), 'Reciente'::text) AS tiempo
+    to_char(fec_ultimo_acceso, 'DD/MM/YYYY HH24:MI'::text) AS tiempo
    FROM public.tbl_usuarios u
-  WHERE (bol_activo = true)
-  ORDER BY COALESCE((fec_ultimo_acceso)::timestamp with time zone, updated_at) DESC
+  WHERE ((bol_activo = true) AND (fec_ultimo_acceso IS NOT NULL))
+  ORDER BY fec_ultimo_acceso DESC
  LIMIT 10;
 
 
@@ -1781,14 +1781,12 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 --
 
 COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, str_device_id, str_device_name) FROM stdin;
-234	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkwODgxNDczLCJleHAiOjE3OTA4ODUwNzN9.Vy7-uNbTKaO-Vg9AV5qhRDh1-4ItmQ36qykRTSUt30g	2026-10-01 15:04:33.60211-04	2026-10-01 16:04:33.60211-04	f	03694813-c751-4e5b-a9ed-e286fb235813	Chrome en Linux PC
-235	2	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJ5amFyYW1pbGxvIiwiaWF0IjoxNzkwODgzMTgyLCJleHAiOjE3OTA4ODY3ODJ9.pPYJ3nhGf83PKRetr24piJGL4xGugCTNcEu3wU_S6dI	2026-10-01 15:33:02.174791-04	2026-10-01 16:33:02.174791-04	f	ff340399-0599-427c-ae05-e46e599c5214	Firefox en Linux PC
-236	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkwODgzMjA2LCJleHAiOjE3OTA4ODY4MDZ9.MSPVofS0zuFxoVTkdvWzkcnm-VI6DDlTcE1ffLQ28LM	2026-10-01 15:33:26.973413-04	2026-10-01 16:33:26.973413-04	f	3973f424-8b4e-4bda-94d5-e9abd301e73f	Firefox en Linux PC
 237	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkwODg0NzYyLCJleHAiOjE3OTA4ODgzNjJ9.-tFg4owRgySgaChjdKpm9OMIzBe_lv_TS03wdW_M3Pk	2026-10-01 15:59:22.407733-04	2026-10-01 16:59:22.407733-04	f	eca34a7d-e631-4aa8-a88d-1a66a8fcfcf2	Chrome en Linux PC
 238	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg4NDgwMywiZXhwIjoxNzkwODg4NDAzfQ.hjX62KDxtgVy03mK20840ATl4sWjl-CyykfslLsDx38	2026-10-01 16:00:03.106882-04	2026-10-01 17:00:03.106882-04	f	cbb690b0-2d3c-48d2-b949-0ba85e855c4e	Chrome en Linux PC
 239	2	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJ5amFyYW1pbGxvIiwiaWF0IjoxNzkwODg0ODE1LCJleHAiOjE3OTA4ODg0MTV9.75SaXU44Z8_ZuQmef4FCFtQrhz2HFllfseqC8B2u1bI	2026-10-01 16:00:15.450007-04	2026-10-01 17:00:15.450007-04	f	b4c9632b-3428-4dcd-859e-3eac579e800f	Firefox en Linux PC
 240	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkwODg0ODI2LCJleHAiOjE3OTA4ODg0MjZ9.rTqv1ttHMP9HV3RV_AFGqmBZSiXrgBqeoTbWtEUKs3s	2026-10-01 16:00:26.873533-04	2026-10-01 17:00:26.873533-04	f	61ea450f-6922-49b5-abab-679cdaffa9a5	Firefox en Linux PC
 241	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkwODg1MDU2LCJleHAiOjE3OTA4ODg2NTZ9.nbdvyYaT_CsLv_4w5FUrPmFnl8sGg_5JAbtXzMgSBY8	2026-10-01 16:04:16.452866-04	2026-10-01 17:04:16.452866-04	f	695656f1-ae97-4a78-a156-7b111f002080	Firefox en Linux PC
+242	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg4NzQ3NCwiZXhwIjoxNzkwODkxMDc0fQ.bLXF5EJmXyKFMDx3zCL2Pwyu-BMhMw7QNex6E29iJGY	2026-10-01 16:44:40.888779-04	2026-10-01 17:44:40.888779-04	f	cefc1855-6dcc-421d-9fe8-7f1041c0de14	Edge en Windows PC
 \.
 
 
@@ -2102,7 +2100,7 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 10, true);
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 241, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 242, true);
 
 
 --
@@ -2854,11 +2852,11 @@ ALTER TABLE ONLY tickets.tbl_tickets_kcs_articulos
     ADD CONSTRAINT fk_ticket_kcs_usuario FOREIGN KEY (usuario_id) REFERENCES public.tbl_usuarios(id) ON DELETE RESTRICT;
 
 
--- Completed on 2026-10-01 16:42:24 -04
+-- Completed on 2026-10-01 16:56:12 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict eptE7ZADTqGQglkpZvdU6LPQjmtzQEfYzYB9eOCynbdhDb7lQrFpYfI7E7ID0RT
+\unrestrict D58ql2bovDXY1KZfbeeI0VW4CboYH5HRQv0bKOaUUhQJ6vvyzoVFawhexdf6gZs
 
