@@ -67,6 +67,10 @@ export default function Permisos() {
 
   const [flag, setFlag] = useState(false);
 
+  // Estados de Paginación
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [porPagina, setPorPagina] = useState(10);
+
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => {
@@ -155,10 +159,25 @@ export default function Permisos() {
   const [filtroSistema, setFiltroSistema] = useState("");
   const [filtroRol, setFiltroRol] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("");
+  const [filtroDepartamento, setFiltroDepartamento] = useState("");
   const [filtroUltimoAcceso, setFiltroUltimoAcceso] = useState("");
   const [fechaDesde, setFechaDesde] = useState("");
   const [fechaHasta, setFechaHasta] = useState("");
   const [modal, setModal] = useState(null);
+
+  // Reiniciar a la página 1 cuando cambie cualquier filtro o la búsqueda
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [
+    busqueda,
+    filtroSistema,
+    filtroRol,
+    filtroEstado,
+    filtroDepartamento,
+    filtroUltimoAcceso,
+    fechaDesde,
+    fechaHasta,
+  ]);
 
   const rolesDeSistema = (sysId) =>
     roles.filter(
@@ -192,6 +211,10 @@ export default function Permisos() {
 
         const coincideEstado = !filtroEstado || u.estado === filtroEstado;
 
+        const coincideDepartamento =
+          !filtroDepartamento ||
+          String(u.departamento_id || u.departamentoId) === String(filtroDepartamento);
+
         let coincideUltimoAcceso = true;
         if (filtroUltimoAcceso === "hoy") {
           coincideUltimoAcceso = u.ultimo.startsWith("Hoy");
@@ -221,6 +244,7 @@ export default function Permisos() {
           coincideSistema &&
           coincideRol &&
           coincideEstado &&
+          coincideDepartamento &&
           coincideUltimoAcceso
         );
       }),
@@ -230,11 +254,19 @@ export default function Permisos() {
       filtroSistema,
       filtroRol,
       filtroEstado,
+      filtroDepartamento,
       filtroUltimoAcceso,
       fechaDesde,
       fechaHasta,
     ],
   );
+
+  // Cálculo de usuarios paginados
+  const totalPaginas = Math.ceil(usuariosFiltrados.length / porPagina) || 1;
+  const usuariosPaginados = useMemo(() => {
+    const inicio = (paginaActual - 1) * porPagina;
+    return usuariosFiltrados.slice(inicio, inicio + porPagina);
+  }, [usuariosFiltrados, paginaActual, porPagina]);
 
   const stats = useMemo(
     () => ({
@@ -511,6 +543,7 @@ export default function Permisos() {
               roles,
               catRoles,
               sistemas,
+              departamentos,
               busqueda,
               setBusqueda,
               filtroSistema,
@@ -519,6 +552,8 @@ export default function Permisos() {
               setFiltroRol,
               filtroEstado,
               setFiltroEstado,
+              filtroDepartamento,
+              setFiltroDepartamento,
               filtroUltimoAcceso,
               setFiltroUltimoAcceso,
               fechaDesde,
@@ -530,11 +565,17 @@ export default function Permisos() {
             }}
           />
           <TabUsuariosYAccesos
-            usuariosFiltrados={usuariosFiltrados}
+            usuariosPaginados={usuariosPaginados}
+            usuariosFiltradosLength={usuariosFiltrados.length}
             rolesDeSistema={rolesDeSistema}
             sistemas={sistemas}
             setAccesoMatriz={setAccesoMatriz}
             setModal={setModal}
+            paginaActual={paginaActual}
+            setPaginaActual={setPaginaActual}
+            porPagina={porPagina}
+            setPorPagina={setPorPagina}
+            totalPaginas={totalPaginas}
           />
         </>
       )}
@@ -606,6 +647,7 @@ function ToolbarFiltros({
   roles,
   catRoles,
   sistemas,
+  departamentos,
   busqueda,
   setBusqueda,
   filtroSistema,
@@ -614,6 +656,8 @@ function ToolbarFiltros({
   setFiltroRol,
   filtroEstado,
   setFiltroEstado,
+  filtroDepartamento,
+  setFiltroDepartamento,
   filtroUltimoAcceso,
   setFiltroUltimoAcceso,
   fechaDesde,
@@ -700,6 +744,18 @@ function ToolbarFiltros({
         </select>
 
         <select
+          value={filtroDepartamento}
+          onChange={(e) => setFiltroDepartamento(e.target.value)}
+        >
+          <option value="">Todos los departamentos</option>
+          {departamentos?.map((d, index) => (
+            <option key={d.id ? `${d.id}-${index}` : index} value={d.id}>
+              {d.str_nombre || d.nombre}
+            </option>
+          ))}
+        </select>
+
+        <select
           value={filtroEstado}
           onChange={(e) => setFiltroEstado(e.target.value)}
         >
@@ -766,6 +822,7 @@ function ToolbarFiltros({
           filtroSistema ||
           filtroRol ||
           filtroEstado ||
+          filtroDepartamento ||
           filtroUltimoAcceso ||
           fechaDesde ||
           fechaHasta) && (
@@ -777,6 +834,7 @@ function ToolbarFiltros({
               setFiltroSistema("");
               setFiltroRol("");
               setFiltroEstado("");
+              setFiltroDepartamento("");
               setFiltroUltimoAcceso("");
               setFechaDesde("");
               setFechaHasta("");
@@ -833,12 +891,17 @@ function AccesosChips({ accesos, sysMap }) {
 }
 
 function TabUsuariosYAccesos({
-  usuariosFiltrados,
+  usuariosPaginados,
+  usuariosFiltradosLength,
   rolesDeSistema,
-  sysMap,
   sistemas,
   setAccesoMatriz,
   setModal,
+  paginaActual,
+  setPaginaActual,
+  porPagina,
+  setPorPagina,
+  totalPaginas,
 }) {
   const [expandidos, setExpandidos] = useState({});
 
@@ -850,251 +913,348 @@ function TabUsuariosYAccesos({
     setExpandidos((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  return (
-    <div className="ma-card" style={{ overflowX: "auto" }}>
-      <table className="ma-table">
-        <thead>
-          <tr>
-            <th style={{ width: 40 }}></th>
-            <th>Usuario</th>
-            <th>Accesos por sistema</th>
-            <th>Estado</th>
-            <th>Último acceso</th>
-            <th style={{ textAlign: "right" }}>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuariosFiltrados.map((u) => {
-            const estaAbierto = !!expandidos[u.id];
+  const registroInicio =
+    usuariosFiltradosLength === 0 ? 0 : (paginaActual - 1) * porPagina + 1;
+  const registroFin = Math.min(
+    paginaActual * porPagina,
+    usuariosFiltradosLength,
+  );
 
-            return (
-              <React.Fragment key={u.id}>
-                <tr style={{ borderBottom: estaAbierto ? "none" : undefined }}>
-                  <td style={{ textAlign: "center", paddingRight: 0 }}>
-                    <button
-                      className="btn-icon"
-                      onClick={() => toggleExpandir(u.id)}
-                      title={
-                        estaAbierto
-                          ? "Ocultar gestión de accesos"
-                          : "Gestionar accesos"
-                      }
-                      style={{
-                        transform: estaAbierto
-                          ? "rotate(90deg)"
-                          : "rotate(0deg)",
-                        transition: "transform 0.2s ease",
-                        fontSize: 12,
-                        cursor: "pointer",
-                      }}
-                    >
-                      <DynamicIcon name="FiArrowRight" />
-                    </button>
-                  </td>
-                  <td>
-                    <div className="ma-user-cell">
-                      <div
-                        className="ma-ava"
-                        style={{ background: avaColor(u.nombre) }}
-                      >
-                        {iniciales(u.nombre)}
-                      </div>
-                      <div>
-                        <b>{u.nombre}</b>
-                        <small>{u.email}</small>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                      <AccesosChips accesos={u.accesos} sysMap={sistemaMap} />
-                    </div>
-                  </td>
-                  <td>
-                    <span className={"badge " + ESTADOS[u.estado][1]}>
-                      {ESTADOS[u.estado][0]}
-                    </span>
-                  </td>
-                  <td style={{ color: "var(--merco-muted)", fontSize: 13 }}>
-                    {u.ultimo}
-                  </td>
-                  <td>
-                    <div className="ma-actions">
+  return (
+    <div
+      className="ma-card"
+      style={{ display: "flex", flexDirection: "column" }}
+    >
+      <div style={{ overflowX: "auto" }}>
+        <table className="ma-table">
+          <thead>
+            <tr>
+              <th style={{ width: 40 }}></th>
+              <th>Usuario</th>
+              <th>Accesos por sistema</th>
+              <th>Estado</th>
+              <th>Último acceso</th>
+              <th style={{ textAlign: "right" }}>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {usuariosPaginados.map((u) => {
+              const estaAbierto = !!expandidos[u.id];
+
+              return (
+                <React.Fragment key={u.id}>
+                  <tr style={{ borderBottom: estaAbierto ? "none" : undefined }}>
+                    <td style={{ textAlign: "center", paddingRight: 0 }}>
                       <button
                         className="btn-icon"
-                        title="Editar usuario"
-                        onClick={() => setModal({ tipo: "usuario", data: u })}
-                      >
-                        <DynamicIcon name="FiEdit" />
-                      </button>
-                      <button
-                        className="btn-icon danger"
-                        title="Eliminar usuario"
-                        onClick={() => setModal({ tipo: "usuario", data: u })}
-                      >
-                        <DynamicIcon name="FiTrash2" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-
-                {estaAbierto && (
-                  <tr
-                    style={{
-                      background:
-                        "var(--merco-bg-subtle, rgba(255, 255, 255, 0.02))",
-                    }}
-                  >
-                    <td colSpan={6} style={{ padding: "12px 20px 20px 48px" }}>
-                      <div
+                        onClick={() => toggleExpandir(u.id)}
+                        title={
+                          estaAbierto
+                            ? "Ocultar gestión de accesos"
+                            : "Gestionar accesos"
+                        }
                         style={{
-                          padding: 16,
-                          borderRadius: 8,
-                          border: "1px solid var(--merco-border, #333)",
-                          background: "var(--merco-bg, #1a1a1a)",
+                          transform: estaAbierto
+                            ? "rotate(90deg)"
+                            : "rotate(0deg)",
+                          transition: "transform 0.2s ease",
+                          fontSize: 12,
+                          cursor: "pointer",
                         }}
                       >
+                        <DynamicIcon name="FiArrowRight" />
+                      </button>
+                    </td>
+                    <td>
+                      <div className="ma-user-cell">
                         <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            fontSize: 13,
-                            fontWeight: 600,
-                            marginBottom: 12,
-                            color: "var(--merco-muted)",
-                          }}
+                          className="ma-ava"
+                          style={{ background: avaColor(u.nombre) }}
                         >
-                          <DynamicIcon name="FiSettings" />
-                          <span>
-                            Configuración rápida de roles para {u.nombre}:
-                          </span>
+                          {iniciales(u.nombre)}
                         </div>
+                        <div>
+                          <b>{u.nombre}</b>
+                          <small>{u.email}</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        <AccesosChips
+                          accesos={u.accesos}
+                          sysMap={sistemaMap}
+                        />
+                      </div>
+                    </td>
+                    <td>
+                      <span className={"badge " + ESTADOS[u.estado][1]}>
+                        {ESTADOS[u.estado][0]}
+                      </span>
+                    </td>
+                    <td style={{ color: "var(--merco-muted)", fontSize: 13 }}>
+                      {u.ultimo}
+                    </td>
+                    <td>
+                      <div className="ma-actions">
+                        <button
+                          className="btn-icon"
+                          title="Editar usuario"
+                          onClick={() => setModal({ tipo: "usuario", data: u })}
+                        >
+                          <DynamicIcon name="FiEdit" />
+                        </button>
+                        <button
+                          className="btn-icon danger"
+                          title="Eliminar usuario"
+                          onClick={() => setModal({ tipo: "usuario", data: u })}
+                        >
+                          <DynamicIcon name="FiTrash2" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  {estaAbierto && (
+                    <tr
+                      style={{
+                        background:
+                          "var(--merco-bg-subtle, rgba(255, 255, 255, 0.02))",
+                      }}
+                    >
+                      <td colSpan={6} style={{ padding: "12px 20px 20px 48px" }}>
                         <div
                           style={{
-                            display: "grid",
-                            gridTemplateColumns:
-                              "repeat(auto-fill, minmax(260px, 1fr))",
-                            gap: 12,
+                            padding: 16,
+                            borderRadius: 8,
+                            border: "1px solid var(--merco-border, #333)",
+                            background: "var(--merco-bg, #1a1a1a)",
                           }}
                         >
-                          {sistemas.map((s, index) => {
-                            const rolActual =
-                              u.accesos[s.id] ||
-                              u.accesos[String(s.id)] ||
-                              u.accesos[Number(s.id)] ||
-                              "";
-                            const rolesPermitidos = rolesDeSistema(s.id);
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 8,
+                              fontSize: 13,
+                              fontWeight: 600,
+                              marginBottom: 12,
+                              color: "var(--merco-muted)",
+                            }}
+                          >
+                            <DynamicIcon name="FiSettings" />
+                            <span>
+                              Configuración rápida de roles para {u.nombre}:
+                            </span>
+                          </div>
+                          <div
+                            style={{
+                              display: "grid",
+                              gridTemplateColumns:
+                                "repeat(auto-fill, minmax(260px, 1fr))",
+                              gap: 12,
+                            }}
+                          >
+                            {sistemas.map((s, index) => {
+                              const rolActual =
+                                u.accesos[s.id] ||
+                                u.accesos[String(s.id)] ||
+                                u.accesos[Number(s.id)] ||
+                                "";
+                              const rolesPermitidos = rolesDeSistema(s.id);
 
-                            return (
-                              <div
-                                key={s.id ? `${s.id}-${index}` : index}
-                                style={{
-                                  padding: "10px 12px",
-                                  borderRadius: 6,
-                                  border: rolActual
-                                    ? `1px solid ${s.color || "#2f6fed"}66`
-                                    : "1px solid var(--merco-border, #333)",
-                                  background: rolActual
-                                    ? `${s.color || "#2f6fed"}0d`
-                                    : "transparent",
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  gap: 8,
-                                }}
-                              >
+                              return (
                                 <div
+                                  key={s.id ? `${s.id}-${index}` : index}
                                   style={{
+                                    padding: "10px 12px",
+                                    borderRadius: 6,
+                                    border: rolActual
+                                      ? `1px solid ${s.color || "#2f6fed"}66`
+                                      : "1px solid var(--merco-border, #333)",
+                                    background: rolActual
+                                      ? `${s.color || "#2f6fed"}0d`
+                                      : "transparent",
                                     display: "flex",
-                                    alignItems: "center",
+                                    flexDirection: "column",
                                     gap: 8,
                                   }}
                                 >
                                   <div
                                     style={{
-                                      width: 26,
-                                      height: 26,
-                                      borderRadius: 4,
-                                      background: s.color || "#2f6fed",
-                                      color: "#fff",
                                       display: "flex",
                                       alignItems: "center",
-                                      justifyContent: "center",
-                                      flexShrink: 0,
+                                      gap: 8,
                                     }}
                                   >
-                                    <DynamicIcon
-                                      name={s.ic || "FiGrid"}
-                                      fallback="FiGrid"
-                                    />
-                                  </div>
-                                  <div style={{ overflow: "hidden" }}>
-                                    <b
+                                    <div
                                       style={{
-                                        fontSize: 13,
-                                        display: "block",
-                                        textOverflow: "ellipsis",
-                                        whiteSpace: "nowrap",
-                                        overflow: "hidden",
+                                        width: 26,
+                                        height: 26,
+                                        borderRadius: 4,
+                                        background: s.color || "#2f6fed",
+                                        color: "#fff",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        flexShrink: 0,
                                       }}
                                     >
-                                      {s.nombre}
-                                    </b>
+                                      <DynamicIcon
+                                        name={s.ic || "FiGrid"}
+                                        fallback="FiGrid"
+                                      />
+                                    </div>
+                                    <div style={{ overflow: "hidden" }}>
+                                      <b
+                                        style={{
+                                          fontSize: 13,
+                                          display: "block",
+                                          textOverflow: "ellipsis",
+                                          whiteSpace: "nowrap",
+                                          overflow: "hidden",
+                                        }}
+                                      >
+                                        {s.nombre}
+                                      </b>
+                                    </div>
                                   </div>
-                                </div>
 
-                                <select
-                                  className={
-                                    "role-select" + (rolActual ? "" : " off")
-                                  }
-                                  value={rolActual}
-                                  onChange={(e) =>
-                                    setAccesoMatriz(u.id, s.id, e.target.value)
-                                  }
-                                  style={{
-                                    width: "100%",
-                                    padding: "6px 8px",
-                                    fontSize: 12,
-                                    borderRadius: 4,
-                                  }}
-                                >
-                                  <option value="">
-                                    Sin acceso (Denegado)
-                                  </option>
-                                  {rolesPermitidos.map((r) => (
-                                    <option key={r.id} value={r.nombre}>
-                                      {r.nombre}
+                                  <select
+                                    className={
+                                      "role-select" + (rolActual ? "" : " off")
+                                    }
+                                    value={rolActual}
+                                    onChange={(e) =>
+                                      setAccesoMatriz(u.id, s.id, e.target.value)
+                                    }
+                                    style={{
+                                      width: "100%",
+                                      padding: "6px 8px",
+                                      fontSize: 12,
+                                      borderRadius: 4,
+                                    }}
+                                  >
+                                    <option value="">
+                                      Sin acceso (Denegado)
                                     </option>
-                                  ))}
-                                </select>
-                              </div>
-                            );
-                          })}
+                                    {rolesPermitidos.map((r) => (
+                                      <option key={r.id} value={r.nombre}>
+                                        {r.nombre}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
-            );
-          })}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
 
-          {usuariosFiltrados.length === 0 && (
-            <tr>
-              <td
-                colSpan={6}
-                style={{
-                  textAlign: "center",
-                  padding: 40,
-                  color: "var(--merco-muted)",
-                }}
-              >
-                No se encontraron usuarios con los filtros aplicados.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            {usuariosPaginados.length === 0 && (
+              <tr>
+                <td
+                  colSpan={6}
+                  style={{
+                    textAlign: "center",
+                    padding: 40,
+                    color: "var(--merco-muted)",
+                  }}
+                >
+                  No se encontraron usuarios con los filtros aplicados.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Barra de Paginación Estilo Data Table */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "12px 20px",
+          borderTop: "1px solid var(--merco-border, rgba(255, 255, 255, 0.08))",
+          flexWrap: "wrap",
+          gap: 12,
+          fontSize: 13,
+          color: "var(--merco-muted)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span>
+            Mostrando <b>{registroInicio}</b> a <b>{registroFin}</b> de{" "}
+            <b>{usuariosFiltradosLength}</b> registros
+          </span>
+
+          <div
+            style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: 8 }}
+          >
+            <span>Filas por página:</span>
+            <select
+              value={porPagina}
+              onChange={(e) => {
+                setPorPagina(Number(e.target.value));
+                setPaginaActual(1);
+              }}
+              style={{
+                padding: "4px 8px",
+                borderRadius: 4,
+                border: "1px solid var(--merco-border, #444)",
+                background: "var(--merco-bg-subtle, rgba(255,255,255,0.05))",
+                color: "inherit",
+                fontSize: 12,
+              }}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <button
+            className="btn btn-ghost"
+            disabled={paginaActual === 1}
+            onClick={() => setPaginaActual((p) => Math.max(p - 1, 1))}
+            style={{
+              padding: "6px 12px",
+              fontSize: 12,
+              opacity: paginaActual === 1 ? 0.5 : 1,
+              cursor: paginaActual === 1 ? "not-allowed" : "pointer",
+            }}
+          >
+            Anterior
+          </button>
+
+          <span style={{ padding: "0 6px", fontWeight: 500 }}>
+            Página {paginaActual} de {totalPaginas}
+          </span>
+
+          <button
+            className="btn btn-ghost"
+            disabled={paginaActual >= totalPaginas}
+            onClick={() => setPaginaActual((p) => Math.min(p + 1, totalPaginas))}
+            style={{
+              padding: "6px 12px",
+              fontSize: 12,
+              opacity: paginaActual >= totalPaginas ? 0.5 : 1,
+              cursor: paginaActual >= totalPaginas ? "not-allowed" : "pointer",
+            }}
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
