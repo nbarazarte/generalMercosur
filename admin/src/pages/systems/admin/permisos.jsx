@@ -69,7 +69,7 @@ export default function Permisos() {
 
   // Estados de Paginación
   const [paginaActual, setPaginaActual] = useState(1);
-  const [porPagina, setPorPagina] = useState(10);
+  const [porPagina, setPorPagina] = useState(5);
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });

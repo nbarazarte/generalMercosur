@@ -214,7 +214,7 @@ export default function DashboardSistemasUsuarios() {
             label="Roles Definidos"
             trend="Matriz global"
           />
-          {/* <KPICard
+          <KPICard
             icon="FiUserCheck"
             val={totalUsuariosPendientes}
             label="Altas Pendientes"
@@ -231,11 +231,11 @@ export default function DashboardSistemasUsuarios() {
                 ? "var(--merco-warning, #d8992a)"
                 : "var(--merco-muted)"
             }
-          /> */}
+          />
         </div>
 
         {/* 2. FILA 1 DE GRÁFICOS: ACCESOS POR SISTEMA Y DISTRIBUCIÓN DE ROLES */}
-        <div className="dashboard-grid-2col">
+        <div className="dashboard-grid-1col">
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
               <span
@@ -247,13 +247,36 @@ export default function DashboardSistemasUsuarios() {
               >
                 Usuarios asignados por sistema
               </span>{" "}
-              <small style={{ color: "var(--merco-muted)" }}>
-                cobertura de licencias
-              </small>
             </div>
             <ChartBarSistemas isDark={isDark} />
           </div>
+        </div>
 
+        {/* SECCIÓN DE GRÁFICOS: ROLES Y DEPARTAMENTOS (DOS COLUMNAS) */}
+        <div
+          className="dashboard-grid-2col"
+          style={{ marginBottom: "20px", marginTop: "20px" }}
+        >
+          {/* Tarjeta 2: Distribución de Usuarios por Departamento */}
+          <div className="ma-card" style={{ padding: 18 }}>
+            <div style={{ marginBottom: 12 }}>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  color: "var(--merco-text)",
+                }}
+              >
+                Distribución de usuarios por departamento
+              </span>
+              <small style={{ color: "var(--merco-muted)", display: "block" }}>
+                Personal activo por área organizacional
+              </small>
+            </div>
+            <ChartDoughnutDepartamentos usuarios={usuarios} isDark={isDark} />
+          </div>
+
+          {/* Tarjeta 1: Distribución de Roles */}
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
               <span
@@ -949,6 +972,80 @@ function ChartDoughnutRoles({ usuarios, isDark }) {
 
     return () => chart.destroy();
   }, [isDark, roleData]);
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: 210 }}>
+      <canvas ref={canvasRef} />
+    </div>
+  );
+}
+
+/* ==========================================================
+   GRÁFICO: DISTRIBUCIÓN DE USUARIOS POR DEPARTAMENTO
+   ========================================================== */
+function ChartDoughnutDepartamentos({ usuarios, isDark }) {
+  const canvasRef = useRef(null);
+
+  const deptoData = useMemo(() => {
+    const conteo = {};
+    if (Array.isArray(usuarios)) {
+      usuarios.forEach((u) => {
+        const depto =
+          u.departamento || u.departamento_nombre || "Sin departamento";
+        conteo[depto] = (conteo[depto] || 0) + 1;
+      });
+    }
+
+    return Object.keys(conteo).map((nombre) => ({
+      nombre,
+      total: conteo[nombre],
+    }));
+  }, [usuarios]);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const ctx = canvasRef.current.getContext("2d");
+    const textColor = isDark ? "#94A3B8" : "#64748B";
+
+    const labels = deptoData.map((d) => d.nombre);
+    const data = deptoData.map((d) => d.total);
+
+    const chart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels: labels.length ? labels : ["Sin datos"],
+        datasets: [
+          {
+            data: data.length ? data : [1],
+            backgroundColor: [
+              "#2f6fed",
+              "#1f9d63",
+              "#d8992a",
+              "#ee176d",
+              "#8155d8",
+              "#0b2545",
+              "#123a63",
+              "#0f7a4c",
+            ],
+            borderColor: isDark ? "#08192f" : "#FFFFFF",
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: { color: textColor, boxWidth: 12 },
+          },
+        },
+      },
+    });
+
+    return () => chart.destroy();
+  }, [isDark, deptoData]);
 
   return (
     <div style={{ position: "relative", width: "100%", height: 210 }}>
