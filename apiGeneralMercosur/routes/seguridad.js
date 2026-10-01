@@ -299,6 +299,13 @@ router.post("/login", async (req, res) => {
 
     const user = result.rows[0];
 
+    // ---> NUEVA VALIDACIÓN: Verificar si el usuario está activo <---
+    if (user.bol_activo === false) {
+      return res
+        .status(403)
+        .send("Su cuenta se encuentra inactiva. Contacte al administrador.");
+    }
+
     // 2. Validar contraseña
     const validPassword = await bcrypt.compare(password, user.str_password);
     if (!validPassword) {

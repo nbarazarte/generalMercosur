@@ -3,7 +3,7 @@
 pg_dump -U postgres -h 192.168.12.29 -F c -b -v -f ./sistemadb_general_mercosur.backup db_general_mercosur
 pg_dump -U postgres -h localhost -F c -b -v -f ./sistemadb_general_mercosur.backup db_general_mercosur
 
-pg_dump -U postgres -h localhost -F p -v -f ./sistemadb_general_mercosur.sql db_general_mercosur
+pg_dump -U postgres -h 192.168.12.29 -F p -v -f ./sistemadb_general_mercosur.sql db_general_mercosur
 
 # Restore
 dropdb -U postgres -h localhost db_general_mercosur

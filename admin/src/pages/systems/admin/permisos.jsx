@@ -102,7 +102,6 @@ export default function Permisos() {
             ? resSistemas.data.data
             : resSistemas.data?.sistemas || [];
 
-        // Mapeo de sistemas incluyendo iconos (ic) y colores[cite: 1, 2]
         const sistemasMapeados = dataArray.map((row) => ({
           id: row.id,
           nombre: row.nombre,
@@ -169,7 +168,7 @@ export default function Permisos() {
         String(r.sistema_id) === String(sysId) ||
         (Array.isArray(r.sistemas)
           ? r.sistemas.includes(sysId)
-          : r.sistemas === sysId)
+          : r.sistemas === sysId),
     );
 
   const usuariosFiltrados = useMemo(
@@ -393,14 +392,13 @@ export default function Permisos() {
         {
           usuarioId: userId,
           sistemaId: sysId,
-          rolNombre: rol, // Si viene vacío "", el backend limpia el acceso
+          rolNombre: rol,
         },
         {
           headers: { Authorization: `Bearer ${API_TOKEN}` },
         },
       );
 
-      // Actualizamos el estado localmente para reflejar el cambio de inmediato
       setUsuarios((prev) =>
         prev.map((u) => {
           if (u.id !== userId) return u;
@@ -511,6 +509,7 @@ export default function Permisos() {
           <ToolbarFiltros
             {...{
               roles,
+              catRoles,
               sistemas,
               busqueda,
               setBusqueda,
@@ -540,7 +539,9 @@ export default function Permisos() {
         </>
       )}
 
-      {tab === "roles" && <TabRoles roles={roles} setModal={setModal} />}
+      {tab === "roles" && (
+        <TabRoles roles={roles} catRoles={catRoles} setModal={setModal} />
+      )}
 
       {modal?.tipo === "usuario" && (
         <ModalUsuario
@@ -603,6 +604,7 @@ export default function Permisos() {
 
 function ToolbarFiltros({
   roles,
+  catRoles,
   sistemas,
   busqueda,
   setBusqueda,
@@ -621,6 +623,14 @@ function ToolbarFiltros({
   setModal,
   mostrarBotonNuevo,
 }) {
+  const rolesUnicosFiltro = useMemo(() => {
+    const unicos = new Set();
+    catRoles?.forEach((r) => {
+      if (r.nombre) unicos.add(r.nombre.trim());
+    });
+    return Array.from(unicos);
+  }, [catRoles]);
+
   return (
     <div className="ma-toolbar" style={{ marginBottom: 16 }}>
       <div
@@ -682,9 +692,9 @@ function ToolbarFiltros({
           onChange={(e) => setFiltroRol(e.target.value)}
         >
           <option value="">Todos los roles</option>
-          {roles.map((r, index) => (
-            <option key={r.id ? `${r.id}-${index}` : index} value={r.nombre}>
-              {r.nombre}
+          {rolesUnicosFiltro.map((rolNombre, index) => (
+            <option key={index} value={rolNombre}>
+              {rolNombre}
             </option>
           ))}
         </select>
@@ -696,7 +706,6 @@ function ToolbarFiltros({
           <option value="">Todos los estados</option>
           <option value="active">Activo</option>
           <option value="inactive">Inactivo</option>
-          <option value="pending">Pendiente</option>
         </select>
 
         <select
@@ -797,7 +806,6 @@ function AccesosChips({ accesos, sysMap }) {
   const ids = Object.keys(accesos || {});
   if (!ids.length) return <span className="access-chip none">Sin accesos</span>;
   return ids.map((sid) => {
-    // Búsqueda flexible de sistema por ID (soporta string y número)
     const s = sysMap[sid] || sysMap[Number(sid)] || sysMap[String(sid)];
     if (!s) return null;
     return (
@@ -1091,13 +1099,17 @@ function TabUsuariosYAccesos({
   );
 }
 
-function TabRoles({ roles, setModal }) {
+function TabRoles({ roles, catRoles, setModal }) {
   const [rolFiltro, setRolFiltro] = useState("todos");
   const [sistemaFiltro, setSistemaFiltro] = useState("todos");
 
-  const rolesDisponibles = Array.from(
-    new Set(roles?.map((r) => r.nombre) || []),
-  ).filter(Boolean);
+  const rolesDisponibles = useMemo(() => {
+    const unicos = new Set();
+    catRoles?.forEach((r) => {
+      if (r.nombre) unicos.add(r.nombre.trim());
+    });
+    return Array.from(unicos);
+  }, [catRoles]);
 
   const sistemasDisponibles = Array.from(
     new Set(
@@ -1108,7 +1120,10 @@ function TabRoles({ roles, setModal }) {
   ).filter(Boolean);
 
   const rolesFiltrados = roles?.filter((r) => {
-    const matchRol = rolFiltro === "todos" || r.nombre === rolFiltro;
+    const matchRol =
+      rolFiltro === "todos" ||
+      (r.nombre &&
+        r.nombre.trim().toLowerCase() === rolFiltro.trim().toLowerCase());
 
     const sistemasArr = Array.isArray(r.sistemas) ? r.sistemas : [r.sistemas];
     const matchSistema =

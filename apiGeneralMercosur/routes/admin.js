@@ -944,7 +944,12 @@ router.get("/fetchUsuarios", async (req, res) => {
         u.str_cedula,
         u.bol_activo,
         u.departamento_id,
-        d.str_nombre AS departamento
+        d.str_nombre AS departamento,
+        (
+          SELECT MAX(t.created_at) 
+          FROM public.tbl_auth_tokens t 
+          WHERE t.user_id = u.id
+        ) AS ultimo_acceso
       FROM public.tbl_usuarios u
       LEFT JOIN public.cat_departamentos d ON u.departamento_id = d.id
       ORDER BY u.id ASC;
@@ -972,6 +977,38 @@ router.get("/fetchUsuarios", async (req, res) => {
       accesosPorUsuario[row.usuario_id][row.sistema_id] = row.rol_nombre;
     });
 
+    // Función auxiliar para formatear la fecha del último acceso
+    const formatUltimoAcceso = (fecha) => {
+      if (!fecha) return "—";
+      const d = new Date(fecha);
+      const hoy = new Date();
+
+      const esHoy =
+        d.getDate() === hoy.getDate() &&
+        d.getMonth() === hoy.getMonth() &&
+        d.getFullYear() === hoy.getFullYear();
+
+      const ayer = new Date(hoy);
+      ayer.setDate(hoy.getDate() - 1);
+      const esAyer =
+        d.getDate() === ayer.getDate() &&
+        d.getMonth() === ayer.getMonth() &&
+        d.getFullYear() === ayer.getFullYear();
+
+      const horaMin = d.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      if (esHoy) return `Hoy, ${horaMin}`;
+      if (esAyer) return `Ayer, ${horaMin}`;
+
+      const dia = String(d.getDate()).padStart(2, "0");
+      const mes = String(d.getMonth() + 1).padStart(2, "0");
+      const anio = d.getFullYear();
+      return `${dia}/${mes}/${anio} ${horaMin}`;
+    };
+
     const usuariosMapeados = usuariosRes.rows.map((u) => ({
       id: u.id,
       nombre: `${u.str_nombre} ${u.str_apellido}`,
@@ -983,7 +1020,7 @@ router.get("/fetchUsuarios", async (req, res) => {
       departamento_id: u.departamento_id,
       departamento: u.departamento,
       estado: u.bol_activo ? "active" : "inactive",
-      ultimo: "—",
+      ultimo: formatUltimoAcceso(u.ultimo_acceso),
       accesos: accesosPorUsuario[u.id] || {},
     }));
 
@@ -1190,12 +1227,10 @@ router.post("/actualizarAccesoUsuario", async (req, res) => {
     }
 
     await client.query("COMMIT");
-    return res
-      .status(200)
-      .json({
-        message:
-          "Acceso del usuario actualizado correctamente en la base de datos.",
-      });
+    return res.status(200).json({
+      message:
+        "Acceso del usuario actualizado correctamente en la base de datos.",
+    });
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error al actualizar acceso de usuario:", err.message);

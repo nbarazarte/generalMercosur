@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict BJnpV4q4OnVNTwX4tVmfhPieJQbRAYpdesofeTBeYpGPCh1kn73imAUcsphV99V
+\restrict zG0lT505b9Yci5jfHtdgvtzRL2V9P3KLiyAqE5W8cX1KZrnwFIcr6IX9a7KKM8D
 
 -- Dumped from database version 18.6 (Ubuntu 18.6-1.pgdg22.04+2)
 -- Dumped by pg_dump version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 
--- Started on 2026-10-01 11:24:48 -04
+-- Started on 2026-10-01 14:43:31 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -626,7 +626,8 @@ CREATE TABLE public.tbl_usuarios (
     str_direccion text,
     str_usuario character varying(20),
     str_telefono character varying(13),
-    str_contacto_emergencia character varying(13)
+    str_contacto_emergencia character varying(13),
+    fec_ultimo_acceso timestamp without time zone
 );
 
 
@@ -1610,6 +1611,8 @@ COPY public.cat_opciones (id, str_nombre, bol_eliminado, fecha_creacion, str_rut
 3	Permisos	f	17:39:32.17236-04	/admin/permisos	FiShield
 40	Dashboard	f	11:15:30.830653-04	/inventario/dashboard	FiCheckSquare
 41	Dashboard	f	11:18:14.266279-04	/visitantes/dashboard	FiCheckSquare
+42	Dashboard	f	13:13:24.615383-04	/facturacion/dashboard	FiCheckSquare
+43	carga de clientes	f	13:21:40.217601-04	/facrturacion/clientes	FiBattery
 \.
 
 
@@ -1621,7 +1624,9 @@ COPY public.cat_opciones (id, str_nombre, bol_eliminado, fecha_creacion, str_rut
 
 COPY public.cat_roles (id, str_nombre, str_descripcion, created_at, updated_at) FROM stdin;
 1	administrador	Administrador general de los sistemas	2026-09-09 11:28:55.692406-04	2026-09-09 11:28:55.692406-04
-17	analista rrrhh	\N	2026-10-01 10:28:35.429321-04	2026-10-01 10:28:35.429321-04
+17	analista rrhh	\N	2026-10-01 10:28:35.429321-04	2026-10-01 13:17:58.988979-04
+18	técnico 1	\N	2026-10-01 13:19:56.909464-04	2026-10-01 13:19:56.909464-04
+19	usuario	\N	2026-10-01 13:22:25.912871-04	2026-10-01 13:22:25.912871-04
 \.
 
 
@@ -1636,8 +1641,9 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 29	Mi Expediente	Portal de ficha de empleados de Mercosur	t	2026-09-29 11:41:47.813769-04	2026-09-29 11:41:47.813769-04	/rrhh	FiBookOpen	#ee176d
 31	Base de Conocimiento	Base conocimiento bursátil y financiero de Mercosur	t	2026-09-29 11:50:56.831542-04	2026-09-29 12:07:44.22176-04	/kcs	FiCloud	#6ded35
 2	Tickets	Sistema central de tickets de Mercosur	t	2026-09-25 11:27:26.784012-04	2026-09-29 12:08:04.581739-04	/tickets	FiAperture	#d68324
-32	Inventario	pruebas	t	2026-10-01 11:15:30.830653-04	2026-10-01 11:15:30.830653-04	/inventario	FiDownloadCloud	#ea35ed
-33	Control de Visitantes	Control de visitantes	t	2026-10-01 11:18:14.266279-04	2026-10-01 11:18:14.266279-04	/visitantes	FiArrowDownCircle	#e193c9
+32	Inventario	pruebas	t	2026-10-01 11:15:30.830653-04	2026-10-01 12:45:09.14238-04	/inventario	FiShoppingBag	#ea35ed
+33	Control de Visitantes	Control de visitantes	t	2026-10-01 11:18:14.266279-04	2026-10-01 12:45:36.484746-04	/visitantes	FiGift	#e193c9
+34	Facturacion	sistema de facturas	t	2026-10-01 13:13:24.615383-04	2026-10-01 13:13:24.615383-04	/facturacion	FiArchive	#edbc35
 \.
 
 
@@ -1648,10 +1654,11 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 --
 
 COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, str_device_id, str_device_name) FROM stdin;
-205	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg2Mjk3MiwiZXhwIjoxNzkwODY2NTcyfQ.ZNwaaa1gEBeQ3J-rxVu1jfLGg4aQRdUGMYn_Jrexhvg	2026-10-01 09:56:12.186648-04	2026-10-01 10:56:12.186648-04	f	91a2c19b-f90f-4dcc-bdf5-2007bc21fbf4	Chrome en Linux PC
-206	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg2MzAzMSwiZXhwIjoxNzkwODY2NjMxfQ.aroRwhF0la3T_Wm2ZTy86YPKUY3YOTQRFDVtYY2INlg	2026-10-01 09:57:11.477625-04	2026-10-01 10:57:11.477625-04	f	adaa97f9-c725-40db-9b6b-b80ca712a7ea	Chrome en Linux PC
-207	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg2MzE4OCwiZXhwIjoxNzkwODY2Nzg4fQ.WIFTlhrU3MU_TbxXl93Fkq0qRkjJLvs7llWvDqLpQKI	2026-10-01 09:59:48.22717-04	2026-10-01 10:59:48.22717-04	f	31ca9a4b-c354-480f-8eb9-f2906ab9a316	Chrome en Linux PC
-208	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg2MzU0NSwiZXhwIjoxNzkwODY3MTQ1fQ.cVbTvJl8PG8t_tlSeokDwYHkA0VxlGglXbTe_n1iJxg	2026-10-01 10:05:45.467754-04	2026-10-01 11:05:45.467754-04	f	6575b183-be2e-4a9f-9a17-7af7bfaf88ad	Chrome en Linux PC
+226	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg3ODM1MCwiZXhwIjoxNzkwODgxOTUwfQ.1ft0pVx349ZU-Bf8Eykyos2AZyKrn6SNreydEpcguUw	2026-10-01 14:12:30.261154-04	2026-10-01 15:12:30.261154-04	f	21ce4af5-b255-4822-95a7-76fb93e82a03	Chrome en Linux PC
+227	2	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJ5amFyYW1pbGxvIiwiaWF0IjoxNzkwODc4NDIyLCJleHAiOjE3OTA4ODIwMjJ9.kEw6yrM7QCB_D7UTktd7CLeV5aoLyrhx2wvWucqyA-U	2026-10-01 14:13:42.623614-04	2026-10-01 15:13:42.623614-04	f	15cb767d-202d-45a2-9e63-3f5cdfa04d09	Firefox en Linux PC
+228	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg3ODQzMCwiZXhwIjoxNzkwODgyMDMwfQ.BigRILc-zd5IQ58YIW8yRGyTJUSqIcbUEwjNJ7r1E8U	2026-10-01 14:13:50.723322-04	2026-10-01 15:13:50.723322-04	f	f79eb666-04ef-409e-a99d-6da77abb5df8	Chrome en Linux PC
+229	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg3ODY4NiwiZXhwIjoxNzkwODgyMjg2fQ._GfdirOkwjEQA2iszbGwaKUB9LfLyen7AnHyqirujR0	2026-10-01 14:18:06.727022-04	2026-10-01 15:18:06.727022-04	f	e3f3f5a6-546a-44a7-ac98-a9bd16233275	Chrome en Linux PC
+230	2	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJ5amFyYW1pbGxvIiwiaWF0IjoxNzkwODgwMDY0LCJleHAiOjE3OTA4ODM2NjR9.rg3FHo3-zg8Aqkc5yuNgCUBB1_rScIJ6JHhPYTIpb6s	2026-10-01 14:41:04.267367-04	2026-10-01 15:41:04.267367-04	f	b548d200-845d-4e28-beee-a699613c7bb2	Firefox en Linux PC
 \.
 
 
@@ -1669,6 +1676,9 @@ COPY public.tbl_roles_sistemas (id, rol_id, sistema_id, created_at, updated_at, 
 40	17	2	2026-10-01 10:28:41.801946-04	2026-10-01 10:28:41.801946-04	t
 41	1	32	2026-10-01 11:15:30.830653-04	2026-10-01 11:15:30.830653-04	t
 42	1	33	2026-10-01 11:18:14.266279-04	2026-10-01 11:18:14.266279-04	t
+43	1	34	2026-10-01 13:13:24.615383-04	2026-10-01 13:13:24.615383-04	t
+44	18	34	2026-10-01 13:20:08.158603-04	2026-10-01 13:20:08.158603-04	t
+45	19	29	2026-10-01 13:22:32.398527-04	2026-10-01 13:22:32.398527-04	t
 \.
 
 
@@ -1694,6 +1704,12 @@ COPY public.tbl_roles_sistemas_opciones (id, rol_sistema_id, opcion_id) FROM std
 42	40	5
 43	41	40
 44	42	41
+45	43	42
+47	43	43
+48	44	42
+49	44	43
+50	45	36
+51	45	39
 \.
 
 
@@ -1703,8 +1719,10 @@ COPY public.tbl_roles_sistemas_opciones (id, rol_sistema_id, opcion_id) FROM std
 -- Data for Name: tbl_usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apellido, str_email, str_password, bol_activo, created_at, updated_at, dmt_fecha_nacimiento, str_direccion, str_usuario, str_telefono, str_contacto_emergencia) FROM stdin;
-1	1	V-00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$0N9CZGs3cq1pMUMt/vOa7e0/TdWyd1ziWgs3zMQC4BvC4PykCLoDW	t	2026-09-10 13:13:24.007018-04	2026-09-10 13:13:24.007018-04	\N	\N	admin	\N	\N
+COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apellido, str_email, str_password, bol_activo, created_at, updated_at, dmt_fecha_nacimiento, str_direccion, str_usuario, str_telefono, str_contacto_emergencia, fec_ultimo_acceso) FROM stdin;
+3	1	V-28099437	Miguel	Millan	mmillan@mercosur.com.ve	$2a$10$iXqiwUiySZ7RuxepUe8w7usu8g6aBanMda0JWO/7julEILXGyG1Ey	t	2026-10-01 13:14:55.835451-04	2026-10-01 13:14:55.835451-04	\N	\N	mmillan	\N	\N	\N
+1	1	V-00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$sQJ1WZfXydLA91xjFb59AeyIMxmQ7xa66uPnYq8FtBjQIFUM3zbZK	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-10-01 14:18:06.708129
+2	1	V-27474427	Yinesca	Jaramillo	yjaramillo@mercosur.com.ve	$2a$10$H49UmWzM8wPVL2DFBA93bONndQZC3Xu7DPzOXe0YlWfce2EubYc7e	t	2026-10-01 11:51:44.544172-04	2026-10-01 14:41:30.840338-04	\N	\N	yjaramillo	\N	\N	2026-10-01 14:13:42.603616
 \.
 
 
@@ -1731,6 +1749,10 @@ COPY public.tbl_usuarios_roles_sistemas (id, usuario_id, rol_sistema_id, bol_act
 2	1	2	t	2026-09-25 00:00:00-04	2026-09-29 00:00:00-04
 42	1	41	t	2026-10-01 00:00:00-04	2026-10-01 00:00:00-04
 43	1	42	t	2026-10-01 00:00:00-04	2026-10-01 00:00:00-04
+47	2	40	t	2026-10-01 00:00:00-04	2026-10-01 00:00:00-04
+48	1	43	t	2026-10-01 00:00:00-04	2026-10-01 00:00:00-04
+50	3	44	t	2026-10-01 00:00:00-04	2026-10-01 00:00:00-04
+51	3	45	t	2026-10-01 00:00:00-04	2026-10-01 00:00:00-04
 \.
 
 
@@ -1896,7 +1918,7 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 1, true);
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 208, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 230, true);
 
 
 --
@@ -1905,7 +1927,7 @@ SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 208, true);
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 41, true);
+SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 43, true);
 
 
 --
@@ -1914,7 +1936,7 @@ SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 41, true);
 -- Name: tbl_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_id_seq', 17, true);
+SELECT pg_catalog.setval('public.tbl_roles_id_seq', 19, true);
 
 
 --
@@ -1923,7 +1945,7 @@ SELECT pg_catalog.setval('public.tbl_roles_id_seq', 17, true);
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 42, true);
+SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 45, true);
 
 
 --
@@ -1932,7 +1954,7 @@ SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 42, true);
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 44, true);
+SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 51, true);
 
 
 --
@@ -1941,7 +1963,7 @@ SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 44, true);
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_sistemas_id_seq', 33, true);
+SELECT pg_catalog.setval('public.tbl_sistemas_id_seq', 34, true);
 
 
 --
@@ -1959,7 +1981,7 @@ SELECT pg_catalog.setval('public.tbl_usuarios_opciones_excepciones_id_seq', 1, f
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_usuarios_roles_sistemas_id_seq', 43, true);
+SELECT pg_catalog.setval('public.tbl_usuarios_roles_sistemas_id_seq', 51, true);
 
 
 --
@@ -1968,7 +1990,7 @@ SELECT pg_catalog.setval('public.tbl_usuarios_roles_sistemas_id_seq', 43, true);
 -- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.usuarios_id_seq', 1, true);
+SELECT pg_catalog.setval('public.usuarios_id_seq', 3, true);
 
 
 --
@@ -2648,11 +2670,11 @@ ALTER TABLE ONLY tickets.tbl_tickets_kcs_articulos
     ADD CONSTRAINT fk_ticket_kcs_usuario FOREIGN KEY (usuario_id) REFERENCES public.tbl_usuarios(id) ON DELETE RESTRICT;
 
 
--- Completed on 2026-10-01 11:24:55 -04
+-- Completed on 2026-10-01 14:43:40 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict BJnpV4q4OnVNTwX4tVmfhPieJQbRAYpdesofeTBeYpGPCh1kn73imAUcsphV99V
+\unrestrict zG0lT505b9Yci5jfHtdgvtzRL2V9P3KLiyAqE5W8cX1KZrnwFIcr6IX9a7KKM8D
 
