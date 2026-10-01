@@ -1658,3 +1658,17 @@ html.dark {
               display: none;
             }
           }
+
+          @keyframes cardAppear {
+          0% {
+            opacity: 0;
+            transform: translateY(16px) scale(0.95);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        .role-card-animated {
+          animation: cardAppear 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }

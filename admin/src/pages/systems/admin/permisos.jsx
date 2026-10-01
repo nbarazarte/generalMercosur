@@ -1099,6 +1099,34 @@ function TabUsuariosYAccesos({
 }
 
 function TabRoles({ roles, setModal }) {
+  const [rolFiltro, setRolFiltro] = useState("todos");
+  const [sistemaFiltro, setSistemaFiltro] = useState("todos");
+
+  // 1. Obtener una lista única de roles disponibles para el select
+  const rolesDisponibles = Array.from(
+    new Set(roles?.map((r) => r.nombre) || []),
+  ).filter(Boolean);
+
+  // 2. Obtener una lista única de sistemas disponibles para el select
+  const sistemasDisponibles = Array.from(
+    new Set(
+      roles?.flatMap((r) =>
+        Array.isArray(r.sistemas) ? r.sistemas : [r.sistemas],
+      ) || [],
+    ),
+  ).filter(Boolean);
+
+  // 3. Filtrar los roles según el rol y el sistema seleccionados
+  const rolesFiltrados = roles?.filter((r) => {
+    const matchRol = rolFiltro === "todos" || r.nombre === rolFiltro;
+
+    const sistemasArr = Array.isArray(r.sistemas) ? r.sistemas : [r.sistemas];
+    const matchSistema =
+      sistemaFiltro === "todos" || sistemasArr.includes(sistemaFiltro);
+
+    return matchRol && matchSistema;
+  });
+
   return (
     <>
       <div className="ma-toolbar">
@@ -1128,104 +1156,180 @@ function TabRoles({ roles, setModal }) {
           </button>
         </div>
       </div>
+
+      {/* Selectores de Filtro */}
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          margin: "16px 0",
+          flexWrap: "wrap",
+        }}
+      >
+        <select
+          value={rolFiltro}
+          onChange={(e) => setRolFiltro(e.target.value)}
+          style={{
+            flex: 1,
+            minWidth: "220px",
+            padding: "8px 12px",
+            borderRadius: "6px",
+            border: "1px solid var(--merco-border, #ccc)",
+            background: "var(--merco-surface, #fff)",
+            color: "inherit",
+            fontSize: 14,
+            textTransform: "capitalize",
+          }}
+        >
+          <option value="todos">Todos los roles</option>
+          {rolesDisponibles.map((rolName, idx) => (
+            <option
+              key={idx}
+              value={rolName}
+              style={{ textTransform: "capitalize" }}
+            >
+              {rolName}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={sistemaFiltro}
+          onChange={(e) => setSistemaFiltro(e.target.value)}
+          style={{
+            flex: 1,
+            minWidth: "220px",
+            padding: "8px 12px",
+            borderRadius: "6px",
+            border: "1px solid var(--merco-border, #ccc)",
+            background: "var(--merco-surface, #fff)",
+            color: "inherit",
+            fontSize: 14,
+          }}
+        >
+          <option value="todos">Todos los sistemas</option>
+          {sistemasDisponibles.map((sis, idx) => (
+            <option key={idx} value={sis}>
+              {sis}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="ma-roles">
-        {roles?.map((r, indexRol) => {
-          const sistemasArr = Array.isArray(r.sistemas)
-            ? r.sistemas
-            : [r.sistemas];
+        {rolesFiltrados?.length === 0 ? (
+          <div
+            style={{
+              gridColumn: "1 / -1",
+              textAlign: "center",
+              padding: "30px",
+              color: "var(--merco-muted)",
+            }}
+          >
+            No se encontraron roles que coincidan con los filtros.
+          </div>
+        ) : (
+          rolesFiltrados?.map((r, indexRol) => {
+            const sistemasArr = Array.isArray(r.sistemas)
+              ? r.sistemas
+              : [r.sistemas];
 
-          const permisosArray = Array.isArray(r.permisos) ? r.permisos : [];
+            const permisosArray = Array.isArray(r.permisos) ? r.permisos : [];
 
-          return (
-            <div className="role-card" key={indexRol}>
-              <div className="rc-top">
-                <div
-                  className="role-ic"
-                  style={{
-                    background: `${r.color || "#2f6fed"}22`,
-                    color: r.color || "#2f6fed",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 20,
-                  }}
-                >
-                  <DynamicIcon name={r.ic || "FiShield"} />
-                </div>
-                <button
-                  className="btn-icon"
-                  title="Editar rol"
-                  onClick={() => setModal({ tipo: "rol", data: r })}
-                >
-                  <DynamicIcon name="FiEdit" />
-                </button>
-              </div>
-
-              <h3>{r.nombre}</h3>
-
+            return (
               <div
-                style={{
-                  display: "flex",
-                  gap: 4,
-                  flexWrap: "wrap",
-                  margin: "4px 0 8px 0",
-                }}
+                className="role-card role-card-animated"
+                key={r.nombre + indexRol}
               >
-                {sistemasArr.map((sys, idx) => (
-                  <span
-                    key={idx}
-                    className="tag tag-accent"
+                <div className="rc-top">
+                  <div
+                    className="role-ic"
                     style={{
                       background: `${r.color || "#2f6fed"}22`,
                       color: r.color || "#2f6fed",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: 12,
+                      fontSize: 20,
                     }}
                   >
-                    {sys}
-                  </span>
-                ))}
-              </div>
+                    <DynamicIcon name={r.ic || "FiShield"} />
+                  </div>
+                  <button
+                    className="btn-icon"
+                    title="Editar rol"
+                    onClick={() => setModal({ tipo: "rol", data: r })}
+                  >
+                    <DynamicIcon name="FiEdit" />
+                  </button>
+                </div>
 
-              {r.desc && (
-                <p
+                <h3 style={{ textTransform: "capitalize" }}>{r.nombre}</h3>
+
+                <div
                   style={{
-                    fontSize: 13,
-                    color: "var(--merco-muted)",
-                    margin: "0 0 10px 0",
-                    lineHeight: 1.4,
+                    display: "flex",
+                    gap: 4,
+                    flexWrap: "wrap",
+                    margin: "4px 0 8px 0",
                   }}
                 >
-                  {r.desc}
-                </p>
-              )}
-
-              <div style={{ marginTop: "auto" }}>
-                <span
-                  style={{
-                    fontSize: 11,
-                    letterSpacing: "0.5px",
-                    color: "var(--merco-muted)",
-                    display: "block",
-                    marginBottom: 6,
-                    fontWeight: 600,
-                  }}
-                >
-                  Opciones ({permisosArray.length})
-                </span>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {permisosArray.map((p, idxPermiso) => (
-                    <span key={idxPermiso} className="tag">
-                      {p}
+                  {sistemasArr.map((sys, idx) => (
+                    <span
+                      key={idx}
+                      className="tag tag-accent"
+                      style={{
+                        background: `${r.color || "#2f6fed"}22`,
+                        color: r.color || "#2f6fed",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 12,
+                      }}
+                    >
+                      {sys}
                     </span>
                   ))}
                 </div>
+
+                {r.desc && (
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: "var(--merco-muted)",
+                      margin: "0 0 10px 0",
+                      lineHeight: 1.4,
+                    }}
+                  >
+                    {r.desc}
+                  </p>
+                )}
+
+                <div style={{ marginTop: "auto" }}>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      letterSpacing: "0.5px",
+                      color: "var(--merco-muted)",
+                      display: "block",
+                      marginBottom: 6,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Opciones ({permisosArray.length})
+                  </span>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    {permisosArray.map((p, idxPermiso) => (
+                      <span key={idxPermiso} className="tag">
+                        {p}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </>
   );
@@ -1528,7 +1632,7 @@ function ModalRol({
                 whiteSpace: "nowrap",
               }}
             >
-              1.- Crear Rol
+              Crear Rol
             </button>
             <button
               type="button"
@@ -1551,7 +1655,7 @@ function ModalRol({
                 whiteSpace: "nowrap",
               }}
             >
-              2.- Editar Nombre
+              Editar Rol
             </button>
             <button
               type="button"
@@ -1574,7 +1678,7 @@ function ModalRol({
                 whiteSpace: "nowrap",
               }}
             >
-              3.- Eliminar Rol
+              Eliminar Rol
             </button>
           </div>
         ) : (
