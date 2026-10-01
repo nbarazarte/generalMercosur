@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict sNt7QVkPIrBhPuTRq48pmXhmzMS0vBLbFIqWvyaitA4zv69Bw1ArwNnNuPmphXf
+\restrict hFCW4Tpxcfe0arXt2PoZ0UcIUfDrRNsfbttjMy2xIX1D8Y6djBIXw4w3RGUEO0M
 
 -- Dumped from database version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 -- Dumped by pg_dump version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 
--- Started on 2026-09-29 21:40:43 -04
+-- Started on 2026-09-30 23:59:13 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 6 (class 2615 OID 60400)
+-- TOC entry 6 (class 2615 OID 60777)
 -- Name: kcs; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -41,7 +41,7 @@ COMMENT ON SCHEMA kcs IS 'Esquema del sistema de la base de datos de conocimient
 
 
 --
--- TOC entry 7 (class 2615 OID 60401)
+-- TOC entry 7 (class 2615 OID 60778)
 -- Name: rrhh; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -60,7 +60,7 @@ COMMENT ON SCHEMA rrhh IS 'Esquema que almacena las tablas del sistema de RRHH';
 
 
 --
--- TOC entry 8 (class 2615 OID 60402)
+-- TOC entry 8 (class 2615 OID 60779)
 -- Name: tickets; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -79,7 +79,7 @@ COMMENT ON SCHEMA tickets IS 'Esquema del Sistema de Tickets para ATC.';
 
 
 --
--- TOC entry 269 (class 1255 OID 60403)
+-- TOC entry 269 (class 1255 OID 60780)
 -- Name: crear_datos_tablas_public(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -148,7 +148,7 @@ $_$;
 ALTER FUNCTION public.crear_datos_tablas_public() OWNER TO postgres;
 
 --
--- TOC entry 270 (class 1255 OID 60404)
+-- TOC entry 270 (class 1255 OID 60781)
 -- Name: limpiar_tablas_public(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -178,7 +178,7 @@ $$;
 ALTER FUNCTION public.limpiar_tablas_public() OWNER TO postgres;
 
 --
--- TOC entry 220 (class 1259 OID 60405)
+-- TOC entry 220 (class 1259 OID 60782)
 -- Name: tbl_kcs_articulos_id_seq; Type: SEQUENCE; Schema: kcs; Owner: postgres
 --
 
@@ -198,7 +198,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 221 (class 1259 OID 60406)
+-- TOC entry 221 (class 1259 OID 60783)
 -- Name: cat_datos_maestros; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -225,7 +225,7 @@ COMMENT ON TABLE public.cat_datos_maestros IS 'Esta tabla es el catalogo general
 
 
 --
--- TOC entry 222 (class 1259 OID 60414)
+-- TOC entry 222 (class 1259 OID 60791)
 -- Name: cat_datos_maestros_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -250,7 +250,7 @@ ALTER SEQUENCE public.cat_datos_maestros_id_seq OWNED BY public.cat_datos_maestr
 
 
 --
--- TOC entry 223 (class 1259 OID 60415)
+-- TOC entry 223 (class 1259 OID 60792)
 -- Name: cat_departamentos; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -275,7 +275,7 @@ COMMENT ON TABLE public.cat_departamentos IS 'Esta tabla contiene el listado de 
 
 
 --
--- TOC entry 224 (class 1259 OID 60420)
+-- TOC entry 224 (class 1259 OID 60797)
 -- Name: cat_departamentos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -300,7 +300,7 @@ ALTER SEQUENCE public.cat_departamentos_id_seq OWNED BY public.cat_departamentos
 
 
 --
--- TOC entry 225 (class 1259 OID 60421)
+-- TOC entry 225 (class 1259 OID 60798)
 -- Name: cat_opciones; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -326,7 +326,7 @@ COMMENT ON TABLE public.cat_opciones IS 'Esta tabla contiene las opciones de los
 
 
 --
--- TOC entry 226 (class 1259 OID 60428)
+-- TOC entry 226 (class 1259 OID 60805)
 -- Name: cat_roles; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -351,7 +351,7 @@ COMMENT ON TABLE public.cat_roles IS 'Esta tabla contiene el listado de roles qu
 
 
 --
--- TOC entry 227 (class 1259 OID 60433)
+-- TOC entry 227 (class 1259 OID 60810)
 -- Name: cat_sistemas; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -380,7 +380,7 @@ COMMENT ON TABLE public.cat_sistemas IS 'Contiene los nombres de los Sistemas In
 
 
 --
--- TOC entry 228 (class 1259 OID 60441)
+-- TOC entry 228 (class 1259 OID 60818)
 -- Name: tbl_auth_tokens; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -408,7 +408,7 @@ COMMENT ON TABLE public.tbl_auth_tokens IS 'Esta tabla contiene los tokens de se
 
 
 --
--- TOC entry 229 (class 1259 OID 60448)
+-- TOC entry 229 (class 1259 OID 60825)
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -433,7 +433,7 @@ ALTER SEQUENCE public.tbl_auth_tokens_id_seq OWNED BY public.tbl_auth_tokens.id;
 
 
 --
--- TOC entry 230 (class 1259 OID 60449)
+-- TOC entry 230 (class 1259 OID 60826)
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -458,7 +458,7 @@ ALTER SEQUENCE public.tbl_opciones_id_seq OWNED BY public.cat_opciones.id;
 
 
 --
--- TOC entry 231 (class 1259 OID 60450)
+-- TOC entry 231 (class 1259 OID 60827)
 -- Name: tbl_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -483,7 +483,7 @@ ALTER SEQUENCE public.tbl_roles_id_seq OWNED BY public.cat_roles.id;
 
 
 --
--- TOC entry 232 (class 1259 OID 60451)
+-- TOC entry 232 (class 1259 OID 60828)
 -- Name: tbl_roles_sistemas; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -509,7 +509,7 @@ COMMENT ON TABLE public.tbl_roles_sistemas IS 'Esta tabla contiene el catalogo d
 
 
 --
--- TOC entry 233 (class 1259 OID 60457)
+-- TOC entry 233 (class 1259 OID 60834)
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -534,7 +534,7 @@ ALTER SEQUENCE public.tbl_roles_opciones_id_seq OWNED BY public.tbl_roles_sistem
 
 
 --
--- TOC entry 234 (class 1259 OID 60458)
+-- TOC entry 234 (class 1259 OID 60835)
 -- Name: tbl_roles_sistemas_opciones; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -557,7 +557,7 @@ COMMENT ON TABLE public.tbl_roles_sistemas_opciones IS 'Esta tabla contiene las 
 
 
 --
--- TOC entry 235 (class 1259 OID 60461)
+-- TOC entry 235 (class 1259 OID 60838)
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -582,7 +582,7 @@ ALTER SEQUENCE public.tbl_roles_sistemas_opciones_id_seq OWNED BY public.tbl_rol
 
 
 --
--- TOC entry 236 (class 1259 OID 60462)
+-- TOC entry 236 (class 1259 OID 60839)
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -607,7 +607,7 @@ ALTER SEQUENCE public.tbl_sistemas_id_seq OWNED BY public.cat_sistemas.id;
 
 
 --
--- TOC entry 237 (class 1259 OID 60463)
+-- TOC entry 237 (class 1259 OID 60840)
 -- Name: tbl_usuarios; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -642,7 +642,7 @@ COMMENT ON TABLE public.tbl_usuarios IS 'Esta tabla contiene el listado global d
 
 
 --
--- TOC entry 238 (class 1259 OID 60471)
+-- TOC entry 238 (class 1259 OID 60848)
 -- Name: tbl_usuarios_opciones_excepciones; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -668,7 +668,7 @@ COMMENT ON TABLE public.tbl_usuarios_opciones_excepciones IS 'Esta tabla es para
 
 
 --
--- TOC entry 239 (class 1259 OID 60477)
+-- TOC entry 239 (class 1259 OID 60854)
 -- Name: tbl_usuarios_opciones_excepciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -693,7 +693,7 @@ ALTER SEQUENCE public.tbl_usuarios_opciones_excepciones_id_seq OWNED BY public.t
 
 
 --
--- TOC entry 240 (class 1259 OID 60478)
+-- TOC entry 240 (class 1259 OID 60855)
 -- Name: tbl_usuarios_roles_sistemas; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -719,7 +719,7 @@ COMMENT ON TABLE public.tbl_usuarios_roles_sistemas IS 'Esta tabla contiene el r
 
 
 --
--- TOC entry 241 (class 1259 OID 60484)
+-- TOC entry 241 (class 1259 OID 60861)
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -744,7 +744,7 @@ ALTER SEQUENCE public.tbl_usuarios_roles_sistemas_id_seq OWNED BY public.tbl_usu
 
 
 --
--- TOC entry 242 (class 1259 OID 60485)
+-- TOC entry 242 (class 1259 OID 60862)
 -- Name: usuarios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -769,12 +769,13 @@ ALTER SEQUENCE public.usuarios_id_seq OWNED BY public.tbl_usuarios.id;
 
 
 --
--- TOC entry 243 (class 1259 OID 60486)
--- Name: view_matriz_roles_opciones; Type: VIEW; Schema: public; Owner: postgres
+-- TOC entry 243 (class 1259 OID 60863)
+-- Name: view_matriz_roles_sistemas_opciones; Type: VIEW; Schema: public; Owner: postgres
 --
 
-CREATE VIEW public.view_matriz_roles_opciones AS
+CREATE VIEW public.view_matriz_roles_sistemas_opciones AS
 SELECT
+    NULL::integer AS rol_sistema_id,
     NULL::integer AS sistema_id,
     NULL::character varying(50) AS str_sistema,
     NULL::text AS str_descripcion,
@@ -785,10 +786,10 @@ SELECT
     NULL::text AS opciones_asignadas;
 
 
-ALTER VIEW public.view_matriz_roles_opciones OWNER TO postgres;
+ALTER VIEW public.view_matriz_roles_sistemas_opciones OWNER TO postgres;
 
 --
--- TOC entry 244 (class 1259 OID 60490)
+-- TOC entry 244 (class 1259 OID 60867)
 -- Name: view_sistemas_opciones; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -806,16 +807,16 @@ CREATE VIEW public.view_sistemas_opciones AS
     o.str_ruta_opcion,
     rso.id AS rol_sistema_opcion_id
    FROM (((public.cat_sistemas s
-     JOIN public.tbl_roles_sistemas rs ON ((s.id = rs.sistema_id)))
-     JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.roles_sistemas_id)))
-     JOIN public.cat_opciones o ON ((rso.opcion_id = o.id)))
-  WHERE ((s.bol_activo = true) AND (rs.bol_activo = true) AND (o.bol_eliminado = false));
+     LEFT JOIN public.tbl_roles_sistemas rs ON (((s.id = rs.sistema_id) AND (rs.bol_activo = true))))
+     LEFT JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.roles_sistemas_id)))
+     LEFT JOIN public.cat_opciones o ON (((rso.opcion_id = o.id) AND (o.bol_eliminado = false))))
+  WHERE (s.bol_activo = true);
 
 
 ALTER VIEW public.view_sistemas_opciones OWNER TO postgres;
 
 --
--- TOC entry 245 (class 1259 OID 60495)
+-- TOC entry 245 (class 1259 OID 60872)
 -- Name: view_usuarios_opciones_sistemas; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -862,7 +863,7 @@ COMMENT ON VIEW public.view_usuarios_opciones_sistemas IS 'Muestra que opciones 
 
 
 --
--- TOC entry 246 (class 1259 OID 60500)
+-- TOC entry 246 (class 1259 OID 60877)
 -- Name: view_usuarios_permisos_detallados; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -888,7 +889,7 @@ CREATE VIEW public.view_usuarios_permisos_detallados AS
 ALTER VIEW public.view_usuarios_permisos_detallados OWNER TO postgres;
 
 --
--- TOC entry 247 (class 1259 OID 60505)
+-- TOC entry 247 (class 1259 OID 60882)
 -- Name: view_usuarios_roles_sistemas; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -917,7 +918,7 @@ CREATE VIEW public.view_usuarios_roles_sistemas AS
 ALTER VIEW public.view_usuarios_roles_sistemas OWNER TO postgres;
 
 --
--- TOC entry 248 (class 1259 OID 60510)
+-- TOC entry 248 (class 1259 OID 60887)
 -- Name: tbl_amonestaciones; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -935,7 +936,7 @@ CREATE TABLE rrhh.tbl_amonestaciones (
 ALTER TABLE rrhh.tbl_amonestaciones OWNER TO postgres;
 
 --
--- TOC entry 249 (class 1259 OID 60517)
+-- TOC entry 249 (class 1259 OID 60894)
 -- Name: tbl_amonestaciones_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -960,7 +961,7 @@ ALTER SEQUENCE rrhh.tbl_amonestaciones_id_seq OWNED BY rrhh.tbl_amonestaciones.i
 
 
 --
--- TOC entry 250 (class 1259 OID 60518)
+-- TOC entry 250 (class 1259 OID 60895)
 -- Name: tbl_carga_familiar; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -978,7 +979,7 @@ CREATE TABLE rrhh.tbl_carga_familiar (
 ALTER TABLE rrhh.tbl_carga_familiar OWNER TO postgres;
 
 --
--- TOC entry 251 (class 1259 OID 60523)
+-- TOC entry 251 (class 1259 OID 60900)
 -- Name: tbl_carga_familiar_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1003,7 +1004,7 @@ ALTER SEQUENCE rrhh.tbl_carga_familiar_id_seq OWNED BY rrhh.tbl_carga_familiar.i
 
 
 --
--- TOC entry 252 (class 1259 OID 60524)
+-- TOC entry 252 (class 1259 OID 60901)
 -- Name: tbl_expediente; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1031,7 +1032,7 @@ CREATE TABLE rrhh.tbl_expediente (
 ALTER TABLE rrhh.tbl_expediente OWNER TO postgres;
 
 --
--- TOC entry 253 (class 1259 OID 60529)
+-- TOC entry 253 (class 1259 OID 60906)
 -- Name: tbl_expediente_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1056,7 +1057,7 @@ ALTER SEQUENCE rrhh.tbl_expediente_id_seq OWNED BY rrhh.tbl_expediente.id;
 
 
 --
--- TOC entry 254 (class 1259 OID 60530)
+-- TOC entry 254 (class 1259 OID 60907)
 -- Name: tbl_permisos; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1074,7 +1075,7 @@ CREATE TABLE rrhh.tbl_permisos (
 ALTER TABLE rrhh.tbl_permisos OWNER TO postgres;
 
 --
--- TOC entry 255 (class 1259 OID 60537)
+-- TOC entry 255 (class 1259 OID 60914)
 -- Name: tbl_permisos_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1099,7 +1100,7 @@ ALTER SEQUENCE rrhh.tbl_permisos_id_seq OWNED BY rrhh.tbl_permisos.id;
 
 
 --
--- TOC entry 256 (class 1259 OID 60538)
+-- TOC entry 256 (class 1259 OID 60915)
 -- Name: tbl_reposos; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1117,7 +1118,7 @@ CREATE TABLE rrhh.tbl_reposos (
 ALTER TABLE rrhh.tbl_reposos OWNER TO postgres;
 
 --
--- TOC entry 257 (class 1259 OID 60545)
+-- TOC entry 257 (class 1259 OID 60922)
 -- Name: tbl_reposos_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1142,7 +1143,7 @@ ALTER SEQUENCE rrhh.tbl_reposos_id_seq OWNED BY rrhh.tbl_reposos.id;
 
 
 --
--- TOC entry 258 (class 1259 OID 60546)
+-- TOC entry 258 (class 1259 OID 60923)
 -- Name: tbl_vacaciones; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1163,7 +1164,7 @@ CREATE TABLE rrhh.tbl_vacaciones (
 ALTER TABLE rrhh.tbl_vacaciones OWNER TO postgres;
 
 --
--- TOC entry 259 (class 1259 OID 60551)
+-- TOC entry 259 (class 1259 OID 60928)
 -- Name: tbl_vacaciones_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1188,7 +1189,7 @@ ALTER SEQUENCE rrhh.tbl_vacaciones_id_seq OWNED BY rrhh.tbl_vacaciones.id;
 
 
 --
--- TOC entry 260 (class 1259 OID 60552)
+-- TOC entry 260 (class 1259 OID 60929)
 -- Name: sla_configuracion; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1204,7 +1205,7 @@ CREATE TABLE tickets.sla_configuracion (
 ALTER TABLE tickets.sla_configuracion OWNER TO postgres;
 
 --
--- TOC entry 261 (class 1259 OID 60556)
+-- TOC entry 261 (class 1259 OID 60933)
 -- Name: tbl_adjuntos_caso; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1222,7 +1223,7 @@ CREATE TABLE tickets.tbl_adjuntos_caso (
 ALTER TABLE tickets.tbl_adjuntos_caso OWNER TO postgres;
 
 --
--- TOC entry 262 (class 1259 OID 60564)
+-- TOC entry 262 (class 1259 OID 60941)
 -- Name: tbl_alertas; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1241,7 +1242,7 @@ CREATE TABLE tickets.tbl_alertas (
 ALTER TABLE tickets.tbl_alertas OWNER TO postgres;
 
 --
--- TOC entry 263 (class 1259 OID 60571)
+-- TOC entry 263 (class 1259 OID 60948)
 -- Name: tbl_clientes; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1281,7 +1282,7 @@ COMMENT ON COLUMN tickets.tbl_clientes.condicion_cliente_id IS 'Determina si es 
 
 
 --
--- TOC entry 264 (class 1259 OID 60578)
+-- TOC entry 264 (class 1259 OID 60955)
 -- Name: tbl_clientes_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1306,7 +1307,7 @@ ALTER SEQUENCE tickets.tbl_clientes_id_seq OWNED BY tickets.tbl_clientes.id;
 
 
 --
--- TOC entry 265 (class 1259 OID 60579)
+-- TOC entry 265 (class 1259 OID 60956)
 -- Name: tbl_tickets; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1342,7 +1343,7 @@ COMMENT ON TABLE tickets.tbl_tickets IS 'Tabla transaccional principal que manej
 
 
 --
--- TOC entry 266 (class 1259 OID 60587)
+-- TOC entry 266 (class 1259 OID 60964)
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1367,7 +1368,7 @@ ALTER SEQUENCE tickets.tbl_tickets_id_seq OWNED BY tickets.tbl_tickets.id;
 
 
 --
--- TOC entry 267 (class 1259 OID 60588)
+-- TOC entry 267 (class 1259 OID 60965)
 -- Name: tbl_tickets_kcs_articulos; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1384,7 +1385,7 @@ CREATE TABLE tickets.tbl_tickets_kcs_articulos (
 ALTER TABLE tickets.tbl_tickets_kcs_articulos OWNER TO postgres;
 
 --
--- TOC entry 268 (class 1259 OID 60593)
+-- TOC entry 268 (class 1259 OID 60970)
 -- Name: tbl_tickets_kcs_articulos_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1409,7 +1410,7 @@ ALTER SEQUENCE tickets.tbl_tickets_kcs_articulos_id_seq OWNED BY tickets.tbl_tic
 
 
 --
--- TOC entry 3429 (class 2604 OID 60594)
+-- TOC entry 3429 (class 2604 OID 60971)
 -- Name: cat_datos_maestros id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1417,7 +1418,7 @@ ALTER TABLE ONLY public.cat_datos_maestros ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3433 (class 2604 OID 60595)
+-- TOC entry 3433 (class 2604 OID 60972)
 -- Name: cat_departamentos id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1425,7 +1426,7 @@ ALTER TABLE ONLY public.cat_departamentos ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3436 (class 2604 OID 60596)
+-- TOC entry 3436 (class 2604 OID 60973)
 -- Name: cat_opciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1433,7 +1434,7 @@ ALTER TABLE ONLY public.cat_opciones ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3439 (class 2604 OID 60597)
+-- TOC entry 3439 (class 2604 OID 60974)
 -- Name: cat_roles id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1441,7 +1442,7 @@ ALTER TABLE ONLY public.cat_roles ALTER COLUMN id SET DEFAULT nextval('public.tb
 
 
 --
--- TOC entry 3442 (class 2604 OID 60598)
+-- TOC entry 3442 (class 2604 OID 60975)
 -- Name: cat_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1449,7 +1450,7 @@ ALTER TABLE ONLY public.cat_sistemas ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3446 (class 2604 OID 60599)
+-- TOC entry 3446 (class 2604 OID 60976)
 -- Name: tbl_auth_tokens id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1457,7 +1458,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3449 (class 2604 OID 60600)
+-- TOC entry 3449 (class 2604 OID 60977)
 -- Name: tbl_roles_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1465,7 +1466,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3453 (class 2604 OID 60601)
+-- TOC entry 3453 (class 2604 OID 60978)
 -- Name: tbl_roles_sistemas_opciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1473,7 +1474,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones ALTER COLUMN id SET DEFAULT 
 
 
 --
--- TOC entry 3454 (class 2604 OID 60602)
+-- TOC entry 3454 (class 2604 OID 60979)
 -- Name: tbl_usuarios id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1481,7 +1482,7 @@ ALTER TABLE ONLY public.tbl_usuarios ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3458 (class 2604 OID 60603)
+-- TOC entry 3458 (class 2604 OID 60980)
 -- Name: tbl_usuarios_opciones_excepciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1489,7 +1490,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones ALTER COLUMN id SET DE
 
 
 --
--- TOC entry 3462 (class 2604 OID 60604)
+-- TOC entry 3462 (class 2604 OID 60981)
 -- Name: tbl_usuarios_roles_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1497,7 +1498,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas ALTER COLUMN id SET DEFAULT 
 
 
 --
--- TOC entry 3466 (class 2604 OID 60605)
+-- TOC entry 3466 (class 2604 OID 60982)
 -- Name: tbl_amonestaciones id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1505,7 +1506,7 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones ALTER COLUMN id SET DEFAULT nextval('rr
 
 
 --
--- TOC entry 3469 (class 2604 OID 60606)
+-- TOC entry 3469 (class 2604 OID 60983)
 -- Name: tbl_carga_familiar id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1513,7 +1514,7 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar ALTER COLUMN id SET DEFAULT nextval('rr
 
 
 --
--- TOC entry 3472 (class 2604 OID 60607)
+-- TOC entry 3472 (class 2604 OID 60984)
 -- Name: tbl_expediente id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1521,7 +1522,7 @@ ALTER TABLE ONLY rrhh.tbl_expediente ALTER COLUMN id SET DEFAULT nextval('rrhh.t
 
 
 --
--- TOC entry 3475 (class 2604 OID 60608)
+-- TOC entry 3475 (class 2604 OID 60985)
 -- Name: tbl_permisos id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1529,7 +1530,7 @@ ALTER TABLE ONLY rrhh.tbl_permisos ALTER COLUMN id SET DEFAULT nextval('rrhh.tbl
 
 
 --
--- TOC entry 3478 (class 2604 OID 60609)
+-- TOC entry 3478 (class 2604 OID 60986)
 -- Name: tbl_reposos id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1537,7 +1538,7 @@ ALTER TABLE ONLY rrhh.tbl_reposos ALTER COLUMN id SET DEFAULT nextval('rrhh.tbl_
 
 
 --
--- TOC entry 3481 (class 2604 OID 60610)
+-- TOC entry 3481 (class 2604 OID 60987)
 -- Name: tbl_vacaciones id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1545,7 +1546,7 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones ALTER COLUMN id SET DEFAULT nextval('rrhh.t
 
 
 --
--- TOC entry 3490 (class 2604 OID 60611)
+-- TOC entry 3490 (class 2604 OID 60988)
 -- Name: tbl_clientes id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1553,7 +1554,7 @@ ALTER TABLE ONLY tickets.tbl_clientes ALTER COLUMN id SET DEFAULT nextval('ticke
 
 
 --
--- TOC entry 3493 (class 2604 OID 60612)
+-- TOC entry 3493 (class 2604 OID 60989)
 -- Name: tbl_tickets id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1561,7 +1562,7 @@ ALTER TABLE ONLY tickets.tbl_tickets ALTER COLUMN id SET DEFAULT nextval('ticket
 
 
 --
--- TOC entry 3497 (class 2604 OID 60613)
+-- TOC entry 3497 (class 2604 OID 60990)
 -- Name: tbl_tickets_kcs_articulos id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1569,7 +1570,7 @@ ALTER TABLE ONLY tickets.tbl_tickets_kcs_articulos ALTER COLUMN id SET DEFAULT n
 
 
 --
--- TOC entry 3739 (class 0 OID 60406)
+-- TOC entry 3739 (class 0 OID 60783)
 -- Dependencies: 221
 -- Data for Name: cat_datos_maestros; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1579,7 +1580,7 @@ COPY public.cat_datos_maestros (id, str_tipo, str_nombre, str_descripcion, bol_a
 
 
 --
--- TOC entry 3741 (class 0 OID 60415)
+-- TOC entry 3741 (class 0 OID 60792)
 -- Dependencies: 223
 -- Data for Name: cat_departamentos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1590,7 +1591,7 @@ COPY public.cat_departamentos (id, str_nombre, str_descripcion, created_at, upda
 
 
 --
--- TOC entry 3743 (class 0 OID 60421)
+-- TOC entry 3743 (class 0 OID 60798)
 -- Dependencies: 225
 -- Data for Name: cat_opciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1603,51 +1604,53 @@ COPY public.cat_opciones (id, str_nombre, bol_eliminado, fecha_creacion, str_rut
 2	Sistemas	f	13:31:51.405615-04	/admin/sistemas	FiMonitor
 4	Dashboard	f	11:32:35.611285-04	/tickets/dashboard	FiPieChart
 7	Clientes	f	11:32:35.611285-04	/tickets/clientes	FiBriefcase
-3	Usuarios y Accesos	f	17:39:32.17236-04	/admin/usuarios-accesos	FiUsers
-36	Dashboard	f	11:41:47.813769-04	/rrhh/dashboard	FiPieChart
 38	Dashboard	f	11:50:56.831542-04	/kcs/dashboard	FiPieChart
 39	Reportes	f	16:27:48.946195-04	/rrhh/reportes	FiFileText
+41	Dashboard	f	21:51:37.316914-04	/rrhh/dashboard	FiCheckSquare
+42	Dashboard	f	21:52:08.924663-04	/kcs/dashboard	FiCheckSquare
+3	Permisos	f	17:39:32.17236-04	/admin/permisos	FiShield
 \.
 
 
 --
--- TOC entry 3744 (class 0 OID 60428)
+-- TOC entry 3744 (class 0 OID 60805)
 -- Dependencies: 226
 -- Data for Name: cat_roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.cat_roles (id, str_nombre, str_descripcion, created_at, updated_at) FROM stdin;
-1	Administrador	Administrador general de los sistemas	2026-09-09 11:28:55.692406-04	2026-09-09 11:28:55.692406-04
+1	admin	Administrador general de los sistemas	2026-09-09 11:28:55.692406-04	2026-09-30 23:34:46.428663-04
+38	analista	\N	2026-09-30 23:53:36.785435-04	2026-09-30 23:53:36.785435-04
 \.
 
 
 --
--- TOC entry 3745 (class 0 OID 60433)
+-- TOC entry 3745 (class 0 OID 60810)
 -- Dependencies: 227
 -- Data for Name: cat_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_at, updated_at, str_ruta_sistema, str_icono, str_color) FROM stdin;
-29	Mi Expediente	Portal de ficha de empleados de Mercosur	t	2026-09-29 11:41:47.813769-04	2026-09-29 11:41:47.813769-04	/rrhh	FiBookOpen	#ee176d
-31	Base de Conocimiento	Base conocimiento bursátil y financiero de Mercosur	t	2026-09-29 11:50:56.831542-04	2026-09-29 12:07:44.22176-04	/kcs	FiCloud	#6ded35
-1	Administración General	Administra todos los sistemas, opciones roles y usuarios de Mercosur	t	2026-09-09 11:32:38.520464-04	2026-09-29 18:30:07.240917-04	/admin	FiServer	#f99848
-2	Tickets	Sistema central de tickets de Mercosur	t	2026-09-25 11:27:26.784012-04	2026-09-29 18:30:26.495076-04	/tickets	FiAperture	#24d6b2
+1	Administración General	Administra todos los sistemas, opciones roles y usuarios de Mercosur	t	2026-09-09 11:32:38.520464-04	2026-09-29 09:39:00.838242-04	/admin	FiServer	#2f6fed
+2	Tickets	Sistema central de tickets de Mercosur	t	2026-09-25 11:27:26.784012-04	2026-09-29 12:08:04.581739-04	/tickets	FiAperture	#d68324
+32	Mi Expediente	Expedientes de empelados de Mercosur	t	2026-09-30 21:51:37.316914-04	2026-09-30 21:51:37.316914-04	/rrhh	FiArchive	#ed31a8
+33	Base de Conocimiento	Base de conocimiento de Mercosur	t	2026-09-30 21:52:08.924663-04	2026-09-30 23:50:34.102327-04	/kcs	FiCloud	#73ed31
 \.
 
 
 --
--- TOC entry 3746 (class 0 OID 60441)
+-- TOC entry 3746 (class 0 OID 60818)
 -- Dependencies: 228
 -- Data for Name: tbl_auth_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, str_device_id, str_device_name) FROM stdin;
-206	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDczMTkzNSwiZXhwIjoxNzkwNzM1NTM1fQ.v4CQMT-s55GWNmhcDUPbURDRpvEpVcKmxzPi91TSfy0	2026-09-29 21:32:15.92541-04	2026-09-29 22:32:15.92541-04	f	659fb391-7ffd-4c04-9d4b-d26dc3aee553	Chrome en Linux PC
+208	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDgyNTU0MCwiZXhwIjoxNzkwODI5MTQwfQ.L_IxwUE6Vi3VAKrPlkJLSUi7ZZpTMF-RSVyngYxeTMc	2026-09-30 23:32:20.177321-04	2026-10-01 00:32:20.177321-04	f	8b405812-3f18-41f2-a63a-204d8afc554e	Chrome en Linux PC
 \.
 
 
 --
--- TOC entry 3750 (class 0 OID 60451)
+-- TOC entry 3750 (class 0 OID 60828)
 -- Dependencies: 232
 -- Data for Name: tbl_roles_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1655,13 +1658,14 @@ COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, s
 COPY public.tbl_roles_sistemas (id, rol_id, sistema_id, created_at, updated_at, bol_activo) FROM stdin;
 1	1	1	2026-09-23 16:23:47.947669-04	2026-09-23 16:23:47.947669-04	t
 2	1	2	2026-09-25 00:00:00-04	2026-09-25 00:00:00-04	t
-29	1	29	2026-09-29 11:41:47.813769-04	2026-09-29 11:41:47.813769-04	t
-31	1	31	2026-09-29 11:50:56.831542-04	2026-09-29 11:50:56.831542-04	t
+44	1	32	2026-09-30 21:51:37.316914-04	2026-09-30 21:51:37.316914-04	t
+45	1	33	2026-09-30 21:52:08.924663-04	2026-09-30 21:52:08.924663-04	t
+54	38	32	2026-09-30 23:53:43.387063-04	2026-09-30 23:53:43.387063-04	t
 \.
 
 
 --
--- TOC entry 3752 (class 0 OID 60458)
+-- TOC entry 3752 (class 0 OID 60835)
 -- Dependencies: 234
 -- Data for Name: tbl_roles_sistemas_opciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1675,14 +1679,14 @@ COPY public.tbl_roles_sistemas_opciones (id, roles_sistemas_id, opcion_id) FROM 
 6	2	6
 7	2	7
 8	2	8
-36	29	36
-38	31	38
-39	29	39
+48	44	41
+49	45	42
+66	54	41
 \.
 
 
 --
--- TOC entry 3755 (class 0 OID 60463)
+-- TOC entry 3755 (class 0 OID 60840)
 -- Dependencies: 237
 -- Data for Name: tbl_usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1693,7 +1697,7 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 
 
 --
--- TOC entry 3756 (class 0 OID 60471)
+-- TOC entry 3756 (class 0 OID 60848)
 -- Dependencies: 238
 -- Data for Name: tbl_usuarios_opciones_excepciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1703,21 +1707,21 @@ COPY public.tbl_usuarios_opciones_excepciones (id, usuario_id, opcion_id, bol_pe
 
 
 --
--- TOC entry 3758 (class 0 OID 60478)
+-- TOC entry 3758 (class 0 OID 60855)
 -- Dependencies: 240
 -- Data for Name: tbl_usuarios_roles_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.tbl_usuarios_roles_sistemas (id, usuario_id, rol_sistema_id, bol_activo, created_at, updated_at) FROM stdin;
-35	1	29	t	2026-09-29 00:00:00-04	2026-09-29 00:00:00-04
-37	1	31	t	2026-09-29 00:00:00-04	2026-09-29 00:00:00-04
 1	1	1	t	2026-09-23 16:23:47.947669-04	2026-09-29 00:00:00-04
 2	1	2	t	2026-09-25 00:00:00-04	2026-09-29 00:00:00-04
+42	1	44	t	2026-09-30 00:00:00-04	2026-09-30 00:00:00-04
+43	1	45	t	2026-09-30 00:00:00-04	2026-09-30 00:00:00-04
 \.
 
 
 --
--- TOC entry 3761 (class 0 OID 60510)
+-- TOC entry 3761 (class 0 OID 60887)
 -- Dependencies: 248
 -- Data for Name: tbl_amonestaciones; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -1727,7 +1731,7 @@ COPY rrhh.tbl_amonestaciones (id, usuario_id, motivo_id, str_motivo_descripcion,
 
 
 --
--- TOC entry 3763 (class 0 OID 60518)
+-- TOC entry 3763 (class 0 OID 60895)
 -- Dependencies: 250
 -- Data for Name: tbl_carga_familiar; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -1737,7 +1741,7 @@ COPY rrhh.tbl_carga_familiar (id, usuario_id, parentesco_id, nombre_completo, fe
 
 
 --
--- TOC entry 3765 (class 0 OID 60524)
+-- TOC entry 3765 (class 0 OID 60901)
 -- Dependencies: 252
 -- Data for Name: tbl_expediente; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -1747,7 +1751,7 @@ COPY rrhh.tbl_expediente (id, str_num_expediente, usuario_id, dmt_fecha_exp, bol
 
 
 --
--- TOC entry 3767 (class 0 OID 60530)
+-- TOC entry 3767 (class 0 OID 60907)
 -- Dependencies: 254
 -- Data for Name: tbl_permisos; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -1757,7 +1761,7 @@ COPY rrhh.tbl_permisos (id, usuario_id, motivo_id, str_motivo_descripcion, dmt_f
 
 
 --
--- TOC entry 3769 (class 0 OID 60538)
+-- TOC entry 3769 (class 0 OID 60915)
 -- Dependencies: 256
 -- Data for Name: tbl_reposos; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -1767,7 +1771,7 @@ COPY rrhh.tbl_reposos (id, usuario_id, motivo_id, str_motivo_descripcion, tim_fe
 
 
 --
--- TOC entry 3771 (class 0 OID 60546)
+-- TOC entry 3771 (class 0 OID 60923)
 -- Dependencies: 258
 -- Data for Name: tbl_vacaciones; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -1777,7 +1781,7 @@ COPY rrhh.tbl_vacaciones (id, usuario_id, int_total_dias, dmt_fecha_desde, dmt_f
 
 
 --
--- TOC entry 3773 (class 0 OID 60552)
+-- TOC entry 3773 (class 0 OID 60929)
 -- Dependencies: 260
 -- Data for Name: sla_configuracion; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -1789,7 +1793,7 @@ COPY tickets.sla_configuracion (id, categoria_id, prioridad_id, tiempo_maximo, a
 
 
 --
--- TOC entry 3774 (class 0 OID 60556)
+-- TOC entry 3774 (class 0 OID 60933)
 -- Dependencies: 261
 -- Data for Name: tbl_adjuntos_caso; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -1800,7 +1804,7 @@ COPY tickets.tbl_adjuntos_caso (id, caso_id, str_archivo, str_ruta, dmt_fecha, c
 
 
 --
--- TOC entry 3775 (class 0 OID 60564)
+-- TOC entry 3775 (class 0 OID 60941)
 -- Dependencies: 262
 -- Data for Name: tbl_alertas; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -1811,7 +1815,7 @@ COPY tickets.tbl_alertas (id, caso_id, usuario_id, str_tipo_alerta, str_mensaje,
 
 
 --
--- TOC entry 3776 (class 0 OID 60571)
+-- TOC entry 3776 (class 0 OID 60948)
 -- Dependencies: 263
 -- Data for Name: tbl_clientes; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -1822,7 +1826,7 @@ COPY tickets.tbl_clientes (id, str_cedula, str_nombre, str_apellido, str_telefon
 
 
 --
--- TOC entry 3778 (class 0 OID 60579)
+-- TOC entry 3778 (class 0 OID 60956)
 -- Dependencies: 265
 -- Data for Name: tbl_tickets; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -1836,7 +1840,7 @@ COPY tickets.tbl_tickets (id, str_ticket, cliente_id, creador_agente_id, cierre_
 
 
 --
--- TOC entry 3780 (class 0 OID 60588)
+-- TOC entry 3780 (class 0 OID 60965)
 -- Dependencies: 267
 -- Data for Name: tbl_tickets_kcs_articulos; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -1878,7 +1882,7 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 1, true);
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 206, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 208, true);
 
 
 --
@@ -1887,7 +1891,7 @@ SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 206, true);
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 39, true);
+SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 43, true);
 
 
 --
@@ -1896,7 +1900,7 @@ SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 39, true);
 -- Name: tbl_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_id_seq', 1, true);
+SELECT pg_catalog.setval('public.tbl_roles_id_seq', 38, true);
 
 
 --
@@ -1905,7 +1909,7 @@ SELECT pg_catalog.setval('public.tbl_roles_id_seq', 1, true);
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 31, true);
+SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 54, true);
 
 
 --
@@ -1914,7 +1918,7 @@ SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 31, true);
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 39, true);
+SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 66, true);
 
 
 --
@@ -1923,7 +1927,7 @@ SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 39, true);
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_sistemas_id_seq', 31, true);
+SELECT pg_catalog.setval('public.tbl_sistemas_id_seq', 33, true);
 
 
 --
@@ -1941,7 +1945,7 @@ SELECT pg_catalog.setval('public.tbl_usuarios_opciones_excepciones_id_seq', 1, f
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_usuarios_roles_sistemas_id_seq', 43, true);
+SELECT pg_catalog.setval('public.tbl_usuarios_roles_sistemas_id_seq', 44, true);
 
 
 --
@@ -2035,7 +2039,7 @@ SELECT pg_catalog.setval('tickets.tbl_tickets_kcs_articulos_id_seq', 1, false);
 
 
 --
--- TOC entry 3501 (class 2606 OID 60615)
+-- TOC entry 3501 (class 2606 OID 60992)
 -- Name: cat_datos_maestros cat_datos_maestros_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2044,7 +2048,7 @@ ALTER TABLE ONLY public.cat_datos_maestros
 
 
 --
--- TOC entry 3503 (class 2606 OID 60617)
+-- TOC entry 3503 (class 2606 OID 60994)
 -- Name: cat_departamentos cat_departamentos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2053,7 +2057,7 @@ ALTER TABLE ONLY public.cat_departamentos
 
 
 --
--- TOC entry 3505 (class 2606 OID 60619)
+-- TOC entry 3505 (class 2606 OID 60996)
 -- Name: cat_departamentos cat_departamentos_str_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2062,7 +2066,7 @@ ALTER TABLE ONLY public.cat_departamentos
 
 
 --
--- TOC entry 3521 (class 2606 OID 60621)
+-- TOC entry 3521 (class 2606 OID 60998)
 -- Name: tbl_roles_sistemas_opciones pk_roles_sistemas_opciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2071,7 +2075,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3515 (class 2606 OID 60623)
+-- TOC entry 3515 (class 2606 OID 61000)
 -- Name: tbl_auth_tokens tbl_auth_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2080,7 +2084,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 3507 (class 2606 OID 60625)
+-- TOC entry 3507 (class 2606 OID 61002)
 -- Name: cat_opciones tbl_opciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2089,7 +2093,7 @@ ALTER TABLE ONLY public.cat_opciones
 
 
 --
--- TOC entry 3509 (class 2606 OID 60627)
+-- TOC entry 3509 (class 2606 OID 61004)
 -- Name: cat_roles tbl_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2098,7 +2102,7 @@ ALTER TABLE ONLY public.cat_roles
 
 
 --
--- TOC entry 3519 (class 2606 OID 60629)
+-- TOC entry 3519 (class 2606 OID 61006)
 -- Name: tbl_roles_sistemas tbl_roles_sistemas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2107,7 +2111,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 3511 (class 2606 OID 60631)
+-- TOC entry 3511 (class 2606 OID 61008)
 -- Name: cat_roles tbl_roles_str_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2116,7 +2120,7 @@ ALTER TABLE ONLY public.cat_roles
 
 
 --
--- TOC entry 3513 (class 2606 OID 60633)
+-- TOC entry 3513 (class 2606 OID 61010)
 -- Name: cat_sistemas tbl_sistemas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2125,7 +2129,7 @@ ALTER TABLE ONLY public.cat_sistemas
 
 
 --
--- TOC entry 3531 (class 2606 OID 60635)
+-- TOC entry 3531 (class 2606 OID 61012)
 -- Name: tbl_usuarios_opciones_excepciones tbl_usuarios_opciones_excepciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2134,7 +2138,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3523 (class 2606 OID 60637)
+-- TOC entry 3523 (class 2606 OID 61014)
 -- Name: tbl_usuarios tbl_usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2143,7 +2147,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3533 (class 2606 OID 60639)
+-- TOC entry 3533 (class 2606 OID 61016)
 -- Name: tbl_usuarios_opciones_excepciones uk_usuario_opcion_excepcion; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2152,7 +2156,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3517 (class 2606 OID 60641)
+-- TOC entry 3517 (class 2606 OID 61018)
 -- Name: tbl_auth_tokens unique_user_device; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2161,7 +2165,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 3535 (class 2606 OID 60643)
+-- TOC entry 3535 (class 2606 OID 61020)
 -- Name: tbl_usuarios_roles_sistemas unique_usuario_rol_sistema; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2170,7 +2174,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3525 (class 2606 OID 60645)
+-- TOC entry 3525 (class 2606 OID 61022)
 -- Name: tbl_usuarios usuarios_str_cedula_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2179,7 +2183,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3527 (class 2606 OID 60647)
+-- TOC entry 3527 (class 2606 OID 61024)
 -- Name: tbl_usuarios usuarios_str_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2188,7 +2192,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3537 (class 2606 OID 60649)
+-- TOC entry 3537 (class 2606 OID 61026)
 -- Name: tbl_amonestaciones tbl_amonestaciones_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2197,7 +2201,7 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones
 
 
 --
--- TOC entry 3539 (class 2606 OID 60651)
+-- TOC entry 3539 (class 2606 OID 61028)
 -- Name: tbl_carga_familiar tbl_carga_familiar_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2206,7 +2210,7 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar
 
 
 --
--- TOC entry 3541 (class 2606 OID 60653)
+-- TOC entry 3541 (class 2606 OID 61030)
 -- Name: tbl_expediente tbl_expediente_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2215,7 +2219,7 @@ ALTER TABLE ONLY rrhh.tbl_expediente
 
 
 --
--- TOC entry 3543 (class 2606 OID 60655)
+-- TOC entry 3543 (class 2606 OID 61032)
 -- Name: tbl_permisos tbl_permisos_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2224,7 +2228,7 @@ ALTER TABLE ONLY rrhh.tbl_permisos
 
 
 --
--- TOC entry 3545 (class 2606 OID 60657)
+-- TOC entry 3545 (class 2606 OID 61034)
 -- Name: tbl_reposos tbl_reposos_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2233,7 +2237,7 @@ ALTER TABLE ONLY rrhh.tbl_reposos
 
 
 --
--- TOC entry 3547 (class 2606 OID 60659)
+-- TOC entry 3547 (class 2606 OID 61036)
 -- Name: tbl_vacaciones tbl_vacaciones_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2242,7 +2246,7 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones
 
 
 --
--- TOC entry 3549 (class 2606 OID 60661)
+-- TOC entry 3549 (class 2606 OID 61038)
 -- Name: sla_configuracion sla_configuracion_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2251,7 +2255,7 @@ ALTER TABLE ONLY tickets.sla_configuracion
 
 
 --
--- TOC entry 3551 (class 2606 OID 60663)
+-- TOC entry 3551 (class 2606 OID 61040)
 -- Name: tbl_adjuntos_caso tbl_adjuntos_caso_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2260,7 +2264,7 @@ ALTER TABLE ONLY tickets.tbl_adjuntos_caso
 
 
 --
--- TOC entry 3553 (class 2606 OID 60665)
+-- TOC entry 3553 (class 2606 OID 61042)
 -- Name: tbl_alertas tbl_alertas_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2269,7 +2273,7 @@ ALTER TABLE ONLY tickets.tbl_alertas
 
 
 --
--- TOC entry 3555 (class 2606 OID 60667)
+-- TOC entry 3555 (class 2606 OID 61044)
 -- Name: tbl_clientes tbl_clientes_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2278,7 +2282,7 @@ ALTER TABLE ONLY tickets.tbl_clientes
 
 
 --
--- TOC entry 3557 (class 2606 OID 60669)
+-- TOC entry 3557 (class 2606 OID 61046)
 -- Name: tbl_clientes tbl_clientes_str_cedula_key; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2287,7 +2291,7 @@ ALTER TABLE ONLY tickets.tbl_clientes
 
 
 --
--- TOC entry 3559 (class 2606 OID 60671)
+-- TOC entry 3559 (class 2606 OID 61048)
 -- Name: tbl_clientes tbl_clientes_str_email_key; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2296,7 +2300,7 @@ ALTER TABLE ONLY tickets.tbl_clientes
 
 
 --
--- TOC entry 3567 (class 2606 OID 60673)
+-- TOC entry 3567 (class 2606 OID 61050)
 -- Name: tbl_tickets_kcs_articulos tbl_tickets_kcs_articulos_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2305,7 +2309,7 @@ ALTER TABLE ONLY tickets.tbl_tickets_kcs_articulos
 
 
 --
--- TOC entry 3561 (class 2606 OID 60675)
+-- TOC entry 3561 (class 2606 OID 61052)
 -- Name: tbl_tickets tbl_tickets_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2314,7 +2318,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3563 (class 2606 OID 60677)
+-- TOC entry 3563 (class 2606 OID 61054)
 -- Name: tbl_tickets tbl_tickets_str_ticket_key; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2323,7 +2327,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3569 (class 2606 OID 60679)
+-- TOC entry 3569 (class 2606 OID 61056)
 -- Name: tbl_tickets_kcs_articulos uq_ticket_articulo; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2332,7 +2336,7 @@ ALTER TABLE ONLY tickets.tbl_tickets_kcs_articulos
 
 
 --
--- TOC entry 3528 (class 1259 OID 60680)
+-- TOC entry 3528 (class 1259 OID 61057)
 -- Name: idx_excepciones_opcion; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2340,7 +2344,7 @@ CREATE INDEX idx_excepciones_opcion ON public.tbl_usuarios_opciones_excepciones 
 
 
 --
--- TOC entry 3529 (class 1259 OID 60681)
+-- TOC entry 3529 (class 1259 OID 61058)
 -- Name: idx_excepciones_usuario; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -2348,7 +2352,7 @@ CREATE INDEX idx_excepciones_usuario ON public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3564 (class 1259 OID 60682)
+-- TOC entry 3564 (class 1259 OID 61059)
 -- Name: idx_tbl_tickets_kcs_articulo_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -2356,7 +2360,7 @@ CREATE INDEX idx_tbl_tickets_kcs_articulo_id ON tickets.tbl_tickets_kcs_articulo
 
 
 --
--- TOC entry 3565 (class 1259 OID 60683)
+-- TOC entry 3565 (class 1259 OID 61060)
 -- Name: idx_tbl_tickets_kcs_ticket_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -2364,12 +2368,13 @@ CREATE INDEX idx_tbl_tickets_kcs_ticket_id ON tickets.tbl_tickets_kcs_articulos 
 
 
 --
--- TOC entry 3733 (class 2618 OID 60489)
--- Name: view_matriz_roles_opciones _RETURN; Type: RULE; Schema: public; Owner: postgres
+-- TOC entry 3733 (class 2618 OID 60866)
+-- Name: view_matriz_roles_sistemas_opciones _RETURN; Type: RULE; Schema: public; Owner: postgres
 --
 
-CREATE OR REPLACE VIEW public.view_matriz_roles_opciones AS
- SELECT s.id AS sistema_id,
+CREATE OR REPLACE VIEW public.view_matriz_roles_sistemas_opciones AS
+ SELECT rs.id AS rol_sistema_id,
+    s.id AS sistema_id,
     s.str_sistema,
     s.str_descripcion,
     s.str_icono,
@@ -2383,11 +2388,11 @@ CREATE OR REPLACE VIEW public.view_matriz_roles_opciones AS
      LEFT JOIN public.tbl_roles_sistemas_opciones rso ON ((rs.id = rso.roles_sistemas_id)))
      LEFT JOIN public.cat_opciones o ON (((rso.opcion_id = o.id) AND (o.bol_eliminado = false))))
   WHERE (rs.bol_activo = true)
-  GROUP BY s.id, s.str_sistema, r.id, r.str_nombre;
+  GROUP BY rs.id, s.id, s.str_sistema, r.id, r.str_nombre;
 
 
 --
--- TOC entry 3576 (class 2606 OID 60685)
+-- TOC entry 3576 (class 2606 OID 61062)
 -- Name: tbl_usuarios_opciones_excepciones fk_excepciones_opcion; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2396,7 +2401,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3577 (class 2606 OID 60690)
+-- TOC entry 3577 (class 2606 OID 61067)
 -- Name: tbl_usuarios_opciones_excepciones fk_excepciones_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2405,7 +2410,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3573 (class 2606 OID 60695)
+-- TOC entry 3573 (class 2606 OID 61072)
 -- Name: tbl_roles_sistemas_opciones fk_opciones; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2414,7 +2419,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3571 (class 2606 OID 60700)
+-- TOC entry 3571 (class 2606 OID 61077)
 -- Name: tbl_roles_sistemas fk_rol; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2432,7 +2437,7 @@ COMMENT ON CONSTRAINT fk_rol ON public.tbl_roles_sistemas IS 'Relaciona la colum
 
 
 --
--- TOC entry 3574 (class 2606 OID 60705)
+-- TOC entry 3574 (class 2606 OID 61082)
 -- Name: tbl_roles_sistemas_opciones fk_roles_sistemas; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2441,7 +2446,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3572 (class 2606 OID 60710)
+-- TOC entry 3572 (class 2606 OID 61087)
 -- Name: tbl_roles_sistemas fk_sistema; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2450,7 +2455,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 3570 (class 2606 OID 60715)
+-- TOC entry 3570 (class 2606 OID 61092)
 -- Name: tbl_auth_tokens fk_tokens_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2468,7 +2473,7 @@ COMMENT ON CONSTRAINT fk_tokens_usuario ON public.tbl_auth_tokens IS 'Relaciona 
 
 
 --
--- TOC entry 3578 (class 2606 OID 60720)
+-- TOC entry 3578 (class 2606 OID 61097)
 -- Name: tbl_usuarios_roles_sistemas fk_urs_roles_sistemas; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2477,7 +2482,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3579 (class 2606 OID 60725)
+-- TOC entry 3579 (class 2606 OID 61102)
 -- Name: tbl_usuarios_roles_sistemas fk_urs_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2486,7 +2491,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3575 (class 2606 OID 60730)
+-- TOC entry 3575 (class 2606 OID 61107)
 -- Name: tbl_usuarios fk_usuario_departamento; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2504,7 +2509,7 @@ COMMENT ON CONSTRAINT fk_usuario_departamento ON public.tbl_usuarios IS 'Relacio
 
 
 --
--- TOC entry 3581 (class 2606 OID 60735)
+-- TOC entry 3581 (class 2606 OID 61112)
 -- Name: tbl_carga_familiar fk_CargaFamiliar; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2522,7 +2527,7 @@ COMMENT ON CONSTRAINT "fk_CargaFamiliar" ON rrhh.tbl_carga_familiar IS 'Relació
 
 
 --
--- TOC entry 3580 (class 2606 OID 60740)
+-- TOC entry 3580 (class 2606 OID 61117)
 -- Name: tbl_amonestaciones fk_amonestaciones; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2540,7 +2545,7 @@ COMMENT ON CONSTRAINT fk_amonestaciones ON rrhh.tbl_amonestaciones IS 'Relación
 
 
 --
--- TOC entry 3582 (class 2606 OID 60745)
+-- TOC entry 3582 (class 2606 OID 61122)
 -- Name: tbl_expediente fk_expediente_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2558,7 +2563,7 @@ COMMENT ON CONSTRAINT fk_expediente_usuario ON rrhh.tbl_expediente IS 'Relación
 
 
 --
--- TOC entry 3583 (class 2606 OID 60750)
+-- TOC entry 3583 (class 2606 OID 61127)
 -- Name: tbl_permisos fk_permisos_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2576,7 +2581,7 @@ COMMENT ON CONSTRAINT fk_permisos_usuario ON rrhh.tbl_permisos IS 'Relación ent
 
 
 --
--- TOC entry 3584 (class 2606 OID 60755)
+-- TOC entry 3584 (class 2606 OID 61132)
 -- Name: tbl_reposos fk_reposo_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2594,7 +2599,7 @@ COMMENT ON CONSTRAINT fk_reposo_usuario ON rrhh.tbl_reposos IS 'Relación entre 
 
 
 --
--- TOC entry 3585 (class 2606 OID 60760)
+-- TOC entry 3585 (class 2606 OID 61137)
 -- Name: tbl_vacaciones fk_vacaciones_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2612,7 +2617,7 @@ COMMENT ON CONSTRAINT fk_vacaciones_usuario ON rrhh.tbl_vacaciones IS 'Relación
 
 
 --
--- TOC entry 3586 (class 2606 OID 60765)
+-- TOC entry 3586 (class 2606 OID 61142)
 -- Name: tbl_tickets_kcs_articulos fk_ticket_kcs_ticket; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2621,7 +2626,7 @@ ALTER TABLE ONLY tickets.tbl_tickets_kcs_articulos
 
 
 --
--- TOC entry 3587 (class 2606 OID 60770)
+-- TOC entry 3587 (class 2606 OID 61147)
 -- Name: tbl_tickets_kcs_articulos fk_ticket_kcs_usuario; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2629,11 +2634,11 @@ ALTER TABLE ONLY tickets.tbl_tickets_kcs_articulos
     ADD CONSTRAINT fk_ticket_kcs_usuario FOREIGN KEY (usuario_id) REFERENCES public.tbl_usuarios(id) ON DELETE RESTRICT;
 
 
--- Completed on 2026-09-29 21:40:47 -04
+-- Completed on 2026-09-30 23:59:19 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict sNt7QVkPIrBhPuTRq48pmXhmzMS0vBLbFIqWvyaitA4zv69Bw1ArwNnNuPmphXf
+\unrestrict hFCW4Tpxcfe0arXt2PoZ0UcIUfDrRNsfbttjMy2xIX1D8Y6djBIXw4w3RGUEO0M
 

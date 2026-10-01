@@ -19,7 +19,6 @@ router.get("/descargar/:nombre", (req, res) => {
   const nombre = req.params.nombre;
   const ruta = path.join("/var/www/uploads", nombre);
 
-  // Verifica que el archivo exista
   if (!fs.existsSync(ruta)) {
     return res.status(404).send("Archivo no encontrado");
   }
@@ -31,23 +30,14 @@ router.get("/descargar/:nombre", (req, res) => {
     }
   });
 });
-/**
- * Endpoint para la descarga física de archivos
- * Sirve tanto para archivos individuales como para el ZIP generado
- */
+
 router.get("/descargar-archivo/:nombre", (req, res) => {
   try {
     const nombreArchivo = req.params.nombre;
-
-    // 1. Limpiamos el nombre por seguridad (evita que suban niveles de carpetas)
     const nombreLimpio = path.basename(nombreArchivo);
-
-    // 2. Definimos la ruta absoluta donde residen tus archivos
-    // IMPORTANTE: Asegúrate de que esta ruta coincida con la que usaste en el POST
     const carpetaUploads = "/var/www/uploads";
     const rutaAbsoluta = path.join(carpetaUploads, nombreLimpio);
 
-    // 3. Verificamos si el archivo existe físicamente
     if (!fs.existsSync(rutaAbsoluta)) {
       console.error(`Archivo no encontrado: ${rutaAbsoluta}`);
       return res
@@ -55,14 +45,9 @@ router.get("/descargar-archivo/:nombre", (req, res) => {
         .send("El archivo solicitado no existe en el servidor.");
     }
 
-    // 4. Ejecutamos la descarga
-    // res.download configura automáticamente los headers:
-    // Content-Disposition: attachment; filename="..."
     res.download(rutaAbsoluta, nombreLimpio, (err) => {
       if (err) {
         console.error("Error durante la descarga:", err.message);
-
-        // Si el cliente cancela la descarga o hay error de red, evitamos crashear
         if (!res.headersSent) {
           res.status(500).send("Error al procesar la descarga.");
         }
@@ -74,7 +59,6 @@ router.get("/descargar-archivo/:nombre", (req, res) => {
   }
 });
 
-// Uso del middleware para proteger todas las rutas (A PARTIR DE AQUI SON PRIVADAS)
 router.use(autenticarToken);
 
 // ==========================================
@@ -83,10 +67,8 @@ router.use(autenticarToken);
 router.get("/fetchSistemas", async (req, res) => {
   try {
     const query = `SELECT * FROM public.view_sistemas_opciones`;
-
     const result = await pool.query(query);
 
-    // Agrupamos los datos planos por sistema
     const sistemasEstructurados = Object.values(
       result.rows.reduce((acc, row) => {
         if (!acc[row.sistema_id]) {
@@ -102,19 +84,23 @@ router.get("/fetchSistemas", async (req, res) => {
         }
 
         if (row.opcion_id) {
-          acc[row.sistema_id].opciones.push({
-            id: row.opcion_id,
-            opcion: row.opcion_nombre,
-            ruta_opcion: row.str_ruta_opcion,
-            ic: row.opcion_icono || "FiCheckSquare",
-          });
+          const opcionesSistema = acc[row.sistema_id].opciones;
+          const existeOpcion = opcionesSistema.some(
+            (op) => op.id === row.opcion_id
+          );
+          if (!existeOpcion) {
+            opcionesSistema.push({
+              id: row.opcion_id,
+              opcion: row.opcion_nombre,
+              ruta_opcion: row.str_ruta_opcion,
+              ic: row.opcion_icono || "FiCheckSquare",
+            });
+          }
         }
 
         return acc;
       }, {}),
     );
-
-    //console.log(JSON.stringify(sistemasEstructurados, null, 2));
 
     res.json({ sistemas: sistemasEstructurados });
   } catch (err) {
@@ -138,14 +124,10 @@ router.post("/guardarSistema", async (req, res) => {
       });
     }
 
-    // Determinar el usuario al que se le asignará la relación
     const targetUserId = 1;
 
     await client.query("BEGIN");
 
-    // ------------------------------------------
-    // MODO EDICIÓN (Existe `id`)
-    // ------------------------------------------
     if (id) {
       const updateQuery = `
         UPDATE public.cat_sistemas 
@@ -176,7 +158,6 @@ router.post("/guardarSistema", async (req, res) => {
 
       const sistemaEditado = resUpdate.rows[0];
 
-      // Si se cuenta con usuario, aseguramos la vinculación y que bol_activo sea true
       if (targetUserId) {
         let resRolSys = await client.query(
           "SELECT id FROM public.tbl_roles_sistemas WHERE sistema_id = $1 AND rol_id = 1 LIMIT 1",
@@ -195,7 +176,6 @@ router.post("/guardarSistema", async (req, res) => {
           rolSistemaId = resRolSys.rows[0].id;
         }
 
-        // Se inserta o se fuerza bol_activo = true si ya existía
         await client.query(
           `INSERT INTO public.tbl_usuarios_roles_sistemas (usuario_id, rol_sistema_id, bol_activo, created_at, updated_at)
            VALUES ($1, $2, true, CURRENT_DATE, CURRENT_DATE)
@@ -221,11 +201,6 @@ router.post("/guardarSistema", async (req, res) => {
       });
     }
 
-    // ------------------------------------------
-    // MODO CREACIÓN (No existe `id`)
-    // ------------------------------------------
-
-    // 1. Insertar el nuevo sistema en cat_sistemas
     const querySistema = `
       INSERT INTO public.cat_sistemas (
         str_sistema, 
@@ -247,7 +222,6 @@ router.post("/guardarSistema", async (req, res) => {
     ]);
     const nuevoSistema = resSistema.rows[0];
 
-    // 2. Crear el rol de administración para este sistema (rol_id = 1) garantizando bol_activo = true
     const queryRolSistema = `
       INSERT INTO public.tbl_roles_sistemas (
         rol_id, 
@@ -265,7 +239,6 @@ router.post("/guardarSistema", async (req, res) => {
     ]);
     const nuevoRolSistemaId = resRolSistema.rows[0].id;
 
-    // 3. Vincular al usuario obligando bol_activo = true
     if (targetUserId) {
       const queryUsuarioRolSistema = `
         INSERT INTO public.tbl_usuarios_roles_sistemas (
@@ -283,26 +256,24 @@ router.post("/guardarSistema", async (req, res) => {
       ]);
     }
 
-    // 4. Insertar la opción inicial ("Dashboard")
     const queryOpcion = `
-  INSERT INTO public.cat_opciones (
-    str_nombre, 
-    str_ruta_opcion, 
-    str_icono,
-    bol_eliminado
-  ) 
-  VALUES ($1, $2, $3, false) 
-  RETURNING id, str_nombre, str_ruta_opcion, str_icono;
-`;
+      INSERT INTO public.cat_opciones (
+        str_nombre, 
+        str_ruta_opcion, 
+        str_icono,
+        bol_eliminado
+      ) 
+      VALUES ($1, $2, $3, false) 
+      RETURNING id, str_nombre, str_ruta_opcion, str_icono;
+    `;
     const resOpcion = await client.query(queryOpcion, [
       "Dashboard",
       `${ruta}/dashboard`,
-      "FiCheckSquare", // Ícono predeterminado para Dashboard
+      "FiCheckSquare",
     ]);
 
     const nuevaOpcion = resOpcion.rows[0];
 
-    // 5. Vincular la opción al rol del sistema en tbl_roles_sistemas_opciones
     const queryRolSistemaOpcion = `
       INSERT INTO public.tbl_roles_sistemas_opciones (
         roles_sistemas_id, 
@@ -361,7 +332,6 @@ router.delete("/eliminarSistema/:id", async (req, res) => {
   const client = await pool.connect();
 
   try {
-    // 1. Verificar si el sistema existe
     const sistemaResult = await client.query(
       "SELECT id, str_sistema FROM public.cat_sistemas WHERE id = $1",
       [id],
@@ -376,7 +346,6 @@ router.delete("/eliminarSistema/:id", async (req, res) => {
 
     const sistema = sistemaResult.rows[0];
 
-    // Validación de seguridad para evitar eliminar la Administración General
     if (sistema.str_sistema === "Administración General") {
       client.release();
       return res.status(403).json({
@@ -386,7 +355,6 @@ router.delete("/eliminarSistema/:id", async (req, res) => {
 
     await client.query("BEGIN");
 
-    // 2. Obtener las IDs de las opciones (cat_opciones) vinculadas a los roles de este sistema
     const opcionesResult = await client.query(
       `SELECT DISTINCT opcion_id 
        FROM public.tbl_roles_sistemas_opciones 
@@ -398,7 +366,6 @@ router.delete("/eliminarSistema/:id", async (req, res) => {
 
     const opcionIds = opcionesResult.rows.map((row) => row.opcion_id);
 
-    // 3. Eliminar las asignaciones de usuarios vinculadas a los roles del sistema (tbl_usuarios_roles_sistemas)
     await client.query(
       `DELETE FROM public.tbl_usuarios_roles_sistemas
        WHERE rol_sistema_id IN (
@@ -407,7 +374,6 @@ router.delete("/eliminarSistema/:id", async (req, res) => {
       [id],
     );
 
-    // 4. Eliminar las relaciones de opciones con los roles del sistema (tbl_roles_sistemas_opciones)
     await client.query(
       `DELETE FROM public.tbl_roles_sistemas_opciones
        WHERE roles_sistemas_id IN (
@@ -416,7 +382,6 @@ router.delete("/eliminarSistema/:id", async (req, res) => {
       [id],
     );
 
-    // 5. Eliminar las opciones asociadas de la tabla catálogo cat_opciones
     if (opcionIds.length > 0) {
       await client.query(
         `DELETE FROM public.cat_opciones WHERE id = ANY($1::int[])`,
@@ -424,13 +389,11 @@ router.delete("/eliminarSistema/:id", async (req, res) => {
       );
     }
 
-    // 6. Eliminar los roles asignados al sistema (tbl_roles_sistemas)
     await client.query(
       "DELETE FROM public.tbl_roles_sistemas WHERE sistema_id = $1",
       [id],
     );
 
-    // 7. Eliminar el registro principal del sistema (cat_sistemas)
     await client.query("DELETE FROM public.cat_sistemas WHERE id = $1", [id]);
 
     await client.query("COMMIT");
@@ -467,9 +430,6 @@ router.post("/guardarOpcion", async (req, res) => {
 
     await client.query("BEGIN");
 
-    // ------------------------------------------
-    // MODO EDICIÓN (Existe `id` de la opción)
-    // ------------------------------------------
     if (id) {
       const updateQuery = `
         UPDATE public.cat_opciones
@@ -507,11 +467,6 @@ router.post("/guardarOpcion", async (req, res) => {
       });
     }
 
-    // ------------------------------------------
-    // MODO CREACIÓN (No existe `id`)
-    // ------------------------------------------
-
-    // 1. Obtener el rol_sistema asociado al sistema (por defecto rol_id = 1)
     const rolSysRes = await client.query(
       `SELECT id FROM public.tbl_roles_sistemas WHERE sistema_id = $1 AND rol_id = 1 LIMIT 1`,
       [sistemaId],
@@ -529,7 +484,6 @@ router.post("/guardarOpcion", async (req, res) => {
       rolesSistemasId = rolSysRes.rows[0].id;
     }
 
-    // 2. Insertar nueva opción en cat_opciones con str_icono
     const insertOpcionQuery = `
       INSERT INTO public.cat_opciones (str_nombre, str_ruta_opcion, str_icono, bol_eliminado)
       VALUES ($1, $2, $3, false)
@@ -542,7 +496,6 @@ router.post("/guardarOpcion", async (req, res) => {
     ]);
     const nuevaOpcion = resOpcion.rows[0];
 
-    // 3. Vincular con tbl_roles_sistemas_opciones
     const insertRelacionQuery = `
       INSERT INTO public.tbl_roles_sistemas_opciones (roles_sistemas_id, opcion_id)
       VALUES ($1, $2);
@@ -585,13 +538,11 @@ router.delete("/eliminarOpcion/:id", async (req, res) => {
   try {
     await client.query("BEGIN");
 
-    // 1. Eliminar relaciones en tbl_roles_sistemas_opciones
     await client.query(
       "DELETE FROM public.tbl_roles_sistemas_opciones WHERE opcion_id = $1",
       [id],
     );
 
-    // 2. Eliminar la opción de cat_opciones
     const resOpcion = await client.query(
       "DELETE FROM public.cat_opciones WHERE id = $1 RETURNING str_nombre",
       [id],
@@ -621,14 +572,31 @@ router.delete("/eliminarOpcion/:id", async (req, res) => {
 });
 
 // ==========================================
-// ENDPOINT: OBTIENE LA LISTA DE ROLES
+// ENDPOINT: OBTIENE LA LISTA DE ROLES SISTEMAS Y OPCIONES
 // ==========================================
-router.get("/fetchRoles", async (req, res) => {
+router.get("/fetchRolesSistemasOpciones", async (req, res) => {
   try {
-    const query = `SELECT DISTINCT * FROM public.view_matriz_roles_opciones`;
+    const query = `
+      SELECT 
+        rs.id AS rol_sistema_id,
+        rs.rol_id,
+        s.id AS sistema_id,
+        s.str_sistema,
+        s.str_icono,
+        s.str_color,
+        s.str_descripcion,
+        r.str_nombre AS rol,
+        string_agg(DISTINCT o.str_nombre, ', ') AS opciones_asignadas,
+        array_agg(DISTINCT o.id) FILTER (WHERE o.id IS NOT NULL) AS opcion_ids
+      FROM public.tbl_roles_sistemas rs
+      JOIN public.cat_sistemas s ON rs.sistema_id = s.id
+      JOIN public.cat_roles r ON rs.rol_id = r.id
+      LEFT JOIN public.tbl_roles_sistemas_opciones rso ON rs.id = rso.roles_sistemas_id
+      LEFT JOIN public.cat_opciones o ON rso.opcion_id = o.id
+      GROUP BY rs.id, rs.rol_id, s.id, r.str_nombre;
+    `;
     const result = await pool.query(query);
 
-    // Función auxiliar para convertir HEX a RGBA con opacidad
     const hexToRgba = (hex, alpha = 0.12) => {
       if (!hex || !hex.startsWith("#")) return hex;
       let cleanHex = hex.replace("#", "");
@@ -644,86 +612,160 @@ router.get("/fetchRoles", async (req, res) => {
       return `rgba(${r},${g},${b},${alpha})`;
     };
 
-    // Mapeo dinámico
     const roles = result.rows.map((row) => ({
       id: row.rol_sistema_id,
+      rol_id: row.rol_id,
+      sistema_id: row.sistema_id,
       nombre: row.rol,
       desc: row.str_descripcion,
       ic: row.str_icono,
       color: row.str_color,
-      bg: hexToRgba(row.str_color, 0.12), // Aplica la opacidad del 12% igual que tu inicial
+      bg: hexToRgba(row.str_color, 0.12),
       sistemas: row.str_sistema,
-      // Convierte 'Dashboard, Sistemas, Usuarios' en ['Dashboard', 'Sistemas', 'Usuarios']
       permisos: row.opciones_asignadas
         ? row.opciones_asignadas.split(",").map((p) => p.trim())
         : [],
+      opcion_ids: row.opcion_ids ? row.opcion_ids.map(Number) : [],
     }));
-
-    //console.log(roles);
 
     res.json(roles);
   } catch (err) {
-    console.error("Error al obtener sistemas:", err.message);
+    console.error("Error al obtener roles sistemas opciones:", err.message);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 
 // ==========================================
-// ENDPOINT: GUARDAR ROL (BÁSICO)
+// ENDPOINT: ACTUALIZAR OPCIONES DE UN ROL EN UN SISTEMA
 // ==========================================
-router.post("/guardarRol", async (req, res) => {
+router.post("/actualizarRolSistemaOpciones", async (req, res) => {
   const client = await pool.connect();
 
   try {
-    const { nombre, sistemaId } = req.body;
+    const { rolSistemaId, opcionIds } = req.body;
 
-    //console.log(nombre, sistemaId);
-
-    if (!nombre || !sistemaId) {
+    if (!rolSistemaId) {
       return res.status(400).json({
-        error: "El nombre del rol y el sistema son obligatorios.",
+        error: "El ID del rol del sistema es obligatorio.",
       });
     }
 
     await client.query("BEGIN");
 
-    let rolId;
-    // 1. Si no existe, lo insertamos usando 'str_nombre' en minúsculas
-    const nuevoRol = await client.query(
-      `INSERT INTO public.cat_roles (str_nombre, created_at, updated_at) 
-         VALUES (LOWER(TRIM($1)), NOW(), NOW()) RETURNING id;`,
-      [nombre],
+    await client.query(
+      `DELETE FROM public.tbl_roles_sistemas_opciones WHERE roles_sistemas_id = $1;`,
+      [rolSistemaId],
     );
-    rolId = nuevoRol.rows[0].id;
 
-    // 2. Insertar la relación en tbl_roles_sistemas
-    const insRolSys = await client.query(
-      `INSERT INTO public.tbl_roles_sistemas (rol_id, sistema_id) VALUES ($1, $2) RETURNING id;`,
-      [rolId, sistemaId],
-    );
+    if (Array.isArray(opcionIds) && opcionIds.length > 0) {
+      const insertQuery = `
+        INSERT INTO public.tbl_roles_sistemas_opciones (roles_sistemas_id, opcion_id)
+        SELECT $1, UNNEST($2::integer[]);
+      `;
+      await client.query(insertQuery, [rolSistemaId, opcionIds]);
+    }
 
     await client.query("COMMIT");
 
     return res.status(200).json({
-      message: "Rol creado exitosamente.",
-      id: insRolSys.rows[0].id,
+      message: "Permisos y opciones del rol actualizados exitosamente.",
     });
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error al crear rol:", err.message);
-    res.status(500).json({ error: `Error en base de datos: ${err.message}` });
+    console.error("Error al actualizar opciones del rol:", err.message);
+    res.status(500).json({
+      error: `Error en base de datos: ${err.message}`,
+    });
   } finally {
     client.release();
   }
 });
+
+// ==========================================
+// ENDPOINT: OBTIENE EL CATÁLOGO DE ROLES (CAT_ROLES)
+// ==========================================
+router.get("/fetchCatRoles", async (req, res) => {
+  try {
+    const query = `SELECT id, str_nombre AS nombre FROM public.cat_roles ORDER BY id ASC`;
+    const result = await pool.query(query);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error al obtener catálogo de roles:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+// ==========================================
+// ENDPOINT: GUARDAR ROL (CREAR / EDITAR EN CAT_ROLES)
+// ==========================================
+router.post("/guardarRol", async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    const { id, nombre } = req.body;
+
+    if (!nombre) {
+      return res.status(400).json({
+        error: "El nombre del rol es obligatorio.",
+      });
+    }
+
+    await client.query("BEGIN");
+
+    if (id) {
+      const updateRol = await client.query(
+        `UPDATE public.cat_roles 
+         SET str_nombre = LOWER(TRIM($1)), updated_at = NOW() 
+         WHERE id = $2 
+         RETURNING id, str_nombre;`,
+        [nombre, id],
+      );
+
+      if (updateRol.rowCount === 0) {
+        await client.query("ROLLBACK");
+        return res
+          .status(404)
+          .json({ error: "El rol no existe en el catálogo." });
+      }
+
+      await client.query("COMMIT");
+
+      return res.status(200).json({
+        message: "Rol actualizado exitosamente en el catálogo.",
+        rol: updateRol.rows[0],
+      });
+    } else {
+      const nuevoRol = await client.query(
+        `INSERT INTO public.cat_roles (str_nombre, created_at, updated_at) 
+         VALUES (LOWER(TRIM($1)), NOW(), NOW()) 
+         RETURNING id, str_nombre;`,
+        [nombre],
+      );
+
+      await client.query("COMMIT");
+
+      return res.status(201).json({
+        message: "Rol creado exitosamente en el catálogo.",
+        rol: nuevoRol.rows[0],
+      });
+    }
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error al guardar rol:", err.message);
+    return res
+      .status(500)
+      .json({ error: `Error en base de datos: ${err.message}` });
+  } finally {
+    client.release();
+  }
+});
+
 // ==========================================
 // ENDPOINT: ELIMINAR ROL
 // ==========================================
 router.post("/eliminarRol/:id", async (req, res) => {
   const client = await pool.connect();
-  const { id } = req.params; // Este id corresponde al registro de tbl_roles_sistemas
-
-  console.log(id);
+  const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({
@@ -734,13 +776,11 @@ router.post("/eliminarRol/:id", async (req, res) => {
   try {
     await client.query("BEGIN");
 
-    // 2. Eliminar la relación en tbl_roles_sistemas_opciones
     await client.query(
       `DELETE FROM public.tbl_roles_sistemas_opciones WHERE roles_sistemas_id = $1;`,
       [id],
     );
 
-    // 3. Eliminar la relación en tbl_roles_sistemas
     await client.query(`DELETE FROM public.tbl_roles_sistemas WHERE id = $1;`, [
       id,
     ]);
@@ -753,6 +793,119 @@ router.post("/eliminarRol/:id", async (req, res) => {
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error al eliminar rol:", err.message);
+    return res
+      .status(500)
+      .json({ error: `Error en base de datos: ${err.message}` });
+  } finally {
+    client.release();
+  }
+});
+
+// ==========================================
+// ENDPOINT: ASIGNAR ROL A SISTEMA
+// ==========================================
+router.post("/asignarRol", async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    const { rolId, sistemaId } = req.body;
+
+    if (!rolId || !sistemaId) {
+      return res.status(400).json({
+        error: "El ID del rol y el sistema son obligatorios.",
+      });
+    }
+
+    await client.query("BEGIN");
+
+    const checkExist = await client.query(
+      `SELECT id FROM public.tbl_roles_sistemas WHERE rol_id = $1 AND sistema_id = $2 LIMIT 1;`,
+      [rolId, sistemaId],
+    );
+
+    if (checkExist.rowCount > 0) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        error: "Este rol ya se encuentra asignado a este sistema.",
+      });
+    }
+
+    const queryRolSistema = `
+      INSERT INTO public.tbl_roles_sistemas (rol_id, sistema_id, created_at, updated_at, bol_activo)
+      VALUES ($1, $2, NOW(), NOW(), true)
+      RETURNING id;
+    `;
+    const resRolSistema = await client.query(queryRolSistema, [
+      rolId,
+      sistemaId,
+    ]);
+
+    const nuevoRolSistemaId = resRolSistema.rows[0].id;
+
+    await client.query("COMMIT");
+
+    return res.status(201).json({
+      message: "Rol asignado y opciones vinculadas exitosamente.",
+      rolesSistemasId: nuevoRolSistemaId,
+    });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error al asignar rol y opciones:", err.message);
+    return res.status(500).json({
+      error: `Error en base de datos: ${err.message}`,
+    });
+  } finally {
+    client.release();
+  }
+});
+
+// ==========================================
+// ENDPOINT: ELIMINAR ROL DEL CATÁLOGO (CAT_ROLES)
+// ==========================================
+router.post("/eliminarRolCat/:id", async (req, res) => {
+  const client = await pool.connect();
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ error: "El ID del rol es obligatorio." });
+  }
+
+  try {
+    await client.query("BEGIN");
+
+    const checkVinculo = await client.query(
+      `SELECT id FROM public.tbl_roles_sistemas WHERE rol_id = $1 LIMIT 1;`,
+      [id],
+    );
+
+    if (checkVinculo.rowCount > 0) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        error:
+          "No se puede eliminar el rol porque se encuentra vinculado a uno o más sistemas.",
+      });
+    }
+
+    const deleteRol = await client.query(
+      `DELETE FROM public.cat_roles WHERE id = $1 RETURNING str_nombre;`,
+      [id],
+    );
+
+    if (deleteRol.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return res
+        .status(404)
+        .json({ error: "El rol no existe en el catálogo." });
+    }
+
+    await client.query("COMMIT");
+
+    return res.status(200).json({
+      message: `El rol "${deleteRol.rows[0].str_nombre}" fue eliminado del catálogo exitosamente.`,
+    });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error al eliminar rol del catálogo:", err.message);
     return res
       .status(500)
       .json({ error: `Error en base de datos: ${err.message}` });

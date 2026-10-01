@@ -11,7 +11,7 @@ import { setUser } from "../src/store/authSlice";
 // Rutas de los sistemas:
 
 //admin:
-import UsuariosAccesos from "./pages/systems/admin/usuariosAccesos";
+import Permisos from "./pages/systems/admin/permisos";
 import Sistemas from "./pages/systems/admin/sistemas";
 import Dashboard from "./pages/systems/admin/dashboard";
 
@@ -226,7 +226,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
 
             {/* Subruta 1: Usuarios y Accesos */}
-            <Route path="usuarios-accesos" element={<UsuariosAccesos />} />
+            <Route path="permisos" element={<Permisos />} />
 
             {/* Subruta 2: Sistemas */}
             <Route path="sistemas" element={<Sistemas />} />
