@@ -945,11 +945,7 @@ router.get("/fetchUsuarios", async (req, res) => {
         u.bol_activo,
         u.departamento_id,
         d.str_nombre AS departamento,
-        (
-          SELECT MAX(t.created_at) 
-          FROM public.tbl_auth_tokens t 
-          WHERE t.user_id = u.id
-        ) AS ultimo_acceso
+        u.fec_ultimo_acceso AS ultimo_acceso -- <-- CAMBIO AQUÍ
       FROM public.tbl_usuarios u
       LEFT JOIN public.cat_departamentos d ON u.departamento_id = d.id
       ORDER BY u.id ASC;
@@ -1294,7 +1290,6 @@ router.get("/dashboard/alertas", async (req, res) => {
   }
 });
 
-
 // ==========================================
 // ENDPOINT: ÚLTIMOS ACCESOS DE USUARIOS
 // ==========================================
@@ -1308,6 +1303,5 @@ router.get("/dashboard/ultimos-accesos", async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
-
 
 module.exports = router;

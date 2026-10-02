@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict F9Gm19l5itwoUjKhHZku4cWNkMzbJRljXOPd1Iroj4ruFh0onJWmYlVLeBDL5NA
+\restrict qmYDxHsgaaYrSKXwJG03rYv0VzyffkzCLMexCdNY5S0hiFjOqzxXJBpD1ame0mZ
 
 -- Dumped from database version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 -- Dumped by pg_dump version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 
--- Started on 2026-10-01 18:54:19 -04
+-- Started on 2026-10-02 07:43:55 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1043,7 +1043,8 @@ CREATE VIEW public.view_usuarios_roles_sistemas AS
     s.str_sistema,
     r.id AS rol_id,
     r.str_nombre AS rol,
-    urs.bol_activo AS asignacion_activa
+    urs.bol_activo AS asignacion_activa,
+    u.fec_ultimo_acceso
    FROM (((((public.tbl_usuarios u
      JOIN public.cat_departamentos d ON ((u.departamento_id = d.id)))
      JOIN public.tbl_usuarios_roles_sistemas urs ON ((u.id = urs.usuario_id)))
@@ -1781,7 +1782,8 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 --
 
 COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, str_device_id, str_device_name) FROM stdin;
-243	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDg5NDAyNSwiZXhwIjoxNzkwODk3NjI1fQ.TiANqBLRFCsXIUnfwYxgEQqCS_IFIY7hyMw8Vp0OPjA	2026-10-01 18:33:45.32161-04	2026-10-01 19:33:45.32161-04	f	9f015dc8-6320-4ccf-ac78-2fe43a9b74a2	Chrome en Linux PC
+244	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDk0MDQ5NCwiZXhwIjoxNzkwOTQ0MDk0fQ.HK0puc6_BxMT9BFZ2RpQOHyG2WGXXsUesQa12R9iMbg	2026-10-02 07:28:14.59605-04	2026-10-02 08:28:14.59605-04	f	55a91dd4-9ca2-4808-9ad2-62681cf7b140	Chrome en Linux PC
+245	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MDk0MTA2NSwiZXhwIjoxNzkwOTQ0NjY1fQ.cdS4x-0bc5inEnA93cdk5Ky1attxDLaip8LSVfoe5Pk	2026-10-02 07:37:45.853004-04	2026-10-02 08:37:45.853004-04	f	46ef93cb-f65c-4f61-b972-d5fe1518adac	Chrome en Linux PC
 \.
 
 
@@ -1882,7 +1884,6 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 88	5	28441002	Vanessa Chinquinquira	Niño Ortega	vniño@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:48:51.576678-04	\N	\N	vniño	\N	\N	\N
 91	8	13124921	Jackelin Coromoto	Palma Serrano	jpalma@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:12.000716-04	\N	\N	jpalma	\N	\N	\N
 92	8	16575563	Rosalia	Roa Marquez	rroa@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:23.064406-04	\N	\N	rroa	\N	\N	\N
-1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$sQJ1WZfXydLA91xjFb59AeyIMxmQ7xa66uPnYq8FtBjQIFUM3zbZK	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-10-01 18:33:45.323553
 93	10	17286981	Maria Emperatriz	Salazar Di Cristofaro	hsalazar@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:38.041131-04	\N	\N	hsalazar	\N	\N	\N
 94	1	17369732	Ivan Enrique	Tarazona Caceres	itarazona@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:50.657557-04	\N	\N	itarazona	\N	\N	\N
 95	6	25327464	Samuel Josue	Tapias Ramirez	stapias@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:02.176906-04	\N	\N	stapias	\N	\N	\N
@@ -1893,6 +1894,7 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 100	9	32227070	Willianyelis Sarait	Vasquez Villamizar	wvasquez@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:10.842593-04	\N	\N	wvasquez	\N	\N	\N
 101	3	21436685	Zaidi Raida	Zambrano Aranguren	zzambrano@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:27.482944-04	\N	\N	zzambrano	\N	\N	\N
 102	5	32061634	Cladimar Oriana	Zambrano Baez	czambrano@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:44.710836-04	\N	\N	czambrano	\N	\N	\N
+1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$sQJ1WZfXydLA91xjFb59AeyIMxmQ7xa66uPnYq8FtBjQIFUM3zbZK	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-10-02 07:37:45.854827
 \.
 
 
@@ -2095,7 +2097,7 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 10, true);
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 243, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 245, true);
 
 
 --
@@ -2847,11 +2849,11 @@ ALTER TABLE ONLY tickets.tbl_tickets_kcs_articulos
     ADD CONSTRAINT fk_ticket_kcs_usuario FOREIGN KEY (usuario_id) REFERENCES public.tbl_usuarios(id) ON DELETE RESTRICT;
 
 
--- Completed on 2026-10-01 18:54:24 -04
+-- Completed on 2026-10-02 07:44:01 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict F9Gm19l5itwoUjKhHZku4cWNkMzbJRljXOPd1Iroj4ruFh0onJWmYlVLeBDL5NA
+\unrestrict qmYDxHsgaaYrSKXwJG03rYv0VzyffkzCLMexCdNY5S0hiFjOqzxXJBpD1ame0mZ
 

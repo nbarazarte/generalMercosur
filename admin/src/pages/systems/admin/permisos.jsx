@@ -993,8 +993,8 @@ function TabUsuariosYAccesos({
                       </span>
                     </td>
                     <td style={{ color: "var(--merco-muted)", fontSize: 13 }}>
-                      {u.ultimo}
-                    </td>
+  {u.ultimo || (u.fec_ultimo_acceso ? new Date(u.fec_ultimo_acceso).toLocaleString() : "—")}
+</td>
                     <td>
                       <div className="ma-actions">
                         <button
