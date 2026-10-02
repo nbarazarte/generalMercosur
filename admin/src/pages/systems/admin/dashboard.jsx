@@ -65,6 +65,11 @@ export default function DashboardSistemasUsuarios() {
   const [toast, setToast] = useState(null);
   const [flag, setFlag] = useState(false);
 
+  // Estados para búsqueda y paginación de la Matriz de Accesos Rápidos
+  const [accessSearch, setAccessSearch] = useState("");
+  const [accessPage, setAccessPage] = useState(1);
+  const itemsPerPage = 5;
+
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
@@ -118,6 +123,25 @@ export default function DashboardSistemasUsuarios() {
     () => usuarios.filter((u) => u.estado === "pending").length,
     [usuarios],
   );
+
+  // Filtrado y Paginación de Usuarios para la Matriz de Accesos
+  const filteredAccessUsuarios = useMemo(() => {
+    if (!accessSearch.trim()) return usuarios;
+    const query = accessSearch.toLowerCase();
+    return usuarios.filter(
+      (u) =>
+        (u.nombre && u.nombre.toLowerCase().includes(query)) ||
+        (u.email && u.email.toLowerCase().includes(query)),
+    );
+  }, [usuarios, accessSearch]);
+
+  const totalAccessPages =
+    Math.ceil(filteredAccessUsuarios.length / itemsPerPage) || 1;
+
+  const paginatedAccessUsuarios = useMemo(() => {
+    const start = (accessPage - 1) * itemsPerPage;
+    return filteredAccessUsuarios.slice(start, start + itemsPerPage);
+  }, [filteredAccessUsuarios, accessPage]);
 
   const guardarOpcionSistema = async (sistemaId, opcionData) => {
     try {
@@ -329,123 +353,215 @@ export default function DashboardSistemasUsuarios() {
               </button>
             </div>
 
+            {/* BUSCADOR DE USUARIOS PARA LA MATRIZ */}
+            <div
+              style={{
+                padding: "10px 20px",
+                borderTop: "1px solid var(--merco-border)",
+                borderBottom: "1px solid var(--merco-border)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 10,
+                background: "var(--merco-bg-subtle, rgba(255, 255, 255, 0.01))",
+              }}
+            >
+              <div style={{ flex: 1, minWidth: "200px" }}>
+                <input
+                  type="text"
+                  placeholder="Buscar usuario por nombre o correo..."
+                  value={accessSearch}
+                  onChange={(e) => {
+                    setAccessSearch(e.target.value);
+                    setAccessPage(1);
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "6px 12px",
+                    borderRadius: 6,
+                    border: "1px solid var(--merco-border)",
+                    background: "var(--merco-bg)",
+                    color: "var(--merco-text)",
+                    fontSize: 13,
+                    outline: "none",
+                  }}
+                />
+              </div>
+              <div style={{ fontSize: 12, color: "var(--merco-muted)" }}>
+                Mostrando {paginatedAccessUsuarios.length} de{" "}
+                {filteredAccessUsuarios.length} registros
+              </div>
+            </div>
+
             <div className="ma-table-container">
               <table className="ma-table">
                 <thead>
                   <tr>
                     <th>USUARIO</th>
-                    <th>ESTADO</th>
+                    <th style={{ width: "160px" }}>ESTADO</th>
                     <th>ACCESOS CONFIGURADOS</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {usuarios.slice(0, 5).map((u) => (
-                    <tr key={u.id}>
-                      <td style={{ padding: "10px 16px" }}>
-                        <div className="ma-user-cell">
-                          <div
-                            className="ma-ava"
-                            style={{ background: "var(--merco-navy, #0B1B32)" }}
+                  {paginatedAccessUsuarios.length > 0 ? (
+                    paginatedAccessUsuarios.map((u) => (
+                      <tr key={u.id}>
+                        <td style={{ padding: "10px 16px" }}>
+                          <div className="ma-user-cell">
+                            <div
+                              className="ma-ava"
+                              style={{ background: "var(--merco-navy, #0B1B32)" }}
+                            >
+                              {initials(u.nombre)}
+                            </div>
+                            <div>
+                              <b
+                                style={{
+                                  color: "var(--merco-text)",
+                                  display: "block",
+                                }}
+                              >
+                                {u.nombre}
+                              </b>
+                              <small style={{ color: "var(--merco-muted)" }}>
+                                {u.email}
+                              </small>
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: "10px 16px" }}>
+                          <span
+                            style={{
+                              padding: "3px 10px",
+                              borderRadius: 12,
+                              fontSize: 11,
+                              fontWeight: 600,
+                              background:
+                                u.estado === "active"
+                                  ? "rgba(31, 157, 99, 0.15)"
+                                  : u.estado === "pending"
+                                    ? "rgba(216, 153, 42, 0.15)"
+                                    : "rgba(209, 67, 91, 0.15)",
+                              color:
+                                u.estado === "active"
+                                  ? "#1f9d63"
+                                  : u.estado === "pending"
+                                    ? "#d8992a"
+                                    : "#d1435b",
+                            }}
                           >
-                            {initials(u.nombre)}
-                          </div>
-                          <div>
-                            <b
-                              style={{
-                                color: "var(--merco-text)",
-                                display: "block",
-                              }}
-                            >
-                              {u.nombre}
-                            </b>
-                            <small style={{ color: "var(--merco-muted)" }}>
-                              {u.email}
-                            </small>
-                          </div>
-                        </div>
-                      </td>
-                      <td style={{ padding: "10px 16px" }}>
-                        <span
-                          style={{
-                            padding: "3px 10px",
-                            borderRadius: 12,
-                            fontSize: 11,
-                            fontWeight: 600,
-                            background:
-                              u.estado === "active"
-                                ? "rgba(31, 157, 99, 0.15)"
-                                : u.estado === "pending"
-                                  ? "rgba(216, 153, 42, 0.15)"
-                                  : "rgba(209, 67, 91, 0.15)",
-                            color:
-                              u.estado === "active"
-                                ? "#1f9d63"
-                                : u.estado === "pending"
-                                  ? "#d8992a"
-                                  : "#d1435b",
-                          }}
-                        >
-                          ●{" "}
-                          {u.estado === "active"
-                            ? "Activo"
-                            : u.estado === "pending"
-                              ? "Pendiente"
-                              : "Inactivo"}
-                        </span>
-                      </td>
+                            ●{" "}
+                            {u.estado === "active"
+                              ? "Activo"
+                              : u.estado === "pending"
+                                ? "Pendiente"
+                                : "Inactivo"}
+                          </span>
+                        </td>
 
-                      <td style={{ padding: "10px 16px" }}>
-                        <div
-                          style={{ display: "flex", gap: 6, flexWrap: "wrap" }}
-                        >
-                          {sistemas.filter(
-                            (sys) => u.accesos && u.accesos[sys.id],
-                          ).length > 0 ? (
-                            sistemas
-                              .filter((sys) => u.accesos && u.accesos[sys.id])
-                              .map((sys) => {
-                                const rolActual = u.accesos[sys.id];
-                                return (
-                                  <span
-                                    key={sys.id}
-                                    style={{
-                                      fontSize: 11,
-                                      padding: "2px 8px",
-                                      borderRadius: 4,
-                                      border: `1px solid ${sys.color}66`,
-                                      background: `${sys.color}15`,
-                                      color: "var(--merco-text)",
-                                      display: "inline-flex",
-                                      alignItems: "center",
-                                      gap: 4,
-                                    }}
-                                  >
-                                    <DynamicIcon
-                                      name={sys.ic}
-                                      fallback="FiGrid"
-                                    />
-                                    <b>{sys.nombre}:</b> {rolActual}
-                                  </span>
-                                );
-                              })
-                          ) : (
-                            <span
-                              style={{
-                                fontSize: 11,
-                                color: "var(--merco-muted)",
-                                fontStyle: "italic",
-                              }}
-                            >
-                              Sin accesos configurados
-                            </span>
-                          )}
-                        </div>
+                        <td style={{ padding: "10px 16px" }}>
+                          <div
+                            style={{ display: "flex", gap: 6, flexWrap: "wrap" }}
+                          >
+                            {sistemas.filter(
+                              (sys) => u.accesos && u.accesos[sys.id],
+                            ).length > 0 ? (
+                              sistemas
+                                .filter((sys) => u.accesos && u.accesos[sys.id])
+                                .map((sys) => {
+                                  const rolActual = u.accesos[sys.id];
+                                  return (
+                                    <span
+                                      key={sys.id}
+                                      style={{
+                                        fontSize: 11,
+                                        padding: "2px 8px",
+                                        borderRadius: 4,
+                                        border: `1px solid ${sys.color}66`,
+                                        background: `${sys.color}15`,
+                                        color: "var(--merco-text)",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: 4,
+                                      }}
+                                    >
+                                      <DynamicIcon
+                                        name={sys.ic}
+                                        fallback="FiGrid"
+                                      />
+                                      <b>{sys.nombre}:</b> {rolActual}
+                                    </span>
+                                  );
+                                })
+                            ) : (
+                              <span
+                                style={{
+                                  fontSize: 11,
+                                  color: "var(--merco-muted)",
+                                  fontStyle: "italic",
+                                }}
+                              >
+                                Sin accesos configurados
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        style={{
+                          textAlign: "center",
+                          padding: "24px",
+                          color: "var(--merco-muted)",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        No se encontraron usuarios que coincidan con la
+                        búsqueda.
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
+
+            {/* CONTROLES DE PAGINACIÓN */}
+            {totalAccessPages > 1 && (
+              <div
+                style={{
+                  padding: "12px 20px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  borderTop: "1px solid var(--merco-border)",
+                  fontSize: 13,
+                }}
+              >
+                <button
+                  className="btn btn-ghost btn-sm"
+                  disabled={accessPage === 1}
+                  onClick={() => setAccessPage((p) => Math.max(p - 1, 1))}
+                >
+                  Anterior
+                </button>
+                <span style={{ color: "var(--merco-muted)" }}>
+                  Página {accessPage} de {totalAccessPages}
+                </span>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  disabled={accessPage === totalAccessPages}
+                  onClick={() =>
+                    setAccessPage((p) => Math.min(p + 1, totalAccessPages))
+                  }
+                >
+                  Siguiente
+                </button>
+              </div>
+            )}
           </div>
 
           {/* ÚLTIMOS ACCESOS DE USUARIOS (DESDE LA BASE DE DATOS) */}
@@ -910,8 +1026,6 @@ function ChartDoughnutRoles({ usuarios, isDark }) {
     const conteo = {};
     usuarios.forEach((u) => {
       if (u.accesos) {
-        // Obtenemos los roles únicos de este usuario para evitar duplicar
-        // si tiene el mismo rol en varios sistemas
         const rolesUnicosDelUsuario = new Set(
           Object.values(u.accesos).filter((r) => r && r.trim() !== ""),
         );
