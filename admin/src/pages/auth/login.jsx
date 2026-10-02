@@ -166,6 +166,57 @@ const Login = () => {
     }
   };
 
+  const handleRecoverPassword = async (e) => {
+    e.preventDefault();
+    let valid = true;
+    const errors = { email: false, password: loginErrors.password };
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!loginEmail || !emailRegex.test(loginEmail.trim())) {
+      errors.email = true;
+      valid = false;
+    }
+
+    setLoginErrors(errors);
+    if (!valid) return;
+
+    setIsLoginLoading(true);
+
+    try {
+      if (!API_URL || !API_TOKEN) {
+        throw new Error("Faltan variables de entorno.");
+      }
+
+      const response = await axios.post(
+        `${API_URL}/forgot-password`,
+        { email: loginEmail.trim() },
+        { headers: { Authorization: `Bearer ${API_TOKEN}` } },
+      );
+
+      // El backend devuelve un mensaje genérico por seguridad (evita enumeración de usuarios)
+      showToast(
+        response.data.message ||
+          "Si el correo está registrado, recibirás un enlace.",
+        "success",
+      );
+    } catch (error) {
+      const isNetworkError =
+        error.message === "Network Error" || !error.response;
+
+      const errorMessage =
+        (typeof error.response?.data === "string"
+          ? error.response.data
+          : error.response?.data?.message) ||
+        (isNetworkError && error.message !== "Faltan variables de entorno."
+          ? "No hay conexión con la API."
+          : error.message);
+
+      showToast(errorMessage, "error");
+    } finally {
+      setIsLoginLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="toast-container" id="toastContainer">
@@ -267,13 +318,7 @@ const Login = () => {
             </div>
 
             <div className="forgot-link">
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  showToast("Función de recuperación próximamente", "info");
-                }}
-              >
+              <a href="#" onClick={handleRecoverPassword}>
                 ¿Olvidó su contraseña?
               </a>
             </div>

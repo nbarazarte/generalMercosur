@@ -3,6 +3,9 @@ import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import HomeLayout from "./pages/layouts/HomeLayout";
 import Login, { LoginAside } from "./pages/auth/login";
+import ResetearContrasena, {
+  ResetPasswordAside,
+} from "./pages/auth/resetearContrasena";
 import Home, { MainAside } from "./pages/systems/home/home";
 
 import { DynamicIcon } from "../src/pages/components/IconCatalog";
@@ -194,6 +197,22 @@ function App() {
             }
           >
             <Route path="/login" element={<Login />} />
+          </Route>
+        </Route>
+
+        <Route element={<PublicOnlyRoute />}>
+          <Route
+            element={
+              <HomeLayout
+                asideContent={ResetPasswordAside}
+                showLogout={false}
+              />
+            }
+          >
+            <Route
+              path="/resetear-contrasena"
+              element={<ResetearContrasena />}
+            />
           </Route>
         </Route>
 

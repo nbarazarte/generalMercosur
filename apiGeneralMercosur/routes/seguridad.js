@@ -381,14 +381,15 @@ router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
 
   // Validación básica de entrada
-  if (!email) return res.status(400).send("Email requerido");
+  if (!email) return res.status(400).send("Correo Electrónico requerido");
 
   try {
-    const normalizedEmail = email.trim().toUpperCase();
+    const normalizedEmail = email.trim().toLowerCase();
 
     // 1. Verificar si el usuario existe usando UPPER
+    // Corrección recomendada
     const userRes = await pool.query(
-      "SELECT id, email, username FROM usuarios WHERE UPPER(email) = $1",
+      "SELECT id, str_email, str_usuario FROM tbl_usuarios WHERE LOWER(str_email) = LOWER($1)",
       [normalizedEmail],
     );
 
@@ -407,21 +408,20 @@ router.post("/forgot-password", async (req, res) => {
     // 2. Generar token de recuperación
     // IMPORTANTE: Usa el mismo secreto que en /login. Si allá usas "secret", aquí también.
     const resetToken = jwt.sign(
-      { email: user.email, id: user.id, type: "reset" },
+      { email: user.str_email, id: user.id, type: "reset" },
       "123456", // Cambia esto por process.env.JWT_SECRET
       { expiresIn: "15m" },
     );
 
     // 3. Configurar enlace (Verifica que process.env.URL esté definido en tu .env)
     const baseUrl = process.env.URL || "http://localhost:3000"; // Fallback por seguridad
-    const resetLink = `${baseUrl}/reset-password?token=${resetToken}`;
+    const resetLink = `${baseUrl}/resetear-contrasena?token=${resetToken}`;
 
     // 4. Enviar Correo
     await transporter.sendMail({
       from: `"Mercosur Casa de Bolsa, S.A." <sistemasmcdb@mercosur.com.ve>`,
-      to: user.email, // Es mejor usar el email que viene de la base de datos
-      subject:
-        "Recuperación de Contraseña - Plataforma de Registro de Nuevo Cliente",
+      to: user.str_email,
+      subject: "Recuperación de Contraseña - Mercosur Enterpise Portal",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
           <div style="background-color: #ff6600; padding: 20px; text-align: center;">
@@ -429,7 +429,7 @@ router.post("/forgot-password", async (req, res) => {
           </div>
           <div style="padding: 30px; color: #333333;">
             <h3>Solicitud de cambio de contraseña</h3>
-            <p>Hola, <strong>${user.email}</strong>.</p>
+            <p>Hola, <strong>${user.str_email}</strong>.</p>
             <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente botón para continuar:</p>
             <div style="text-align: center; margin: 30px 0;">
               <a href="${resetLink}" style="padding: 12px 25px; background-color: #ff6600; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
@@ -460,7 +460,7 @@ router.post("/reset-password", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await pool.query(
-      "UPDATE usuarios SET password = $1 WHERE lower(email) = lower($2)",
+      "UPDATE tbl_usuarios SET str_password = $1 WHERE lower(str_email) = lower($2)",
       [hashedPassword, email],
     );
 

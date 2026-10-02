@@ -1,28 +1,40 @@
 ############### BD LOCALHOST #########################
-# BK de Produccion:
+# Backup de la base de datos:
+
+.backup:
 pg_dump -U postgres -h 192.168.12.29 -F c -b -v -f ./sistemadb_general_mercosur.backup db_general_mercosur
 pg_dump -U postgres -h localhost -F c -b -v -f ./sistemadb_general_mercosur.backup db_general_mercosur
-pg_dump -U postgres -h 192.168.12.29 -F p -v -f ./sistemadb_general_mercosur.sql db_general_mercosur
 
-# Restore
+.sql:
+pg_dump -U postgres -h 192.168.12.29 -F p -v -f ./sistemadb_general_mercosur.sql db_general_mercosur
+pg_dump -U postgres -h localhost -F p -v -f ./sistemadb_general_mercosur.sql db_general_mercosur
+
+
+# Restore de la base de datos:
+
 dropdb -U postgres -h localhost db_general_mercosur
 createdb -U postgres -h localhost db_general_mercosur
-pg_restore -U postgres -h localhost -d db_general_mercosur -v ./sistemadb_general_mercosur.backup
+
+.backup:
 pg_restore -U postgres -h 192.168.12.29 -d db_general_mercosur -v ./sistemadb_general_mercosur.backup
+pg_restore -U postgres -h localhost -d db_general_mercosur -v ./sistemadb_general_mercosur.backup
+
+.sql:
+psql -U postgres -h 192.168.12.29 -d db_general_mercosur -f ./sistemadb_general_mercosur.sql
 psql -U postgres -h localhost -d db_general_mercosur -f ./sistemadb_general_mercosur.sql
 
-time psql -h localhost -U postgres -d db_general_mercosur -c "SELECT count(*) FROM db_general_mercosur.fichas"
+
+time psql -h localhost -U postgres -d db_general_mercosur -c "SELECT count(*) FROM public.tbl_usuarios"
 
 ALTER DATABASE db_general_mercosur SET timezone = 'America/Caracas';
 
 sudo -i -u postgres
 psql
 
-ALTER USER postgres WITH PASSWORD 'H3r05*!';
 ALTER USER postgres WITH PASSWORD '1123581321';
 
 SELECT column_name, data_type 
 FROM information_schema.columns 
-WHERE table_schema = 'db_general_mercosur' 
-  AND table_name = 'representantes'
+WHERE table_schema = 'public' 
+  AND table_name = 'tbl_usuarios'
 ORDER BY ordinal_position;
