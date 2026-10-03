@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
+import { useSelector } from "react-redux";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_URL_API_ADMIN;
@@ -51,6 +52,8 @@ function useIsDarkMode() {
 /* ============================ DASHBOARD COMPONENT ============================ */
 export default function DashboardSistemasUsuarios() {
   const isDark = useIsDarkMode();
+  const token = useSelector((state) => state.auth?.token);
+
   const [sistemas, setSistemas] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [kpis, setKpis] = useState({
@@ -75,20 +78,25 @@ export default function DashboardSistemasUsuarios() {
     setTimeout(() => setToast(null), 3500);
   };
 
+  const authHeaders = useMemo(
+    () => ({
+      headers: {
+        "x-client-uuid": API_TOKEN,
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+    [token],
+  );
+
   useEffect(() => {
+    if (!token) return;
     const fetchData = async () => {
       try {
         const [resSistemas, resUsuarios, resKpis] = await Promise.all([
-          axios.get(`${API_URL}/fetchSistemas`, {
-            headers: { Authorization: `Bearer ${API_TOKEN}` },
-          }),
-          axios.get(`${API_URL}/fetchUsuarios`, {
-            headers: { Authorization: `Bearer ${API_TOKEN}` },
-          }),
+          axios.get(`${API_URL}/fetchSistemas`, authHeaders),
+          axios.get(`${API_URL}/fetchUsuarios`, authHeaders),
           axios
-            .get(`${API_URL}/dashboard/kpis`, {
-              headers: { Authorization: `Bearer ${API_TOKEN}` },
-            })
+            .get(`${API_URL}/dashboard/kpis`, authHeaders)
             .catch(() => ({ data: { data: {} } })),
         ]);
 
@@ -112,7 +120,7 @@ export default function DashboardSistemasUsuarios() {
     };
 
     fetchData();
-  }, [flag]);
+  }, [flag, token]);
 
   const totalOpciones = useMemo(
     () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),
@@ -148,7 +156,7 @@ export default function DashboardSistemasUsuarios() {
       const response = await axios.post(
         `${API_URL}/guardarOpcion`,
         { sistemaId, ...opcionData },
-        { headers: { Authorization: `Bearer ${API_TOKEN}` } },
+        authHeaders,
       );
       showToast(
         response.data?.message || "Ruta guardada correctamente.",
@@ -272,7 +280,7 @@ export default function DashboardSistemasUsuarios() {
                 Usuarios asignados por sistema
               </span>{" "}
             </div>
-            <ChartBarSistemas isDark={isDark} />
+            <ChartBarSistemas isDark={isDark} token={token} />
           </div>
         </div>
 
@@ -411,7 +419,9 @@ export default function DashboardSistemasUsuarios() {
                           <div className="ma-user-cell">
                             <div
                               className="ma-ava"
-                              style={{ background: "var(--merco-navy, #0B1B32)" }}
+                              style={{
+                                background: "var(--merco-navy, #0B1B32)",
+                              }}
                             >
                               {initials(u.nombre)}
                             </div>
@@ -462,7 +472,11 @@ export default function DashboardSistemasUsuarios() {
 
                         <td style={{ padding: "10px 16px" }}>
                           <div
-                            style={{ display: "flex", gap: 6, flexWrap: "wrap" }}
+                            style={{
+                              display: "flex",
+                              gap: 6,
+                              flexWrap: "wrap",
+                            }}
                           >
                             {sistemas.filter(
                               (sys) => u.accesos && u.accesos[sys.id],
@@ -565,7 +579,7 @@ export default function DashboardSistemasUsuarios() {
           </div>
 
           {/* ÚLTIMOS ACCESOS DE USUARIOS (DESDE LA BASE DE DATOS) */}
-          <UltimosAccesosCard isDark={isDark} />
+          <UltimosAccesosCard isDark={isDark} token={token} />
         </div>
 
         {/* 4. FILA 3: CATÁLOGO DE SISTEMAS Y RUTAS CONFIGURADAS */}
@@ -824,20 +838,24 @@ function KPICard({ icon, val, label, trend, trendColor, iconColor }) {
 }
 
 /* ====== COMPONENTE DE ÚLTIMOS ACCESOS DE USUARIOS DESDE LA BD ====== */
-function UltimosAccesosCard({ isDark }) {
+function UltimosAccesosCard({ isDark, token }) {
   const [accesos, setAccesos] = useState([]);
 
   useEffect(() => {
+    if (!token) return;
     axios
       .get(`${API_URL}/dashboard/ultimos-accesos`, {
-        headers: { Authorization: `Bearer ${API_TOKEN}` },
+        headers: {
+          "x-client-uuid": API_TOKEN,
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((res) => {
         const data = res.data?.data || res.data || [];
         setAccesos(data);
       })
       .catch((err) => console.error("Error al obtener últimos accesos:", err));
-  }, []);
+  }, [token]);
 
   return (
     <div className="ma-card" style={{ padding: 18 }}>
@@ -950,14 +968,18 @@ function UltimosAccesosCard({ isDark }) {
 /* ====== COMPONENTES DE GRÁFICOS (CHART.JS CON AXIOS) ====== */
 
 /* 1. Bar Chart: Usuarios por Sistema */
-function ChartBarSistemas({ isDark }) {
+function ChartBarSistemas({ isDark, token }) {
   const canvasRef = useRef(null);
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
+    if (!token) return;
     axios
       .get(`${API_URL}/usuarios-por-sistema`, {
-        headers: { Authorization: `Bearer ${API_TOKEN}` },
+        headers: {
+          "x-client-uuid": API_TOKEN,
+          Authorization: `Bearer ${token}`,
+        },
       })
       .then((res) => {
         const data = res.data?.data || res.data || [];
@@ -966,7 +988,7 @@ function ChartBarSistemas({ isDark }) {
       .catch((err) =>
         console.error("Error al obtener usuarios por sistema:", err),
       );
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     if (!canvasRef.current || chartData.length === 0) return;

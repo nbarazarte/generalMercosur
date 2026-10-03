@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
+import { useSelector } from "react-redux";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_URL_API_ADMIN;
@@ -56,6 +57,8 @@ const parsearFechaUltimoAcceso = (str) => {
 
 /* ============================ COMPONENTE PRINCIPAL ============================ */
 export default function Permisos() {
+  const token = useSelector((state) => state.auth?.token);
+
   const [tab, setTab] = useState("usuarios"); // 'usuarios' o 'roles'
   const [usuarios, setUsuarios] = useState([]);
 
@@ -78,26 +81,27 @@ export default function Permisos() {
     }, 3500);
   };
 
+  const authHeaders = useMemo(
+    () => ({
+      headers: {
+        "x-client-uuid": API_TOKEN,
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+    [token],
+  );
+
   useEffect(() => {
+    if (!token) return;
     const fetchData = async () => {
       try {
         const [resSistemas, resRoles, resCatRoles, resUsuarios, resDeptos] =
           await Promise.all([
-            axios.get(`${API_URL}/fetchSistemas`, {
-              headers: { Authorization: `Bearer ${API_TOKEN}` },
-            }),
-            axios.get(`${API_URL}/fetchRolesSistemasOpciones`, {
-              headers: { Authorization: `Bearer ${API_TOKEN}` },
-            }),
-            axios.get(`${API_URL}/fetchCatRoles`, {
-              headers: { Authorization: `Bearer ${API_TOKEN}` },
-            }),
-            axios.get(`${API_URL}/fetchUsuarios`, {
-              headers: { Authorization: `Bearer ${API_TOKEN}` },
-            }),
-            axios.get(`${API_URL}/fetchDepartamentos`, {
-              headers: { Authorization: `Bearer ${API_TOKEN}` },
-            }),
+            axios.get(`${API_URL}/fetchSistemas`, authHeaders),
+            axios.get(`${API_URL}/fetchRolesSistemasOpciones`, authHeaders),
+            axios.get(`${API_URL}/fetchCatRoles`, authHeaders),
+            axios.get(`${API_URL}/fetchUsuarios`, authHeaders),
+            axios.get(`${API_URL}/fetchDepartamentos`, authHeaders),
           ]);
 
         const dataArray = Array.isArray(resSistemas.data)
@@ -153,7 +157,7 @@ export default function Permisos() {
     };
 
     fetchData();
-  }, [flag]);
+  }, [flag, token]);
 
   const [busqueda, setBusqueda] = useState("");
   const [filtroSistema, setFiltroSistema] = useState("");
@@ -213,7 +217,8 @@ export default function Permisos() {
 
         const coincideDepartamento =
           !filtroDepartamento ||
-          String(u.departamento_id || u.departamentoId) === String(filtroDepartamento);
+          String(u.departamento_id || u.departamentoId) ===
+            String(filtroDepartamento);
 
         let coincideUltimoAcceso = true;
         if (filtroUltimoAcceso === "hoy") {
@@ -280,9 +285,11 @@ export default function Permisos() {
 
   const guardarUsuario = async (data) => {
     try {
-      const response = await axios.post(`${API_URL}/guardarUsuario`, data, {
-        headers: { Authorization: `Bearer ${API_TOKEN}` },
-      });
+      const response = await axios.post(
+        `${API_URL}/guardarUsuario`,
+        data,
+        authHeaders,
+      );
       setFlag(!flag);
       setModal(null);
       showToast(
@@ -300,9 +307,10 @@ export default function Permisos() {
     if (!window.confirm("¿Estás seguro de que deseas eliminar este usuario?"))
       return;
     try {
-      const response = await axios.delete(`${API_URL}/eliminarUsuario/${id}`, {
-        headers: { Authorization: `Bearer ${API_TOKEN}` },
-      });
+      const response = await axios.delete(
+        `${API_URL}/eliminarUsuario/${id}`,
+        authHeaders,
+      );
       setFlag(!flag);
       setModal(null);
       showToast(
@@ -318,11 +326,11 @@ export default function Permisos() {
 
   const guardarRol = async (data) => {
     try {
-      const response = await axios.post(`${API_URL}/guardarRol`, data, {
-        headers: {
-          Authorization: `Bearer ${API_TOKEN}`,
-        },
-      });
+      const response = await axios.post(
+        `${API_URL}/guardarRol`,
+        data,
+        authHeaders,
+      );
 
       setFlag(!flag);
       setModal(null);
@@ -339,11 +347,11 @@ export default function Permisos() {
 
   const asignarRolSistema = async (data) => {
     try {
-      const response = await axios.post(`${API_URL}/asignarRol`, data, {
-        headers: {
-          Authorization: `Bearer ${API_TOKEN}`,
-        },
-      });
+      const response = await axios.post(
+        `${API_URL}/asignarRol`,
+        data,
+        authHeaders,
+      );
 
       setFlag(!flag);
       setModal(null);
@@ -363,11 +371,7 @@ export default function Permisos() {
       const response = await axios.post(
         `${API_URL}/actualizarRolSistemaOpciones`,
         data,
-        {
-          headers: {
-            Authorization: `Bearer ${API_TOKEN}`,
-          },
-        },
+        authHeaders,
       );
 
       setFlag(!flag);
@@ -396,11 +400,7 @@ export default function Permisos() {
       const response = await axios.post(
         `${API_URL}/eliminarRol/${rolId}`,
         {},
-        {
-          headers: {
-            Authorization: `Bearer ${API_TOKEN}`,
-          },
-        },
+        authHeaders,
       );
 
       const data = response.data;
@@ -426,9 +426,7 @@ export default function Permisos() {
           sistemaId: sysId,
           rolNombre: rol,
         },
-        {
-          headers: { Authorization: `Bearer ${API_TOKEN}` },
-        },
+        authHeaders,
       );
 
       setUsuarios((prev) =>
@@ -621,9 +619,7 @@ export default function Permisos() {
               const response = await axios.post(
                 `${API_URL}/eliminarRolCat/${rolId}`,
                 {},
-                {
-                  headers: { Authorization: `Bearer ${API_TOKEN}` },
-                },
+                authHeaders,
               );
               setFlag(!flag);
               setModal(null);
@@ -943,7 +939,9 @@ function TabUsuariosYAccesos({
 
               return (
                 <React.Fragment key={u.id}>
-                  <tr style={{ borderBottom: estaAbierto ? "none" : undefined }}>
+                  <tr
+                    style={{ borderBottom: estaAbierto ? "none" : undefined }}
+                  >
                     <td style={{ textAlign: "center", paddingRight: 0 }}>
                       <button
                         className="btn-icon"
@@ -980,11 +978,10 @@ function TabUsuariosYAccesos({
                       </div>
                     </td>
                     <td>
-                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                        <AccesosChips
-                          accesos={u.accesos}
-                          sysMap={sistemaMap}
-                        />
+                      <div
+                        style={{ display: "flex", gap: 6, flexWrap: "wrap" }}
+                      >
+                        <AccesosChips accesos={u.accesos} sysMap={sistemaMap} />
                       </div>
                     </td>
                     <td>
@@ -993,8 +990,11 @@ function TabUsuariosYAccesos({
                       </span>
                     </td>
                     <td style={{ color: "var(--merco-muted)", fontSize: 13 }}>
-  {u.ultimo || (u.fec_ultimo_acceso ? new Date(u.fec_ultimo_acceso).toLocaleString() : "—")}
-</td>
+                      {u.ultimo ||
+                        (u.fec_ultimo_acceso
+                          ? new Date(u.fec_ultimo_acceso).toLocaleString()
+                          : "—")}
+                    </td>
                     <td>
                       <div className="ma-actions">
                         <button
@@ -1022,7 +1022,10 @@ function TabUsuariosYAccesos({
                           "var(--merco-bg-subtle, rgba(255, 255, 255, 0.02))",
                       }}
                     >
-                      <td colSpan={6} style={{ padding: "12px 20px 20px 48px" }}>
+                      <td
+                        colSpan={6}
+                        style={{ padding: "12px 20px 20px 48px" }}
+                      >
                         <div
                           style={{
                             padding: 16,
@@ -1126,7 +1129,11 @@ function TabUsuariosYAccesos({
                                     }
                                     value={rolActual}
                                     onChange={(e) =>
-                                      setAccesoMatriz(u.id, s.id, e.target.value)
+                                      setAccesoMatriz(
+                                        u.id,
+                                        s.id,
+                                        e.target.value,
+                                      )
                                     }
                                     style={{
                                       width: "100%",
@@ -1195,7 +1202,12 @@ function TabUsuariosYAccesos({
           </span>
 
           <div
-            style={{ display: "flex", alignItems: "center", gap: 6, marginLeft: 8 }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              marginLeft: 8,
+            }}
           >
             <span>Filas por página:</span>
             <select
@@ -1243,7 +1255,9 @@ function TabUsuariosYAccesos({
           <button
             className="btn btn-ghost"
             disabled={paginaActual >= totalPaginas}
-            onClick={() => setPaginaActual((p) => Math.min(p + 1, totalPaginas))}
+            onClick={() =>
+              setPaginaActual((p) => Math.min(p + 1, totalPaginas))
+            }
             style={{
               padding: "6px 12px",
               fontSize: 12,

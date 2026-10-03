@@ -3,7 +3,8 @@ dotenv.config({ path: "../.env" });
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
-const autenticarToken = require("../middlewares/autenticarToken");
+const verificarClienteFrontend = require("../middlewares/autenticarToken");
+const verificarSesion = require("../middlewares/verificarSesion");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const transporter = require("../mailer");
@@ -11,7 +12,6 @@ const transporter = require("../mailer");
 // --- MIDDLEWARE DE MANTENIMIENTO ---
 const verificarMantenimiento = (req, res, next) => {
   const isMaintenance = process.env.MAINTENANCE_MODE === "true";
-  // Excluimos la ruta de chequeo para evitar bucles infinitos
   if (isMaintenance && req.path !== "/config/mantenimiento") {
     return res.status(503).json({
       mantenimiento: true,
@@ -21,8 +21,10 @@ const verificarMantenimiento = (req, res, next) => {
   next();
 };
 
-// Aplicar el bloqueo globalmente a este router
 router.use(verificarMantenimiento);
+
+// 🔒 Exigir el UUID de la aplicación en todas las peticiones de este router
+router.use(verificarClienteFrontend);
 
 // Endpoint público para que el Frontend consulte el estado
 router.get("/config/mantenimiento", (req, res) => {
@@ -31,23 +33,16 @@ router.get("/config/mantenimiento", (req, res) => {
   });
 });
 
-// --- RUTAS PRIVADAS USUARIOS MERCOSUR---
+// --- RUTAS PÚBLICAS CLIENTES ---
 
-// --- RUTAS PÚBLICAS CLIENTES---
-
-// Nuevo endpoint para iniciar el registro
 router.post("/request-register", async (req, res) => {
   let { email } = req.body;
 
-  // 1. Limpieza (Trimming y Normalización)
   if (!email) return res.status(400).json({ error: "Email requerido" });
 
-  // Quitamos espacios en blanco y convertimos a MAYÚSCULAS
   const normalizedEmail = email.trim().toUpperCase();
 
   try {
-    // 2. Verificación insensible a mayúsculas/minúsculas
-    // Usamos UPPER() en la consulta por si acaso hay datos viejos mezclados
     const usuarioExistente = await pool.query(
       "SELECT id FROM usuarios WHERE UPPER(email) = $1",
       [normalizedEmail],
@@ -59,7 +54,6 @@ router.post("/request-register", async (req, res) => {
       });
     }
 
-    // 3. Generar token usando el email normalizado
     const registrationToken = jwt.sign(
       { email: normalizedEmail },
       process.env.JWT_SECRET,
@@ -116,40 +110,31 @@ router.post("/request-register", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  // 1. Recibimos el token del correo y la contraseña que el usuario definió
   const { token, password } = req.body;
 
   try {
-    // 2. Verificamos el token de invitación
-    // Asegúrate de que "tu_clave_secreta_temporal" sea la misma que usaste en /request-register
     const decoded = jwt.verify(token, "123456");
     const emailFromToken = decoded.email.trim().toUpperCase();
 
     const client = await pool.connect();
 
     try {
-      // Encriptamos la contraseña
       const hashedPassword = await bcrypt.hash(password, 10);
 
       await client.query("BEGIN");
 
-      // 3. Insertar el usuario usando el email que venía en el TOKEN
       const nuevoUsuarioRes = await client.query(
         "INSERT INTO usuarios (password, email) VALUES ($1, $2) RETURNING id, email",
         [hashedPassword, emailFromToken],
       );
       const user = nuevoUsuarioRes.rows[0];
 
-      // 4. Crear la ficha principal
       const nuevaFichaRes = await client.query(
         "INSERT INTO onboarding.fichas (usuario_id) VALUES ($1) RETURNING id",
         [user.id],
       );
       const fichaId = nuevaFichaRes.rows[0].id;
 
-      // 5. Inserciones masivas en las tablas relacionadas
-      // Usamos un array de promesas para que sea más limpio si prefieres,
-      // pero mantenerlo secuencial con await dentro de la transacción está bien para asegurar el orden.
       const tablas = [
         "conyuges",
         "representantes",
@@ -170,17 +155,14 @@ router.post("/register", async (req, res) => {
         );
       }
 
-      // 6. Generar el Token de Sesión Real (JWT de acceso)
-      // Nota: Cambié el nombre a 'accessToken' para no confundirlo con el 'token' del body
       const accessToken = jwt.sign(
         { id: user.id, email: user.email },
-        "secret", // Tu clave secreta de producción
+        process.env.JWT_SECRET,
         { expiresIn: "1h" },
       );
 
-      // 7. Guardar el token en la base de datos
       await client.query(
-        "INSERT INTO auth_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
+        "INSERT INTO tbl_auth_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
         [user.id, accessToken, new Date(Date.now() + 3600000)],
       );
 
@@ -200,14 +182,12 @@ router.post("/register", async (req, res) => {
       client.release();
     }
   } catch (err) {
-    // Este bloque atrapa errores de jwt.verify (token expirado o alterado)
     return res
       .status(401)
       .json({ error: "El enlace es inválido o ha expirado." });
   }
 });
 
-//########################################################################################
 // Función auxiliar reutilizable
 async function obtenerSistemasYOpciones(userId) {
   const resultado = await pool.query(
@@ -268,8 +248,6 @@ router.get("/sistemas-opciones/:usuario_id", async (req, res) => {
       return res.status(404).send("Usuario sin sistemas asignados");
     }
 
-    //console.log(sistemasOpciones)
-
     res.json(sistemasOpciones);
   } catch (err) {
     console.error(err.message);
@@ -287,7 +265,6 @@ router.post("/login", async (req, res) => {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    // 1. Buscar usuario
     const result = await pool.query(
       "SELECT * FROM tbl_usuarios WHERE str_email = $1",
       [normalizedEmail],
@@ -305,13 +282,11 @@ router.post("/login", async (req, res) => {
         .send("Su cuenta se encuentra inactiva. Contacte al administrador.");
     }
 
-    // 2. Validar contraseña
     const validPassword = await bcrypt.compare(password, user.str_password);
     if (!validPassword) {
       return res.status(401).send("Contraseña incorrecta");
     }
 
-    // 3. Generar token JWT
     const secretKey = process.env.JWT_SECRET;
     const token = jwt.sign(
       { id: user.id, username: user.str_usuario },
@@ -319,7 +294,6 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" },
     );
 
-    // 4. Limpieza de tokens expirados de ESTE usuario en segundo plano
     pool
       .query(
         "DELETE FROM tbl_auth_tokens WHERE user_id = $1 AND expires_at < NOW()",
@@ -332,7 +306,6 @@ router.post("/login", async (req, res) => {
         ),
       );
 
-    // 5. UPSERT token de dispositivo
     const deviceId = device_id || "default_device";
     const deviceName = device_name || "Dispositivo Desconocido";
 
@@ -349,22 +322,19 @@ router.post("/login", async (req, res) => {
       [user.id, deviceId, deviceName, token],
     );
 
-    // Ejemplo en tu controlador de Login en el backend cuando las credenciales son correctas:
     await pool.query(
       `UPDATE public.tbl_usuarios 
-   SET fec_ultimo_acceso = CURRENT_TIMESTAMP 
-   WHERE id = $1`,
+       SET fec_ultimo_acceso = CURRENT_TIMESTAMP 
+       WHERE id = $1`,
       [user.id],
     );
 
-    // 6. Obtener Sistemas y Opciones usando la función auxiliar
     const sistemasOpciones = await obtenerSistemasYOpciones(user.id);
 
     if (!sistemasOpciones) {
       return res.status(404).send("Usuario sin sistemas asignados");
     }
 
-    // 7. Respuesta al cliente
     res.json({
       id: user.id,
       username: user.str_usuario,
@@ -379,26 +349,20 @@ router.post("/login", async (req, res) => {
     res.status(500).send("Error en el servidor");
   }
 });
-//########################################################################################
 
-// Recuperar contraseña
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
 
-  // Validación básica de entrada
   if (!email) return res.status(400).send("Correo Electrónico requerido");
 
   try {
     const normalizedEmail = email.trim().toLowerCase();
 
-    // 1. Verificar si el usuario existe usando UPPER
-    // Corrección recomendada
     const userRes = await pool.query(
       "SELECT id, str_email, str_usuario FROM tbl_usuarios WHERE LOWER(str_email) = LOWER($1)",
       [normalizedEmail],
     );
 
-    // Respuesta genérica por seguridad (evita enumeración de usuarios)
     const genericResponse = {
       message: "Si el correo está registrado, recibirás un enlace.",
     };
@@ -407,22 +371,17 @@ router.post("/forgot-password", async (req, res) => {
       return res.status(200).json(genericResponse);
     }
 
-    // Extraemos el usuario encontrado
     const user = userRes.rows[0];
 
-    // 2. Generar token de recuperación
-    // IMPORTANTE: Usa el mismo secreto que en /login. Si allá usas "secret", aquí también.
     const resetToken = jwt.sign(
       { email: user.str_email, id: user.id, type: "reset" },
       process.env.JWT_SECRET,
       { expiresIn: "15m" },
     );
 
-    // 3. Configurar enlace (Verifica que process.env.URL esté definido en tu .env)
-    const baseUrl = process.env.URL; // Fallback por seguridad
+    const baseUrl = process.env.URL;
     const resetLink = `${baseUrl}/resetear-contrasena?token=${resetToken}`;
 
-    // 4. Enviar Correo
     await transporter.sendMail({
       from: `"Mercosur Casa de Bolsa, S.A." <sistemasmcdb@mercosur.com.ve>`,
       to: user.str_email,
@@ -449,13 +408,11 @@ router.post("/forgot-password", async (req, res) => {
 
     return res.status(200).json(genericResponse);
   } catch (error) {
-    // Si el error es de Nodemailer, se verá aquí en la consola
     console.error("Error en forgot-password:", error);
     res.status(500).send("Error en el servidor al procesar la solicitud.");
   }
 });
 
-// Endpoint para guardar la nueva contraseña
 router.post("/reset-password", async (req, res) => {
   const { token, password } = req.body;
 
@@ -475,15 +432,12 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-// Uso del middleware para proteger todas las rutas (A PARTIR DE AQUI SON PRIVADAS)
-router.use(autenticarToken);
-
-// Logout de cliente
-router.post("/logout", async (req, res) => {
+// --- RUTA PRIVADA ---
+// Logout de cliente (Protegido por UUID de app Y Token JWT/BD de usuario)
+router.post("/logout", verificarSesion, async (req, res) => {
   try {
     const { userId } = req.body;
 
-    // Asegúrate de usar 'tbl_auth_tokens' igual que en el login
     await pool.query("DELETE FROM tbl_auth_tokens WHERE user_id = $1", [
       userId,
     ]);

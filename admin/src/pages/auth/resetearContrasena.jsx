@@ -11,7 +11,8 @@ export const ResetPasswordAside = (
       Enterprise Portal
     </h1>
     <p className="subtitle">
-      Restablece tu contraseña de forma segura para recuperar el acceso a los sistemas de Mercosur Casa de Bolsa.
+      Restablece tu contraseña de forma segura para recuperar el acceso a los
+      sistemas de Mercosur Casa de Bolsa.
     </p>
 
     <ul className="feature-list">
@@ -48,7 +49,8 @@ const ResetearContrasena = () => {
   const [resetPassword, setResetPassword] = useState("");
   const [resetConfirmPassword, setResetConfirmPassword] = useState("");
   const [showResetPassword, setShowResetPassword] = useState(false);
-  const [showResetConfirmPassword, setShowResetConfirmPassword] = useState(false);
+  const [showResetConfirmPassword, setShowResetConfirmPassword] =
+    useState(false);
   const [resetErrors, setResetErrors] = useState({
     password: false,
     confirm: false,
@@ -84,7 +86,10 @@ const ResetearContrasena = () => {
     if (!valid) return;
 
     if (!token) {
-      showToast("Token de recuperación no válido o ausente en el enlace.", "error");
+      showToast(
+        "Token de recuperación no válido o ausente en el enlace.",
+        "error",
+      );
       return;
     }
 
@@ -95,18 +100,19 @@ const ResetearContrasena = () => {
         throw new Error("Faltan variables de entorno.");
       }
 
+      // CAMBIO: Se usa 'x-client-uuid' en lugar de 'Authorization'
       const response = await axios.post(
         `${API_URL}/reset-password`,
         {
           token: token,
           password: resetPassword,
         },
-        { headers: { Authorization: `Bearer ${API_TOKEN}` } },
+        { headers: { "x-client-uuid": API_TOKEN } },
       );
 
       showToast(
         response.data.message || "Contraseña actualizada correctamente.",
-        "success"
+        "success",
       );
 
       // Redirigir al login después de 2 segundos
@@ -228,7 +234,9 @@ const ResetearContrasena = () => {
                 <button
                   type="button"
                   className="toggle-password-btn"
-                  onClick={() => setShowResetConfirmPassword(!showResetConfirmPassword)}
+                  onClick={() =>
+                    setShowResetConfirmPassword(!showResetConfirmPassword)
+                  }
                   aria-label="Mostrar u ocultar contraseña"
                 >
                   {showResetConfirmPassword ? (

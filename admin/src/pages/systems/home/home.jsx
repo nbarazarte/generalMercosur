@@ -89,6 +89,7 @@ const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth?.user);
+  const token = useSelector((state) => state.auth?.token);
 
   // Mapear sistemas de Redux
   const sistemasRedux = useMemo(() => {
@@ -112,7 +113,7 @@ const Home = () => {
 
   // Carga de sistemas desde la API y sincronización con Redux
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id || !token) return;
 
     let isMounted = true;
 
@@ -122,7 +123,8 @@ const Home = () => {
           `${API_URL}/sistemas-opciones/${user.id}`,
           {
             headers: {
-              Authorization: `Bearer ${user?.token || API_TOKEN}`,
+              "x-client-uuid": API_TOKEN,
+              Authorization: `Bearer ${token || user?.token}`,
             },
           },
         );
@@ -158,7 +160,7 @@ const Home = () => {
     return () => {
       isMounted = false;
     };
-  }, [user?.id, user?.token, user?.sistemasOpciones, dispatch]);
+  }, [user?.id, token, user?.token, user?.sistemasOpciones, dispatch]);
 
   // Manejo del tema (Light/Dark)
   const [theme, setTheme] = useState(() => {

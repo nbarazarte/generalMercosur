@@ -18,6 +18,7 @@ export default function Sistemas() {
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth?.user);
+  const token = useSelector((state) => state.auth?.token);
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
@@ -26,16 +27,24 @@ export default function Sistemas() {
     }, 3500);
   };
 
+  const authHeaders = useMemo(
+    () => ({
+      headers: {
+        "x-client-uuid": API_TOKEN,
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+    [token],
+  );
+
   // Función reutilizable para obtener los sistemas de la API principal
   const fetchSistemasGlobales = async () => {
     try {
-      if (!API_URL || !API_TOKEN) {
-        throw new Error("Faltan variables de entorno.");
+      if (!API_URL || !API_TOKEN || !token) {
+        throw new Error("Faltan variables de entorno o token de sesión.");
       }
 
-      const response = await axios.get(`${API_URL}/fetchSistemas`, {
-        headers: { Authorization: `Bearer ${API_TOKEN}` },
-      });
+      const response = await axios.get(`${API_URL}/fetchSistemas`, authHeaders);
 
       const sistemasObtenidos = response.data.sistemas || [];
 
@@ -59,13 +68,14 @@ export default function Sistemas() {
 
   // Función opcional para refrescar el estado de Redux de las opciones del usuario
   const fetchSistemasUsuario = async () => {
-    if (!user?.id) return;
+    if (!user?.id || !token) return;
     try {
       const response = await axios.get(
         `${API_URL2}/sistemas-opciones/${user.id}`,
         {
           headers: {
-            Authorization: `Bearer ${API_TOKEN}`,
+            "x-client-uuid": API_TOKEN,
+            Authorization: `Bearer ${token}`,
           },
         },
       );
@@ -85,13 +95,17 @@ export default function Sistemas() {
 
   // 1. Carga inicial de datos globales
   useEffect(() => {
-    fetchSistemasGlobales();
-  }, []);
+    if (token) {
+      fetchSistemasGlobales();
+    }
+  }, [token]);
 
   // 2. Sincronización secundaria con Redux/API de seguridad local al cargar usuario
   useEffect(() => {
-    fetchSistemasUsuario();
-  }, [user?.id, user?.token]);
+    if (token) {
+      fetchSistemasUsuario();
+    }
+  }, [user?.id, token]);
 
   const totalOpciones = useMemo(
     () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),
@@ -100,8 +114,8 @@ export default function Sistemas() {
 
   const handleGuardarSistema = async (sistemaData) => {
     try {
-      if (!API_URL || !API_TOKEN) {
-        throw new Error("Faltan variables de entorno.");
+      if (!API_URL || !API_TOKEN || !token) {
+        throw new Error("Faltan variables de entorno o token de sesión.");
       }
 
       // 1. Actualización optimista local (evita parpadeo de íconos/datos)
@@ -122,7 +136,8 @@ export default function Sistemas() {
         sistemaData,
         {
           headers: {
-            Authorization: `Bearer ${API_TOKEN}`,
+            "x-client-uuid": API_TOKEN,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         },
@@ -153,9 +168,9 @@ export default function Sistemas() {
         (typeof error.response?.data === "string"
           ? error.response.data
           : error.response?.data?.error || error.response?.data?.message) ||
-        (isNetworkError && error.message !== "Faltan variables de entorno."
+        (isNetworkError && error.message !== "Faltan variables de entorno.")
           ? "No hay conexión con el servidor."
-          : error.message);
+          : error.message;
 
       console.error("Error al guardar sistema:", errorMessage);
       showToast(`Error: ${errorMessage}`, "error");
@@ -165,19 +180,18 @@ export default function Sistemas() {
 
   const eliminarSistema = async (id) => {
     try {
-      if (!API_URL || !API_TOKEN) {
-        throw new Error("Faltan variables de entorno.");
+      if (!API_URL || !API_TOKEN || !token) {
+        throw new Error("Faltan variables de entorno o token de sesión.");
       }
 
       // Actualización optimista
       setSistemas((prev) => prev.filter((s) => s.id !== id));
       setModal(null);
 
-      const response = await axios.delete(`${API_URL}/eliminarSistema/${id}`, {
-        headers: {
-          Authorization: `Bearer ${API_TOKEN}`,
-        },
-      });
+      const response = await axios.delete(
+        `${API_URL}/eliminarSistema/${id}`,
+        authHeaders,
+      );
 
       await fetchSistemasGlobales();
       await fetchSistemasUsuario();
@@ -207,8 +221,8 @@ export default function Sistemas() {
 
   const guardarOpcionSistema = async (sistemaId, opcionData) => {
     try {
-      if (!API_URL || !API_TOKEN) {
-        throw new Error("Faltan variables de entorno.");
+      if (!API_URL || !API_TOKEN || !token) {
+        throw new Error("Faltan variables de entorno o token de sesión.");
       }
 
       // 1. Actualización optimista de la opción e ícono en pantalla
@@ -242,7 +256,8 @@ export default function Sistemas() {
       // 2. Envío a la API
       const response = await axios.post(`${API_URL}/guardarOpcion`, payload, {
         headers: {
-          Authorization: `Bearer ${API_TOKEN}`,
+          "x-client-uuid": API_TOKEN,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -276,8 +291,8 @@ export default function Sistemas() {
 
   const eliminarOpcionSistema = async (sistemaId, opcionId) => {
     try {
-      if (!API_URL || !API_TOKEN) {
-        throw new Error("Faltan variables de entorno.");
+      if (!API_URL || !API_TOKEN || !token) {
+        throw new Error("Faltan variables de entorno o token de sesión.");
       }
 
       // Actualización optimista local
@@ -293,11 +308,7 @@ export default function Sistemas() {
 
       const response = await axios.delete(
         `${API_URL}/eliminarOpcion/${opcionId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${API_TOKEN}`,
-          },
-        },
+        authHeaders,
       );
 
       await fetchSistemasGlobales();

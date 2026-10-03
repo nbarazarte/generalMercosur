@@ -1,21 +1,16 @@
 const dotenv = require("dotenv");
 dotenv.config({ path: "../.env" });
 const express = require("express");
-const CryptoJS = require("crypto-js");
-const axios = require("axios");
 const router = express.Router();
 const pool = require("../db");
-const autenticarToken = require("../middlewares/autenticarToken");
+const verificarClienteFrontend = require("../middlewares/autenticarToken");
+const verificarSesion = require("../middlewares/verificarSesion");
 const bcrypt = require("bcryptjs");
-const upload = require("../middlewares/multerConfig");
 const fs = require("fs");
-const fsp = fs.promises;
-const { EventEmitter } = require("events");
 const path = require("path");
-const { transporter, transporter_gmail } = require("../mailer");
 const jwt = require("jsonwebtoken");
 
-// Ruta pública para descargar un archivo por nombre
+// Ruta pública para descargar un archivo por nombre (protegida por ambos middlewares globales)
 router.get("/descargar/:nombre", (req, res) => {
   const nombre = req.params.nombre;
   const ruta = path.join("/var/www/uploads", nombre);
@@ -60,7 +55,9 @@ router.get("/descargar-archivo/:nombre", (req, res) => {
   }
 });
 
-router.use(autenticarToken);
+// 🔒 Doble capa de seguridad global para todo el módulo admin
+router.use(verificarClienteFrontend);
+router.use(verificarSesion);
 
 // ==========================================
 // 0. ENDPOINT: OBTIENE LA LISTA DE SISTEMAS
@@ -777,7 +774,6 @@ router.post("/eliminarRol/:id", async (req, res) => {
   try {
     await client.query("BEGIN");
 
-    // Validar si tiene opciones asociadas antes de eliminar
     const checkOpciones = await client.query(
       `SELECT id FROM public.tbl_roles_sistemas_opciones WHERE rol_sistema_id = $1 LIMIT 1;`,
       [id],
@@ -945,7 +941,7 @@ router.get("/fetchUsuarios", async (req, res) => {
         u.bol_activo,
         u.departamento_id,
         d.str_nombre AS departamento,
-        u.fec_ultimo_acceso AS ultimo_acceso -- <-- CAMBIO AQUÍ
+        u.fec_ultimo_acceso AS ultimo_acceso
       FROM public.tbl_usuarios u
       LEFT JOIN public.cat_departamentos d ON u.departamento_id = d.id
       ORDER BY u.id ASC;
@@ -973,7 +969,6 @@ router.get("/fetchUsuarios", async (req, res) => {
       accesosPorUsuario[row.usuario_id][row.sistema_id] = row.rol_nombre;
     });
 
-    // Función auxiliar para formatear la fecha del último acceso
     const formatUltimoAcceso = (fecha) => {
       if (!fecha) return "—";
       const d = new Date(fecha);
@@ -1182,7 +1177,6 @@ router.post("/actualizarAccesoUsuario", async (req, res) => {
 
     await client.query("BEGIN");
 
-    // 1. Limpiar el rol previo que tuviera este usuario en este sistema específico
     await client.query(
       `DELETE FROM public.tbl_usuarios_roles_sistemas 
        WHERE usuario_id = $1 
@@ -1192,7 +1186,6 @@ router.post("/actualizarAccesoUsuario", async (req, res) => {
       [usuarioId, sistemaId],
     );
 
-    // 2. Si se seleccionó un rol (si no viene vacío), buscamos su ID correspondiente en tbl_roles_sistemas
     if (rolNombre && rolNombre.trim() !== "") {
       const rolSysRes = await client.query(
         `SELECT rs.id 
@@ -1212,7 +1205,6 @@ router.post("/actualizarAccesoUsuario", async (req, res) => {
 
       const rolSistemaId = rolSysRes.rows[0].id;
 
-      // 3. Insertar la relación definitiva en tbl_usuarios_roles_sistemas
       await client.query(
         `INSERT INTO public.tbl_usuarios_roles_sistemas (usuario_id, rol_sistema_id, bol_activo, created_at, updated_at)
          VALUES ($1, $2, true, CURRENT_DATE, CURRENT_DATE)
@@ -1240,7 +1232,6 @@ router.post("/actualizarAccesoUsuario", async (req, res) => {
 // ENDPOINTS PARA EL DASHBOARD Y GRÁFICOS
 // ==========================================
 
-// 1. Obtener KPIs generales
 router.get("/dashboard/kpis", async (req, res) => {
   try {
     const query = `SELECT * FROM public.view_dashboard_kpis;`;
@@ -1252,7 +1243,6 @@ router.get("/dashboard/kpis", async (req, res) => {
   }
 });
 
-// 2. Obtener Usuarios por Sistema (Gráfico de Barras)
 router.get("/usuarios-por-sistema", async (req, res) => {
   try {
     const query = `SELECT * FROM public.view_dashboard_usuarios_por_sistema;`;
@@ -1264,7 +1254,6 @@ router.get("/usuarios-por-sistema", async (req, res) => {
   }
 });
 
-// 3. Obtener Distribución de Roles (Gráfico de Dona)
 router.get("/distribucion-roles", async (req, res) => {
   try {
     const query = `SELECT * FROM public.view_dashboard_distribucion_roles;`;
@@ -1276,9 +1265,6 @@ router.get("/distribucion-roles", async (req, res) => {
   }
 });
 
-// ==========================================
-// ENDPOINT: ALERTAS DE ACCESOS Y SEGURIDAD
-// ==========================================
 router.get("/dashboard/alertas", async (req, res) => {
   try {
     const query = `SELECT * FROM public.view_dashboard_alertas_seguridad LIMIT 10;`;
@@ -1290,9 +1276,6 @@ router.get("/dashboard/alertas", async (req, res) => {
   }
 });
 
-// ==========================================
-// ENDPOINT: ÚLTIMOS ACCESOS DE USUARIOS
-// ==========================================
 router.get("/dashboard/ultimos-accesos", async (req, res) => {
   try {
     const query = `SELECT * FROM public.view_dashboard_ultimos_accesos;`;

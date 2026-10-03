@@ -1,33 +1,23 @@
-const { v4: uuidv4 } = require('uuid');
+// middlewares/autenticarToken.js
 const dotenv = require('dotenv');
-
-dotenv.config({ path: '../env' });
+dotenv.config({ path: '../.env' });
 
 const AUTHORIZATION_HEADER = process.env.AUTHORIZATION_HEADER;
 
-function autenticarUUID(req, res, next) {
-    // 1. Intentar obtener el token del Header 'Authorization'
-    const authHeader = req.header('Authorization');
-    let token = null;
+function verificarClienteFrontend(req, res, next) {
+    // Buscamos el UUID en el header personalizado de la aplicación
+    const clientUuid = req.header('x-client-uuid');
 
-    if (authHeader) {
-        token = authHeader.replace('Bearer ', '');
-    } else {
-        // 2. Si no hay header, intentar obtenerlo de la URL (para EventSource/SSE)
-        token = req.query.token;
+    if (!clientUuid) {
+        return res.status(401).json({ error: 'Acceso denegado. Falta el identificador de la aplicación.' });
     }
 
-    if (!token) {
-        return res.status(401).send('Acceso denegado. Se requiere un UUID.');
-    }
-
-    // 3. Verificar que el token sea el correcto
-    if (token !== AUTHORIZATION_HEADER) {
-        console.log("Error al verificar el UUID: UUID inválido.");
-        return res.status(400).send('UUID inválido.');
+    if (clientUuid !== AUTHORIZATION_HEADER) {
+        console.log("Error al verificar el UUID: UUID de aplicación inválido.");
+        return res.status(403).json({ error: 'Aplicación no autorizada.' });
     }
 
     next();
 }
 
-module.exports = autenticarUUID;
+module.exports = verificarClienteFrontend;

@@ -132,6 +132,8 @@ const Login = () => {
       }
 
       const { deviceId, deviceName } = await getDeviceInfo();
+
+      // CAMBIO: Se usa 'x-client-uuid' en lugar de 'Authorization' para el token de la app
       const response = await axios.post(
         `${API_URL}/login`,
         {
@@ -140,7 +142,7 @@ const Login = () => {
           device_id: deviceId,
           device_name: deviceName,
         },
-        { headers: { Authorization: `Bearer ${API_TOKEN}` } },
+        { headers: { "x-client-uuid": API_TOKEN } },
       );
 
       dispatch(setUser(response.data));
@@ -148,7 +150,6 @@ const Login = () => {
       showToast("¡Sesión iniciada correctamente!", "success");
       navigate("/home");
     } catch (error) {
-      // Si Axios no recibió respuesta del servidor (servidor caído o sin red)
       const isNetworkError =
         error.message === "Network Error" || !error.response;
 
@@ -187,13 +188,13 @@ const Login = () => {
         throw new Error("Faltan variables de entorno.");
       }
 
+      // CAMBIO: Se usa 'x-client-uuid' en lugar de 'Authorization'
       const response = await axios.post(
         `${API_URL}/forgot-password`,
         { email: loginEmail.trim() },
-        { headers: { Authorization: `Bearer ${API_TOKEN}` } },
+        { headers: { "x-client-uuid": API_TOKEN } },
       );
 
-      // El backend devuelve un mensaje genérico por seguridad (evita enumeración de usuarios)
       showToast(
         response.data.message ||
           "Si el correo está registrado, recibirás un enlace.",

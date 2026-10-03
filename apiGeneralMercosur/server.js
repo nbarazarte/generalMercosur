@@ -30,8 +30,8 @@ app.use(cors({
       allowedOrigins.includes(origin) || 
       origin.startsWith("http://192.168.") || 
       origin.startsWith("https://192.168.") ||
-      origin.endsWith(".trycloudflare.com") ||  // Permite subdominios de Cloudflare
-      origin.endsWith(".loca.lt")              // Permite subdominios de Localtunnel
+      origin.endsWith(".trycloudflare.com") ||  
+      origin.endsWith(".loca.lt")              
     ) {
       callback(null, true);
     } else {
@@ -40,7 +40,7 @@ app.use(cors({
   },
   credentials: true,
   methods: "GET,POST,PUT,DELETE,OPTIONS",
-  allowedHeaders: "Content-Type,Authorization"
+  allowedHeaders: ["Content-Type", "Authorization", "x-client-uuid"] // <-- Agregado x-client-uuid aquí
 }));
 
 // 4. Middleware PNA

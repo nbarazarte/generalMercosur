@@ -11,32 +11,43 @@ const LogoutButton = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // 3. Obtén el userId actual desde el estado de Redux antes de borrarlo
   const userId = useSelector((state) => state.auth.user?.id);
+  const token = useSelector(
+    (state) => state.auth.token || state.auth.user?.token,
+  );
 
   const handleLogout = async () => {
     try {
-      // 4. Hacemos la petición al backend para que borre el token/sesión en la BD
-      if (userId) {
+      // Intentamos notificar al backend para limpiar la BD (si el token aún es válido)
+      if (userId && token) {
         await axios.post(
           `${API_URL}/logout`,
           { userId },
           {
             headers: {
-              Authorization: `Bearer ${API_TOKEN}`,
+              "x-client-uuid": API_TOKEN,
+              Authorization: `Bearer ${token}`,
             },
           },
         );
       }
-
-      // 5. Limpieza local (Redux y persistencia)
-      dispatch(logout());
-      await persistor.flush();
-      await persistor.purge();
-      window.localStorage.removeItem("persist:root");
     } catch (error) {
-      console.error("Error durante el logout:", error);
+      console.warn(
+        "No se pudo notificar al servidor el cierre de sesión (posiblemente el token ya expiró o fue eliminado):",
+        error,
+      );
     } finally {
+      // 🔒 LIMPIEZA LOCAL GARANTIZADA: Ocurre siempre, falle o no el backend
+      dispatch(logout());
+      try {
+        await persistor.flush();
+        await persistor.purge();
+      } catch (err) {
+        console.error("Error al limpiar el persistor:", err);
+      }
+      window.localStorage.removeItem("persist:root");
+
+      // Redirección forzada al login
       navigate("/login", { replace: true });
     }
   };
