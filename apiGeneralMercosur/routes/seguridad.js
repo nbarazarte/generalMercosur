@@ -299,7 +299,6 @@ router.post("/login", async (req, res) => {
 
     const user = result.rows[0];
 
-    // ---> NUEVA VALIDACIÓN: Verificar si el usuario está activo <---
     if (user.bol_activo === false) {
       return res
         .status(403)
@@ -320,11 +319,17 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1h" },
     );
 
-    // 4. Limpieza global de tokens expirados en segundo plano
+    // 4. Limpieza de tokens expirados de ESTE usuario en segundo plano
     pool
-      .query("DELETE FROM tbl_auth_tokens WHERE expires_at < NOW()")
+      .query(
+        "DELETE FROM tbl_auth_tokens WHERE user_id = $1 AND expires_at < NOW()",
+        [user.id],
+      )
       .catch((err) =>
-        console.error("Error al limpiar tokens expirados:", err.message),
+        console.error(
+          "Error al limpiar tokens expirados del usuario:",
+          err.message,
+        ),
       );
 
     // 5. UPSERT token de dispositivo
@@ -478,11 +483,12 @@ router.post("/logout", async (req, res) => {
   try {
     const { userId } = req.body;
 
-    await pool.query("DELETE FROM auth_tokens WHERE user_id = $1", [userId]);
+    // Asegúrate de usar 'tbl_auth_tokens' igual que en el login
+    await pool.query("DELETE FROM tbl_auth_tokens WHERE user_id = $1", [userId]);
 
     res.send("Sesión cerrada correctamente");
   } catch (err) {
-    console.error(err.message);
+    console.error("Error al cerrar sesión:", err.message);
     res.status(500).send("Error al cerrar sesión");
   }
 });

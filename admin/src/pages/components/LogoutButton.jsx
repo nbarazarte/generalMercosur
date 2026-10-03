@@ -1,14 +1,35 @@
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { logout } from "../../store/authSlice"; // Ajusta la ruta si es necesario[cite: 3]
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../store/authSlice";
 import { persistor } from "../../store/store";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;
+const API_TOKEN = import.meta.env.VITE_TOKEN;
 
 const LogoutButton = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // 3. Obtén el userId actual desde el estado de Redux antes de borrarlo
+  const userId = useSelector((state) => state.auth.user?.id);
+
   const handleLogout = async () => {
     try {
+      // 4. Hacemos la petición al backend para que borre el token/sesión en la BD
+      if (userId) {
+        await axios.post(
+          `${API_URL}/logout`,
+          { userId },
+          {
+            headers: {
+              Authorization: `Bearer ${API_TOKEN}`,
+            },
+          },
+        );
+      }
+
+      // 5. Limpieza local (Redux y persistencia)
       dispatch(logout());
       await persistor.flush();
       await persistor.purge();
