@@ -62,7 +62,7 @@ router.post("/request-register", async (req, res) => {
     // 3. Generar token usando el email normalizado
     const registrationToken = jwt.sign(
       { email: normalizedEmail },
-      process.env.JWT_SECRET || "123456",
+      process.env.JWT_SECRET,
       {
         expiresIn: "15m",
       },
@@ -312,7 +312,7 @@ router.post("/login", async (req, res) => {
     }
 
     // 3. Generar token JWT
-    const secretKey = process.env.JWT_SECRET || "secret_fallback_dev";
+    const secretKey = process.env.JWT_SECRET;
     const token = jwt.sign(
       { id: user.id, username: user.str_usuario },
       secretKey,
@@ -414,12 +414,12 @@ router.post("/forgot-password", async (req, res) => {
     // IMPORTANTE: Usa el mismo secreto que en /login. Si allá usas "secret", aquí también.
     const resetToken = jwt.sign(
       { email: user.str_email, id: user.id, type: "reset" },
-      "123456", // Cambia esto por process.env.JWT_SECRET
+      process.env.JWT_SECRET,
       { expiresIn: "15m" },
     );
 
     // 3. Configurar enlace (Verifica que process.env.URL esté definido en tu .env)
-    const baseUrl = process.env.URL || "http://localhost:3000"; // Fallback por seguridad
+    const baseUrl = process.env.URL; // Fallback por seguridad
     const resetLink = `${baseUrl}/resetear-contrasena?token=${resetToken}`;
 
     // 4. Enviar Correo
@@ -484,7 +484,9 @@ router.post("/logout", async (req, res) => {
     const { userId } = req.body;
 
     // Asegúrate de usar 'tbl_auth_tokens' igual que en el login
-    await pool.query("DELETE FROM tbl_auth_tokens WHERE user_id = $1", [userId]);
+    await pool.query("DELETE FROM tbl_auth_tokens WHERE user_id = $1", [
+      userId,
+    ]);
 
     res.send("Sesión cerrada correctamente");
   } catch (err) {

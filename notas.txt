@@ -113,16 +113,18 @@ WHERE table_schema = 'onboarding'
 ORDER BY ordinal_position;
 
 api:
-DBHOST=192.168.12.29
+DBHOST=localhost
 DBPASSWORD=1123581321
 PORT=3000
 DBUSER=postgres
 DBDATABASE=db_general_mercosur
 DBPORT=5432
-JWT_SECRET=Mercosur2024
-AUTHORIZATION_HEADER=0117921a-64a2-4676-8d0a-22877bfecaf5
+AUTHORIZATION_HEADER=3594ced6-86ce-4c66-a276-d47399bb4deb
 
 URL="http://localhost:5173"
+
+# para encriptar el token de jwt
+JWT_SECRET=3594ced6-86ce-4c66-a276-d47399bb4deb
 
 MAINTENANCE_MODE=false
 
@@ -131,17 +133,17 @@ SMTP_PORT = 587
 SENDER_EMAIL = "serviciosautomaticos@mercosur.com.ve"  # Tu correo de Office 365
 PASSWORD_EMAIL = "S!146168980372oz"                 # Tu contraseña o App Password
 
-front:
-#################### Variables API de admin #################### 
-VITE_NOMBRE_SISTEMA=Mercosur Enterprise Portal
 
-# URLS API LOCAL (Configuración para pruebas desde la red local / teléfono)
-VITE_URL_API_LOCAL_SEGURIDAD=http://192.168.1.41:3000/seguridad/
-VITE_URL_API_ADMIN=http://192.168.1.41:3000/admin/
-VITE_URL_API_LOCAL_VER=http://192.168.1.41:3000/
+front:
+#################### Variables API de General Mercosur #################### 
+
+# URLS API LOCAL
+VITE_URL_API_LOCAL_SEGURIDAD=http://192.168.1.42:3000/seguridad/
+VITE_URL_API_ADMIN=http://192.168.1.42:3000/admin/
+VITE_URL_API_LOCAL_VER=http://192.168.1.42:3000/
 
 # TOKEN de la api
-VITE_TOKEN=0117921a-64a2-4676-8d0a-22877bfecaf5
+VITE_TOKEN=3594ced6-86ce-4c66-a276-d47399bb4deb
 
 # para encriptar el token de redux
 VITE_REDUX_SECRET_KEY=3594ced6-86ce-4c66-a276-d47399bb4deb
