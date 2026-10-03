@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import axiosSeguridad from "../utils/axiosSeguridad";
 
 // Contenido estático para el Aside de Restablecer Contraseña
 export const ResetPasswordAside = (
@@ -57,9 +57,6 @@ const ResetearContrasena = () => {
   });
   const [isResetLoading, setIsResetLoading] = useState(false);
 
-  const API_URL = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;
-  const API_TOKEN = import.meta.env.VITE_TOKEN;
-
   const showToast = (message, type = "info") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -96,19 +93,10 @@ const ResetearContrasena = () => {
     setIsResetLoading(true);
 
     try {
-      if (!API_URL || !API_TOKEN) {
-        throw new Error("Faltan variables de entorno.");
-      }
-
-      // CAMBIO: Se usa 'x-client-uuid' en lugar de 'Authorization'
-      const response = await axios.post(
-        `${API_URL}/reset-password`,
-        {
-          token: token,
-          password: resetPassword,
-        },
-        { headers: { "x-client-uuid": API_TOKEN } },
-      );
+      const response = await axiosSeguridad.post(`/reset-password`, {
+        token: token,
+        password: resetPassword,
+      });
 
       showToast(
         response.data.message || "Contraseña actualizada correctamente.",
@@ -127,9 +115,7 @@ const ResetearContrasena = () => {
         (typeof error.response?.data === "string"
           ? error.response.data
           : error.response?.data?.message || error.response?.data?.error) ||
-        (isNetworkError && error.message !== "Faltan variables de entorno."
-          ? "No hay conexión con la API."
-          : error.message);
+        (isNetworkError ? "No hay conexión con la API." : error.message);
 
       showToast(errorMessage, "error");
     } finally {

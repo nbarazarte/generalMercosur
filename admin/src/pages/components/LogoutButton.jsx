@@ -1,11 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
 import { logout } from "../../store/authSlice";
 import { persistor } from "../../store/store";
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;
-const API_TOKEN = import.meta.env.VITE_TOKEN;
+import axiosSeguridad from "../utils/axiosSeguridad";
 
 const LogoutButton = () => {
   const navigate = useNavigate();
@@ -20,16 +18,7 @@ const LogoutButton = () => {
     try {
       // Intentamos notificar al backend para limpiar la BD (si el token aún es válido)
       if (userId && token) {
-        await axios.post(
-          `${API_URL}/logout`,
-          { userId },
-          {
-            headers: {
-              "x-client-uuid": API_TOKEN,
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
+        await axiosSeguridad.post(`/logout`, { userId });
       }
     } catch (error) {
       console.warn(

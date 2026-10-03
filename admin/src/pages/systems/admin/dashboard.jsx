@@ -3,10 +3,7 @@ import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
 import { useSelector } from "react-redux";
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_URL_API_ADMIN;
-const API_TOKEN = import.meta.env.VITE_TOKEN;
+import axiosAdmin from "../../utils/axiosAdmin";
 
 /* ====== HELPER FUNCTIONS ====== */
 function initials(n) {
@@ -78,25 +75,16 @@ export default function DashboardSistemasUsuarios() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  const authHeaders = useMemo(
-    () => ({
-      headers: {
-        "x-client-uuid": API_TOKEN,
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-    [token],
-  );
-
   useEffect(() => {
     if (!token) return;
     const fetchData = async () => {
       try {
+        // Peticiones limpias usando axiosAdmin (sin necesidad de pasar authHeaders manuales)
         const [resSistemas, resUsuarios, resKpis] = await Promise.all([
-          axios.get(`${API_URL}/fetchSistemas`, authHeaders),
-          axios.get(`${API_URL}/fetchUsuarios`, authHeaders),
-          axios
-            .get(`${API_URL}/dashboard/kpis`, authHeaders)
+          axiosAdmin.get("/fetchSistemas"),
+          axiosAdmin.get("/fetchUsuarios"),
+          axiosAdmin
+            .get("/dashboard/kpis")
             .catch(() => ({ data: { data: {} } })),
         ]);
 
@@ -153,11 +141,10 @@ export default function DashboardSistemasUsuarios() {
 
   const guardarOpcionSistema = async (sistemaId, opcionData) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/guardarOpcion`,
-        { sistemaId, ...opcionData },
-        authHeaders,
-      );
+      const response = await axiosAdmin.post("/guardarOpcion", {
+        sistemaId,
+        ...opcionData,
+      });
       showToast(
         response.data?.message || "Ruta guardada correctamente.",
         "success",
@@ -266,7 +253,7 @@ export default function DashboardSistemasUsuarios() {
           />
         </div>
 
-        {/* 2. FILA 1 DE GRÁFICOS: ACCESOS POR SISTEMA Y DISTRIBUCIÓN DE ROLES */}
+        {/* 2. FILA 1 DE GRÁFICOS */}
         <div className="dashboard-grid-1col">
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
@@ -284,12 +271,11 @@ export default function DashboardSistemasUsuarios() {
           </div>
         </div>
 
-        {/* SECCIÓN DE GRÁFICOS: ROLES Y DEPARTAMENTOS (DOS COLUMNAS) */}
+        {/* SECCIÓN DE GRÁFICOS: ROLES Y DEPARTAMENTOS */}
         <div
           className="dashboard-grid-2col"
           style={{ marginBottom: "20px", marginTop: "20px" }}
         >
-          {/* Tarjeta 2: Distribución de Usuarios por Departamento */}
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
               <span
@@ -308,7 +294,6 @@ export default function DashboardSistemasUsuarios() {
             <ChartDoughnutDepartamentos usuarios={usuarios} isDark={isDark} />
           </div>
 
-          {/* Tarjeta 1: Distribución de Roles */}
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
               <span
@@ -327,7 +312,6 @@ export default function DashboardSistemasUsuarios() {
 
         {/* 3. FILA 2: MATRIZ DE ACCESOS RÁPIDOS Y ÚLTIMOS ACCESOS */}
         <div className="dashboard-grid-2col">
-          {/* MATRIZ RESUMEN DE USUARIOS Y ACCESOS */}
           <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
             <div
               style={{
@@ -361,7 +345,6 @@ export default function DashboardSistemasUsuarios() {
               </button>
             </div>
 
-            {/* BUSCADOR DE USUARIOS PARA LA MATRIZ */}
             <div
               style={{
                 padding: "10px 20px",
@@ -543,7 +526,6 @@ export default function DashboardSistemasUsuarios() {
               </table>
             </div>
 
-            {/* CONTROLES DE PAGINACIÓN */}
             {totalAccessPages > 1 && (
               <div
                 style={{
@@ -578,11 +560,10 @@ export default function DashboardSistemasUsuarios() {
             )}
           </div>
 
-          {/* ÚLTIMOS ACCESOS DE USUARIOS (DESDE LA BASE DE DATOS) */}
           <UltimosAccesosCard isDark={isDark} token={token} />
         </div>
 
-        {/* 4. FILA 3: CATÁLOGO DE SISTEMAS Y RUTAS CONFIGURADAS */}
+        {/* 4. CATÁLOGO DE SISTEMAS Y RUTAS */}
         <div style={{ marginBottom: 20 }}>
           <div
             style={{
@@ -782,7 +763,6 @@ export default function DashboardSistemasUsuarios() {
         </div>
       </div>
 
-      {/* MODAL PARA AGREGAR OPCIÓN / RUTA RÁPIDA */}
       {modal && (
         <ModalOpcionRapida
           sistema={modal.sistema}
@@ -837,19 +817,15 @@ function KPICard({ icon, val, label, trend, trendColor, iconColor }) {
   );
 }
 
-/* ====== COMPONENTE DE ÚLTIMOS ACCESOS DE USUARIOS DESDE LA BD ====== */
+/* ====== COMPONENTE DE ÚLTIMOS ACCESOS ====== */
 function UltimosAccesosCard({ isDark, token }) {
   const [accesos, setAccesos] = useState([]);
 
   useEffect(() => {
     if (!token) return;
-    axios
-      .get(`${API_URL}/dashboard/ultimos-accesos`, {
-        headers: {
-          "x-client-uuid": API_TOKEN,
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    // Corregido: se usa axiosAdmin en lugar de axios
+    axiosAdmin
+      .get("/dashboard/ultimos-accesos")
       .then((res) => {
         const data = res.data?.data || res.data || [];
         setAccesos(data);
@@ -965,22 +941,16 @@ function UltimosAccesosCard({ isDark, token }) {
   );
 }
 
-/* ====== COMPONENTES DE GRÁFICOS (CHART.JS CON AXIOS) ====== */
-
-/* 1. Bar Chart: Usuarios por Sistema */
+/* ====== GRÁFICO: BAR CHART (USUARIOS POR SISTEMA) ====== */
 function ChartBarSistemas({ isDark, token }) {
   const canvasRef = useRef(null);
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     if (!token) return;
-    axios
-      .get(`${API_URL}/usuarios-por-sistema`, {
-        headers: {
-          "x-client-uuid": API_TOKEN,
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    // Corregido: se usa axiosAdmin en lugar de axios
+    axiosAdmin
+      .get("/usuarios-por-sistema")
       .then((res) => {
         const data = res.data?.data || res.data || [];
         setChartData(data);
@@ -1040,7 +1010,7 @@ function ChartBarSistemas({ isDark, token }) {
   );
 }
 
-/* 2. Doughnut Chart: Distribución de Roles por Usuario Único */
+/* ====== GRÁFICO: DOUGHNUT ROLES ====== */
 function ChartDoughnutRoles({ usuarios, isDark }) {
   const canvasRef = useRef(null);
 
@@ -1116,9 +1086,7 @@ function ChartDoughnutRoles({ usuarios, isDark }) {
   );
 }
 
-/* ==========================================================
-   GRÁFICO: DISTRIBUCIÓN DE USUARIOS POR DEPARTAMENTO
-   ========================================================== */
+/* ====== GRÁFICO: DOUGHNUT DEPARTAMENTOS ====== */
 function ChartDoughnutDepartamentos({ usuarios, isDark }) {
   const canvasRef = useRef(null);
 

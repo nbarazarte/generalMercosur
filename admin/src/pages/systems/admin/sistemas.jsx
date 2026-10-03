@@ -2,13 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
 import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
+
+// Instancias de Axios personalizadas según tu estructura de carpetas
+import axiosAdmin from "../../utils/axiosAdmin";
+import axiosSeguridad from "../../utils/axiosSeguridad";
 
 import { setSistemasOpciones } from "../../../store/authSlice";
-
-const API_URL = import.meta.env.VITE_URL_API_ADMIN;
-const API_URL2 = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;
-const API_TOKEN = import.meta.env.VITE_TOKEN;
 
 /* ============================ COMPONENTE PRINCIPAL ============================ */
 export default function Sistemas() {
@@ -27,24 +26,14 @@ export default function Sistemas() {
     }, 3500);
   };
 
-  const authHeaders = useMemo(
-    () => ({
-      headers: {
-        "x-client-uuid": API_TOKEN,
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-    [token],
-  );
-
   // Función reutilizable para obtener los sistemas de la API principal
   const fetchSistemasGlobales = async () => {
     try {
-      if (!API_URL || !API_TOKEN || !token) {
-        throw new Error("Faltan variables de entorno o token de sesión.");
+      if (!token) {
+        throw new Error("Falta el token de sesión.");
       }
 
-      const response = await axios.get(`${API_URL}/fetchSistemas`, authHeaders);
+      const response = await axiosAdmin.get(`/fetchSistemas`);
 
       const sistemasObtenidos = response.data.sistemas || [];
 
@@ -57,7 +46,7 @@ export default function Sistemas() {
         (typeof error.response?.data === "string"
           ? error.response.data
           : error.response?.data?.message) ||
-        (isNetworkError && error.message !== "Faltan variables de entorno."
+        (isNetworkError && error.message !== "Falta el token de sesión."
           ? "No hay conexión con el servidor."
           : error.message);
 
@@ -70,14 +59,8 @@ export default function Sistemas() {
   const fetchSistemasUsuario = async () => {
     if (!user?.id || !token) return;
     try {
-      const response = await axios.get(
-        `${API_URL2}/sistemas-opciones/${user.id}`,
-        {
-          headers: {
-            "x-client-uuid": API_TOKEN,
-            Authorization: `Bearer ${token}`,
-          },
-        },
+      const response = await axiosSeguridad.get(
+        `/sistemas-opciones/${user.id}`,
       );
 
       if (response.data) {
@@ -114,8 +97,8 @@ export default function Sistemas() {
 
   const handleGuardarSistema = async (sistemaData) => {
     try {
-      if (!API_URL || !API_TOKEN || !token) {
-        throw new Error("Faltan variables de entorno o token de sesión.");
+      if (!token) {
+        throw new Error("Falta el token de sesión.");
       }
 
       // 1. Actualización optimista local (evita parpadeo de íconos/datos)
@@ -131,17 +114,7 @@ export default function Sistemas() {
       setModal(null);
 
       // 2. Envío a la API
-      const response = await axios.post(
-        `${API_URL}/guardarSistema`,
-        sistemaData,
-        {
-          headers: {
-            "x-client-uuid": API_TOKEN,
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const response = await axiosAdmin.post(`/guardarSistema`, sistemaData);
 
       const { sistema: sistemaProcesado, esEdicion, message } = response.data;
 
@@ -168,7 +141,7 @@ export default function Sistemas() {
         (typeof error.response?.data === "string"
           ? error.response.data
           : error.response?.data?.error || error.response?.data?.message) ||
-        (isNetworkError && error.message !== "Faltan variables de entorno.")
+        (isNetworkError && error.message !== "Falta el token de sesión.")
           ? "No hay conexión con el servidor."
           : error.message;
 
@@ -180,18 +153,15 @@ export default function Sistemas() {
 
   const eliminarSistema = async (id) => {
     try {
-      if (!API_URL || !API_TOKEN || !token) {
-        throw new Error("Faltan variables de entorno o token de sesión.");
+      if (!token) {
+        throw new Error("Falta el token de sesión.");
       }
 
       // Actualización optimista
       setSistemas((prev) => prev.filter((s) => s.id !== id));
       setModal(null);
 
-      const response = await axios.delete(
-        `${API_URL}/eliminarSistema/${id}`,
-        authHeaders,
-      );
+      const response = await axiosAdmin.delete(`/eliminarSistema/${id}`);
 
       await fetchSistemasGlobales();
       await fetchSistemasUsuario();
@@ -210,7 +180,7 @@ export default function Sistemas() {
         (typeof error.response?.data === "string"
           ? error.response.data
           : error.response?.data?.error || error.response?.data?.message) ||
-        (isNetworkError && error.message !== "Faltan variables de entorno."
+        (isNetworkError && error.message !== "Falta el token de sesión."
           ? "No hay conexión con el servidor."
           : error.message);
 
@@ -221,8 +191,8 @@ export default function Sistemas() {
 
   const guardarOpcionSistema = async (sistemaId, opcionData) => {
     try {
-      if (!API_URL || !API_TOKEN || !token) {
-        throw new Error("Faltan variables de entorno o token de sesión.");
+      if (!token) {
+        throw new Error("Falta el token de sesión.");
       }
 
       // 1. Actualización optimista de la opción e ícono en pantalla
@@ -254,13 +224,7 @@ export default function Sistemas() {
       };
 
       // 2. Envío a la API
-      const response = await axios.post(`${API_URL}/guardarOpcion`, payload, {
-        headers: {
-          "x-client-uuid": API_TOKEN,
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axiosAdmin.post(`/guardarOpcion`, payload);
 
       // 3. Sincronización en segundo plano
       await fetchSistemasGlobales();
@@ -280,7 +244,7 @@ export default function Sistemas() {
         (typeof error.response?.data === "string"
           ? error.response.data
           : error.response?.data?.error || error.response?.data?.message) ||
-        (isNetworkError && error.message !== "Faltan variables de entorno."
+        (isNetworkError && error.message !== "Falta el token de sesión."
           ? "No hay conexión con el servidor."
           : error.message);
 
@@ -291,8 +255,8 @@ export default function Sistemas() {
 
   const eliminarOpcionSistema = async (sistemaId, opcionId) => {
     try {
-      if (!API_URL || !API_TOKEN || !token) {
-        throw new Error("Faltan variables de entorno o token de sesión.");
+      if (!token) {
+        throw new Error("Falta el token de sesión.");
       }
 
       // Actualización optimista local
@@ -306,10 +270,7 @@ export default function Sistemas() {
         }),
       );
 
-      const response = await axios.delete(
-        `${API_URL}/eliminarOpcion/${opcionId}`,
-        authHeaders,
-      );
+      const response = await axiosAdmin.delete(`/eliminarOpcion/${opcionId}`);
 
       await fetchSistemasGlobales();
       await fetchSistemasUsuario();
@@ -328,7 +289,7 @@ export default function Sistemas() {
         (typeof error.response?.data === "string"
           ? error.response.data
           : error.response?.data?.error || error.response?.data?.message) ||
-        (isNetworkError && error.message !== "Faltan variables de entorno."
+        (isNetworkError && error.message !== "Falta el token de sesión."
           ? "No hay conexión con el servidor."
           : error.message);
 

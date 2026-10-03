@@ -2,10 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
 import { useSelector } from "react-redux";
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_URL_API_ADMIN;
-const API_TOKEN = import.meta.env.VITE_TOKEN;
+import axiosAdmin from "../../utils/axiosAdmin";
 
 const AVA_COLORS = [
   "#0b2545",
@@ -81,27 +78,17 @@ export default function Permisos() {
     }, 3500);
   };
 
-  const authHeaders = useMemo(
-    () => ({
-      headers: {
-        "x-client-uuid": API_TOKEN,
-        Authorization: `Bearer ${token}`,
-      },
-    }),
-    [token],
-  );
-
   useEffect(() => {
     if (!token) return;
     const fetchData = async () => {
       try {
         const [resSistemas, resRoles, resCatRoles, resUsuarios, resDeptos] =
           await Promise.all([
-            axios.get(`${API_URL}/fetchSistemas`, authHeaders),
-            axios.get(`${API_URL}/fetchRolesSistemasOpciones`, authHeaders),
-            axios.get(`${API_URL}/fetchCatRoles`, authHeaders),
-            axios.get(`${API_URL}/fetchUsuarios`, authHeaders),
-            axios.get(`${API_URL}/fetchDepartamentos`, authHeaders),
+            axiosAdmin.get("/fetchSistemas"),
+            axiosAdmin.get("/fetchRolesSistemasOpciones"),
+            axiosAdmin.get("/fetchCatRoles"),
+            axiosAdmin.get("/fetchUsuarios"),
+            axiosAdmin.get("/fetchDepartamentos"),
           ]);
 
         const dataArray = Array.isArray(resSistemas.data)
@@ -285,11 +272,7 @@ export default function Permisos() {
 
   const guardarUsuario = async (data) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/guardarUsuario`,
-        data,
-        authHeaders,
-      );
+      const response = await axiosAdmin.post("/guardarUsuario", data);
       setFlag(!flag);
       setModal(null);
       showToast(
@@ -307,10 +290,7 @@ export default function Permisos() {
     if (!window.confirm("¿Estás seguro de que deseas eliminar este usuario?"))
       return;
     try {
-      const response = await axios.delete(
-        `${API_URL}/eliminarUsuario/${id}`,
-        authHeaders,
-      );
+      const response = await axiosAdmin.delete(`/eliminarUsuario/${id}`);
       setFlag(!flag);
       setModal(null);
       showToast(
@@ -326,11 +306,7 @@ export default function Permisos() {
 
   const guardarRol = async (data) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/guardarRol`,
-        data,
-        authHeaders,
-      );
+      const response = await axiosAdmin.post("/guardarRol", data);
 
       setFlag(!flag);
       setModal(null);
@@ -347,11 +323,7 @@ export default function Permisos() {
 
   const asignarRolSistema = async (data) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/asignarRol`,
-        data,
-        authHeaders,
-      );
+      const response = await axiosAdmin.post("/asignarRol", data);
 
       setFlag(!flag);
       setModal(null);
@@ -368,10 +340,9 @@ export default function Permisos() {
 
   const actualizarRolSistemaOpciones = async (data) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/actualizarRolSistemaOpciones`,
+      const response = await axiosAdmin.post(
+        "/actualizarRolSistemaOpciones",
         data,
-        authHeaders,
       );
 
       setFlag(!flag);
@@ -397,11 +368,7 @@ export default function Permisos() {
       return;
 
     try {
-      const response = await axios.post(
-        `${API_URL}/eliminarRol/${rolId}`,
-        {},
-        authHeaders,
-      );
+      const response = await axiosAdmin.post(`/eliminarRol/${rolId}`, {});
 
       const data = response.data;
       setFlag(!flag);
@@ -419,15 +386,11 @@ export default function Permisos() {
 
   const setAccesoMatriz = async (userId, sysId, rol) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/actualizarAccesoUsuario`,
-        {
-          usuarioId: userId,
-          sistemaId: sysId,
-          rolNombre: rol,
-        },
-        authHeaders,
-      );
+      const response = await axiosAdmin.post("/actualizarAccesoUsuario", {
+        usuarioId: userId,
+        sistemaId: sysId,
+        rolNombre: rol,
+      });
 
       setUsuarios((prev) =>
         prev.map((u) => {
@@ -616,10 +579,9 @@ export default function Permisos() {
             )
               return;
             try {
-              const response = await axios.post(
-                `${API_URL}/eliminarRolCat/${rolId}`,
+              const response = await axiosAdmin.post(
+                `/eliminarRolCat/${rolId}`,
                 {},
-                authHeaders,
               );
               setFlag(!flag);
               setModal(null);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import axiosSeguridad from "../utils/axiosSeguridad";
 import getDeviceInfo from "../../helper/getDeviceInfo";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -95,9 +95,6 @@ const Login = () => {
   });
   const [isLoginLoading, setIsLoginLoading] = useState(false);
 
-  const API_URL = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;
-  const API_TOKEN = import.meta.env.VITE_TOKEN;
-
   const showToast = (message, type = "info") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -127,23 +124,14 @@ const Login = () => {
     setIsLoginLoading(true);
 
     try {
-      if (!API_URL || !API_TOKEN) {
-        throw new Error("Faltan variables de entorno.");
-      }
-
       const { deviceId, deviceName } = await getDeviceInfo();
 
-      // CAMBIO: Se usa 'x-client-uuid' en lugar de 'Authorization' para el token de la app
-      const response = await axios.post(
-        `${API_URL}/login`,
-        {
-          email: loginEmail.trim().toLowerCase(),
-          password: loginPassword,
-          device_id: deviceId,
-          device_name: deviceName,
-        },
-        { headers: { "x-client-uuid": API_TOKEN } },
-      );
+      const response = await axiosSeguridad.post(`/login`, {
+        email: loginEmail.trim().toLowerCase(),
+        password: loginPassword,
+        device_id: deviceId,
+        device_name: deviceName,
+      });
 
       dispatch(setUser(response.data));
 
@@ -184,16 +172,10 @@ const Login = () => {
     setIsLoginLoading(true);
 
     try {
-      if (!API_URL || !API_TOKEN) {
-        throw new Error("Faltan variables de entorno.");
-      }
-
       // CAMBIO: Se usa 'x-client-uuid' en lugar de 'Authorization'
-      const response = await axios.post(
-        `${API_URL}/forgot-password`,
-        { email: loginEmail.trim() },
-        { headers: { "x-client-uuid": API_TOKEN } },
-      );
+      const response = await axiosSeguridad.post(`/forgot-password`, {
+        email: loginEmail.trim(),
+      });
 
       showToast(
         response.data.message ||

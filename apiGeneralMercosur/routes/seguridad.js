@@ -109,85 +109,6 @@ router.post("/request-register", async (req, res) => {
   }
 });
 
-router.post("/register", async (req, res) => {
-  const { token, password } = req.body;
-
-  try {
-    const decoded = jwt.verify(token, "123456");
-    const emailFromToken = decoded.email.trim().toUpperCase();
-
-    const client = await pool.connect();
-
-    try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      await client.query("BEGIN");
-
-      const nuevoUsuarioRes = await client.query(
-        "INSERT INTO usuarios (password, email) VALUES ($1, $2) RETURNING id, email",
-        [hashedPassword, emailFromToken],
-      );
-      const user = nuevoUsuarioRes.rows[0];
-
-      const nuevaFichaRes = await client.query(
-        "INSERT INTO onboarding.fichas (usuario_id) VALUES ($1) RETURNING id",
-        [user.id],
-      );
-      const fichaId = nuevaFichaRes.rows[0].id;
-
-      const tablas = [
-        "conyuges",
-        "representantes",
-        "negociopropio",
-        "relaciondependencia",
-        "referenciasbancarias",
-        "referenciaspersonales",
-        "productoservicio",
-        "otros_productoservicio",
-        "rrss_fichas",
-        "perfilesinversion",
-      ];
-
-      for (const tabla of tablas) {
-        await client.query(
-          `INSERT INTO onboarding.${tabla} (ficha_id, usuario_id) VALUES ($1, $2)`,
-          [fichaId, user.id],
-        );
-      }
-
-      const accessToken = jwt.sign(
-        { id: user.id, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: "1h" },
-      );
-
-      await client.query(
-        "INSERT INTO tbl_auth_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)",
-        [user.id, accessToken, new Date(Date.now() + 3600000)],
-      );
-
-      await client.query("COMMIT");
-
-      res.status(201).json({
-        id: user.id,
-        ficha_id: fichaId,
-        email: user.email,
-        token: accessToken,
-      });
-    } catch (err) {
-      await client.query("ROLLBACK");
-      console.error("Error en la transacción de registro:", err);
-      res.status(500).send("Error al procesar los datos del formulario.");
-    } finally {
-      client.release();
-    }
-  } catch (err) {
-    return res
-      .status(401)
-      .json({ error: "El enlace es inválido o ha expirado." });
-  }
-});
-
 // Función auxiliar reutilizable
 async function obtenerSistemasYOpciones(userId) {
   const resultado = await pool.query(
@@ -288,10 +209,19 @@ router.post("/login", async (req, res) => {
     }
 
     const secretKey = process.env.JWT_SECRET;
+
+    // 1. Token de acceso de corta duración (1 hora)
     const token = jwt.sign(
       { id: user.id, username: user.str_usuario },
       secretKey,
       { expiresIn: "1h" },
+    );
+
+    // 2. 💡 NUEVO: Token de renovación de larga duración (12 horas)
+    const refreshToken = jwt.sign(
+      { id: user.id, username: user.str_usuario, type: "refresh" },
+      secretKey,
+      { expiresIn: "12h" },
     );
 
     pool
@@ -335,6 +265,7 @@ router.post("/login", async (req, res) => {
       return res.status(404).send("Usuario sin sistemas asignados");
     }
 
+    // 3. 💡 NUEVO: Devolver el refreshToken junto al token de acceso
     res.json({
       id: user.id,
       username: user.str_usuario,
@@ -342,11 +273,64 @@ router.post("/login", async (req, res) => {
       nombre: user.str_nombre,
       apellido: user.str_apellido,
       token: token,
+      refreshToken: refreshToken, // <--- ¡Asegúrate de incluir esta línea aquí!
       sistemasOpciones: sistemasOpciones,
     });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Error en el servidor");
+  }
+});
+
+// Renovar token de acceso usando el refreshToken
+router.post("/refresh-token", verificarClienteFrontend, async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res
+      .status(401)
+      .json({ error: "No se proporcionó un Refresh Token." });
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+    // Opcional: verificar que el usuario siga activo en la BD
+    const userResult = await pool.query(
+      "SELECT bol_activo FROM tbl_usuarios WHERE id = $1",
+      [decoded.id],
+    );
+
+    if (
+      userResult.rows.length === 0 ||
+      userResult.rows[0].bol_activo === false
+    ) {
+      return res
+        .status(403)
+        .json({ error: "Usuario inactivo o no encontrado." });
+    }
+
+    // Generar un nuevo token de acceso de corta duración (1 hora)
+    const newAccessToken = jwt.sign(
+      { id: decoded.id, username: decoded.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" },
+    );
+
+    // Actualizar el token activo en la base de datos (tbl_auth_tokens)
+    await pool.query(
+      `UPDATE tbl_auth_tokens 
+       SET token = $1, expires_at = NOW() + INTERVAL '1 hour' 
+       WHERE user_id = $2`,
+      [newAccessToken, decoded.id],
+    );
+
+    res.json({ token: newAccessToken });
+  } catch (err) {
+    console.error("Error al refrescar el token:", err.message);
+    return res
+      .status(403)
+      .json({ error: "Refresh Token inválido o expirado." });
   }
 });
 
@@ -417,7 +401,7 @@ router.post("/reset-password", async (req, res) => {
   const { token, password } = req.body;
 
   try {
-    const decoded = jwt.verify(token, "123456");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const email = decoded.email;
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -433,16 +417,20 @@ router.post("/reset-password", async (req, res) => {
 });
 
 // --- RUTA PRIVADA ---
-// Logout de cliente (Protegido por UUID de app Y Token JWT/BD de usuario)
-router.post("/logout", verificarSesion, async (req, res) => {
+router.post("/logout", async (req, res) => {
   try {
     const { userId } = req.body;
 
+    if (!userId) {
+      return res.status(400).json({ error: "ID de usuario no proporcionado." });
+    }
+
+    // Borra los tokens del usuario sin importar el estado del middleware de sesión
     await pool.query("DELETE FROM tbl_auth_tokens WHERE user_id = $1", [
       userId,
     ]);
 
-    res.send("Sesión cerrada correctamente");
+    res.status(200).send("Sesión cerrada correctamente");
   } catch (err) {
     console.error("Error al cerrar sesión:", err.message);
     res.status(500).send("Error al cerrar sesión");

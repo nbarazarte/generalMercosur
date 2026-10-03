@@ -1,13 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
+import axiosSeguridad from "../../utils/axiosSeguridad";
 import TextType from "../../components/TextType";
 import { DynamicIcon } from "../../components/IconCatalog";
 import { setSistemasOpciones } from "../../../store/authSlice";
-
-const API_URL = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;
-const API_TOKEN = import.meta.env.VITE_TOKEN;
 
 export const MainAside = () => {
   const user = useSelector((state) => state.auth?.user);
@@ -119,14 +116,8 @@ const Home = () => {
 
     const fetchSistemas = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/sistemas-opciones/${user.id}`,
-          {
-            headers: {
-              "x-client-uuid": API_TOKEN,
-              Authorization: `Bearer ${token || user?.token}`,
-            },
-          },
+        const response = await axiosSeguridad.get(
+          `/sistemas-opciones/${user.id}`,
         );
 
         if (isMounted && response.data) {
@@ -160,7 +151,7 @@ const Home = () => {
     return () => {
       isMounted = false;
     };
-  }, [user?.id, token, user?.token, user?.sistemasOpciones, dispatch]);
+  }, [user?.id, token, user?.sistemasOpciones, dispatch]);
 
   // Manejo del tema (Light/Dark)
   const [theme, setTheme] = useState(() => {
