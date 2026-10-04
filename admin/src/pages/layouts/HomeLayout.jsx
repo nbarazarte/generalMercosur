@@ -1,19 +1,137 @@
-import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 // Componentes
 import Logo from "../components/Logo";
 import LogoMobile from "../components/LogoMobile";
 import ThemeToggle from "../components/ThemeToggleHome";
 import LogoutButton from "../components/LogoutButton";
+import { updateAccessToken, logout } from "../../store/authSlice";
+import axiosSeguridad from "../utils/axiosSeguridad";
+import { DynamicIcon } from "../../../src/pages/components/IconCatalog";
 
 const HomeLayout = ({ asideContent, showLogout = false }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // 1. Obtén el id del usuario desde el estado de Redux
+  const userId = useSelector((state) => state.auth?.user?.id);
+
+  const refreshToken = useSelector((state) => state.auth?.refreshToken);
+
   const [theme, setTheme] = useState(
     () => localStorage.getItem("theme") || "light",
   );
 
   // Estado para controlar la apertura del menú hamburguesa en móviles
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // --- ESTADOS Y REFERENCIAS PARA EL CONTROL DE SESIÓN ---
+  const [showWarning, setShowWarning] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutos en segundos
+
+  const warningTimerRef = useRef(null);
+  const intervalTimerRef = useRef(null);
+
+  const clearSessionTimers = () => {
+    if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+    if (intervalTimerRef.current) clearInterval(intervalTimerRef.current);
+  };
+
+  const startSessionTimer = () => {
+    clearSessionTimers();
+    setShowWarning(false);
+
+    // El token dura 1 hora (3,600,000 ms).
+    // Avisamos cuando falten 5 minutos para que expire (5 * 60 * 1000 = 300,000 ms).
+    // Nota: Si quieres probarlo rápido mientras desarrollas, puedes cambiar esto temporalmente.
+    const tokenLifetimeMs = 60 * 60 * 1000; // 1 hora total
+    const warningTimeMs = tokenLifetimeMs - 5 * 60 * 1000; // Avisar a los 55 minutos (faltando 5 min)
+
+    warningTimerRef.current = setTimeout(() => {
+      setShowWarning(true);
+      startCountdown();
+    }, warningTimeMs);
+  };
+
+  const startCountdown = () => {
+    let seconds = 300; // 5 minutos de cuenta regresiva en el modal
+    setTimeLeft(seconds);
+
+    if (intervalTimerRef.current) clearInterval(intervalTimerRef.current);
+
+    intervalTimerRef.current = setInterval(() => {
+      seconds -= 1;
+      setTimeLeft(seconds);
+      if (seconds <= 0) {
+        clearInterval(intervalTimerRef.current);
+        handleForceLogout();
+      }
+    }, 1000);
+  };
+
+  // --- INICIO DE TEMPORIZADORES CONDICIONALES ---
+  useEffect(() => {
+    // Si estamos en la página de login, no ejecutamos ningún temporizador de sesión
+    if (location.pathname === "/login" || location.pathname === "/") {
+      clearSessionTimers();
+      setShowWarning(false);
+      return;
+    }
+
+    // Si hay un token válido o usuario, iniciamos el temporizador normal
+    if (refreshToken) {
+      startSessionTimer();
+    }
+
+    return () => clearSessionTimers();
+  }, [location.pathname, refreshToken]);
+
+  const handleExtendSession = async () => {
+    try {
+      if (!refreshToken) {
+        throw new Error(
+          "No hay Refresh Token disponible en el estado de Redux.",
+        );
+      }
+
+      // Llamada al endpoint para renovar el token
+      const response = await axiosSeguridad.post("/refresh-token", {
+        refreshToken,
+      });
+
+      const nuevoToken = response.data.token || response.data.accessToken;
+      dispatch(updateAccessToken(nuevoToken));
+
+      // Reiniciamos el ciclo de los timers para otros 30 segundos limpios
+      startSessionTimer();
+    } catch (err) {
+      console.error("Error al extender la sesión:", err);
+      handleForceLogout();
+    }
+  };
+
+  // 2. Actualiza la función handleForceLogout
+  const handleForceLogout = async () => {
+    clearSessionTimers();
+    try {
+      if (userId) {
+        // Llama a tu endpoint del backend para borrar los tokens de la BD
+        await axiosSeguridad.post("/logout", { userId });
+      }
+    } catch (err) {
+      console.error(
+        "No se pudo notificar el cierre de sesión al servidor:",
+        err,
+      );
+    } finally {
+      // Siempre limpiamos Redux y redirigimos al login, pase lo que pase en la red
+      dispatch(logout());
+      navigate("/login");
+    }
+  };
 
   useEffect(() => {
     document.documentElement.classList.remove("light", "dark");
@@ -28,6 +146,97 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
 
   return (
     <>
+      {/* ----------------- MODAL DE ADVERTENCIA DE SESIÓN ----------------- */}
+      {showWarning && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 99999,
+          }}
+        >
+          <div
+            style={{
+              background: "var(--merco-bg, #ffffff)",
+              color: "var(--merco-text, #333)",
+              padding: "24px",
+              borderRadius: "12px",
+              boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
+              maxWidth: "400px",
+              width: "90%",
+              textAlign: "center",
+              border: "1px solid var(--merco-border, #e2e8f0)",
+            }}
+          >
+            <h3
+              style={{
+                margin: "0 0 12px 0",
+                fontSize: "1.2rem",
+                color: "var(--merco-warning, #d8992a)",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <DynamicIcon name="FiAlertTriangle" />
+              <span>Tu sesión está por expirar</span>
+            </h3>
+            <p
+              style={{
+                margin: "0 0 20px 0",
+                fontSize: "0.95rem",
+                lineHeight: 1.5,
+              }}
+            >
+              Por motivos de seguridad, tu sesión caducará en{" "}
+              <b>{timeLeft} segundos</b> por inactividad. ¿Deseas mantenerla
+              activa?
+            </p>
+            <div
+              style={{ display: "flex", justifyContent: "center", gap: "12px" }}
+            >
+              <button
+                onClick={handleExtendSession}
+                className="btn btn-primary"
+                style={{
+                  padding: "8px 16px",
+                  background: "#10b981",
+                  border: "none",
+                  color: "#fff",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                Sí, extender sesión
+              </button>
+              <button
+                onClick={handleForceLogout}
+                className="btn btn-ghost"
+                style={{
+                  padding: "8px 16px",
+                  background: "#ef4444",
+                  border: "none",
+                  color: "#fff",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* BOTÓN HAMBURGUESA - MÓVIL (IZQUIERDA) */}
       <button
         className="mobile-menu-toggle"

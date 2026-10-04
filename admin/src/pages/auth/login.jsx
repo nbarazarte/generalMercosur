@@ -13,13 +13,29 @@ export const LoginAside = (
       <br />
       Enterprise Portal
     </h1>
-    <p className="subtitle">
-      Tu portal de acceso centralizado a los sistemas de Mercosur Casa de Bolsa.
-    </p>
+    <p className="subtitle">Tu portal de acceso centralizado</p>
 
-    <ul className="feature-list">
-      <li className="feature-item">
-        <span className="feature-icon">
+    <div className="feature-list">
+      <div
+        className="feature-item"
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "12px",
+          width: "100%",
+        }}
+      >
+        <div
+          className="feature-icon"
+          style={{
+            flexShrink: 0,
+            width: "24px",
+            height: "24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -27,58 +43,110 @@ export const LoginAside = (
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            style={{ width: "100%", height: "100%" }}
           >
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
           </svg>
-        </span>
-        <div className="feature-text">
-          <p>Recursos Humanos</p>
-          <p>Gestiona tu ficha de empleado</p>
         </div>
-      </li>
-      <li className="feature-item">
-        <span className="feature-icon">
+        <div className="feature-text" style={{ minWidth: 0, flex: 1 }}>
+          <p style={{ margin: 0, wordBreak: "break-word" }}>Acceso Unificado</p>
+          <p style={{ margin: "4px 0 0 0", wordBreak: "break-word" }}>
+            Conéctate a todas tus herramientas operativas desde un solo lugar
+          </p>
+        </div>
+      </div>
+
+      <div
+        className="feature-item"
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "12px",
+          width: "100%",
+        }}
+      >
+        <div
+          className="feature-icon"
+          style={{
+            flexShrink: 0,
+            width: "24px",
+            height: "24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <svg
-            xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            style={{ width: "100%", height: "100%" }}
           >
-            <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
-            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+            <polygon points="12 2 2 7 12 12 22 7 12 2" />
+            <polyline points="2 17 12 22 22 17" />
+            <polyline points="2 12 12 17 22 12" />
           </svg>
-        </span>
-        <div className="feature-text">
-          <p>Tickets</p>
-          <p>Atiende a tus clientes de manera eficiente</p>
         </div>
-      </li>
-      <li className="feature-item">
-        <span className="feature-icon">
+        <div className="feature-text" style={{ minWidth: 0, flex: 1 }}>
+          <p style={{ margin: 0, wordBreak: "break-word" }}>
+            Arquitectura Modular
+          </p>
+          <p style={{ margin: "4px 0 0 0", wordBreak: "break-word" }}>
+            Capacidad de integrar nuevas herramientas, módulos y servicios
+          </p>
+        </div>
+      </div>
+
+      <div
+        className="feature-item"
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: "12px",
+          width: "100%",
+        }}
+      >
+        <div
+          className="feature-icon"
+          style={{
+            flexShrink: 0,
+            width: "24px",
+            height: "24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <svg
-            xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            style={{ width: "100%", height: "100%" }}
           >
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
           </svg>
-        </span>
-        <div className="feature-text">
-          <p>Base de datos de Conocimiento</p>
-          <p>Accede a información valiosa para nuestros clientes</p>
         </div>
-      </li>
-    </ul>
+        <div className="feature-text" style={{ minWidth: 0, flex: 1 }}>
+          <p style={{ margin: 0, wordBreak: "break-word" }}>
+            Diseño Adaptativo
+          </p>
+          <p style={{ margin: "4px 0 0 0", wordBreak: "break-word" }}>
+            Experiencia fluida desde cualquier dispositivo
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 );
 
