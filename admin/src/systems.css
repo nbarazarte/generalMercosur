@@ -37,7 +37,7 @@
   color: var(--merco-text);
 }
 
-/* ---------- Sidebar ---------- */
+/* ---------- Sidebar (Unificado y Corregido) ---------- */
 .ma-side {
   background: linear-gradient(180deg, var(--merco-navy) 0%, #08192f 100%);
   color: #e8eef7;
@@ -47,6 +47,91 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100dvh;
+  box-sizing: border-box;
+  z-index: 60;
+  transition: 0.25s;
+}
+
+.ma-side-header {
+  display: flex;
+  justify-content: flex-end; /* X a la derecha */
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.ma-side-nav {
+  flex-shrink: 0;
+}
+
+.ma-side-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.ma-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Footer del Sidebar: ocupa el espacio restante y empuja los botones al fondo */
+.ma-side-footer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-bottom: 16px;
+}
+
+.ma-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  flex-shrink: 0;
+}
+
+.ma-user-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.ma-user-info b {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #eef3fa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ma-user-info small {
+  display: block;
+  color: #9fb2cc;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botones inferiores enviados al fondo absoluto */
+.ma-bottom-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 14px;
+  flex-shrink: 0;
 }
 
 .ma-brand {
@@ -139,15 +224,6 @@
   box-shadow: inset 3px 0 0 var(--merco-accent);
 }
 
-.ma-side-foot {
-  margin-top: auto;
-  padding: 14px 10px 4px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-
 .ma-avatar {
   width: 38px;
   height: 38px;
@@ -158,18 +234,7 @@
   font-weight: 600;
   font-size: 14px;
   color: #fff;
-}
-
-.ma-side-foot small {
-  display: block;
-  color: #9fb2cc;
-  font-size: 11px;
-}
-
-.ma-side-foot b {
-  font-size: 13px;
-  font-weight: 600;
-  color: #eef3fa;
+  flex-shrink: 0;
 }
 
 /* ---------- Main Container ---------- */
@@ -321,7 +386,6 @@
   color: var(--merco-muted);
 }
 
-/* Grid dinámico para el Dashboard */
 .dashboard-grid-2col {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
@@ -1110,7 +1174,7 @@
 }
 
 /* ==========================================================================
-   PANTALLA DE CARGA DEL SISTEMA (SYSTEM LOADER) - MODO CLARO Y OSCURO
+   PANTALLA DE CARGA DEL SISTEMA (SYSTEM LOADER)
    ========================================================================== */
 
 :root {
@@ -1148,17 +1212,10 @@ html.dark {
   justify-content: center;
   background-color: var(--loader-bg);
   overflow: hidden;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   transition: background-color 0.3s ease;
 }
 
-/* Luces ambientales de fondo */
 .loader-bg-glow {
   position: absolute;
   width: 350px;
@@ -1179,14 +1236,9 @@ html.dark {
 .glow-2 {
   bottom: 15%;
   right: 20%;
-  background: radial-gradient(
-    circle,
-    var(--merco-success, #1f9d63),
-    transparent
-  );
+  background: radial-gradient(circle, var(--merco-success, #1f9d63), transparent);
 }
 
-/* Tarjeta principal con efecto Glassmorphism adaptable */
 .loader-card {
   position: relative;
   width: 100%;
@@ -1203,13 +1255,9 @@ html.dark {
   border: 1px solid var(--loader-card-border);
   border-radius: 24px;
   box-shadow: var(--loader-card-shadow);
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Spinner / Anillo orbital */
 .loader-icon-container {
   position: relative;
   width: 88px;
@@ -1253,7 +1301,6 @@ html.dark {
   transition: background-color 0.3s ease;
 }
 
-/* Textos */
 .loader-text-group {
   margin-bottom: 28px;
 }
@@ -1289,7 +1336,6 @@ html.dark {
   transition: color 0.3s ease;
 }
 
-/* Barra de progreso */
 .loader-progress-wrapper {
   width: 100%;
 }
@@ -1321,51 +1367,68 @@ html.dark {
   transition: color 0.3s ease;
 }
 
-/* Animaciones Keyframes */
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes spin-reverse {
-  0% {
-    transform: rotate(360deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
 }
 
 @keyframes pulse-icon {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.9;
-  }
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
-    box-shadow: 0 0 25px rgba(47, 111, 237, 0.35);
-  }
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 25px rgba(47, 111, 237, 0.35); }
 }
 
 @keyframes fillProgress {
-  0% {
-    width: 0%;
-  }
-  100% {
-    width: 100%;
-  }
+  0% { width: 0%; }
+  100% { width: 100%; }
 }
 
-/* ==========================================================================
-   ADAPTABILIDAD RESPONSIVA Y MEDIA QUERIES (TABLETS Y MÓVILES)
-   ========================================================================== */
+/* ---------- Utilidades Generales y Botones del Menú ---------- */
+.ma-nav-divider {
+  height: 1px;
+  background: var(--merco-border, rgba(255, 255, 255, 0.1));
+  margin: 8px 0;
+  flex-shrink: 0;
+}
 
+.ma-burger-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--merco-text, inherit);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 2px;
+  align-items: center;
+  justify-content: center;
+}
+
+.ma-side-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 998;
+}
+
+@keyframes cardAppear {
+  0% { opacity: 0; transform: translateY(16px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.role-card-animated {
+  animation: cardAppear 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ---------- Media Queries Responsivas ---------- */
 @media (max-width: 1280px) {
   .ma-stats {
     grid-template-columns: repeat(3, 1fr);
@@ -1386,9 +1449,9 @@ html.dark {
   .ma-side {
     position: fixed;
     left: -280px;
-    z-index: 60;
-    transition: 0.25s;
+    z-index: 999;
     width: 264px;
+    transform: translateX(0);
   }
 
   .ma-side.open {
@@ -1406,6 +1469,14 @@ html.dark {
 }
 
 @media (max-width: 768px) {
+  .ma-burger-btn {
+    display: flex;
+  }
+
+  .ma-side-overlay.open {
+    display: block;
+  }
+
   .ma-topbar {
     padding: 12px 16px;
     flex-direction: column;
@@ -1473,202 +1544,3 @@ html.dark {
     justify-content: flex-start;
   }
 }
-
-
-          /* Topbar pegajoso con zona de enmascaramiento inferior */
-          .ma-topbar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding-top: 10px !important;
-            padding-bottom: 10px !important;
-            min-height: auto !important;
-            backdrop-filter: blur(8px);
-            background-color: var(--merco-bg, #0d1117);
-          }
-
-          /* Extensión invisible por debajo del header para que las cards se oculten ANTES */
-          .ma-topbar::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: -10px;
-            height: 20px;
-            background: var(--merco-bg, #0d1117);
-            pointer-events: none;
-          }
-
-          .ma-content {
-            padding-top: 10px;
-          }
-
-          /* Base común para enlaces (NavLink) y botones (ThemeToggle, LogoutButton, .ma-nav-btn) */
-          .ma-nav a,
-          .ma-nav button,
-          .ma-nav-btn {
-            display: flex !important;
-            align-items: center !important;
-            gap: 12px !important;
-            width: 100% !important;
-            padding: 10px 14px !important;
-            background: transparent;
-            border: none !important;
-            border-radius: 6px !important;
-
-            /* Tipografía fina y homogénea */
-            font-family: inherit !important;
-            font-size: 14px !important;
-            font-weight: 400 !important;
-            line-height: 1.2 !important;
-            text-decoration: none !important;
-            text-align: left !important;
-
-            /* Blanco permanente forzado (inmune a cambios de modo) */
-            color: #ffffff !important;
-            cursor: pointer !important;
-            transition: background-color 0.2s ease !important;
-            box-sizing: border-box !important;
-          }
-
-          /* Forzar color blanco absoluto en íconos, textos e hijos internos */
-          .ma-nav a *,
-          .ma-nav button *,
-          .ma-nav-btn * {
-            font-size: 14px !important;
-            font-weight: 400 !important;
-            color: #ffffff !important;
-            fill: #ffffff !important;
-            stroke: #ffffff !important;
-            opacity: 1 !important;
-          }
-
-          /* Normalización de tamaño y alineación para contenedores de íconos y SVG */
-          .ma-nav a .ic,
-          .ma-nav button .ic,
-          .ma-nav-btn .ic,
-          .ma-nav a svg,
-          .ma-nav button svg,
-          .ma-nav-btn svg {
-            width: 18px !important;
-            height: 18px !important;
-            font-size: 18px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            flex-shrink: 0 !important;
-            color: #ffffff !important;
-            fill: currentColor !important;
-            stroke: currentColor !important;
-          }
-
-          /* Estado Hover uniforme manteniendo texto blanco */
-          .ma-nav a:hover,
-          .ma-nav button:hover,
-          .ma-nav-btn:hover {
-            background-color: var(--merco-hover, rgba(255, 255, 255, 0.08)) !important;
-            color: #ffffff !important;
-          }
-
-          .ma-nav-divider {
-            height: 1px;
-            background: var(--merco-border, rgba(255, 255, 255, 0.1));
-            margin: 8px 0;
-          }
-
-          /* Botón Hamburguesa */
-          .ma-burger-btn {
-            display: none;
-            background: transparent;
-            border: none;
-            color: var(--merco-text, inherit);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 2px;
-            align-items: center;
-            justify-content: center;
-          }
-
-          /* Overlay para móvil */
-          .ma-side-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(2px);
-            z-index: 998;
-          }
-
-          /* Encabezado del Sidebar (Logo centrado + X a la derecha) */
-          .ma-side-header-mobile {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            width: 100%;
-            margin-bottom: 12px;
-          }
-
-          .ma-close-btn {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            background: transparent;
-            border: none;
-            color: var(--merco-text, inherit);
-            font-size: 22px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-          }
-
-          @media (max-width: 768px) {
-            .ma-burger-btn {
-              display: flex;
-            }
-
-            .ma-side-overlay.open {
-              display: block;
-            }
-
-            .ma-side {
-              position: fixed;
-              top: 0;
-              left: 0;
-              height: 100vh;
-              z-index: 999;
-              transform: translateX(-100%);
-              transition: transform 0.3s ease-in-out;
-              box-shadow: 2px 0 12px rgba(0,0,0,0.25);
-            }
-
-            .ma-side.open {
-              transform: translateX(0);
-            }
-          }
-
-          @media (min-width: 769px) {
-            .ma-close-btn {
-              display: none;
-            }
-          }
-
-          @keyframes cardAppear {
-          0% {
-            opacity: 0;
-            transform: translateY(16px) scale(0.95);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        .role-card-animated {
-          animation: cardAppear 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }

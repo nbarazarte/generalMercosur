@@ -6,7 +6,7 @@ import TextType from "../../components/TextType";
 import { DynamicIcon } from "../../components/IconCatalog";
 import { setSistemasOpciones } from "../../../store/authSlice";
 
-export const MainAside = () => {
+export const HomeAside = () => {
   const user = useSelector((state) => state.auth?.user);
   const nombre = user?.nombre;
 
@@ -173,7 +173,7 @@ export const MainAside = () => {
   );
 };
 
-export const getMainAside = () => <MainAside />;
+export const getHomeAside = () => <HomeAside />;
 
 const Home = () => {
   const navigate = useNavigate();

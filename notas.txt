@@ -13,8 +13,8 @@ para compartir mi desarrollo
 npm install -g localtunnel
 lt --port 5173
 
-npx cloudflared tunnel --url http://localhost:3000 (en una consola)
-npx cloudflared tunnel --url http://localhost:3000 (en otra consola)
+npx cloudflared tunnel --url http://localhost:5173 
+npx cloudflared tunnel --url http://localhost:3000
 
 
 node --watch server.js 

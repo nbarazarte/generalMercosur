@@ -265,9 +265,8 @@ export default function SystemLayout({ children, identificacion }) {
       )}
 
       {/* ----------------- SIDEBAR ----------------- */}
-      <aside className={`ma-side ${mobileOpen ? "open" : ""}`}>
-        <div className="ma-side-header-mobile">
-          <Link
+
+      {/*  <Link
             to="/home"
             style={{
               display: "inline-flex",
@@ -277,98 +276,81 @@ export default function SystemLayout({ children, identificacion }) {
             onClick={() => setMobileOpen(false)}
           >
             <Logo />
-          </Link>
-          <button
-            className="ma-close-btn"
-            onClick={() => setMobileOpen(false)}
-            aria-label="Cerrar menú"
-          >
-            <DynamicIcon name="FiX" fallback="FiX" />
-          </button>
+          </Link> */}
+
+      <aside className={`ma-side ${mobileOpen ? "open" : ""}`}>
+        {/* Navegación principal */}
+
+        <div className="flex flex-row justify-between items-start">
+          {/* Navegación con elementos separados */}
+          <nav className="flex flex-col gap-2.5">
+            <NavLink
+              key="home"
+              to="/home"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              <div className="flex flex-row items-center gap-2">
+                <span className="ma-icon-wrapper">
+                  <DynamicIcon name="FiHome" fallback="FiGrid" />
+                </span>
+                <span>Inicio</span>
+              </div>
+            </NavLink>
+
+            {nav.map((item, idx) => (
+              <NavLink
+                key={idx}
+                to={item.to}
+                className={({ isActive }) => (isActive ? "active" : "")}
+              >
+                <div className="flex flex-row items-center gap-2">
+                  <span className="ma-icon-wrapper">
+                    <DynamicIcon name={item.icon} fallback="FiGrid" />
+                  </span>
+                  <span>{item.label}</span>
+                </div>
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Cabecera con la X a la derecha */}
+          {/* <div className="p-1">
+            <button
+              onClick={() => setMobileOpen(false)}
+              aria-label="Cerrar menú"
+              className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <DynamicIcon name="FiX" fallback="FiX" />
+            </button>
+          </div> */}
         </div>
 
-        <nav className="">
-          {nav.map((item, idx) => (
-            <NavLink
-              key={idx}
-              to={item.to}
-              className={({ isActive }) => (isActive ? "active" : "")}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                width: "100%",
-                padding: "10px 14px",
-                textDecoration: "none",
-                color: "#ffffff",
-              }}
-            >
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "18px",
-                  height: "18px",
-                  flexShrink: 0,
-                }}
-              >
-                <DynamicIcon name={item.icon} fallback="FiGrid" />
-              </span>
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
+        {/* Sección inferior (Perfil + Divisor + Botones abajo) con Tailwind */}
+        <div className="flex flex-col flex-1 justify-end pb-2">
+          <div className="flex flex-col gap-2.5 px-1 mt-auto">
+            {/* Línea divisoria */}
+            <div className="h-px bg-white/10 my-2 w-full" />
 
-        <div
-          className="ma-side-foot"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-            marginTop: "auto",
-            paddingTop: "12px",
-          }}
-        >
-          <div className="ma-nav" style={{ width: "100%", margin: 0 }}>
-            <ThemeToggle />
-            <LogoutButton />
-          </div>
+            {/* Perfil de Usuario */}
+            <div className="flex items-center gap-3 w-full px-2 py-1.5">
+              <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-semibold text-white text-sm shrink-0 shadow-inner">
+                {iniciales(`${nombre} ${apellido}`)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <b className="block text-xs font-semibold text-slate-100 truncate">
+                  {nombre} {apellido}
+                </b>
+                <small className="block text-[11px] text-slate-400 truncate">
+                  {rol}
+                </small>
+              </div>
 
-          <div className="ma-nav-divider" style={{ margin: "4px 0" }} />
+              {/* Botones de control inferiores */}
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              width: "100%",
-            }}
-          >
-            <div className="ma-avatar">
-              {iniciales(`${nombre} ${apellido}`)}
-            </div>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <b
-                style={{
-                  display: "block",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {nombre} {apellido}
-              </b>
-              <small
-                style={{
-                  display: "block",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {rol}
-              </small>
+              <div className="flex flex-row gap-2.5">
+                <ThemeToggle />
+                <LogoutButton />
+              </div>
             </div>
           </div>
         </div>

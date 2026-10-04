@@ -13,6 +13,7 @@ export const LoginAside = (
       <br />
       Enterprise Portal
     </h1>
+
     <p className="subtitle">Tu portal de acceso centralizado</p>
 
     <div className="feature-list">

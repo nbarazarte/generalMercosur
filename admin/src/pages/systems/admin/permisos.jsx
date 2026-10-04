@@ -454,7 +454,7 @@ export default function Permisos() {
       >
         <div>
           <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
-            Usuarios y Accesos
+            Permisos
           </h2>
         </div>
       </div>

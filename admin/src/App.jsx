@@ -3,13 +3,12 @@ import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import HomeLayout from "./pages/layouts/HomeLayout";
 import Login, { LoginAside } from "./pages/auth/login";
+import Home, { HomeAside } from "./pages/systems/home/home";
 import ResetearContrasena, {
   ResetPasswordAside,
 } from "./pages/auth/resetearContrasena";
-import Home, { MainAside } from "./pages/systems/home/home";
 
 import { DynamicIcon } from "../src/pages/components/IconCatalog";
-import { setUser } from "../src/store/authSlice";
 
 // Rutas de los sistemas:
 
@@ -221,7 +220,7 @@ function App() {
           {/* Vista principal home (Sin pantalla de carga) */}
           <Route
             element={
-              <HomeLayout asideContent={<MainAside />} showLogout={true} />
+              <HomeLayout asideContent={<HomeAside />} showLogout={true} />
             }
           >
             <Route path="/home" element={<Home />} />

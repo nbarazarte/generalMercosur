@@ -274,37 +274,16 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
           <div className="overlay-top" />
           <div className="overlay-bottom" />
 
-          {/* BOTÓN DE CIERRE (SOLO VISIBLE EN MÓVIL CUANDO ESTÁ ABIERTO) */}
-          <button
-            className="mobile-close-btn"
-            onClick={() => setIsMobileMenuOpen(false)}
-            aria-label="Cerrar menú"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-
-          <div className="aside-logo">
+          {/* <div className="aside-logo">
             <Logo />
-          </div>
+          </div> */}
 
           {/* Renderiza el Aside según la vista activa */}
           {asideContent}
 
           {/* CONTENEDOR INFERIOR: Botones de Tema y Salir + Footer */}
-          <div>
-            <div>
+          <div className="flex flex-col  gap-4 mt-auto mb-6">
+            <div className="flex flex-row gap-2.5 items-center justify-between">
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
               {showLogout && <LogoutButton />}
             </div>
@@ -320,7 +299,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
         {/* PANEL DERECHO DINÁMICO */}
         <main className="main-panel">
           <div className="form-wrapper">
-            <div className="mobile-logo">
+            <div className="flex items-center justify-center mb-4">
               <LogoMobile theme={theme} />
             </div>
 
