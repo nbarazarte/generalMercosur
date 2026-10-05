@@ -28,18 +28,22 @@
   --ma-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Base Layout */
+/* Base Layout (Flexbox unificado para colapso fluido en escritorio y expansión total) */
 .ma-shell {
-  display: grid;
-  grid-template-columns: 264px 1fr;
+  display: flex;
+  width: 100%;
   min-height: 100vh;
+  overflow-x: hidden;
   background-color: var(--merco-bg);
   color: var(--merco-text);
 }
 
-/* ---------- Sidebar (Unificado y Corregido) ---------- */
+/* ---------- Sidebar ---------- */
 .ma-side {
+  width: 260px;
+  min-width: 260px;
   background: linear-gradient(180deg, var(--merco-navy) 0%, #08192f 100%);
+  background-color: var(--merco-side-bg, #1e293b);
   color: #e8eef7;
   display: flex;
   flex-direction: column;
@@ -50,11 +54,17 @@
   height: 100dvh;
   box-sizing: border-box;
   z-index: 60;
-  transition: 0.25s;
+  transition:
+    margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.25s ease;
 }
 
+/* Estado Oculto/Colapsado: desplaza la barra fuera del flujo principal */
+.ma-side.collapsed {
+  margin-left: -260px;
+}
 
-/* Agrega un fondo de cuadrícula financiera suave al aside */
+/* Fondo de cuadrícula financiera suave opcional */
 /* .ma-side::before {
   content: "";
   position: absolute;
@@ -65,7 +75,6 @@
   background-size: 32px 32px;
   pointer-events: none;
 } */
-
 
 .ma-side-header {
   display: flex;
@@ -253,10 +262,13 @@
 
 /* ---------- Main Container ---------- */
 .ma-main {
+  flex: 1 1 auto;
+  min-width: 0; /* Evita desbordamientos por flexbox */
+  width: 100%;
   display: flex;
   flex-direction: column;
-  min-width: 0;
   background-color: var(--merco-bg);
+  transition: width 0.3s ease;
 }
 
 .ma-topbar {
@@ -510,6 +522,24 @@
 .btn-icon.danger:hover {
   background: rgba(209, 67, 91, 0.15);
   color: var(--merco-danger);
+}
+
+/* ---------- Burger Button ---------- */
+.ma-burger-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  padding: 6px;
+  border-radius: 6px;
+  color: inherit;
+}
+
+.ma-burger-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* ---------- Cards & Tables ---------- */
@@ -1226,7 +1256,13 @@ html.dark {
   justify-content: center;
   background-color: var(--loader-bg);
   overflow: hidden;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   transition: background-color 0.3s ease;
 }
 
@@ -1250,7 +1286,11 @@ html.dark {
 .glow-2 {
   bottom: 15%;
   right: 20%;
-  background: radial-gradient(circle, var(--merco-success, #1f9d63), transparent);
+  background: radial-gradient(
+    circle,
+    var(--merco-success, #1f9d63),
+    transparent
+  );
 }
 
 .loader-card {
@@ -1269,7 +1309,10 @@ html.dark {
   border: 1px solid var(--loader-card-border);
   border-radius: 24px;
   box-shadow: var(--loader-card-shadow);
-  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .loader-icon-container {
@@ -1382,43 +1425,51 @@ html.dark {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes spin-reverse {
-  0% { transform: rotate(360deg); }
-  100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 @keyframes pulse-icon {
-  0%, 100% { transform: scale(1); opacity: 0.9; }
-  50% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 25px rgba(47, 111, 237, 0.35); }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+    box-shadow: 0 0 25px rgba(47, 111, 237, 0.35);
+  }
 }
 
 @keyframes fillProgress {
-  0% { width: 0%; }
-  100% { width: 100%; }
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
 }
 
-/* ---------- Utilidades Generales y Botones del Menú ---------- */
+/* ---------- Utilidades Generales y Menú ---------- */
 .ma-nav-divider {
   height: 1px;
   background: var(--merco-border, rgba(255, 255, 255, 0.1));
   margin: 8px 0;
   flex-shrink: 0;
-}
-
-.ma-burger-btn {
-  display: none;
-  background: transparent;
-  border: none;
-  color: var(--merco-text, inherit);
-  font-size: 24px;
-  cursor: pointer;
-  padding: 2px;
-  align-items: center;
-  justify-content: center;
 }
 
 .ma-side-overlay {
@@ -1434,8 +1485,14 @@ html.dark {
 }
 
 @keyframes cardAppear {
-  0% { opacity: 0; transform: translateY(16px) scale(0.95); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .role-card-animated {
@@ -1456,15 +1513,12 @@ html.dark {
 }
 
 @media (max-width: 960px) {
-  .ma-shell {
-    grid-template-columns: 1fr;
-  }
-
   .ma-side {
     position: fixed;
     left: -280px;
     z-index: 999;
     width: 264px;
+    margin-left: 0;
     transform: translateX(0);
   }
 

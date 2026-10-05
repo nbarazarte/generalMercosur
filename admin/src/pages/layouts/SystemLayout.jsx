@@ -18,7 +18,8 @@ import axiosSeguridad from "../utils/axiosSeguridad";
 import "../../../src/systems.css";
 
 export default function SystemLayout({ children, identificacion }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  // CAMBIO PRINCIPAL: Por defecto el menú estará colapsado (false)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -32,7 +33,7 @@ export default function SystemLayout({ children, identificacion }) {
 
   // --- ESTADOS Y REFERENCIAS PARA EL CONTROL DE SESIÓN ---
   const [showWarning, setShowWarning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // 60 segundos de cuenta regresiva en el modal
+  const [timeLeft, setTimeLeft] = useState(60);
 
   const warningTimerRef = useRef(null);
   const intervalTimerRef = useRef(null);
@@ -46,9 +47,8 @@ export default function SystemLayout({ children, identificacion }) {
     clearSessionTimers();
     setShowWarning(false);
 
-    // Token dura 1 hora. Avisamos 1 minuto antes (faltando 60s).
-    const tokenLifetimeMs = 60 * 60 * 1000; // 1 hora total
-    const warningTimeMs = tokenLifetimeMs - 60 * 1000; // Avisar faltando 1 minuto
+    const tokenLifetimeMs = 60 * 60 * 1000;
+    const warningTimeMs = tokenLifetimeMs - 60 * 1000;
 
     warningTimerRef.current = setTimeout(() => {
       setShowWarning(true);
@@ -57,7 +57,7 @@ export default function SystemLayout({ children, identificacion }) {
   };
 
   const startCountdown = () => {
-    let seconds = 60; // 60 segundos de cuenta regresiva en el modal
+    let seconds = 60;
     setTimeLeft(seconds);
 
     if (intervalTimerRef.current) clearInterval(intervalTimerRef.current);
@@ -72,19 +72,15 @@ export default function SystemLayout({ children, identificacion }) {
     }, 1000);
   };
 
-  // --- INICIO DE TEMPORIZADORES CONDICIONALES Y VALIDACIÓN AL MONTAR ---
   useEffect(() => {
     const initSessionCheck = async () => {
       if (refreshToken) {
         try {
-          // Intentamos renovar el token al cargar/recargar la página
           const response = await axiosSeguridad.post("/refresh-token", {
             refreshToken,
           });
           const nuevoToken = response.data.token || response.data.accessToken;
           dispatch(updateAccessToken(nuevoToken));
-
-          // Iniciamos el temporizador normal con un token fresco
           startSessionTimer();
         } catch (err) {
           console.error(
@@ -171,7 +167,9 @@ export default function SystemLayout({ children, identificacion }) {
   );
 
   useEffect(() => {
-    setMobileOpen(false);
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
   }, [location.pathname]);
 
   const iniciales = (n) =>
@@ -182,11 +180,16 @@ export default function SystemLayout({ children, identificacion }) {
       .join("")
       .toUpperCase() || "US";
 
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => !prev);
+  };
+
   return (
-    <div className="ma-shell">
+    <div className={`ma-shell ${!sidebarOpen ? "sidebar-collapsed" : ""}`}>
+      {/* Overlay opcional para dispositivos móviles cuando el menú se superpone */}
       <div
-        className={`ma-side-overlay ${mobileOpen ? "open" : ""}`}
-        onClick={() => setMobileOpen(false)}
+        className={`ma-side-overlay ${sidebarOpen ? "open" : ""}`}
+        onClick={() => setSidebarOpen(false)}
       />
 
       {showWarning && (
@@ -279,19 +282,20 @@ export default function SystemLayout({ children, identificacion }) {
         </div>
       )}
 
-      <aside className={`ma-side ${mobileOpen ? "open" : ""}`}>
+      {/* Menú lateral (Sidebar) */}
+      <aside className={`ma-side ${sidebarOpen ? "open" : "collapsed"}`}>
         <div className="flex flex-row justify-between items-start">
-          <nav className="flex flex-col gap-2.5">
+          <nav className="flex flex-col gap-2.5 w-full ma-nav">
             <NavLink
               key="home"
               to="/home"
               className={({ isActive }) => (isActive ? "active" : "")}
             >
               <div className="flex flex-row items-center gap-2">
-                <span className="ma-icon-wrapper">
+                <span className="ma-icon-wrapper ic">
                   <DynamicIcon name="FiHome" fallback="FiGrid" />
                 </span>
-                <span>Inicio</span>
+                <span className="nav-text">Inicio</span>
               </div>
             </NavLink>
 
@@ -302,10 +306,10 @@ export default function SystemLayout({ children, identificacion }) {
                 className={({ isActive }) => (isActive ? "active" : "")}
               >
                 <div className="flex flex-row items-center gap-2">
-                  <span className="ma-icon-wrapper">
+                  <span className="ma-icon-wrapper ic">
                     <DynamicIcon name={item.icon} fallback="FiGrid" />
                   </span>
-                  <span>{item.label}</span>
+                  <span className="nav-text">{item.label}</span>
                 </div>
               </NavLink>
             ))}
@@ -315,11 +319,11 @@ export default function SystemLayout({ children, identificacion }) {
         <div className="flex flex-col flex-1 justify-end pb-2">
           <div className="flex flex-col gap-2.5 px-1 mt-auto">
             <div className="h-px bg-white/10 my-2 w-full" />
-            <div className="flex items-center gap-3 w-full px-2 py-1.5">
+            <div className="flex items-center gap-3 w-full px-2 py-1.5 ma-user-profile">
               <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-semibold text-white text-sm shrink-0 shadow-inner">
                 {iniciales(`${nombre} ${apellido}`)}
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 ma-user-info">
                 <b className="block text-xs font-semibold text-slate-100 truncate">
                   {nombre} {apellido}
                 </b>
@@ -336,6 +340,7 @@ export default function SystemLayout({ children, identificacion }) {
         </div>
       </aside>
 
+      {/* Área Principal de Contenido */}
       <div
         className="ma-main"
         style={{
@@ -365,10 +370,12 @@ export default function SystemLayout({ children, identificacion }) {
               minWidth: 0,
             }}
           >
+            {/* Botón para Ocultar / Mostrar Menú */}
             <button
               className="ma-burger-btn"
-              onClick={() => setMobileOpen(true)}
-              aria-label="Abrir menú"
+              onClick={toggleSidebar}
+              aria-label={sidebarOpen ? "Ocultar menú" : "Mostrar menú"}
+              title={sidebarOpen ? "Ocultar menú" : "Mostrar menú"}
             >
               <DynamicIcon name="FiMenu" fallback="FiMenu" />
             </button>
