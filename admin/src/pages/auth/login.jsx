@@ -17,26 +17,8 @@ export const LoginAside = (
     <p className="subtitle">Tu portal de acceso centralizado</p>
 
     <div className="feature-list">
-      <div
-        className="feature-item"
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: "12px",
-          width: "100%",
-        }}
-      >
-        <div
-          className="feature-icon"
-          style={{
-            flexShrink: 0,
-            width: "24px",
-            height: "24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+      <div className="feature-item flex items-start gap-3 w-full">
+        <div className="feature-icon shrink-0 w-6 h-6 flex items-center justify-center">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -44,7 +26,7 @@ export const LoginAside = (
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            style={{ width: "100%", height: "100%" }}
+            className="w-full h-full"
           >
             <rect x="3" y="3" width="7" height="7" />
             <rect x="14" y="3" width="7" height="7" />
@@ -52,34 +34,16 @@ export const LoginAside = (
             <rect x="3" y="14" width="7" height="7" />
           </svg>
         </div>
-        <div className="feature-text" style={{ minWidth: 0, flex: 1 }}>
-          <p style={{ margin: 0, wordBreak: "break-word" }}>Acceso Unificado</p>
-          <p style={{ margin: "4px 0 0 0", wordBreak: "break-word" }}>
+        <div className="feature-text min-w-0 flex-1">
+          <p className="m-0 break-words">Acceso Unificado</p>
+          <p className="mt-1 mb-0 mx-0 break-words">
             Conéctate a todas tus herramientas operativas desde un solo lugar
           </p>
         </div>
       </div>
 
-      <div
-        className="feature-item"
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: "12px",
-          width: "100%",
-        }}
-      >
-        <div
-          className="feature-icon"
-          style={{
-            flexShrink: 0,
-            width: "24px",
-            height: "24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+      <div className="feature-item flex items-start gap-3 w-full">
+        <div className="feature-icon shrink-0 w-6 h-6 flex items-center justify-center">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -87,43 +51,23 @@ export const LoginAside = (
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            style={{ width: "100%", height: "100%" }}
+            className="w-full h-full"
           >
             <polygon points="12 2 2 7 12 12 22 7 12 2" />
             <polyline points="2 17 12 22 22 17" />
             <polyline points="2 12 12 17 22 12" />
           </svg>
         </div>
-        <div className="feature-text" style={{ minWidth: 0, flex: 1 }}>
-          <p style={{ margin: 0, wordBreak: "break-word" }}>
-            Arquitectura Modular
-          </p>
-          <p style={{ margin: "4px 0 0 0", wordBreak: "break-word" }}>
+        <div className="feature-text min-w-0 flex-1">
+          <p className="m-0 break-words">Arquitectura Modular</p>
+          <p className="mt-1 mb-0 mx-0 break-words">
             Capacidad de integrar nuevas herramientas, módulos y servicios
           </p>
         </div>
       </div>
 
-      <div
-        className="feature-item"
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: "12px",
-          width: "100%",
-        }}
-      >
-        <div
-          className="feature-icon"
-          style={{
-            flexShrink: 0,
-            width: "24px",
-            height: "24px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+      <div className="feature-item flex items-start gap-3 w-full">
+        <div className="feature-icon shrink-0 w-6 h-6 flex items-center justify-center">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -131,18 +75,16 @@ export const LoginAside = (
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            style={{ width: "100%", height: "100%" }}
+            className="w-full h-full"
           >
             <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
             <line x1="8" y1="21" x2="16" y2="21" />
             <line x1="12" y1="17" x2="12" y2="21" />
           </svg>
         </div>
-        <div className="feature-text" style={{ minWidth: 0, flex: 1 }}>
-          <p style={{ margin: 0, wordBreak: "break-word" }}>
-            Diseño Adaptativo
-          </p>
-          <p style={{ margin: "4px 0 0 0", wordBreak: "break-word" }}>
+        <div className="feature-text min-w-0 flex-1">
+          <p className="m-0 break-words">Diseño Adaptativo</p>
+          <p className="mt-1 mb-0 mx-0 break-words">
             Experiencia fluida desde cualquier dispositivo
           </p>
         </div>
@@ -339,7 +281,7 @@ const Login = () => {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      style={{ width: "1.25rem", height: "1.25rem" }}
+                      className="w-5 h-5"
                     >
                       <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
                       <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
@@ -354,7 +296,7 @@ const Login = () => {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      style={{ width: "1.25rem", height: "1.25rem" }}
+                      className="w-5 h-5"
                     >
                       <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
                       <circle cx="12" cy="12" r="3" />
