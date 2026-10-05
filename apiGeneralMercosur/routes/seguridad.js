@@ -314,7 +314,21 @@ router.post("/forgot-password", async (req, res) => {
       from: `"Mercosur Casa de Bolsa, S.A." <sistemasmcdb@mercosur.com.ve>`,
       to: user.str_email,
       subject: "Recuperación de Contraseña - Mercosur Enterprise Portal",
-      html: `...`,
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+          <h2 style="color: #003366; text-align: center;">Mercosur Casa de Bolsa, S.A.</h2>
+          <p>Estimado/a <strong>${user.str_usuario || "Usuario"}</strong>,</p>
+          <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta en el <strong>Mercosur Enterprise Portal</strong>.</p>
+          <p>Para continuar con el proceso, haz clic en el siguiente botón:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetLink}" style="background-color: #003366; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block;">Restablecer Contraseña</a>
+          </div>
+          <p>Por seguridad, este enlace expirará en <strong>15 minutos</strong>.</p>
+          <p>Si no solicitaste este cambio, puedes ignorar este mensaje de forma segura; tu contraseña seguirá siendo la misma.</p>
+          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
+          <p style="font-size: 12px; color: #777; text-align: center;">Este es un mensaje automático generado por el sistema, por favor no respondas a este correo.</p>
+        </div>
+      `,
     });
 
     return res.status(200).json(genericResponse);

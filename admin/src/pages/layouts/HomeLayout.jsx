@@ -72,8 +72,9 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
 
   // --- INICIO DE TEMPORIZADORES CONDICIONALES Y VALIDACIÓN AL MONTAR ---
   useEffect(() => {
-    // Si estamos en la página de login, no ejecutamos ningún temporizador
-    if (location.pathname === "/login" || location.pathname === "/") {
+    // Si estamos en rutas públicas, no ejecutamos validaciones de sesión ni temporizadores
+    const publicPaths = ["/login", "/", "/resetear-contrasena"];
+    if (publicPaths.includes(location.pathname)) {
       clearSessionTimers();
       setShowWarning(false);
       return;
