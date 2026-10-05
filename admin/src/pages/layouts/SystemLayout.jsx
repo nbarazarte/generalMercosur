@@ -190,27 +190,87 @@ export default function SystemLayout({ children, identificacion }) {
       />
 
       {showWarning && (
-        <div className="fixed inset-0 w-screen h-screen bg-black/50 flex justify-center items-center z-[99999]">
-          <div className="bg-[var(--merco-bg,#ffffff)] text-[var(--merco-text,#333)] p-6 rounded-xl shadow-[0_10px_25px_rgba(0,0,0,0.3)] max-w-[400px] w-[90%] text-center border border-[var(--merco-border,#e2e8f0)]">
-            <h3 className="mb-3 text-[1.2rem] text-[var(--merco-warning,#d8992a)] flex items-center gap-2">
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0, 0, 0, 0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 99999,
+          }}
+        >
+          <div
+            style={{
+              background: "var(--merco-bg, #ffffff)",
+              color: "var(--merco-text, #333)",
+              padding: "24px",
+              borderRadius: "12px",
+              boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
+              maxWidth: "400px",
+              width: "90%",
+              textAlign: "center",
+              border: "1px solid var(--merco-border, #e2e8f0)",
+            }}
+          >
+            <h3
+              style={{
+                margin: "0 0 12px 0",
+                fontSize: "1.2rem",
+                color: "var(--merco-warning, #d8992a)",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
               <DynamicIcon name="FiAlertTriangle" />
               <span>Tu sesión está por expirar</span>
             </h3>
-            <p className="mb-5 text-[0.95rem] leading-[1.5]">
+            <p
+              style={{
+                margin: "0 0 20px 0",
+                fontSize: "0.95rem",
+                lineHeight: 1.5,
+              }}
+            >
               Por motivos de seguridad, tu sesión caducará en{" "}
               <b>{timeLeft} segundos</b> por inactividad. ¿Deseas mantenerla
               activa?
             </p>
-            <div className="flex justify-center gap-3">
+            <div
+              style={{ display: "flex", justifyContent: "center", gap: "12px" }}
+            >
               <button
                 onClick={handleExtendSession}
-                className="btn btn-primary py-2 px-4 bg-[#10b981] border-none text-white rounded-md cursor-pointer font-bold"
+                className="btn btn-primary"
+                style={{
+                  padding: "8px 16px",
+                  background: "#10b981",
+                  border: "none",
+                  color: "#fff",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
               >
                 Sí, extender sesión
               </button>
               <button
                 onClick={handleForceLogout}
-                className="btn btn-ghost py-2 px-4 bg-[#ef4444] border-none text-white rounded-md cursor-pointer font-bold"
+                className="btn btn-ghost"
+                style={{
+                  padding: "8px 16px",
+                  background: "#ef4444",
+                  border: "none",
+                  color: "#fff",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
               >
                 Cerrar sesión
               </button>
@@ -276,9 +336,35 @@ export default function SystemLayout({ children, identificacion }) {
         </div>
       </aside>
 
-      <div className="ma-main flex flex-col min-h-screen">
-        <header className="ma-topbar flex items-center gap-3 w-full box-border pt-[10px] pb-2">
-          <div className="flex items-center gap-3 flex-auto min-w-0">
+      <div
+        className="ma-main"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+        }}
+      >
+        <header
+          className="ma-topbar"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            width: "100%",
+            boxSizing: "border-box",
+            paddingTop: "10px",
+            paddingBottom: "8px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              flex: "1 1 auto",
+              minWidth: 0,
+            }}
+          >
             <button
               className="ma-burger-btn"
               onClick={() => setMobileOpen(true)}
@@ -287,14 +373,27 @@ export default function SystemLayout({ children, identificacion }) {
               <DynamicIcon name="FiMenu" fallback="FiMenu" />
             </button>
 
-            <div className="min-w-0">
+            <div style={{ minWidth: 0 }}>
               {sistemaNombre && (
-                <h2 className="break-words m-0 leading-[1.2] text-[1.15rem]">
+                <h2
+                  style={{
+                    wordBreak: "break-word",
+                    margin: 0,
+                    lineHeight: 1.2,
+                    fontSize: "1.15rem",
+                  }}
+                >
                   {sistemaNombre}
                 </h2>
               )}
               {sistemaDescripcion && (
-                <p className="mt-[2px] mb-0 mx-0 leading-[1.2] text-[0.825rem]">
+                <p
+                  style={{
+                    margin: "2px 0 0 0",
+                    lineHeight: 1.2,
+                    fontSize: "0.825rem",
+                  }}
+                >
                   {sistemaDescripcion}
                 </p>
               )}
@@ -302,7 +401,7 @@ export default function SystemLayout({ children, identificacion }) {
           </div>
         </header>
 
-        <main className="ma-content flex-auto">
+        <main className="ma-content" style={{ flex: "1 0 auto" }}>
           {children ? children : <Outlet />}
         </main>
       </div>
