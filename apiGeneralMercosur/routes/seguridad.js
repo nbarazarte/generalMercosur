@@ -22,11 +22,8 @@ const verificarMantenimiento = (req, res, next) => {
 };
 
 router.use(verificarMantenimiento);
-
-// 🔒 Exigir el UUID de la aplicación en todas las peticiones de este router
 router.use(verificarClienteFrontend);
 
-// Endpoint público para que el Frontend consulte el estado
 router.get("/config/mantenimiento", (req, res) => {
   res.status(200).json({
     mantenimiento: process.env.MAINTENANCE_MODE === "true",
@@ -37,9 +34,7 @@ router.get("/config/mantenimiento", (req, res) => {
 
 router.post("/request-register", async (req, res) => {
   let { email } = req.body;
-
   if (!email) return res.status(400).json({ error: "Email requerido" });
-
   const normalizedEmail = email.trim().toUpperCase();
 
   try {
@@ -57,9 +52,7 @@ router.post("/request-register", async (req, res) => {
     const registrationToken = jwt.sign(
       { email: normalizedEmail },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "15m",
-      },
+      { expiresIn: "15m" },
     );
 
     const verificationLink = `${process.env.URL}/completar-registro?token=${registrationToken}`;
@@ -70,34 +63,7 @@ router.post("/request-register", async (req, res) => {
       to: email,
       subject:
         "Confirmación de correo electrónico - Plataforma de Registro de Nuevo Cliente",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
-        <div style="background-color: #ff6600; padding: 20px; text-align: center;">
-          <h2 style="color: white; margin: 0;">Mercosur Casa de Bolsa, S.A.</h2>
-        </div>
-        
-        <div style="padding: 30px; color: #333333; line-height: 1.6;">
-          <h3 style="color: #ff6600;">Bienvenido(a) a nuestra Plataforma de Registro Nuevo Cliente</h3>
-          <p>Estimado cliente,</p>
-          <p>Se ha iniciado el proceso de apertura de cuenta. Para completar tu registro y crear tu ficha de cliente, es necesario que establezcas tu contraseña de acceso haciendo clic en el siguiente enlace:</p>
-          
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${verificationLink}" style="padding: 12px 25px; background-color: #ff6600; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
-              Completar Registro de Ficha
-            </a>
-          </div>
-          
-          <p style="font-size: 0.9rem; color: #666666;">
-            Nota: Este enlace tiene una validez de <b>15 minutos</b> por motivos de seguridad.
-          </p>
-          <hr style="border: 0; border-top: 1px solid #eeeeee; margin: 20px 0;">
-          <p style="font-size: 0.8rem; color: #999999; text-align: center;">
-            Este es un correo automático, por favor no responda a esta dirección.<br>
-            © ${currentYear} Mercosur Casa de Bolsa, S.A. RIF: J-30455414-1.
-          </p>
-        </div>
-      </div>
-      `,
+      html: `...`,
     });
 
     res.status(200).json({
@@ -109,16 +75,13 @@ router.post("/request-register", async (req, res) => {
   }
 });
 
-// Función auxiliar reutilizable
 async function obtenerSistemasYOpciones(userId) {
   const resultado = await pool.query(
     "SELECT * FROM public.view_usuarios_opciones_sistemas WHERE usuario_id = $1",
     [userId],
   );
 
-  if (resultado.rows.length === 0) {
-    return null;
-  }
+  if (resultado.rows.length === 0) return null;
 
   return Object.values(
     resultado.rows.reduce((acc, row) => {
@@ -162,13 +125,10 @@ async function obtenerSistemasYOpciones(userId) {
 router.get("/sistemas-opciones/:usuario_id", async (req, res) => {
   try {
     const { usuario_id } = req.params;
-
     const sistemasOpciones = await obtenerSistemasYOpciones(usuario_id);
-
     if (!sistemasOpciones) {
       return res.status(404).send("Usuario sin sistemas asignados");
     }
-
     res.json(sistemasOpciones);
   } catch (err) {
     console.error(err.message);
@@ -185,7 +145,6 @@ router.post("/login", async (req, res) => {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-
     const result = await pool.query(
       "SELECT * FROM tbl_usuarios WHERE str_email = $1",
       [normalizedEmail],
@@ -210,14 +169,14 @@ router.post("/login", async (req, res) => {
 
     const secretKey = process.env.JWT_SECRET;
 
-    // 1. Token de acceso de corta duración (1 hora)
+    // Token de acceso de corta duración (1 hora)
     const token = jwt.sign(
       { id: user.id, username: user.str_usuario },
       secretKey,
       { expiresIn: "1h" },
     );
 
-    // 2. 💡 NUEVO: Token de renovación de larga duración (12 horas)
+    // PRUEBA: RefreshToken de renovación (12 horas)
     const refreshToken = jwt.sign(
       { id: user.id, username: user.str_usuario, type: "refresh" },
       secretKey,
@@ -230,15 +189,13 @@ router.post("/login", async (req, res) => {
         [user.id],
       )
       .catch((err) =>
-        console.error(
-          "Error al limpiar tokens expirados del usuario:",
-          err.message,
-        ),
+        console.error("Error al limpiar tokens expirados:", err.message),
       );
 
     const deviceId = device_id || "default_device";
     const deviceName = device_name || "Dispositivo Desconocido";
 
+    // PRUEBA: Expira en 1 hora en la BD
     await pool.query(
       `INSERT INTO tbl_auth_tokens (user_id, str_device_id, str_device_name, token, used, expires_at)
        VALUES ($1, $2, $3, $4, false, NOW() + INTERVAL '1 hour')
@@ -253,19 +210,15 @@ router.post("/login", async (req, res) => {
     );
 
     await pool.query(
-      `UPDATE public.tbl_usuarios 
-       SET fec_ultimo_acceso = CURRENT_TIMESTAMP 
-       WHERE id = $1`,
+      `UPDATE public.tbl_usuarios SET fec_ultimo_acceso = CURRENT_TIMESTAMP WHERE id = $1`,
       [user.id],
     );
 
     const sistemasOpciones = await obtenerSistemasYOpciones(user.id);
-
     if (!sistemasOpciones) {
       return res.status(404).send("Usuario sin sistemas asignados");
     }
 
-    // 3. 💡 NUEVO: Devolver el refreshToken junto al token de acceso
     res.json({
       id: user.id,
       username: user.str_usuario,
@@ -273,7 +226,7 @@ router.post("/login", async (req, res) => {
       nombre: user.str_nombre,
       apellido: user.str_apellido,
       token: token,
-      refreshToken: refreshToken, // <--- ¡Asegúrate de incluir esta línea aquí!
+      refreshToken: refreshToken,
       sistemasOpciones: sistemasOpciones,
     });
   } catch (err) {
@@ -282,7 +235,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Renovar token de acceso usando el refreshToken
 router.post("/refresh-token", verificarClienteFrontend, async (req, res) => {
   const { refreshToken } = req.body;
 
@@ -295,7 +247,6 @@ router.post("/refresh-token", verificarClienteFrontend, async (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
 
-    // Opcional: verificar que el usuario siga activo en la BD
     const userResult = await pool.query(
       "SELECT bol_activo FROM tbl_usuarios WHERE id = $1",
       [decoded.id],
@@ -310,14 +261,14 @@ router.post("/refresh-token", verificarClienteFrontend, async (req, res) => {
         .json({ error: "Usuario inactivo o no encontrado." });
     }
 
-    // Generar un nuevo token de acceso de corta duración (1 hora)
+    // PRUEBA: Nuevo token de acceso de 1 hora
     const newAccessToken = jwt.sign(
       { id: decoded.id, username: decoded.username },
       process.env.JWT_SECRET,
       { expiresIn: "1h" },
     );
 
-    // Actualizar el token activo en la base de datos (tbl_auth_tokens)
+    // PRUEBA: Actualizar token activo en BD por 1 hora
     await pool.query(
       `UPDATE tbl_auth_tokens 
        SET token = $1, expires_at = NOW() + INTERVAL '1 hour' 
@@ -336,12 +287,10 @@ router.post("/refresh-token", verificarClienteFrontend, async (req, res) => {
 
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
-
   if (!email) return res.status(400).send("Correo Electrónico requerido");
 
   try {
     const normalizedEmail = email.trim().toLowerCase();
-
     const userRes = await pool.query(
       "SELECT id, str_email, str_usuario FROM tbl_usuarios WHERE LOWER(str_email) = LOWER($1)",
       [normalizedEmail],
@@ -350,44 +299,22 @@ router.post("/forgot-password", async (req, res) => {
     const genericResponse = {
       message: "Si el correo está registrado, recibirás un enlace.",
     };
-
-    if (userRes.rows.length === 0) {
-      return res.status(200).json(genericResponse);
-    }
+    if (userRes.rows.length === 0) return res.status(200).json(genericResponse);
 
     const user = userRes.rows[0];
-
     const resetToken = jwt.sign(
       { email: user.str_email, id: user.id, type: "reset" },
       process.env.JWT_SECRET,
       { expiresIn: "15m" },
     );
 
-    const baseUrl = process.env.URL;
-    const resetLink = `${baseUrl}/resetear-contrasena?token=${resetToken}`;
+    const resetLink = `${process.env.URL}/resetear-contrasena?token=${resetToken}`;
 
     await transporter.sendMail({
       from: `"Mercosur Casa de Bolsa, S.A." <sistemasmcdb@mercosur.com.ve>`,
       to: user.str_email,
-      subject: "Recuperación de Contraseña - Mercosur Enterpise Portal",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
-          <div style="background-color: #ff6600; padding: 20px; text-align: center;">
-            <h2 style="color: white; margin: 0;">Mercosur Casa de Bolsa</h2>
-          </div>
-          <div style="padding: 30px; color: #333333;">
-            <h3>Solicitud de cambio de contraseña</h3>
-            <p>Hola, <strong>${user.str_email}</strong>.</p>
-            <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente botón para continuar:</p>
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${resetLink}" style="padding: 12px 25px; background-color: #ff6600; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
-                Restablecer Contraseña
-              </a>
-            </div>
-            <p style="font-size: 0.8rem; color: #666666;">Este enlace expirará en 15 minutos. Si no solicitaste este cambio, puedes ignorar este correo.</p>
-          </div>
-        </div>
-      `,
+      subject: "Recuperación de Contraseña - Mercosur Enterprise Portal",
+      html: `...`,
     });
 
     return res.status(200).json(genericResponse);
@@ -399,7 +326,6 @@ router.post("/forgot-password", async (req, res) => {
 
 router.post("/reset-password", async (req, res) => {
   const { token, password } = req.body;
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const email = decoded.email;
@@ -416,20 +342,16 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-// --- RUTA PRIVADA ---
 router.post("/logout", async (req, res) => {
   try {
     const { userId } = req.body;
-
     if (!userId) {
       return res.status(400).json({ error: "ID de usuario no proporcionado." });
     }
 
-    // Borra los tokens del usuario sin importar el estado del middleware de sesión
     await pool.query("DELETE FROM tbl_auth_tokens WHERE user_id = $1", [
       userId,
     ]);
-
     res.status(200).send("Sesión cerrada correctamente");
   } catch (err) {
     console.error("Error al cerrar sesión:", err.message);

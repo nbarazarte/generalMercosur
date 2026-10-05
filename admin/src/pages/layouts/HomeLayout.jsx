@@ -30,7 +30,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
 
   // --- ESTADOS Y REFERENCIAS PARA EL CONTROL DE SESIÓN ---
   const [showWarning, setShowWarning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutos en segundos
+  const [timeLeft, setTimeLeft] = useState(60); // 60 segundos de cuenta regresiva en el modal
 
   const warningTimerRef = useRef(null);
   const intervalTimerRef = useRef(null);
@@ -44,11 +44,9 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
     clearSessionTimers();
     setShowWarning(false);
 
-    // El token dura 1 hora (3,600,000 ms).
-    // Avisamos cuando falten 5 minutos para que expire (5 * 60 * 1000 = 300,000 ms).
-    // Nota: Si quieres probarlo rápido mientras desarrollas, puedes cambiar esto temporalmente.
+    // Token dura 1 hora. Avisamos 1 minuto antes (faltando 60s).
     const tokenLifetimeMs = 60 * 60 * 1000; // 1 hora total
-    const warningTimeMs = tokenLifetimeMs - 5 * 60 * 1000; // Avisar a los 55 minutos (faltando 5 min)
+    const warningTimeMs = tokenLifetimeMs - 60 * 1000; // Avisar faltando 1 minuto
 
     warningTimerRef.current = setTimeout(() => {
       setShowWarning(true);
@@ -57,7 +55,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
   };
 
   const startCountdown = () => {
-    let seconds = 300; // 5 minutos de cuenta regresiva en el modal
+    let seconds = 60; // 60 segundos de cuenta regresiva en el modal
     setTimeLeft(seconds);
 
     if (intervalTimerRef.current) clearInterval(intervalTimerRef.current);
@@ -72,22 +70,43 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
     }, 1000);
   };
 
-  // --- INICIO DE TEMPORIZADORES CONDICIONALES ---
+  // --- INICIO DE TEMPORIZADORES CONDICIONALES Y VALIDACIÓN AL MONTAR ---
   useEffect(() => {
-    // Si estamos en la página de login, no ejecutamos ningún temporizador de sesión
+    // Si estamos en la página de login, no ejecutamos ningún temporizador
     if (location.pathname === "/login" || location.pathname === "/") {
       clearSessionTimers();
       setShowWarning(false);
       return;
     }
 
-    // Si hay un token válido o usuario, iniciamos el temporizador normal
-    if (refreshToken) {
-      startSessionTimer();
-    }
+    const initSessionCheck = async () => {
+      if (refreshToken) {
+        try {
+          // Intentamos refrescar el token de inmediato al recargar o entrar
+          const response = await axiosSeguridad.post("/refresh-token", {
+            refreshToken,
+          });
+          const nuevoToken = response.data.token || response.data.accessToken;
+          dispatch(updateAccessToken(nuevoToken));
+
+          // Iniciamos el temporizador normal con un token limpio
+          startSessionTimer();
+        } catch (err) {
+          console.error(
+            "El Refresh Token ha expirado al recargar la página:",
+            err,
+          );
+          handleForceLogout();
+        }
+      } else {
+        handleForceLogout();
+      }
+    };
+
+    initSessionCheck();
 
     return () => clearSessionTimers();
-  }, [location.pathname, refreshToken]);
+  }, [location.pathname]);
 
   const handleExtendSession = async () => {
     try {
@@ -105,7 +124,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
       const nuevoToken = response.data.token || response.data.accessToken;
       dispatch(updateAccessToken(nuevoToken));
 
-      // Reiniciamos el ciclo de los timers para otros 30 segundos limpios
+      // Reiniciamos el ciclo de los timers limpios
       startSessionTimer();
     } catch (err) {
       console.error("Error al extender la sesión:", err);
@@ -259,7 +278,6 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
       </button>
 
       <div className="page-grid">
-        {/* OVERLAY PARA OSCURECER EL FONDO EN MÓVILES CUANDO EL MENÚ ESTÁ ABIERTO */}
         {isMobileMenuOpen && (
           <div
             className="mobile-backdrop"
@@ -267,21 +285,14 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
           />
         )}
 
-        {/* PANEL IZQUIERDO COMPARTIDO (CON TEMA Y SALIR INTEGRADOS) */}
         <aside
           className={`aside-panel ${isMobileMenuOpen ? "mobile-open" : ""}`}
         >
           <div className="overlay-top" />
           <div className="overlay-bottom" />
 
-          {/* <div className="aside-logo">
-            <Logo />
-          </div> */}
-
-          {/* Renderiza el Aside según la vista activa */}
           {asideContent}
 
-          {/* CONTENEDOR INFERIOR: Botones de Tema y Salir + Footer */}
           <div className="flex flex-col  gap-4 mt-auto mb-6">
             <div className="flex flex-row gap-2.5 items-center justify-between">
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
@@ -296,14 +307,11 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
           </div>
         </aside>
 
-        {/* PANEL DERECHO DINÁMICO */}
         <main className="main-panel">
           <div className="form-wrapper">
             <div className="flex items-center justify-center mb-4">
               <LogoMobile theme={theme} />
             </div>
-
-            {/* Renderiza el contenido de Login o Main */}
             <Outlet context={{ theme }} />
           </div>
         </main>

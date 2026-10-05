@@ -23,7 +23,6 @@ export default function SystemLayout({ children, identificacion }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // 1. Obtén el id del usuario desde el estado de Redux
   const userId = useSelector((state) => state.auth?.user?.id);
   const usuario = useSelector((state) => state.auth?.user);
   const nombre = usuario?.nombre;
@@ -33,9 +32,8 @@ export default function SystemLayout({ children, identificacion }) {
 
   // --- ESTADOS Y REFERENCIAS PARA EL CONTROL DE SESIÓN ---
   const [showWarning, setShowWarning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutos en segundos
+  const [timeLeft, setTimeLeft] = useState(60); // 60 segundos de cuenta regresiva en el modal
 
-  // Referencias para limpiar los timers de forma segura
   const warningTimerRef = useRef(null);
   const intervalTimerRef = useRef(null);
 
@@ -48,11 +46,9 @@ export default function SystemLayout({ children, identificacion }) {
     clearSessionTimers();
     setShowWarning(false);
 
-    // El token dura 1 hora (3,600,000 ms).
-    // Avisamos cuando falten 5 minutos para que expire (5 * 60 * 1000 = 300,000 ms).
-    // Nota: Si quieres probarlo rápido mientras desarrollas, puedes cambiar esto temporalmente.
+    // Token dura 1 hora. Avisamos 1 minuto antes (faltando 60s).
     const tokenLifetimeMs = 60 * 60 * 1000; // 1 hora total
-    const warningTimeMs = tokenLifetimeMs - 5 * 60 * 1000; // Avisar a los 55 minutos (faltando 5 min)
+    const warningTimeMs = tokenLifetimeMs - 60 * 1000; // Avisar faltando 1 minuto
 
     warningTimerRef.current = setTimeout(() => {
       setShowWarning(true);
@@ -61,7 +57,7 @@ export default function SystemLayout({ children, identificacion }) {
   };
 
   const startCountdown = () => {
-    let seconds = 300; // 5 minutos de cuenta regresiva en el modal
+    let seconds = 60; // 60 segundos de cuenta regresiva en el modal
     setTimeLeft(seconds);
 
     if (intervalTimerRef.current) clearInterval(intervalTimerRef.current);
@@ -76,9 +72,34 @@ export default function SystemLayout({ children, identificacion }) {
     }, 1000);
   };
 
-  // Iniciar el temporizador global al cargar la ruta
+  // --- INICIO DE TEMPORIZADORES CONDICIONALES Y VALIDACIÓN AL MONTAR ---
   useEffect(() => {
-    startSessionTimer();
+    const initSessionCheck = async () => {
+      if (refreshToken) {
+        try {
+          // Intentamos renovar el token al cargar/recargar la página
+          const response = await axiosSeguridad.post("/refresh-token", {
+            refreshToken,
+          });
+          const nuevoToken = response.data.token || response.data.accessToken;
+          dispatch(updateAccessToken(nuevoToken));
+
+          // Iniciamos el temporizador normal con un token fresco
+          startSessionTimer();
+        } catch (err) {
+          console.error(
+            "El Refresh Token ha expirado al recargar la página:",
+            err,
+          );
+          handleForceLogout();
+        }
+      } else {
+        handleForceLogout();
+      }
+    };
+
+    initSessionCheck();
+
     return () => clearSessionTimers();
   }, [location.pathname]);
 
@@ -90,7 +111,6 @@ export default function SystemLayout({ children, identificacion }) {
         );
       }
 
-      // Llamada al endpoint para renovar el token
       const response = await axiosSeguridad.post("/refresh-token", {
         refreshToken,
       });
@@ -98,7 +118,6 @@ export default function SystemLayout({ children, identificacion }) {
       const nuevoToken = response.data.token || response.data.accessToken;
       dispatch(updateAccessToken(nuevoToken));
 
-      // IMPORTANTE: Reiniciamos el ciclo de los timers para otros 30 segundos limpios
       startSessionTimer();
     } catch (err) {
       console.error("Error al extender la sesión:", err);
@@ -106,12 +125,10 @@ export default function SystemLayout({ children, identificacion }) {
     }
   };
 
-  // 2. Actualiza la función handleForceLogout
   const handleForceLogout = async () => {
     clearSessionTimers();
     try {
       if (userId) {
-        // Llama a tu endpoint del backend para borrar los tokens de la BD
         await axiosSeguridad.post("/logout", { userId });
       }
     } catch (err) {
@@ -120,7 +137,6 @@ export default function SystemLayout({ children, identificacion }) {
         err,
       );
     } finally {
-      // Siempre limpiamos Redux y redirigimos al login, pase lo que pase en la red
       dispatch(logout());
       navigate("/login");
     }
@@ -173,7 +189,6 @@ export default function SystemLayout({ children, identificacion }) {
         onClick={() => setMobileOpen(false)}
       />
 
-      {/* ----------------- MODAL DE ADVERTENCIA DE SESIÓN ----------------- */}
       {showWarning && (
         <div
           style={{
@@ -264,25 +279,8 @@ export default function SystemLayout({ children, identificacion }) {
         </div>
       )}
 
-      {/* ----------------- SIDEBAR ----------------- */}
-
-      {/*  <Link
-            to="/home"
-            style={{
-              display: "inline-flex",
-              justifyContent: "center",
-              cursor: "pointer",
-            }}
-            onClick={() => setMobileOpen(false)}
-          >
-            <Logo />
-          </Link> */}
-
       <aside className={`ma-side ${mobileOpen ? "open" : ""}`}>
-        {/* Navegación principal */}
-
         <div className="flex flex-row justify-between items-start">
-          {/* Navegación con elementos separados */}
           <nav className="flex flex-col gap-2.5">
             <NavLink
               key="home"
@@ -312,26 +310,11 @@ export default function SystemLayout({ children, identificacion }) {
               </NavLink>
             ))}
           </nav>
-
-          {/* Cabecera con la X a la derecha */}
-          {/* <div className="p-1">
-            <button
-              onClick={() => setMobileOpen(false)}
-              aria-label="Cerrar menú"
-              className="text-slate-400 hover:text-white transition-colors cursor-pointer"
-            >
-              <DynamicIcon name="FiX" fallback="FiX" />
-            </button>
-          </div> */}
         </div>
 
-        {/* Sección inferior (Perfil + Divisor + Botones abajo) con Tailwind */}
         <div className="flex flex-col flex-1 justify-end pb-2">
           <div className="flex flex-col gap-2.5 px-1 mt-auto">
-            {/* Línea divisoria */}
             <div className="h-px bg-white/10 my-2 w-full" />
-
-            {/* Perfil de Usuario */}
             <div className="flex items-center gap-3 w-full px-2 py-1.5">
               <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-semibold text-white text-sm shrink-0 shadow-inner">
                 {iniciales(`${nombre} ${apellido}`)}
@@ -344,10 +327,7 @@ export default function SystemLayout({ children, identificacion }) {
                   {rol}
                 </small>
               </div>
-
-              {/* Botones de control inferiores */}
-
-              <div className="flex flex-row gap-2.5">
+              <div className="flex flex-row gap-8">
                 <ThemeToggle />
                 <LogoutButton />
               </div>
@@ -356,7 +336,6 @@ export default function SystemLayout({ children, identificacion }) {
         </div>
       </aside>
 
-      {/* ----------------- MAIN CONTENT ----------------- */}
       <div
         className="ma-main"
         style={{

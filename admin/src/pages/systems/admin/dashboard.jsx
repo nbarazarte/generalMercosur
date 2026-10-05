@@ -49,7 +49,6 @@ function useIsDarkMode() {
 /* ============================ DASHBOARD COMPONENT ============================ */
 export default function DashboardSistemasUsuarios() {
   const isDark = useIsDarkMode();
-  const token = useSelector((state) => state.auth?.token);
 
   const [sistemas, setSistemas] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
@@ -76,10 +75,8 @@ export default function DashboardSistemasUsuarios() {
   };
 
   useEffect(() => {
-    if (!token) return;
     const fetchData = async () => {
       try {
-        // Peticiones limpias usando axiosAdmin (sin necesidad de pasar authHeaders manuales)
         const [resSistemas, resUsuarios, resKpis] = await Promise.all([
           axiosAdmin.get("/fetchSistemas"),
           axiosAdmin.get("/fetchUsuarios"),
@@ -108,7 +105,7 @@ export default function DashboardSistemasUsuarios() {
     };
 
     fetchData();
-  }, [flag, token]);
+  }, [flag]);
 
   const totalOpciones = useMemo(
     () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),
@@ -267,7 +264,7 @@ export default function DashboardSistemasUsuarios() {
                 Usuarios asignados por sistema
               </span>{" "}
             </div>
-            <ChartBarSistemas isDark={isDark} token={token} />
+            <ChartBarSistemas isDark={isDark} />
           </div>
         </div>
 
@@ -560,7 +557,7 @@ export default function DashboardSistemasUsuarios() {
             )}
           </div>
 
-          <UltimosAccesosCard isDark={isDark} token={token} />
+          <UltimosAccesosCard isDark={isDark} />
         </div>
 
         {/* 4. CATÁLOGO DE SISTEMAS Y RUTAS */}
@@ -818,11 +815,10 @@ function KPICard({ icon, val, label, trend, trendColor, iconColor }) {
 }
 
 /* ====== COMPONENTE DE ÚLTIMOS ACCESOS ====== */
-function UltimosAccesosCard({ isDark, token }) {
+function UltimosAccesosCard({ isDark }) {
   const [accesos, setAccesos] = useState([]);
 
   useEffect(() => {
-    if (!token) return;
     // Corregido: se usa axiosAdmin en lugar de axios
     axiosAdmin
       .get("/dashboard/ultimos-accesos")
@@ -831,7 +827,7 @@ function UltimosAccesosCard({ isDark, token }) {
         setAccesos(data);
       })
       .catch((err) => console.error("Error al obtener últimos accesos:", err));
-  }, [token]);
+  }, []);
 
   return (
     <div className="ma-card" style={{ padding: 18 }}>
@@ -942,12 +938,11 @@ function UltimosAccesosCard({ isDark, token }) {
 }
 
 /* ====== GRÁFICO: BAR CHART (USUARIOS POR SISTEMA) ====== */
-function ChartBarSistemas({ isDark, token }) {
+/* function ChartBarSistemas({ isDark }) {
   const canvasRef = useRef(null);
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    if (!token) return;
     // Corregido: se usa axiosAdmin en lugar de axios
     axiosAdmin
       .get("/usuarios-por-sistema")
@@ -958,7 +953,7 @@ function ChartBarSistemas({ isDark, token }) {
       .catch((err) =>
         console.error("Error al obtener usuarios por sistema:", err),
       );
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     if (!canvasRef.current || chartData.length === 0) return;
@@ -1001,6 +996,102 @@ function ChartBarSistemas({ isDark, token }) {
     });
 
     return () => chart.destroy();
+  }, [isDark, chartData]);
+
+  return (
+    <div style={{ position: "relative", width: "100%", height: 210 }}>
+      <canvas ref={canvasRef} />
+    </div>
+  );
+} */
+
+/* ====== GRÁFICO: BAR CHART (USUARIOS POR SISTEMA) ====== */
+function ChartBarSistemas({ isDark }) {
+  const canvasRef = useRef(null);
+  const chartInstanceRef = useRef(null); // Referencia para guardar la instancia del gráfico
+  const [chartData, setChartData] = useState([]);
+
+  // 1. Carga de datos inicial
+  useEffect(() => {
+    axiosAdmin
+      .get("/usuarios-por-sistema")
+      .then((res) => {
+        const data = res.data?.data || res.data || [];
+        setChartData(data);
+      })
+      .catch((err) =>
+        console.error("Error al obtener usuarios por sistema:", err),
+      );
+  }, []);
+
+  // 2. Inicialización única del gráfico
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const ctx = canvasRef.current.getContext("2d");
+
+    chartInstanceRef.current = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: "Usuarios con Acceso",
+            data: [],
+            backgroundColor: [],
+            borderRadius: 4,
+          },
+        ],
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 300, // Animación más sutil y rápida para evitar saltos bruscos
+        },
+        scales: {
+          x: {
+            ticks: { precision: 0 },
+            grid: {},
+          },
+          y: { ticks: {}, grid: { display: false } },
+        },
+        plugins: { legend: { display: false } },
+      },
+    });
+
+    return () => {
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+        chartInstanceRef.current = null;
+      }
+    };
+  }, []);
+
+  // 3. Actualización dinámica cuando cambian los datos o el tema (sin destruir el gráfico)
+  useEffect(() => {
+    const chart = chartInstanceRef.current;
+    if (!chart) return;
+
+    const textColor = isDark ? "#94A3B8" : "#64748B";
+    const gridColor = isDark
+      ? "rgba(255, 255, 255, 0.08)"
+      : "rgba(0, 0, 0, 0.05)";
+
+    // Actualizar datos
+    chart.data.labels = chartData.map((s) => s.nombre);
+    chart.data.datasets[0].data = chartData.map((s) => s.total_usuarios);
+    chart.data.datasets[0].backgroundColor = chartData.map(
+      (s) => s.color || "#2f6fed",
+    );
+
+    // Actualizar colores de los ejes según el tema oscuro/claro
+    chart.options.scales.x.ticks.color = textColor;
+    chart.options.scales.x.grid.color = gridColor;
+    chart.options.scales.y.ticks.color = textColor;
+
+    // Refrescar gráfico de manera fluida
+    chart.update();
   }, [isDark, chartData]);
 
   return (
