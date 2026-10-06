@@ -273,7 +273,7 @@ const Home = () => {
     return () => observer.disconnect();
   }, [theme]);
 
-  const usuario = user?.username;
+  const usuario = user?.nombre;
 
   // Función encargada de redirigir según si la URL es absoluta o relativa
   const handleNavigate = (url) => {

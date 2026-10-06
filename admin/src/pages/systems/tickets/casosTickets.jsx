@@ -305,6 +305,7 @@ export default function CasosTickets() {
   const [fPrioridad, setFPrioridad] = useState("");
   const [fCanal, setFCanal] = useState("");
   const [fAgente, setFAgente] = useState("");
+  const [modal, setModal] = useState(null);
 
   const clienteDe = (ced) =>
     clientes.find((c) => c.cedula === ced) || { nombre: "—", cedula: ced };
@@ -337,6 +338,280 @@ export default function CasosTickets() {
       .sort((a, b) => b.opened - a.opened);
   }, [casos, fBuscar, fEstado, fPrioridad, fCanal, fAgente, clientes]);
 
+  /* ====== CONSTANTES ADICIONALES PARA LAS LISTAS DE _ID ====== */
+  const DEPARTAMENTOS = [
+    { id: 1, nombre: "Soporte Técnico" },
+    { id: 2, nombre: "Operaciones" },
+    { id: 3, nombre: "Sistemas" },
+    { id: 4, nombre: "Atención al Cliente" },
+  ];
+
+  const CATEGORIAS = [
+    { id: 1, nombre: "Firma Electrónica" },
+    { id: 2, nombre: "Web App" },
+    { id: 3, nombre: "Mercado de Valores" },
+    { id: 4, nombre: "Generar Certificado" },
+    { id: 5, nombre: "Caja Venezolana de Valores" },
+    { id: 6, nombre: "Otros" },
+  ];
+
+  const PRIORIDADES_LIST = [
+    { id: 1, nombre: "Baja" },
+    { id: 2, nombre: "Media" },
+    { id: 3, nombre: "Alta" },
+  ];
+
+  const ESTATUS_LIST = [
+    { id: 1, nombre: "Pendiente" },
+    { id: 2, nombre: "En Proceso" },
+    { id: 3, nombre: "Resuelto" },
+    { id: 4, nombre: "Escalado" },
+  ];
+
+  const handleNuevoTicket = () => {
+    console.log("Nuevo ticket");
+  };
+
+  const ModalTicket = () => {
+    const [clienteId, setClienteId] = useState("");
+    const [departamentoId, setDepartamentoId] = useState("");
+    const [categoriaId, setCategoriaId] = useState("");
+    const [prioridadId, setPrioridadId] = useState("");
+    const [estatusId, setEstatusId] = useState("");
+    const [canalId, setCanalId] = useState("");
+    const [strAsunto, setStrAsunto] = useState("");
+    const [strDescripcion, setStrDescripcion] = useState("");
+    const [intSla, setIntSla] = useState(24);
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      const nuevoTicketData = {
+        cliente_id: Number(clienteId),
+        creador_agente_id: null,
+        cierre_agente_id: null,
+        departamento_id: Number(departamentoId),
+        categoria_id: Number(categoriaId),
+        prioridad_id: Number(prioridadId),
+        estatus_id: Number(estatusId),
+        canal_id: Number(canalId),
+        str_asunto: strAsunto,
+        str_descripcion: strDescripcion,
+        int_sla: Number(intSla),
+        dmt_fecha_cierre: null,
+      };
+
+      console.log("Guardando ticket:", nuevoTicketData);
+      // Aquí realizas la petición a tu API para guardar en PostgreSQL
+      setModal(false);
+    };
+
+    return (
+      <div className="ma-overlay" onClick={() => setModal(false)}>
+        <div
+          className="ma-modal"
+          onClick={(e) => e.stopPropagation()}
+          style={{ maxWidth: 700, maxHeight: "90vh", overflowY: "auto" }}
+        >
+          <div className="ma-modal-head">
+            <h3>Nuevo Ticket</h3>
+            <button className="btn-icon" onClick={() => setModal(false)}>
+              ✕
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div
+              className="ma-modal-body"
+              style={{ display: "flex", flexDirection: "column", gap: 12 }}
+            >
+              {/* Fila 1: Canal y Categoría */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 12,
+                }}
+              >
+                <div className="field">
+                  <label>Canal</label>
+                  <select
+                    className="inp"
+                    value={canalId}
+                    onChange={(e) => setCanalId(e.target.value)}
+                    required
+                  >
+                    <option value="">Seleccione un canal...</option>
+                    {CANALES.map((c, idx) => (
+                      <option key={idx} value={idx + 1}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="field">
+                  <label>Categoría</label>
+                  <select
+                    className="inp"
+                    value={categoriaId}
+                    onChange={(e) => setCategoriaId(e.target.value)}
+                    required
+                  >
+                    <option value="">Seleccione una categoría...</option>
+                    {CATEGORIAS.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Fila 2: Cliente y Departamento */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 12,
+                }}
+              >
+                <div className="field">
+                  <label>Cliente</label>
+                  <select
+                    className="inp"
+                    value={clienteId}
+                    onChange={(e) => setClienteId(e.target.value)}
+                    required
+                  >
+                    <option value="">Seleccione un cliente...</option>
+                    {clientes.map((cl, idx) => (
+                      <option key={idx} value={idx + 1}>
+                        {cl.nombre} ({cl.cedula})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="field">
+                  <label>Departamento</label>
+                  <select
+                    className="inp"
+                    value={departamentoId}
+                    onChange={(e) => setDepartamentoId(e.target.value)}
+                    required
+                  >
+                    <option value="">Seleccione un departamento...</option>
+                    {DEPARTAMENTOS.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Fila 3: Prioridad, Estatus y SLA */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr",
+                  gap: 12,
+                }}
+              >
+                <div className="field">
+                  <label>Prioridad</label>
+                  <select
+                    className="inp"
+                    value={prioridadId}
+                    onChange={(e) => setPrioridadId(e.target.value)}
+                    required
+                  >
+                    <option value="">Prioridad...</option>
+                    {PRIORIDADES_LIST.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="field">
+                  <label>Estatus</label>
+                  <select
+                    className="inp"
+                    value={estatusId}
+                    onChange={(e) => setEstatusId(e.target.value)}
+                    required
+                  >
+                    <option value="">Estatus...</option>
+                    {ESTATUS_LIST.map((es) => (
+                      <option key={es.id} value={es.id}>
+                        {es.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="field">
+                  <label>SLA en Horas</label>
+                  <input
+                    type="number"
+                    className="inp"
+                    value={intSla}
+                    onChange={(e) => setIntSla(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Asunto */}
+              <div className="field">
+                <label>Asunto</label>
+                <input
+                  className="inp"
+                  value={strAsunto}
+                  onChange={(e) => setStrAsunto(e.target.value)}
+                  placeholder="Resumen del requerimiento..."
+                  maxLength={100}
+                  required
+                />
+              </div>
+
+              {/* Descripción */}
+              <div className="field">
+                <label>Descripción</label>
+                <textarea
+                  className="inp"
+                  rows={3}
+                  value={strDescripcion}
+                  onChange={(e) => setStrDescripcion(e.target.value)}
+                  placeholder="Detalle completo de la solicitud..."
+                  required
+                />
+              </div>
+            </div>
+
+            <div
+              className="ma-modal-foot"
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 8,
+                marginTop: 15,
+              }}
+            >
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setModal(false)}
+              >
+                Cancelar
+              </button>
+              <button type="submit" className="btn btn-primary">
+                Crear Ticket
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Casos Tickets">
       <div
@@ -365,7 +640,7 @@ export default function CasosTickets() {
         <div className="ma-toolbar" style={{ marginTop: 0 }}>
           <div className="ma-filters">
             {/* Buscador general */}
-            <div
+            {/* <div
               className="ma-search"
               style={{ position: "relative", maxWidth: 260 }}
             >
@@ -389,6 +664,41 @@ export default function CasosTickets() {
                 onChange={(e) => setFBuscar(e.target.value)}
                 style={{
                   paddingLeft: 32, // Espacio para el icono a la izquierda
+                }}
+              />
+            </div> */}
+
+            <div
+              style={{ position: "relative", minWidth: 170, flex: "1 1 150px" }}
+            >
+              <DynamicIcon
+                name="FiSearch"
+                style={{
+                  position: "absolute",
+                  left: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  pointerEvents: "none",
+                  color: "var(--merco-text, inherit)",
+                  opacity: 0.6,
+                  fontSize: 16,
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Cédula, nombre o descripción..."
+                value={fBuscar}
+                onChange={(e) => setFBuscar(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "8px 12px 8px 32px",
+                  borderRadius: 6,
+                  border: "1px solid var(--merco-border, #444)",
+                  background:
+                    "var(--merco-bg-subtle, rgba(255, 255, 255, 0.05))",
+                  color: "var(--merco-text, inherit)",
+                  fontSize: 13,
+                  boxSizing: "border-box",
                 }}
               />
             </div>
@@ -439,6 +749,15 @@ export default function CasosTickets() {
 
             <button className="btn btn-ghost btn-sm" onClick={limpiarFiltros}>
               Limpiar
+            </button>
+          </div>
+
+          <div>
+            <button className="btn btn-accent" onClick={() => setModal(true)}>
+              <span>
+                <DynamicIcon name="FiPlus" />
+              </span>{" "}
+              Nuevo ticket
             </button>
           </div>
         </div>
@@ -630,6 +949,8 @@ export default function CasosTickets() {
           </div>
         </div>
       </div>
+
+      {modal && <ModalTicket />}
     </SystemLayout>
   );
 }
