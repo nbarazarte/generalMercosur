@@ -18,7 +18,7 @@ import { updateAccessToken, logout } from "../../store/authSlice";
 import axiosSeguridad from "../utils/axiosSeguridad";
 import "../../../src/systems.css";
 
-export default function SystemLayout({ children, identificacion }) {
+export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -411,16 +411,18 @@ export default function SystemLayout({ children, identificacion }) {
 
             <div style={{ minWidth: 0 }}>
               {sistemaNombre && (
-                <h2
-                  style={{
-                    wordBreak: "break-word",
-                    margin: 0,
-                    lineHeight: 1.2,
-                    fontSize: "1.15rem",
-                  }}
-                >
-                  {sistemaNombre}
-                </h2>
+                <>
+                  <h2
+                    style={{
+                      wordBreak: "break-word",
+                      margin: 0,
+                      lineHeight: 1.2,
+                      fontSize: "1.15rem",
+                    }}
+                  >
+                    {sistemaNombre}
+                  </h2>
+                </>
               )}
               {sistemaDescripcion && (
                 <p
@@ -433,6 +435,16 @@ export default function SystemLayout({ children, identificacion }) {
                   {sistemaDescripcion}
                 </p>
               )}
+              <h3
+                style={{
+                  wordBreak: "break-word",
+                  margin: 0,
+                  lineHeight: 1.2,
+                  fontSize: "1.15rem",
+                }}
+              >
+                {opcionMenu}
+              </h3>
             </div>
           </div>
         </header>

@@ -123,7 +123,7 @@ function useIsDarkMode() {
       setIsDark(
         document.documentElement.classList.contains("dark") ||
           document.body.classList.contains("dark") ||
-          document.documentElement.getAttribute("data-theme") === "dark"
+          document.documentElement.getAttribute("data-theme") === "dark",
       );
     };
 
@@ -148,15 +148,15 @@ export default function DashboardTickets() {
   const isDark = useIsDarkMode();
 
   return (
-    <SystemLayout identificacion="Tickets">
+    <SystemLayout identificacion="Tickets" opcionMenu="Dashboard">
       <div className="ma-content" style={{ padding: "10px 0" }}>
         {/* ENCABEZADO */}
         <div className="ma-toolbar" style={{ marginBottom: 20 }}>
-          <div>
+          {/* <div>
             <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
               Dashboard
             </h2>
-          </div>
+          </div> */}
         </div>
 
         {/* 1. TARJETAS DE MÉTRICAS (KPIs) - Adaptables mediante la clase .ma-stats */}

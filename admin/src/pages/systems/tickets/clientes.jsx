@@ -198,7 +198,7 @@ export default function Clientes() {
   ]);
 
   return (
-    <SystemLayout identificacion="Tickets">
+    <SystemLayout identificacion="Tickets" opcionMenu="Clientes">
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
@@ -214,11 +214,11 @@ export default function Clientes() {
             marginBottom: 20,
           }}
         >
-          <div>
+          {/* <div>
             <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
               Clientes
             </h2>
-          </div>
+          </div> */}
         </div>
 
         {/* BARRA DE HERRAMIENTAS Y FILTROS */}

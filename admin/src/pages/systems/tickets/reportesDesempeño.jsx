@@ -271,7 +271,7 @@ export default function ReportesDesempeno() {
   }, [casosFiltrados]);
 
   return (
-    <SystemLayout identificacion="Tickets">
+    <SystemLayout identificacion="Tickets" opcionMenu="Reportes Desempeño">
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
@@ -287,11 +287,11 @@ export default function ReportesDesempeno() {
             marginBottom: 20,
           }}
         >
-          <div>
+          {/* <div>
             <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
               Reportes Desempeño
             </h2>
-          </div>
+          </div> */}
 
           {/* GRUPO DE BOTONES CON ESTILOS DE FILTRO */}
           <div

@@ -338,7 +338,7 @@ export default function CasosTickets() {
   }, [casos, fBuscar, fEstado, fPrioridad, fCanal, fAgente, clientes]);
 
   return (
-    <SystemLayout identificacion="Tickets">
+    <SystemLayout identificacion="Tickets" opcionMenu="Casos Tickets">
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
@@ -354,11 +354,11 @@ export default function CasosTickets() {
             marginBottom: 20,
           }}
         >
-          <div>
+          {/* <div>
             <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
               Casos Tickets
             </h2>
-          </div>
+          </div> */}
         </div>
 
         {/* BARRA DE HERRAMIENTAS Y FILTROS */}

@@ -156,7 +156,7 @@ export default function DashboardSistemasUsuarios() {
   };
 
   return (
-    <SystemLayout identificacion="Administración General">
+    <SystemLayout identificacion="Administración General" opcionMenu="Dashboard">
       {toast && (
         <div
           style={{
@@ -195,11 +195,11 @@ export default function DashboardSistemasUsuarios() {
             marginBottom: 20,
           }}
         >
-          <div>
+          {/* <div>
             <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
               Dashboard
             </h2>
-          </div>
+          </div> */}
         </div>
 
         {/* 1. TARJETAS DE MÉTRICAS GENERALES (KPIs) */}

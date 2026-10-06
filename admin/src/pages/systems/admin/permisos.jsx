@@ -414,7 +414,7 @@ export default function Permisos() {
   };
 
   return (
-    <SystemLayout identificacion="Administración General">
+    <SystemLayout identificacion="Administración General" opcionMenu="Permisos">
       {toast && (
         <div
           style={{
@@ -452,11 +452,11 @@ export default function Permisos() {
           marginBottom: 20,
         }}
       >
-        <div>
+        {/* <div>
           <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
             Permisos
           </h2>
-        </div>
+        </div> */}
       </div>
 
       <div className="ma-stats">

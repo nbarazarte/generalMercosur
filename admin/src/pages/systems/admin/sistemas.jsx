@@ -299,7 +299,7 @@ export default function Sistemas() {
   };
 
   return (
-    <SystemLayout identificacion="Administración General">
+    <SystemLayout identificacion="Administración General" opcionMenu="Sistemas">
       {/* NOTIFICACIÓN TOAST */}
       {toast && (
         <div
@@ -339,11 +339,11 @@ export default function Sistemas() {
           marginBottom: 20,
         }}
       >
-        <div>
+        {/* <div>
           <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
             Sistemas
           </h2>
-        </div>
+        </div> */}
       </div>
 
       <div className="ma-stats">
