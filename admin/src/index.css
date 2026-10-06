@@ -60,7 +60,7 @@
   --card-foreground: #18181b;
   --popover: #ffffff;
   --popover-foreground: #18181b;
-  --primary: #2563eb;
+  --primary: #f97316; /* <- Cambiado a naranja vibrante */
   --primary-foreground: #ffffff;
   --secondary: #f4f4f5;
   --secondary-foreground: #18181b;
@@ -74,9 +74,9 @@
   --ring: #2563eb;
   --card-primary-gradient: linear-gradient(
     135deg,
-    #1e3a5f 0%,
-    #0c1f3d 50%,
-    #0a1628 100%
+    #f97316 0%,
+    #c2410c 50%,
+    #29150b 100%
   );
 }
 
@@ -89,7 +89,7 @@
   --card-foreground: #fafafa;
   --popover: #141416;
   --popover-foreground: #fafafa;
-  --primary: #3b82f6;
+  --primary: #f97316; /* <- Cambiado a naranja vibrante para modo oscuro */
   --primary-foreground: #ffffff;
   --secondary: #1c1c1f;
   --secondary-foreground: #fafafa;
@@ -103,9 +103,9 @@
   --ring: #3b82f6;
   --card-primary-gradient: linear-gradient(
     135deg,
-    #1e3a5f 0%,
-    #0c1f3d 50%,
-    #0a1628 100%
+    #c2410c 0%,
+    #1a100a 50%,
+    #080b10 100%
   );
 }
 
@@ -986,8 +986,8 @@ ol {
 
 .system-card:hover {
   transform: translateY(-2px);
-  border-color: var(--primary);
-  box-shadow: 0 10px 20px -8px rgba(37, 99, 235, 0.25);
+  border-color: var(--merco-accent);
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.15);
 }
 
 .system-icon {
@@ -1384,7 +1384,7 @@ body.dark .spinner {
   .aside-panel.mobile-open {
     transform: translateX(0);
   }
-  
+
   /* Centrar exclusivamente el logo en el panel móvil */
   .aside-logo {
     display: flex;
@@ -1419,7 +1419,9 @@ body.dark .spinner {
   justify-content: center;
   color: #fff;
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
   z-index: 1010;
 }
 

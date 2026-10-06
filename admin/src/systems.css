@@ -4,12 +4,14 @@
    ========================================================================== */
 
 :root {
-  --merco-navy: #0b2545;
-  --merco-navy-700: #123a63;
-  --merco-navy-500: #1d5891;
-  --merco-accent: #c8a45c; /* Dorado corporativo */
-  --merco-accent-dark: #a8863f;
-  --merco-blue: #2f6fed;
+  --merco-navy: #0a1628; /* Fondo oscuro principal */
+  --merco-navy-700: #0c1f3d; /* Fondo oscuro secundario */
+  --merco-navy-500: #1e3a5f; /* Tonos intermedios y contenedores */
+  --merco-accent: #f97316; /* Naranja vibrante corporativo */
+  --merco-accent-dark: #c2410c; /* Naranja oscuro / quemado */
+
+  /* CAMBIO: Reemplaza el azul antiguo por el acento naranja o un tono neutro */
+  --merco-blue: #f97316; /* <- Cambiado de #2f6fed a #F97316 */
 
   /* Mapeo dinámico a las variables de tema globales de index.css */
   --merco-bg: var(--background, #f8fafc);
@@ -42,9 +44,9 @@
 .ma-side {
   width: 260px;
   min-width: 260px;
-  background: linear-gradient(180deg, var(--merco-navy) 0%, #08192f 100%);
-  background-color: var(--merco-side-bg, #1e293b);
-  color: #e8eef7;
+  background: linear-gradient(180deg, #c2410c 0%, #9a3209 100%);
+  background-color: #c2410c;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   padding: 22px 16px;
@@ -477,12 +479,8 @@
 }
 
 .btn-accent {
-  background: linear-gradient(
-    135deg,
-    var(--merco-accent),
-    var(--merco-accent-dark)
-  );
-  color: #0b2545;
+  background: var(--primary, var(--merco-blue));
+  color: var(--primary-foreground, #ffffff);
 }
 
 .btn-accent:hover {
@@ -1236,7 +1234,7 @@
 
 html.dark {
   --loader-bg: var(--background, #0b0f19);
-  --loader-card-bg: rgba(17, 24, 39, 0.75);
+  --loader-card-bg: rgba(0, 0, 0, 0);
   --loader-card-border: rgba(255, 255, 255, 0.08);
   --loader-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   --loader-core-bg: rgba(255, 255, 255, 0.03);

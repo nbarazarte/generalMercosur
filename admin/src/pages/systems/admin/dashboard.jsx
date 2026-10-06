@@ -335,7 +335,7 @@ export default function DashboardSistemasUsuarios() {
                 </small>
               </div>
               <button
-                className="btn btn-ghost btn-sm"
+                className="btn btn-accent btn-sm"
                 onClick={() => (window.location.href = "/admin/permisos")}
               >
                 Ver Usuarios
@@ -583,7 +583,7 @@ export default function DashboardSistemasUsuarios() {
               </small>
             </div>
             <button
-              className="btn btn-ghost btn-sm"
+              className="btn btn-accent btn-sm"
               onClick={() => (window.location.href = "/admin/sistemas")}
             >
               Gestionar Sistemas

@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-// import Aurora from "../layouts/Aurora";
-import FloatingLines from "../layouts/FloatingLines";
+import Aurora from "../layouts/Aurora";
 
 // Componentes
 import Logo from "../components/Logo";
@@ -290,7 +289,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
         <aside
           className={`aside-panel ${isMobileMenuOpen ? "mobile-open" : ""}`}
         >
-          <div className="overlay-top_" />
+          <div className="overlay-top" />
           <div className="overlay-bottom" />
 
           {asideContent}
@@ -309,7 +308,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
           </div>
         </aside>
 
-        {/* Panel derecho (main) con FloatingLines */}
+        {/* Panel derecho (main) con Aurora abarcando todo el fondo */}
         <main className="main-panel relative overflow-hidden">
           <div
             style={{
@@ -321,29 +320,18 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
               zIndex: 0,
             }}
           >
-            {theme === "dark" && (
-              <FloatingLines
-                enabledWaves={["top", "middle", "bottom"]}
-                lineCount={8}
-                lineDistance={8}
-                bendRadius={8}
-                bendStrength={-2}
-                interactive
-                parallax={true}
-                animationSpeed={1}
-                linesGradient={[
-                  "#F97316",
-                  "#C2410C",
-                  "#6f6f6f",
-                  "#3a3a3a",
-                  "#0a1628",
-                ]}
-              />
-            )}
+            <Aurora
+              colorStops={["#7cff67", "#B497CF", "#5227FF"]}
+              blend={0.5}
+              amplitude={1.0}
+              speed={1}
+            />
           </div>
 
           {/* Contenido del main con z-index superior para flotar encima de la animación */}
-          <div className="relative z-10 form-wrapper w-full">
+          <div className="relative z-10 form-wrapper w-full ">
+            {" "}
+            {/* h-full */}
             <div className="flex items-center justify-center mb-4">
               <LogoMobile theme={theme} />
             </div>

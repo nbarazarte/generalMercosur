@@ -11,7 +11,7 @@ import LogoutButton from "../components/LogoutButton";
 import ThemeToggle from "../components/ThemeToggle";
 import { DynamicIcon } from "../components/IconCatalog";
 import Footer from "../components/Footer";
-import FloatingLines from "../layouts/FloatingLines";
+import Aurora from "../layouts/Aurora";
 
 import { useSelector, useDispatch } from "react-redux";
 import { updateAccessToken, logout } from "../../store/authSlice";
@@ -19,6 +19,7 @@ import axiosSeguridad from "../utils/axiosSeguridad";
 import "../../../src/systems.css";
 
 export default function SystemLayout({ children, identificacion }) {
+  // CAMBIO PRINCIPAL: Por defecto el menú estará colapsado (false)
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -30,35 +31,6 @@ export default function SystemLayout({ children, identificacion }) {
   const apellido = usuario?.apellido;
   const sistemas = useSelector((state) => state.auth?.user.sistemasOpciones);
   const refreshToken = useSelector((state) => state.auth?.refreshToken);
-
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("theme") || "light",
-  );
-
-  // Sincronizar el estado del tema si cambia en el DOM o localStorage
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const currentTheme = localStorage.getItem("theme") || "light";
-      setTheme(currentTheme);
-    };
-
-    // Escuchar cambios de clase en el elemento raíz
-    const observer = new MutationObserver(() => {
-      const isDark = document.documentElement.classList.contains("dark");
-      setTheme(isDark ? "dark" : "light");
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
 
   // --- ESTADOS Y REFERENCIAS PARA EL CONTROL DE SESIÓN ---
   const [showWarning, setShowWarning] = useState(false);
@@ -437,42 +409,19 @@ export default function SystemLayout({ children, identificacion }) {
           </div>
         </header>
 
-        {/* Main con fondo FloatingLines adaptativo al tema */}
+        {/* Main con fondo Aurora absoluto */}
         <main
           className="ma-content relative overflow-hidden"
           style={{ flex: "1 0 auto", position: "relative" }}
         >
-          {/* Contenedor del fondo animado */}
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              position: "absolute",
-              top: 0,
-              left: 0,
-              zIndex: 0,
-            }}
-          >
-            {theme === "dark" && (
-              <FloatingLines
-                key="dark-lines"
-                enabledWaves={["top", "middle", "bottom"]}
-                lineCount={8}
-                lineDistance={8}
-                bendRadius={8}
-                bendStrength={-2}
-                interactive
-                parallax={true}
-                animationSpeed={1}
-                linesGradient={[
-                  "#F97316",
-                  "#C2410C",
-                  "#6f6f6f",
-                  "#3a3a3a",
-                  "#0a1628",
-                ]}
-              />
-            )}
+          {/* Fondo Aurora */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+            <Aurora
+              colorStops={["#7cff67", "#B497CF", "#5227FF"]}
+              blend={0.5}
+              amplitude={1.0}
+              speed={1}
+            />
           </div>
 
           {/* Contenido con z-index superior */}
