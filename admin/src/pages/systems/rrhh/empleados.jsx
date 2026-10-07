@@ -1,17 +1,28 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
+
 
 /* ====== CONSTANTES Y VALORES DE CONFIGURACIÓN ====== */
 const TIPOS_PERSONA = ["Natural", "Jurídica"];
 const ESTADOS_EXPEDIENTE = ["Aprobado", "Pendiente", "En Revisión", "Rechazado"];
 const NIVELES_RIESGO = ["Bajo", "Medio", "Alto"];
 
-/* ====== DATOS DE EJEMPLO DE EXPEDIENTES / CLIENTES ====== */
+/* ====== PESTAÑAS CONFIGURADAS PARA LA FICHA ====== */
+const TABS = [
+  { id: "identificacion", label: "Identificación", icon: "FiUser" },
+  { id: "documentos", label: "Doc. Legales", icon: "FiFileText" },
+  { id: "recaudos", label: "Recaudos", icon: "FiFolder" },
+  { id: "operativos", label: "Operativos", icon: "FiShield" },
+  { id: "soportes", label: "Soportes", icon: "FiPaperclip" },
+];
+
+/* ====== DATOS DE EJEMPLO DE EXPEDIENTES ====== */
 const EXPEDIENTES_INIT = [
   {
     id: "EXP-1001",
-    cedula: "12.345.678",
+    cedula: "V-12.345.678",
     nombre: "José Rodríguez",
     tipoPersona: "Natural",
     correo: "jrodriguez@correo.com",
@@ -22,10 +33,20 @@ const EXPEDIENTES_INIT = [
     ultimaActualizacion: new Date("2026-09-24T10:15:00"),
     documentosCompletos: 10,
     documentosTotales: 10,
+    f_ingreso: "2026-01-15",
+    est_colaborador: "Activo",
+    creado_por: "Ana Rodríguez",
+    f_creacion: "2026-01-15",
+    ci: "SI",
+    f_venc_ci: "2029-01-15",
+    rif: "SI",
+    f_venc_rif: "2029-01-15",
+    contrato: "SI",
+    f_venc_contrato: "2027-06-30",
   },
   {
     id: "EXP-1002",
-    cedula: "15.987.654",
+    cedula: "V-15.987.654",
     nombre: "María Gómez",
     tipoPersona: "Natural",
     correo: "mgomez@correo.com",
@@ -36,6 +57,16 @@ const EXPEDIENTES_INIT = [
     ultimaActualizacion: new Date("2026-09-23T14:20:00"),
     documentosCompletos: 7,
     documentosTotales: 10,
+    f_ingreso: "2026-03-10",
+    est_colaborador: "Activo",
+    creado_por: "Ana Rodríguez",
+    f_creacion: "2026-03-10",
+    ci: "SI",
+    f_venc_ci: "2028-06-01",
+    rif: "SI",
+    f_venc_rif: "2026-10-15",
+    contrato: "NO",
+    f_venc_contrato: "",
   },
   {
     id: "EXP-1003",
@@ -50,48 +81,10 @@ const EXPEDIENTES_INIT = [
     ultimaActualizacion: new Date("2026-09-22T09:00:00"),
     documentosCompletos: 12,
     documentosTotales: 15,
-  },
-  {
-    id: "EXP-1004",
-    cedula: "20.556.789",
-    nombre: "Ana Fernández",
-    tipoPersona: "Natural",
-    correo: "afernandez@correo.com",
-    tel: "+58 424-3344556",
-    estado: "Rechazado",
-    riesgo: "Medio",
-    ejecutivo: "Ira 4",
-    ultimaActualizacion: new Date("2026-09-20T16:45:00"),
-    documentosCompletos: 4,
-    documentosTotales: 10,
-  },
-  {
-    id: "EXP-1005",
-    cedula: "J-40112334-5",
-    nombre: "Corporación Micagroup C.A.",
-    tipoPersona: "Jurídica",
-    correo: "admin@micagroup.com",
-    tel: "+58 212-7788990",
-    estado: "Aprobado",
-    riesgo: "Bajo",
-    ejecutivo: "Moises 5",
-    ultimaActualizacion: new Date("2026-09-18T11:30:00"),
-    documentosCompletos: 15,
-    documentosTotales: 15,
-  },
-  {
-    id: "EXP-1006",
-    cedula: "25.667.001",
-    nombre: "Daniela Suárez",
-    tipoPersona: "Natural",
-    correo: "dsuarez@correo.com",
-    tel: "+58 426-1122334",
-    estado: "En Revisión",
-    riesgo: "Bajo",
-    ejecutivo: "Vanessa 6",
-    ultimaActualizacion: new Date("2026-09-15T08:10:00"),
-    documentosCompletos: 8,
-    documentosTotales: 10,
+    f_ingreso: "2025-11-01",
+    est_colaborador: "Activo",
+    creado_por: "Carlos Méndez",
+    f_creacion: "2025-11-01",
   },
 ];
 
@@ -110,21 +103,28 @@ function initials(n) {
 
 function fmtDT(d) {
   return (
-    d.toLocaleDateString("es-VE", { day: "2-digit", month: "short", year: "numeric" }) +
+    d.toLocaleDateString("es-VE", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }) +
     " " +
     d.toLocaleTimeString("es-VE", { hour: "2-digit", minute: "2-digit" })
   );
 }
 
-/* ============================ COMPONENTE EXPEDIENTE ============================ */
+/* ============================ COMPONENTE PRINCIPAL ============================ */
 export default function Empleados() {
-  const [expedientes] = useState(EXPEDIENTES_INIT);
+  const [expedientes, setExpedientes] = useState(EXPEDIENTES_INIT);
 
-  // Estados para los Filtros
+  // Estados para Filtros
   const [fBuscar, setFBuscar] = useState("");
   const [fTipoPersona, setFTipoPersona] = useState("");
   const [fEstado, setFEstado] = useState("");
   const [fRiesgo, setFRiesgo] = useState("");
+
+  // Estado para el modal/ficha
+  const [modal, setModal] = useState({ open: false, data: null });
 
   const limpiarFiltros = () => {
     setFBuscar("");
@@ -151,41 +151,854 @@ export default function Empleados() {
       .sort((a, b) => b.ultimaActualizacion - a.ultimaActualizacion);
   }, [expedientes, fBuscar, fTipoPersona, fEstado, fRiesgo]);
 
+  const handleGuardarExpediente = (expData) => {
+    if (modal.data) {
+      setExpedientes((prev) =>
+        prev.map((e) => (e.id === expData.id ? { ...e, ...expData } : e))
+      );
+    } else {
+      const nuevo = {
+        ...expData,
+        id: `EXP-${1000 + expedientes.length + 1}`,
+        ultimaActualizacion: new Date(),
+        documentosCompletos: 1,
+        documentosTotales: 10,
+        estado: "Pendiente",
+        riesgo: "Bajo",
+        tipoPersona: "Natural",
+        ejecutivo: "Analista Creador",
+      };
+      setExpedientes((prev) => [nuevo, ...prev]);
+    }
+    setModal({ open: false, data: null });
+  };
+
+  /* ====== MODAL FICHA DE EXPEDIENTE (PORTAL CON ESTILOS DE CASOSTICKETS) ====== */
+  const ModalFichaExpediente = () => {
+    const isEdit = !!modal.data;
+    const item = modal.data || {};
+
+    const [activeTab, setActiveTab] = useState("identificacion");
+
+    // Detector de tema en tiempo real (mismo patrón que casosTickets.jsx)
+    const [isDarkMode, setIsDarkMode] = useState(
+      () =>
+        document.documentElement.classList.contains("dark") ||
+        document.body.classList.contains("dark")
+    );
+
+    useEffect(() => {
+      const observer = new MutationObserver(() => {
+        const darkActive =
+          document.documentElement.classList.contains("dark") ||
+          document.body.classList.contains("dark");
+        setIsDarkMode(darkActive);
+      });
+
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+
+      return () => observer.disconnect();
+    }, []);
+
+    // Estados del formulario
+    const [form, setForm] = useState({
+      id: item.id || "Automático",
+      cedula: item.cedula || "",
+      nombre: item.nombre || "",
+      f_ingreso: item.f_ingreso || "",
+      est_colaborador: item.est_colaborador || "",
+      creado_por: item.creado_por || "Analista Creador",
+      f_creacion:
+        item.f_creacion || new Date().toISOString().split("T")[0],
+
+      ci: item.ci || "",
+      f_venc_ci: item.f_venc_ci || "",
+      rif: item.rif || "",
+      f_venc_rif: item.f_venc_rif || "",
+      contrato: item.contrato || "",
+      f_venc_contrato: item.f_venc_contrato || "",
+
+      ft_carnet: item.ft_carnet || "",
+      ref_pers: item.ref_pers || "",
+      compr_domicilio: item.compr_domicilio || "",
+      acdo_confidencialidad: item.acdo_confidencialidad || "",
+      cv: item.cv || "",
+      cert_estudios: item.cert_estudios || "",
+      cert_capacitacion: item.cert_capacitacion || "",
+      acept_cap_gral: item.acept_cap_gral || "",
+      acept_cap_area: item.acept_cap_area || "",
+      cant_cap_cumpl: item.cant_cap_cumpl || 0,
+      cant_otr_cursos: item.cant_otr_cursos || 0,
+
+      ivss: item.ivss || "",
+      f_reg_ivss: item.f_reg_ivss || "",
+      ince: item.ince || "",
+      f_reg_ince: item.f_reg_ince || "",
+      faov: item.faov || "",
+      f_reg_faov: item.f_reg_faov || "",
+      cst_medica: item.cst_medica || "",
+      reposos: item.reposos || 0,
+      vacaciones: item.vacaciones || 0,
+      permisos: item.permisos || 0,
+      amonestaciones: item.amonestaciones || "",
+      cant_amon: item.cant_amon || 0,
+    });
+
+    const [adjuntos, setAdjuntos] = useState(item.adjuntos || []);
+
+    const handleChange = (e) => {
+      const { id, value } = e.target;
+      setForm((prev) => ({ ...prev, [id]: value }));
+    };
+
+    const handleFileAdd = (e) => {
+      const files = Array.from(e.target.files);
+      const newFiles = files.map((f) => ({ name: f.name, size: f.size }));
+      setAdjuntos((prev) => [...prev, ...newFiles]);
+    };
+
+    const handleRemoveFile = (idx) => {
+      setAdjuntos((prev) => prev.filter((_, i) => i !== idx));
+    };
+
+    // Alertas de vencimiento
+    const hoy = new Date().toISOString().split("T")[0];
+    const alertas = [];
+    if (form.f_venc_ci && form.f_venc_ci <= hoy)
+      alertas.push(`La Cédula de Identidad está vencida (${form.f_venc_ci})`);
+    if (form.f_venc_rif && form.f_venc_rif <= hoy)
+      alertas.push(`El RIF está vencido (${form.f_venc_rif})`);
+    if (form.f_venc_contrato && form.f_venc_contrato <= hoy)
+      alertas.push(`El Contrato está vencido (${form.f_venc_contrato})`);
+
+    const onSubmit = (e) => {
+      e.preventDefault();
+      if (!form.nombre.trim()) {
+        alert("Por favor ingrese el nombre completo.");
+        return;
+      }
+      handleGuardarExpediente({ ...form, adjuntos });
+    };
+
+    return ReactDOM.createPortal(
+      <div
+        className="ma-overlay"
+        onClick={() => setModal({ open: false, data: null })}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: 99999,
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "16px",
+          boxSizing: "border-box",
+        }}
+      >
+        <div
+          className="ma-modal"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            width: "100%",
+            maxWidth: 820,
+            maxHeight: "92vh",
+            overflowY: "auto",
+            zIndex: 100000,
+            boxSizing: "border-box",
+            padding: 0,
+          }}
+        >
+          {/* CABECERA IDÉNTICA A CASOSTICKETS */}
+          <div className="ma-modal-head">
+            <h3 style={{ margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+              {isEdit ? `Editar Expediente` : "Nuevo Expediente"}
+              {isEdit && (
+                <span style={{ fontSize: 13, opacity: 0.7 }}>
+                  (#{form.id})
+                </span>
+              )}
+            </h3>
+            <button
+              className="btn-icon"
+              type="button"
+              onClick={() => setModal({ open: false, data: null })}
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* NAVEGACIÓN POR PESTAÑAS SINTONIZADA AL ESTILO DE LA APP */}
+          <div
+            style={{
+              display: "flex",
+              borderBottom: "1px solid var(--merco-border, #ccc)",
+              background: "var(--merco-bg-subtle, rgba(0, 0, 0, 0.03))",
+              padding: "0 10px",
+              overflowX: "auto",
+            }}
+          >
+            {TABS.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "12px 16px",
+                    border: "none",
+                    background: "none",
+                    borderBottom: isActive
+                      ? "2px solid var(--merco-accent, #f95700)"
+                      : "2px solid transparent",
+                    color: isActive
+                      ? "var(--merco-accent, #f95700)"
+                      : "var(--merco-muted, inherit)",
+                    fontWeight: isActive ? 700 : 500,
+                    fontSize: 13,
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  <DynamicIcon name={tab.icon} style={{ fontSize: 15 }} />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <form onSubmit={onSubmit}>
+            <div
+              className="ma-modal-body"
+              style={{
+                padding: "20px",
+                display: "flex",
+                flexDirection: "column",
+                gap: 16,
+                minHeight: 280,
+              }}
+            >
+              {/* ALERTAS */}
+              {alertas.length > 0 && (
+                <div
+                  style={{
+                    background: isDarkMode ? "rgba(245, 166, 35, 0.2)" : "rgba(245, 166, 35, 0.15)",
+                    borderLeft: "4px solid #f95700",
+                    padding: "10px 14px",
+                    borderRadius: 6,
+                    color: isDarkMode ? "#ffcc80" : "#8A5A00",
+                  }}
+                >
+                  <h4
+                    style={{
+                      margin: "0 0 4px 0",
+                      fontSize: 12,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      color: "#f95700",
+                    }}
+                  >
+                    <DynamicIcon name="FiAlertTriangle" /> Alertas de Vencimiento
+                  </h4>
+                  <ul style={{ margin: 0, paddingLeft: 18, fontSize: 11 }}>
+                    {alertas.map((al, idx) => (
+                      <li key={idx}>{al}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* TAB 1: IDENTIFICACIÓN */}
+              {activeTab === "identificacion" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>N° Expediente</label>
+                      <input
+                        className="inp"
+                        id="id"
+                        value={form.id}
+                        readOnly
+                        disabled
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Cédula</label>
+                      <input
+                        className="inp"
+                        id="cedula"
+                        value={form.cedula}
+                        onChange={handleChange}
+                        placeholder="V-00.000.000"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="field">
+                    <label>Apellidos y Nombres</label>
+                    <input
+                      className="inp"
+                      id="nombre"
+                      value={form.nombre}
+                      onChange={handleChange}
+                      placeholder="Nombre completo"
+                    />
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>F. Ingreso</label>
+                      <input
+                        type="date"
+                        className="inp"
+                        id="f_ingreso"
+                        value={form.f_ingreso}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Est. Colaborador</label>
+                      <select
+                        className="inp"
+                        id="est_colaborador"
+                        value={form.est_colaborador}
+                        onChange={handleChange}
+                      >
+                        <option value="">Seleccionar</option>
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                        <option value="Suspendido">Suspendido</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>Creado Por</label>
+                      <input
+                        className="inp"
+                        id="creado_por"
+                        value={form.creado_por}
+                        readOnly
+                        disabled
+                      />
+                    </div>
+                    <div className="field">
+                      <label>F. Creación</label>
+                      <input
+                        className="inp"
+                        id="f_creacion"
+                        value={form.f_creacion}
+                        readOnly
+                        disabled
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: DOCUMENTOS LEGALES */}
+              {activeTab === "documentos" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>C.I.</label>
+                      <select
+                        className="inp"
+                        id="ci"
+                        value={form.ci}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>F. Venc. C.I.</label>
+                      <input
+                        type="date"
+                        className="inp"
+                        id="f_venc_ci"
+                        value={form.f_venc_ci}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>RIF</label>
+                      <select
+                        className="inp"
+                        id="rif"
+                        value={form.rif}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>F. Venc. RIF</label>
+                      <input
+                        type="date"
+                        className="inp"
+                        id="f_venc_rif"
+                        value={form.f_venc_rif}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>Contrato</label>
+                      <select
+                        className="inp"
+                        id="contrato"
+                        value={form.contrato}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>F. Venc. Contrato</label>
+                      <input
+                        type="date"
+                        className="inp"
+                        id="f_venc_contrato"
+                        value={form.f_venc_contrato}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: RECAUDOS Y ACADÉMICOS */}
+              {activeTab === "recaudos" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>Ft. Carnet</label>
+                      <select
+                        className="inp"
+                        id="ft_carnet"
+                        value={form.ft_carnet}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>Ref. Pers.</label>
+                      <select
+                        className="inp"
+                        id="ref_pers"
+                        value={form.ref_pers}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>Compr. Domicilio</label>
+                      <select
+                        className="inp"
+                        id="compr_domicilio"
+                        value={form.compr_domicilio}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>Acdo. Confidencialidad</label>
+                      <select
+                        className="inp"
+                        id="acdo_confidencialidad"
+                        value={form.acdo_confidencialidad}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>CV</label>
+                      <select
+                        className="inp"
+                        id="cv"
+                        value={form.cv}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>Cert. Estudios</label>
+                      <select
+                        className="inp"
+                        id="cert_estudios"
+                        value={form.cert_estudios}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>Cap. Cumplidas</label>
+                      <input
+                        type="number"
+                        className="inp"
+                        id="cant_cap_cumpl"
+                        value={form.cant_cap_cumpl}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Otros Cursos</label>
+                      <input
+                        type="number"
+                        className="inp"
+                        id="cant_otr_cursos"
+                        value={form.cant_otr_cursos}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: OPERATIVOS / SEGURIDAD SOCIAL */}
+              {activeTab === "operativos" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>IVSS</label>
+                      <select
+                        className="inp"
+                        id="ivss"
+                        value={form.ivss}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>F. Reg. IVSS</label>
+                      <input
+                        type="date"
+                        className="inp"
+                        id="f_reg_ivss"
+                        value={form.f_reg_ivss}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>FAOV</label>
+                      <select
+                        className="inp"
+                        id="faov"
+                        value={form.faov}
+                        onChange={handleChange}
+                      >
+                        <option value=""></option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>F. Reg. FAOV</label>
+                      <input
+                        type="date"
+                        className="inp"
+                        id="f_reg_faov"
+                        value={form.f_reg_faov}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                      gap: 12,
+                    }}
+                  >
+                    <div className="field">
+                      <label>Vacaciones</label>
+                      <input
+                        type="number"
+                        className="inp"
+                        id="vacaciones"
+                        value={form.vacaciones}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="field">
+                      <label>Permisos</label>
+                      <input
+                        type="number"
+                        className="inp"
+                        id="permisos"
+                        value={form.permisos}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 5: SOPORTES DIGITALES */}
+              {activeTab === "soportes" && (
+                <div
+                  style={{
+                    border: "2px dashed var(--merco-border, #ccc)",
+                    borderRadius: 8,
+                    padding: "24px 20px",
+                    textAlign: "center",
+                    background: "var(--merco-bg-subtle, rgba(0, 0, 0, 0.02))",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: "var(--merco-muted, inherit)",
+                      marginBottom: 12,
+                    }}
+                  >
+                    Selecciona o arrastra archivos para adjuntar a este expediente.
+                  </p>
+                  <input
+                    type="file"
+                    id="f-file-input"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={handleFileAdd}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm"
+                    onClick={() =>
+                      document.getElementById("f-file-input").click()
+                    }
+                  >
+                    <DynamicIcon name="FiPlus" /> Seleccionar Archivos
+                  </button>
+
+                  {/* Lista de adjuntos */}
+                  {adjuntos.length > 0 && (
+                    <div
+                      style={{
+                        marginTop: 18,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 6,
+                        textAlign: "left",
+                      }}
+                    >
+                      {adjuntos.map((file, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            padding: "6px 10px",
+                            background: "var(--merco-bg-card, #fff)",
+                            border: "1px solid var(--merco-border, #ccc)",
+                            borderRadius: 6,
+                            fontSize: 12,
+                          }}
+                        >
+                          <span
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 6,
+                              color: "var(--merco-text, inherit)",
+                            }}
+                          >
+                            <DynamicIcon name="FiFile" /> {file.name}
+                          </span>
+                          <button
+                            type="button"
+                            className="btn-icon"
+                            style={{
+                              color: "var(--merco-danger, #d1435b)",
+                            }}
+                            onClick={() => handleRemoveFile(idx)}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* PIE DE PÁGINA IDÉNTICO A CASOSTICKETS */}
+            <div
+              className="ma-modal-foot"
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 8,
+              }}
+            >
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setModal({ open: false, data: null })}
+              >
+                Cancelar
+              </button>
+              <button type="submit" className="btn btn-primary">
+                <DynamicIcon name="FiSave" /> Guardar Expediente
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>,
+      document.body
+    );
+  };
+
   return (
-    <SystemLayout identificacion="Mi Expediente">
+    <SystemLayout identificacion="Mi Expediente" opcionMenu="Empleados">
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
           padding: "10px 0",
         }}
       >
-        {/* ENCABEZADO */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
-          <div>
-            <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
-              Expedientes Digitales
-            </h2>
-          </div>
-          <button className="btn btn-primary btn-sm" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <DynamicIcon name="FiPlus" />
-            <span>Nuevo Expediente</span>
-          </button>
-        </div>
-
         {/* BARRA DE HERRAMIENTAS Y FILTROS */}
         <div className="ma-toolbar" style={{ marginTop: 0 }}>
           <div className="ma-filters">
-            {/* Buscador general */}
             <div
-              className="ma-search"
-              style={{ position: "relative", maxWidth: 280 }}
+              style={{ position: "relative", minWidth: 170, flex: "1 1 150px" }}
             >
               <DynamicIcon
                 name="FiSearch"
@@ -201,17 +1014,24 @@ export default function Empleados() {
                 }}
               />
               <input
-                className="inp"
+                type="text"
                 placeholder="Nº Expediente, RIF/Cédula, Cliente..."
                 value={fBuscar}
                 onChange={(e) => setFBuscar(e.target.value)}
                 style={{
-                  paddingLeft: 32,
+                  width: "100%",
+                  padding: "8px 12px 8px 32px",
+                  borderRadius: 6,
+                  border: "1px solid var(--merco-border, #444)",
+                  background:
+                    "var(--merco-bg-subtle, rgba(255, 255, 255, 0.05))",
+                  color: "var(--merco-text, inherit)",
+                  fontSize: 13,
+                  boxSizing: "border-box",
                 }}
               />
             </div>
 
-            {/* Selects de Filtrado */}
             <select
               value={fTipoPersona}
               onChange={(e) => setFTipoPersona(e.target.value)}
@@ -250,6 +1070,18 @@ export default function Empleados() {
 
             <button className="btn btn-ghost btn-sm" onClick={limpiarFiltros}>
               Limpiar
+            </button>
+          </div>
+
+          <div>
+            <button
+              className="btn btn-accent"
+              onClick={() => setModal({ open: true, data: null })}
+            >
+              <span>
+                <DynamicIcon name="FiPlus" />
+              </span>{" "}
+              Nuevo Expediente
             </button>
           </div>
         </div>
@@ -376,8 +1208,15 @@ export default function Empleados() {
                         </td>
                         <td>
                           <div style={{ minWidth: 110 }}>
-                            <div style={{ fontSize: 11, color: "var(--merco-muted)", marginBottom: 3 }}>
-                              {exp.documentosCompletos} / {exp.documentosTotales} ({pctDocs}%)
+                            <div
+                              style={{
+                                fontSize: 11,
+                                color: "var(--merco-muted)",
+                                marginBottom: 3,
+                              }}
+                            >
+                              {exp.documentosCompletos} / {exp.documentosTotales}{" "}
+                              ({pctDocs}%)
                             </div>
                             <div
                               style={{
@@ -414,14 +1253,13 @@ export default function Empleados() {
                           {fmtDT(exp.ultimaActualizacion)}
                         </td>
                         <td>
-                          <div style={{ display: "flex", gap: 4 }}>
-                            <button className="btn-icon" title="Ver Expediente">
-                              <DynamicIcon name="FiFolder" />
-                            </button>
-                            <button className="btn-icon" title="Editar">
-                              <DynamicIcon name="FiEdit" />
-                            </button>
-                          </div>
+                          <button
+                            className="btn-icon"
+                            title="Editar Expediente"
+                            onClick={() => setModal({ open: true, data: exp })}
+                          >
+                            <DynamicIcon name="FiEdit" />
+                          </button>
                         </td>
                       </tr>
                     );
@@ -431,7 +1269,6 @@ export default function Empleados() {
             </table>
           </div>
 
-          {/* PIE DE TABLA / CONTADOR */}
           <div
             style={{
               padding: "12px 18px",
@@ -447,6 +1284,8 @@ export default function Empleados() {
           </div>
         </div>
       </div>
+
+      {modal.open && <ModalFichaExpediente />}
     </SystemLayout>
   );
 }

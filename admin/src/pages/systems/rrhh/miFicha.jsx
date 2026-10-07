@@ -1,333 +1,819 @@
-import React, { useState } from 'react';
-import { 
-  X, 
-  User, 
-  FileText, 
-  Folder, 
-  Settings, 
-  ChevronDown, 
-  ChevronUp, 
-  Calendar, 
-  UploadCloud, 
-  Plus, 
-  Sun, 
-  Moon 
-} from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import SystemLayout from "../../layouts/SystemLayout";
+import { DynamicIcon } from "../../components/IconCatalog";
 
-export default function NuevoExpedienteModal({ isOpen = true, onClose }) {
-  // Estado para el Modo Oscuro / Claro
-  const [darkMode, setDarkMode] = useState(false);
+/* ====== PESTAÑAS CONFIGURADAS ====== */
+const TABS = [
+  { id: "identificacion", label: "Identificación", icon: "FiUser" },
+  { id: "documentos", label: "Doc. Legales", icon: "FiFileText" },
+  { id: "recaudos", label: "Recaudos", icon: "FiFolder" },
+  { id: "operativos", label: "Operativos", icon: "FiShield" },
+  { id: "soportes", label: "Soportes", icon: "FiPaperclip" },
+];
 
-  // Estado para controlar qué sección está abierta
-  const [openSection, setOpenSection] = useState('identificacion');
+export default function MiFicha() {
+  const [activeTab, setActiveTab] = useState("identificacion");
 
-  const toggleSection = (section) => {
-    setOpenSection(openSection === section ? null : section);
+  // Detector de tema en tiempo real
+  const [isDarkMode, setIsDarkMode] = useState(
+    () =>
+      document.documentElement.classList.contains("dark") ||
+      document.body.classList.contains("dark")
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const darkActive =
+        document.documentElement.classList.contains("dark") ||
+        document.body.classList.contains("dark");
+      setIsDarkMode(darkActive);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Estados del formulario
+  const [form, setForm] = useState({
+    id: "EXP-1001",
+    cedula: "V-12.345.678",
+    nombre: "José Rodríguez",
+    f_ingreso: "2026-01-15",
+    est_colaborador: "Activo",
+    creado_por: "Ana Rodríguez",
+    f_creacion: "2026-01-15",
+
+    // Documentos Legales
+    ci: "SI",
+    f_venc_ci: "2029-01-15",
+    rif: "SI",
+    f_venc_rif: "2029-01-15",
+    contrato: "SI",
+    f_venc_contrato: "2027-06-30",
+
+    // Recaudos
+    ft_carnet: "SI",
+    ref_pers: "SI",
+    compr_domicilio: "SI",
+    acdo_confidencialidad: "SI",
+    cv: "SI",
+    cert_estudios: "SI",
+    cert_capacitacion: "SI",
+    acept_cap_gral: "SI",
+    acept_cap_area: "SI",
+    cant_cap_cumpl: 4,
+    cant_otr_cursos: 2,
+
+    // Operativos
+    ivss: "SI",
+    f_reg_ivss: "2026-01-16",
+    ince: "SI",
+    f_reg_ince: "2026-01-16",
+    faov: "SI",
+    f_reg_faov: "2026-01-16",
+    cst_medica: "SI",
+    reposos: 0,
+    vacaciones: 15,
+    permisos: 1,
+    amonestaciones: "NO",
+    cant_amon: 0,
+  });
+
+  const [adjuntos, setAdjuntos] = useState([
+    { name: "Cedula_Identidad.pdf", size: 1024 * 350 },
+    { name: "RIF_Actualizado.pdf", size: 1024 * 512 },
+  ]);
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setForm((prev) => ({ ...prev, [id]: value }));
   };
 
-  if (!isOpen) return null;
+  const handleFileAdd = (e) => {
+    const files = Array.from(e.target.files);
+    const newFiles = files.map((f) => ({ name: f.name, size: f.size }));
+    setAdjuntos((prev) => [...prev, ...newFiles]);
+  };
+
+  const handleRemoveFile = (idx) => {
+    setAdjuntos((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  // Comprobación de alertas de vencimiento
+  const hoy = new Date().toISOString().split("T")[0];
+  const alertas = [];
+  if (form.f_venc_ci && form.f_venc_ci <= hoy)
+    alertas.push(`La Cédula de Identidad está vencida (${form.f_venc_ci})`);
+  if (form.f_venc_rif && form.f_venc_rif <= hoy)
+    alertas.push(`El RIF está vencido (${form.f_venc_rif})`);
+  if (form.f_venc_contrato && form.f_venc_contrato <= hoy)
+    alertas.push(`El Contrato está vencido (${form.f_venc_contrato})`);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Expediente guardado correctamente.");
+    console.log("Datos de la Ficha del Empleado:", { ...form, adjuntos });
+  };
 
   return (
-    <div className={`${darkMode ? 'dark' : ''}`}>
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-        
-        {/* Modal Container */}
-        <div className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col transition-colors duration-300 border border-slate-200 dark:border-slate-800">
-          
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-6 bg-orange-500 rounded-full"></span>
-              <h2 className="text-xl font-bold tracking-tight text-slate-800 dark:text-white">
-                Nuevo Expediente
-              </h2>
+    <SystemLayout identificacion="Mi Expediente" opcionMenu="Mi ficha">
+      <div
+        style={{
+          fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
+          padding: "10px 0",
+        }}
+      >
+        <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
+          {/* CABECERA PRINCIPAL DE LA FICHA */}
+          <div
+            style={{
+              padding: "20px 24px",
+              borderBottom: "1px solid var(--merco-border, #ccc)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: 12,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span
+                style={{
+                  width: 4,
+                  height: 24,
+                  backgroundColor: "var(--merco-accent, #f95700)",
+                  borderRadius: 2,
+                }}
+              />
+              <div>
+                <h2
+                  style={{
+                    margin: 0,
+                    fontSize: 20,
+                    fontWeight: 700,
+                    color: "var(--merco-text, inherit)",
+                  }}
+                >
+                  Expediente de Empleado
+                </h2>
+                <small style={{ color: "var(--merco-muted)" }}>
+                  Nº Expediente: <b>{form.id}</b>
+                </small>
+              </div>
             </div>
-            
-            <div className="flex items-center gap-2">
-              {/* Botón Switch Modo Claro / Oscuro */}
+
+            <div style={{ display: "flex", gap: 8 }}>
               <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-400 transition-colors"
-                title="Cambiar Tema"
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSubmit}
               >
-                {darkMode ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} />}
-              </button>
-              
-              <button
-                onClick={onClose}
-                className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-              >
-                <X size={20} />
+                <DynamicIcon name="FiSave" /> Guardar Cambios
               </button>
             </div>
           </div>
 
-          {/* Form Content / Body */}
-          <div className="p-6 overflow-y-auto space-y-4">
-            
-            {/* 1. IDENTIFICACIÓN */}
-            <AccordionItem
-              id="identificacion"
-              title="Identificación"
-              icon={<User size={18} />}
-              isOpen={openSection === 'identificacion'}
-              onToggle={() => toggleSection('identificacion')}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="label-style">Tipo de Documento</label>
-                  <select className="input-style">
-                    <option value="">Seleccione...</option>
-                    <option value="V">Venezolano (V)</option>
-                    <option value="E">Extranjero (E)</option>
-                    <option value="J">Jurídico (J)</option>
-                  </select>
+          {/* BARRA DE PESTAÑAS (TABS) */}
+          <div
+            style={{
+              display: "flex",
+              borderBottom: "1px solid var(--merco-border, #ccc)",
+              background: "var(--merco-bg-subtle, rgba(0, 0, 0, 0.03))",
+              padding: "0 16px",
+              overflowX: "auto",
+            }}
+          >
+            {TABS.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "14px 20px",
+                    border: "none",
+                    background: "none",
+                    borderBottom: isActive
+                      ? "3px solid var(--merco-accent, #f95700)"
+                      : "3px solid transparent",
+                    color: isActive
+                      ? "var(--merco-accent, #f95700)"
+                      : "var(--merco-muted, inherit)",
+                    fontWeight: isActive ? 700 : 500,
+                    fontSize: 14,
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  <DynamicIcon name={tab.icon} style={{ fontSize: 16 }} />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* CUERPO DEL FORMULARIO */}
+          <form onSubmit={handleSubmit} style={{ padding: "24px" }}>
+            {/* ALERTAS EN CASO DE VENCIMIENTO */}
+            {alertas.length > 0 && (
+              <div
+                style={{
+                  background: isDarkMode
+                    ? "rgba(245, 166, 35, 0.2)"
+                    : "rgba(245, 166, 35, 0.15)",
+                  borderLeft: "4px solid #f95700",
+                  padding: "12px 16px",
+                  borderRadius: 6,
+                  color: isDarkMode ? "#ffcc80" : "#8A5A00",
+                  marginBottom: 20,
+                }}
+              >
+                <h4
+                  style={{
+                    margin: "0 0 4px 0",
+                    fontSize: 13,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    color: "#f95700",
+                  }}
+                >
+                  <DynamicIcon name="FiAlertTriangle" /> Alertas de Vencimiento
+                </h4>
+                <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12 }}>
+                  {alertas.map((al, idx) => (
+                    <li key={idx}>{al}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* TAB 1: IDENTIFICACIÓN */}
+            {activeTab === "identificacion" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>N° Expediente</label>
+                    <input
+                      className="inp"
+                      id="id"
+                      value={form.id}
+                      readOnly
+                      disabled
+                    />
+                  </div>
+                  <div className="field">
+                    <label>Cédula / Identificación</label>
+                    <input
+                      className="inp"
+                      id="cedula"
+                      value={form.cedula}
+                      onChange={handleChange}
+                      placeholder="V-00.000.000"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="label-style">Número de Identificación</label>
-                  <input type="text" placeholder="Ej: 12345678" className="input-style" />
+
+                <div className="field">
+                  <label>Apellidos y Nombres</label>
+                  <input
+                    className="inp"
+                    id="nombre"
+                    value={form.nombre}
+                    onChange={handleChange}
+                    placeholder="Nombre completo"
+                  />
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>F. Ingreso</label>
+                    <input
+                      type="date"
+                      className="inp"
+                      id="f_ingreso"
+                      value={form.f_ingreso}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>Est. Colaborador</label>
+                    <select
+                      className="inp"
+                      id="est_colaborador"
+                      value={form.est_colaborador}
+                      onChange={handleChange}
+                    >
+                      <option value="">Seleccionar</option>
+                      <option value="Activo">Activo</option>
+                      <option value="Inactivo">Inactivo</option>
+                      <option value="Suspendido">Suspendido</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>Creado Por</label>
+                    <input
+                      className="inp"
+                      id="creado_por"
+                      value={form.creado_por}
+                      readOnly
+                      disabled
+                    />
+                  </div>
+                  <div className="field">
+                    <label>F. Creación</label>
+                    <input
+                      className="inp"
+                      id="f_creacion"
+                      value={form.f_creacion}
+                      readOnly
+                      disabled
+                    />
+                  </div>
                 </div>
               </div>
-            </AccordionItem>
+            )}
 
-            {/* 2. DOCUMENTOS LEGALES */}
-            <AccordionItem
-              id="documentos"
-              title="Documentos Legales"
-              icon={<FileText size={18} />}
-              isOpen={openSection === 'documentos'}
-              onToggle={() => toggleSection('documentos')}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="label-style">C.I.</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">F. VENC. C.I.</label>
-                  <input type="date" className="input-style" />
+            {/* TAB 2: DOCUMENTOS LEGALES */}
+            {activeTab === "documentos" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>C.I. Presentada</label>
+                    <select
+                      className="inp"
+                      id="ci"
+                      value={form.ci}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>F. Venc. C.I.</label>
+                    <input
+                      type="date"
+                      className="inp"
+                      id="f_venc_ci"
+                      value={form.f_venc_ci}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="label-style">RIF</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">F. VENC. RIF</label>
-                  <input type="date" className="input-style" />
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>RIF Presentado</label>
+                    <select
+                      className="inp"
+                      id="rif"
+                      value={form.rif}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>F. Venc. RIF</label>
+                    <input
+                      type="date"
+                      className="inp"
+                      id="f_venc_rif"
+                      value={form.f_venc_rif}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="label-style">CONTRATO</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">F. VENC. CONTRATO</label>
-                  <input type="date" className="input-style" />
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>Contrato Firmado</label>
+                    <select
+                      className="inp"
+                      id="contrato"
+                      value={form.contrato}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>F. Venc. Contrato</label>
+                    <input
+                      type="date"
+                      className="inp"
+                      id="f_venc_contrato"
+                      value={form.f_venc_contrato}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
               </div>
-            </AccordionItem>
+            )}
 
-            {/* 3. RECAUDOS Y ACADÉMICOS */}
-            <AccordionItem
-              id="recaudos"
-              title="Recaudos y Académicos"
-              icon={<Folder size={18} />}
-              isOpen={openSection === 'recaudos'}
-              onToggle={() => toggleSection('recaudos')}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="label-style">FT. CARNET</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">REF. PERS.</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-
-                <div>
-                  <label className="label-style">COMPR. DOMICILIO</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">ACDO. CONFIDENCIALIDAD</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-
-                <div>
-                  <label className="label-style">CV</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">CERT. ESTUDIOS</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-
-                <div>
-                  <label className="label-style">CERT. CAPACITACIÓN</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">ACEPT. CAP. GRAL.</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
+            {/* TAB 3: RECAUDOS Y ACADÉMICOS */}
+            {activeTab === "recaudos" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>Ft. Carnet</label>
+                    <select
+                      className="inp"
+                      id="ft_carnet"
+                      value={form.ft_carnet}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>Ref. Personales</label>
+                    <select
+                      className="inp"
+                      id="ref_pers"
+                      value={form.ref_pers}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="label-style">ACEPT. CAP. ÁREA</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">CAP. CUMPLIDAS</label>
-                  <input type="number" defaultValue={0} className="input-style" />
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>Compr. Domicilio</label>
+                    <select
+                      className="inp"
+                      id="compr_domicilio"
+                      value={form.compr_domicilio}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>Acdo. Confidencialidad</label>
+                    <select
+                      className="inp"
+                      id="acdo_confidencialidad"
+                      value={form.acdo_confidencialidad}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div className="md:col-span-1">
-                  <label className="label-style">OTROS CURSOS</label>
-                  <input type="number" defaultValue={0} className="input-style" />
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>Curriculum Vitae (CV)</label>
+                    <select
+                      className="inp"
+                      id="cv"
+                      value={form.cv}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>Cert. Estudios</label>
+                    <select
+                      className="inp"
+                      id="cert_estudios"
+                      value={form.cert_estudios}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>Cap. Cumplidas</label>
+                    <input
+                      type="number"
+                      className="inp"
+                      id="cant_cap_cumpl"
+                      value={form.cant_cap_cumpl}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>Otros Cursos</label>
+                    <input
+                      type="number"
+                      className="inp"
+                      id="cant_otr_cursos"
+                      value={form.cant_otr_cursos}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
               </div>
-            </AccordionItem>
+            )}
 
-            {/* 4. OPERATIVOS / SEGURIDAD SOCIAL */}
-            <AccordionItem
-              id="operativos"
-              title="Operativos / Seguridad Social"
-              icon={<Settings size={18} />}
-              isOpen={openSection === 'operativos'}
-              onToggle={() => toggleSection('operativos')}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="label-style">IVSS</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">F. REG. IVSS</label>
-                  <input type="date" className="input-style" />
-                </div>
-
-                <div>
-                  <label className="label-style">INCE</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">F. REG. INCE</label>
-                  <input type="date" className="input-style" />
-                </div>
-
-                <div>
-                  <label className="label-style">FAOV</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">F. REG. FAOV</label>
-                  <input type="date" className="input-style" />
-                </div>
-
-                <div>
-                  <label className="label-style">CST. MÉDICA</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">REPOSOS</label>
-                  <input type="number" defaultValue={0} className="input-style" />
+            {/* TAB 4: OPERATIVOS / SEGURIDAD SOCIAL */}
+            {activeTab === "operativos" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>IVSS</label>
+                    <select
+                      className="inp"
+                      id="ivss"
+                      value={form.ivss}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>F. Reg. IVSS</label>
+                    <input
+                      type="date"
+                      className="inp"
+                      id="f_reg_ivss"
+                      value={form.f_reg_ivss}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="label-style">VACACIONES</label>
-                  <input type="number" defaultValue={0} className="input-style" />
-                </div>
-                <div>
-                  <label className="label-style">PERMISOS</label>
-                  <input type="number" defaultValue={0} className="input-style" />
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>FAOV</label>
+                    <select
+                      className="inp"
+                      id="faov"
+                      value={form.faov}
+                      onChange={handleChange}
+                    >
+                      <option value=""></option>
+                      <option value="SI">SI</option>
+                      <option value="NO">NO</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>F. Reg. FAOV</label>
+                    <input
+                      type="date"
+                      className="inp"
+                      id="f_reg_faov"
+                      value={form.f_reg_faov}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="label-style">AMONESTACIONES</label>
-                  <select className="input-style"><option value="">Seleccione...</option></select>
-                </div>
-                <div>
-                  <label className="label-style">CANT. AMON.</label>
-                  <input type="number" defaultValue={0} className="input-style" />
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  <div className="field">
+                    <label>Días Vacaciones Disponibles</label>
+                    <input
+                      type="number"
+                      className="inp"
+                      id="vacaciones"
+                      value={form.vacaciones}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="field">
+                    <label>Permisos Tomados</label>
+                    <input
+                      type="number"
+                      className="inp"
+                      id="permisos"
+                      value={form.permisos}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
               </div>
-            </AccordionItem>
+            )}
 
-            {/* 5. SOPORTES DIGITALES */}
-            <AccordionItem
-              id="soportes"
-              title="Soportes Digitales"
-              icon={<FileText size={18} />}
-              isOpen={openSection === 'soportes'}
-              onToggle={() => toggleSection('soportes')}
-            >
-              <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center bg-slate-50/50 dark:bg-slate-800/30">
-                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                  Arrastra archivos o selecciona para adjuntar.
+            {/* TAB 5: SOPORTES DIGITALES */}
+            {activeTab === "soportes" && (
+              <div
+                style={{
+                  border: "2px dashed var(--merco-border, #ccc)",
+                  borderRadius: 8,
+                  padding: "32px 20px",
+                  textAlign: "center",
+                  background: "var(--merco-bg-subtle, rgba(0, 0, 0, 0.02))",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: "var(--merco-muted, inherit)",
+                    marginBottom: 16,
+                  }}
+                >
+                  Selecciona o arrastra archivos para adjuntar documentos a este expediente.
                 </p>
-                <label className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer shadow-sm transition-all">
-                  <Plus size={16} />
-                  <span>Seleccionar Archivos</span>
-                  <input type="file" multiple className="hidden" />
-                </label>
+                <input
+                  type="file"
+                  id="f-file-input"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={handleFileAdd}
+                />
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() =>
+                    document.getElementById("f-file-input").click()
+                  }
+                >
+                  <DynamicIcon name="FiPlus" /> Seleccionar Archivos
+                </button>
+
+                {/* Lista de adjuntos */}
+                {adjuntos.length > 0 && (
+                  <div
+                    style={{
+                      marginTop: 24,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 8,
+                      textAlign: "left",
+                      maxWidth: 600,
+                      margin: "24px auto 0 auto",
+                    }}
+                  >
+                    {adjuntos.map((file, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "8px 12px",
+                          background: "var(--merco-bg-card, #fff)",
+                          border: "1px solid var(--merco-border, #ccc)",
+                          borderRadius: 6,
+                          fontSize: 13,
+                        }}
+                      >
+                        <span
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                            color: "var(--merco-text, inherit)",
+                          }}
+                        >
+                          <DynamicIcon name="FiFile" /> {file.name}
+                        </span>
+                        <button
+                          type="button"
+                          className="btn-icon"
+                          style={{
+                            color: "var(--merco-danger, #d1435b)",
+                          }}
+                          onClick={() => handleRemoveFile(idx)}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            </AccordionItem>
+            )}
 
-          </div>
-
-          {/* Footer Actions */}
-          <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 bg-slate-50/50 dark:bg-slate-900/50 rounded-b-xl">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            {/* BOTÓN INFERIOR DE ACCIÓN */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginTop: 24,
+                paddingTop: 16,
+                borderTop: "1px solid var(--merco-border, #ccc)",
+              }}
             >
-              Cancelar
-            </button>
-            <button
-              className="px-5 py-2 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 active:bg-orange-700 rounded-lg shadow-sm transition-all"
-            >
-              Guardar Expediente
-            </button>
-          </div>
-
+              <button type="submit" className="btn btn-primary">
+                <DynamicIcon name="FiSave" /> Guardar Expediente
+              </button>
+            </div>
+          </form>
         </div>
       </div>
-    </div>
-  );
-}
-
-/* Componente Auxiliar para las secciones Acordeón */
-function AccordionItem({ title, icon, children, isOpen, onToggle }) {
-  return (
-    <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden transition-colors">
-      <button
-        onClick={onToggle}
-        className={`w-full flex items-center justify-between px-4 py-3.5 text-left text-sm font-medium transition-colors ${
-          isOpen
-            ? 'bg-slate-100/80 dark:bg-slate-800/80 text-orange-600 dark:text-orange-400'
-            : 'bg-slate-50/50 dark:bg-slate-800/30 text-slate-700 dark:text-slate-300 hover:bg-slate-100/50 dark:hover:bg-slate-800/50'
-        }`}
-      >
-        <div className="flex items-center gap-2.5">
-          <span className={isOpen ? 'text-orange-500' : 'text-slate-400 dark:text-slate-500'}>
-            {icon}
-          </span>
-          <span className="font-semibold">{title}</span>
-        </div>
-        {isOpen ? (
-          <ChevronUp size={18} className="text-orange-500" />
-        ) : (
-          <ChevronDown size={18} className="text-slate-400 dark:text-slate-500" />
-        )}
-      </button>
-
-      {isOpen && (
-        <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 transition-colors">
-          {children}
-        </div>
-      )}
-    </div>
+    </SystemLayout>
   );
 }
