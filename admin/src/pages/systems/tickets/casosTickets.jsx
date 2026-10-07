@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
 import { useSelector, useDispatch } from "react-redux";
+import axios from "axios";
 
 // Importaciones de BlockNote corregidas
 import { useCreateBlockNote } from "@blocknote/react";
@@ -376,8 +377,13 @@ export default function CasosTickets() {
     const [estatusId, setEstatusId] = useState("");
     const [canalId, setCanalId] = useState("");
     const [strAsunto, setStrAsunto] = useState("");
-    const [strDescripcion, setStrDescripcion] = useState(""); // NUEVO ESTADO PARA LA DESCRIPCIÓN
+    const [strDescripcion, setStrDescripcion] = useState("");
     const [intSla, setIntSla] = useState(24);
+
+    // Estado para almacenar los archivos multimedia adjuntos en el editor
+    const [archivosAdjuntos, setArchivosAdjuntos] = useState([]);
+
+    // Estado para la IA
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
     const user = useSelector((state) => state.auth?.user);
@@ -412,11 +418,26 @@ export default function CasosTickets() {
       return () => observer.disconnect();
     }, []);
 
-    // Función para manejar la subida local de archivos multimedia por arrastre
+    // Función para manejar la subida local de archivos multimedia por arrastre y guardarlos en el estado
     const uploadFile = async (file) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
+        reader.onload = () => {
+          const base64Data = reader.result;
+
+          // Agregamos el archivo al estado local con su metadata y contenido base64
+          setArchivosAdjuntos((prev) => [
+            ...prev,
+            {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              data: base64Data,
+            },
+          ]);
+
+          resolve(base64Data);
+        };
         reader.onerror = (error) => reject(error);
         reader.readAsDataURL(file);
       });
@@ -431,10 +452,9 @@ export default function CasosTickets() {
       [isDarkMode],
     );
 
-    // NUEVA FUNCIÓN: Captura el contenido del editor en texto plano cada vez que cambie
+    // Captura el contenido del editor en texto plano cada vez que cambie
     const handleEditorChange = async () => {
       const blocks = editor.document;
-      // Extraemos el texto plano de los bloques de BlockNote para guardarlo en el estado
       const textContent = blocks
         .map((block) =>
           block.content ? block.content.map((c) => c.text).join("") : "",
@@ -443,7 +463,7 @@ export default function CasosTickets() {
       setStrDescripcion(textContent);
     };
 
-    // Función conectada a Ollama local (qwen2.5:7b-instruct) usando el texto de la descripción
+    // Función conectada a Ollama local usando Axios
     const handleGenerarConIA = async () => {
       if (!strDescripcion.trim()) {
         alert(
@@ -457,14 +477,9 @@ export default function CasosTickets() {
       const modelo = "qwen2.5:7b-instruct";
 
       try {
-        const response = await fetch(`${urlIA}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model: modelo,
-            prompt: `Actúa como un analista de atencion al cliente de la app de la casa de bolsa Mercosur Casa de Bolsa S.A y redacta una descripción detallada y profesional para un ticket de soporte basándote en la siguiente nota o borrador del analista: "${strDescripcion}". 
+        const response = await axios.post(urlIA, {
+          model: modelo,
+          prompt: `Actúa como un analista de atencion al cliente de la app de la casa de bolsa Mercosur Casa de Bolsa S.A y redacta una descripción detallada y profesional para un ticket de soporte basándote en la siguiente nota o borrador del analista: "${strDescripcion}". 
 
                       Utiliza estrictamente la siguiente estructura de salida:
 
@@ -481,27 +496,37 @@ export default function CasosTickets() {
                       4. **[Paso 4 - Título Corto]:** [Instrucciones para la nueva validación junto con el usuario].
 
                       Atentamente ${nombre} ${apellido}`,
-            stream: false,
-          }),
+          stream: false,
         });
 
-        if (!response.ok) {
-          throw new Error("Error al conectar con el servidor de Ollama");
+        const textoGenerado =
+          response.data.response || "No se pudo generar el texto.";
+
+        // Si hay bloques en el editor, actualizamos el primero directamente con el texto generado
+        // para evitar que quede una línea vacía o fantasma arriba ("Escribe o teclea '/'...").
+        if (editor.document.length > 0) {
+          await editor.updateBlock(editor.document[0], {
+            type: "paragraph",
+            content: textoGenerado,
+          });
+
+          // Si la IA generó múltiples líneas o saltos de párrafo, removemos los bloques sobrantes si existieran y dejamos el limpio
+          if (editor.document.length > 1) {
+            const extraBlocks = editor.document.slice(1);
+            await editor.removeBlocks(extraBlocks);
+          }
+        } else {
+          await editor.insertBlocks(
+            [
+              {
+                type: "paragraph",
+                content: textoGenerado,
+              },
+            ],
+            editor.document[0],
+            "after",
+          );
         }
-
-        const data = await response.json();
-        const textoGenerado = data.response || "No se pudo generar el texto.";
-
-        await editor.insertBlocks(
-          [
-            {
-              type: "paragraph",
-              content: textoGenerado,
-            },
-          ],
-          editor.document[0],
-          "after",
-        );
       } catch (error) {
         console.error("Error de conexión con Ollama:", error);
         alert(
@@ -515,7 +540,6 @@ export default function CasosTickets() {
     const handleSubmit = async (e) => {
       e.preventDefault();
 
-      // Confirmación previa usando únicamente el nombre del analista
       const confirmado = window.confirm(
         `¿${nombre ?? "Estimado"}, confirmas que realizaste las acciones descritas antes de crear este ticket?`,
       );
@@ -538,7 +562,6 @@ export default function CasosTickets() {
       };
 
       const textoPlano = extraerTextoDeDescripcion(descripcionContent);
-      //console.log(textoPlano);
 
       const nuevoTicketData = {
         creador_agente_id: null,
@@ -549,6 +572,7 @@ export default function CasosTickets() {
         canal_id: Number(canalId),
         str_asunto: strAsunto,
         str_descripcion: textoPlano,
+        archivos_multimedia: archivosAdjuntos, // Archivos multimedia capturados del editor listos para enviar
         dmt_fecha_cierre: null,
       };
 
@@ -556,11 +580,11 @@ export default function CasosTickets() {
       setModal(false);
     };
 
-    // Renderizamos mediante Portal directamente en el body para evitar restricciones de z-index del layout
+    // Renderizamos mediante Portal directamente en el body
     return ReactDOM.createPortal(
       <div
         className="ma-overlay"
-        onClick={() => setModal(false)}
+        onClick={() => !isGeneratingAI && setModal(false)}
         style={{
           position: "fixed",
           top: 0,
@@ -590,7 +614,10 @@ export default function CasosTickets() {
         >
           <div className="ma-modal-head">
             <h3>Nuevo Ticket</h3>
-            <button className="btn-icon" onClick={() => setModal(false)}>
+            <button
+              className="btn-icon"
+              onClick={() => !isGeneratingAI && setModal(false)}
+            >
               ✕
             </button>
           </div>
@@ -600,14 +627,11 @@ export default function CasosTickets() {
               className="ma-modal-body"
               style={{
                 display: "grid",
-                // En pantallas grandes: Columna izquierda de ~280px y la derecha ocupa el doble (1fr y 2fr)
-                // En pantallas pequeñas/móviles: Se vuelve de una sola columna automáticamente
                 gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                 gap: 20,
                 alignItems: "start",
               }}
             >
-              {/* Estilo responsivo inline condicional para asegurar que la derecha sea más ancha en desktop */}
               <style>{`
                 @media (min-width: 768px) {
                   .ma-modal-body {
@@ -711,7 +735,7 @@ export default function CasosTickets() {
                 </div>
               </div>
 
-              {/* COLUMNA DERECHA: Descripción con BlockNote reactivo al tema (más amplia) */}
+              {/* COLUMNA DERECHA: Descripción con BlockNote y área de carga transparente con blur */}
               <div
                 style={{ display: "flex", flexDirection: "column", gap: 12 }}
               >
@@ -732,28 +756,152 @@ export default function CasosTickets() {
                       disabled={isGeneratingAI}
                       title="Generar estructura y redactar con Ollama basándose en la descripción"
                     >
-                      <span>✨</span>
+                      <DynamicIcon
+                        name="FaRobot"
+                        style={{ fontSize: "20px", color: "#eab308" }}
+                      />
                       {isGeneratingAI
-                        ? "Generando redaccion del ticket"
-                        : "Mejorar redacion del ticket"}
+                        ? "Comenzando..."
+                        : "Mejorar redacción del ticket (opcional)"}
                     </button>
                   </div>
+
+                  {/* Contenedor con position: relative para aislar el loader exclusivamente a esta sección */}
                   <div
-                    key={isDarkMode ? "editor-dark" : "editor-light"}
                     style={{
+                      position: "relative",
                       border: "1px solid var(--merco-border, #ccc)",
                       borderRadius: 6,
                       padding: "4px",
-                      minHeight: "520px",
+                      minHeight: "450px",
                     }}
                   >
-                    {/* Añadimos onChange para actualizar el estado strDescripcion en tiempo real */}
-                    <BlockNoteView
-                      editor={editor}
-                      theme={isDarkMode ? "dark" : "light"}
-                      onChange={handleEditorChange}
-                    />
+                    {/* CAPA DE CARGA AISLADA CON TRANSPARENCIA, BLUR Y TEXTO 'Generando redacción' */}
+                    {isGeneratingAI && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          backgroundColor: isDarkMode
+                            ? "rgba(15, 23, 42, 0.35)"
+                            : "rgba(255, 255, 255, 0.35)",
+                          zIndex: 10,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backdropFilter: "blur(4px)",
+                          WebkitBackdropFilter: "blur(4px)",
+                          borderRadius: "inherit",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "12px",
+                            fontFamily: "monospace",
+                            backgroundColor: isDarkMode
+                              ? "rgba(0.145 0 0)"
+                              : "rgba(255, 255, 255, 0.85)",
+                            color: isDarkMode ? "#ffffff" : "#0284c7",
+                            padding: "14px 20px",
+                            borderRadius: "8px",
+                            border: `1px solid ${isDarkMode ? "#1e293b" : "#cbd5e1"}`,
+                            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.2)",
+                            fontSize: "14px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          <DynamicIcon
+                            name="FaRobot"
+                            style={{
+                              color: "#eab308",
+                              fontSize: "20px",
+                              animation: "spin 2s linear infinite",
+                            }}
+                          />
+                          Generando redacción
+                        </div>
+                      </div>
+                    )}
+
+                    <div
+                      key={isDarkMode ? "editor-dark" : "editor-light"}
+                      style={{ width: "100%", height: "100%" }}
+                    >
+                      <BlockNoteView
+                        editor={editor}
+                        theme={isDarkMode ? "dark" : "light"}
+                        onChange={handleEditorChange}
+                      />
+                    </div>
                   </div>
+
+                  {/* PREVISUALIZACIÓN DE ARCHIVOS MULTIMEDIA ADJUNTOS */}
+                  {archivosAdjuntos.length > 0 && (
+                    <div
+                      style={{
+                        marginTop: 10,
+                        padding: "8px 12px",
+                        background: "var(--merco-bg-subtle, rgba(0,0,0,0.03))",
+                        borderRadius: 6,
+                        fontSize: 12,
+                        border: "1px solid var(--merco-border, #ccc)",
+                      }}
+                    >
+                      <b style={{ display: "block", marginBottom: 6 }}>
+                        Archivos multimedia detectados (
+                        {archivosAdjuntos.length}):
+                      </b>
+                      <ul style={{ margin: 0, paddingLeft: 16 }}>
+                        {archivosAdjuntos.map((file, index) => (
+                          <li
+                            key={index}
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              marginBottom: 4,
+                            }}
+                          >
+                            <span
+                              style={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                maxWidth: "240px",
+                              }}
+                              title={file.name}
+                            >
+                              📎 {file.name} ({Math.round(file.size / 1024)} KB)
+                            </span>
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-sm"
+                              style={{
+                                fontSize: "11px",
+                                padding: "2px 6px",
+                                color: "var(--merco-danger, #d1435b)",
+                              }}
+                              onClick={() =>
+                                setArchivosAdjuntos(
+                                  archivosAdjuntos.filter(
+                                    (_, i) => i !== index,
+                                  ),
+                                )
+                              }
+                            >
+                              Quitar
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -771,10 +919,15 @@ export default function CasosTickets() {
                 type="button"
                 className="btn btn-ghost"
                 onClick={() => setModal(false)}
+                disabled={isGeneratingAI}
               >
                 Cancelar
               </button>
-              <button type="submit" className="btn btn-primary">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={isGeneratingAI}
+              >
                 Crear Ticket
               </button>
             </div>
@@ -831,7 +984,6 @@ export default function CasosTickets() {
               />
             </div>
 
-            {/* Selects de Filtrado */}
             <select
               value={fEstado}
               onChange={(e) => setFEstado(e.target.value)}
@@ -1061,7 +1213,6 @@ export default function CasosTickets() {
             </table>
           </div>
 
-          {/* PIE DE TABLA / CONTADOR */}
           <div
             style={{
               padding: "12px 18px",

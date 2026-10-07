@@ -1,8 +1,68 @@
 import { useState, useMemo } from "react";
-import * as FiIcons from "react-icons/fi";
+import * as AiIcons from "react-icons/ai"; // Ant Design
+import * as BiIcons from "react-icons/bi"; // BoxIcons
+import * as BsIcons from "react-icons/bs"; // Bootstrap Icons
+import * as CgIcons from "react-icons/cg"; // CSS.gg
+import * as CiIcons from "react-icons/ci"; // Cemre Íconos
+import * as DiIcons from "react-icons/di"; // Devicons
+import * as FaIcons from "react-icons/fa"; // Font Awesome
+import * as Fa6Icons from "react-icons/fa6"; // Font Awesome 6
+import * as FcIcons from "react-icons/fc"; // Flat Color Icons
+import * as FiIcons from "react-icons/fi"; // Feather
+import * as GiIcons from "react-icons/gi"; // Game Icons
+import * as GoIcons from "react-icons/go"; // Github Octicons
+import * as GrIcons from "react-icons/gr"; // Grommet Icons
+import * as HiIcons from "react-icons/hi"; // Heroicons
+import * as Hi2Icons from "react-icons/hi2"; // Heroicons 2
+import * as ImIcons from "react-icons/im"; // Icomoon Free
+import * as IoIcons from "react-icons/io"; // Ionicons v4
+import * as Io5Icons from "react-icons/io5"; // Ionicons v5
+import * as LiaIcons from "react-icons/lia"; // Line Awesome
+import * as MdIcons from "react-icons/md"; // Material Design
+import * as PiIcons from "react-icons/pi"; // Phosphor Icons
+import * as RiIcons from "react-icons/ri"; // Remix Icon
+import * as RxIcons from "react-icons/rx"; // Radix Icons
+import * as SiIcons from "react-icons/si"; // Simple Icons
+import * as SlIcons from "react-icons/sl"; // Simple Line Icons
+import * as TbIcons from "react-icons/tb"; // Tabler Icons
+import * as TfiIcons from "react-icons/tfi"; // Themify Icons
+import * as TiIcons from "react-icons/ti"; // Typicons
+import * as VscIcons from "react-icons/vsc"; // VS Code Icons
+import * as WiIcons from "react-icons/wi"; // Weather Icons
 
-/* DICCIONARIO COMPLETO DE ÍCONOS DE FEATHER */
-export const ICON_MAP = { ...FiIcons };
+/* DICCIONARIO CON TODAS LAS FAMILIAS COMPATIBLES DE REACT-ICONS */
+export const ICON_MAP = {
+  ...AiIcons,
+  ...BiIcons,
+  ...BsIcons,
+  ...CgIcons,
+  ...CiIcons,
+  ...DiIcons,
+  ...FaIcons,
+  ...Fa6Icons,
+  ...FcIcons,
+  ...FiIcons,
+  ...GiIcons,
+  ...GoIcons,
+  ...GrIcons,
+  ...HiIcons,
+  ...Hi2Icons,
+  ...ImIcons,
+  ...IoIcons,
+  ...Io5Icons,
+  ...LiaIcons,
+  ...MdIcons,
+  ...PiIcons,
+  ...RiIcons,
+  ...RxIcons,
+  ...SiIcons,
+  ...SlIcons,
+  ...TbIcons,
+  ...TfiIcons,
+  ...TiIcons,
+  ...VscIcons,
+  ...WiIcons,
+};
 
 /* COMPONENTE PARA MOSTRAR UN ÍCONO POR NOMBRE DE FORMA SEGURA */
 export function DynamicIcon({ name, fallback = "FiGrid", style, className }) {
@@ -10,7 +70,7 @@ export function DynamicIcon({ name, fallback = "FiGrid", style, className }) {
   return <IconComponent style={style} className={className} />;
 }
 
-/* COMPONENTE SELECTOR REUTILIZABLE CON BUSCADOR */
+/* COMPONENTE SELECTOR REUTILIZABLE CON BUSCADOR GLOBAL */
 export function IconPicker({ value, onChange }) {
   const [busqueda, setBusqueda] = useState("");
 
@@ -25,7 +85,7 @@ export function IconPicker({ value, onChange }) {
       {/* Buscador en tiempo real */}
       <input
         type="text"
-        placeholder="Buscar entre cientos de íconos (ej. user, settings, chart)..."
+        placeholder="Buscar entre miles de íconos (ej. user, settings, fa, md, tb)..."
         value={busqueda}
         onChange={(e) => setBusqueda(e.target.value)}
         style={{
@@ -64,7 +124,7 @@ export function IconPicker({ value, onChange }) {
                 key={key}
                 type="button"
                 onClick={() => onChange(key)}
-                title={key.replace("Fi", "")}
+                title={key}
                 style={{
                   fontSize: 18,
                   display: "flex",
