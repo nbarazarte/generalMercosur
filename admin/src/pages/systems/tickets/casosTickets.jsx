@@ -456,7 +456,7 @@ export default function CasosTickets() {
                       **Descripción del Problema:**
                       [Redacta una breve descripción técnica y formal del problema basado en el asunto proporcionado, destacando su impacto o criticidad].
 
-                      **Pruebas Realizadas: [Redactalas en pasado]**
+                      **Pruebas Realizadas: [Redactalas en pasado y no repitas pasos ya realizados (no redundes)]**
 
                       1. **[Paso 1 - Título Corto]:** [Descripción clara y accionable de la primera acción técnica o de verificación].
                       2. **[Paso 2 - Título Corto]:** [Descripción clara de la siguiente acción de diagnóstico o revisión de servicios].
