@@ -1264,6 +1264,8 @@ html.dark {
   --loader-track-bg: rgba(255, 255, 255, 0.08);
   --loader-info-color: #9ca3af;
   --loader-glow-opacity: 0.25;
+  --merco-surface: #0a0a0b; /* <- Las tarjetas usarán este mismo color del menú lateral */
+  --merco-surface: rgba(10, 10, 11, 0.85); /* <- Ligeramente transparente (85% de opacidad) */
 }
 
 .system-loader-screen {
