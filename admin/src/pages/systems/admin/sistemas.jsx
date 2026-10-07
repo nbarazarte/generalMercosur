@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
 import { useSelector, useDispatch } from "react-redux";
@@ -589,9 +590,28 @@ function ModalSistema({ data, onSave, onDelete, onClose }) {
   const [ic, setIc] = useState(data?.ic || "FiSettings");
   const [color, setColor] = useState(data?.color || "#2f6fed");
 
-  return (
-    <div className="ma-overlay" onClick={onClose}>
-      <div className="ma-modal" onClick={(e) => e.stopPropagation()}>
+  return ReactDOM.createPortal(
+    <div
+      className="ma-overlay"
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 99999,
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        className="ma-modal"
+        onClick={(e) => e.stopPropagation()}
+        style={{ zIndex: 100000 }}
+      >
         <div className="ma-modal-head">
           <h3>{editar ? "Editar sistema" : "Nuevo sistema"}</h3>
           <button className="btn-icon" onClick={onClose}>
@@ -694,7 +714,8 @@ function ModalSistema({ data, onSave, onDelete, onClose }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -705,9 +726,28 @@ function ModalOpcion({ sistema, data, onSave, onClose }) {
   const [ruta, setRuta] = useState(data?.ruta_opcion || "");
   const [ic, setIc] = useState(data?.ic || "FiGrid");
 
-  return (
-    <div className="ma-overlay" onClick={onClose}>
-      <div className="ma-modal" onClick={(e) => e.stopPropagation()}>
+  return ReactDOM.createPortal(
+    <div
+      className="ma-overlay"
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 99999,
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        className="ma-modal"
+        onClick={(e) => e.stopPropagation()}
+        style={{ zIndex: 100000 }}
+      >
         <div className="ma-modal-head">
           <h3>
             {editar
@@ -772,6 +812,7 @@ function ModalOpcion({ sistema, data, onSave, onClose }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

@@ -19,7 +19,7 @@ import axiosSeguridad from "../utils/axiosSeguridad";
 import "../../../src/systems.css";
 
 export default function SystemLayout({ children, identificacion, opcionMenu }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();

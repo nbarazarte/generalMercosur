@@ -147,3 +147,20 @@ VITE_TOKEN=3594ced6-86ce-4c66-a276-d47399bb4deb
 
 # para encriptar el token de redux
 VITE_REDUX_SECRET_KEY=3594ced6-86ce-4c66-a276-d47399bb4deb
+
+
+
+Edita el servicio con systemd:
+
+Bash
+sudo systemctl edit ollama.service
+Agrega las siguientes líneas bajo la sección [Service]:
+
+Ini, TOML
+[Service]
+Environment="OLLAMA_ORIGINS=*"
+Guarda el archivo, recarga el demonio y reinicia Ollama:
+
+Bash
+sudo systemctl daemon-reload
+sudo systemctl restart ollama

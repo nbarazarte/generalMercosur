@@ -1,6 +1,15 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
+import { useSelector, useDispatch } from "react-redux";
+
+// Importaciones de BlockNote corregidas
+import { useCreateBlockNote } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/mantine";
+import { es } from "@blocknote/core/locales";
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
 
 /* ====== CONSTANTES DE CONFIGURACIÓN Y VALORES ====== */
 const CANALES = [
@@ -339,13 +348,6 @@ export default function CasosTickets() {
   }, [casos, fBuscar, fEstado, fPrioridad, fCanal, fAgente, clientes]);
 
   /* ====== CONSTANTES ADICIONALES PARA LAS LISTAS DE _ID ====== */
-  const DEPARTAMENTOS = [
-    { id: 1, nombre: "Soporte Técnico" },
-    { id: 2, nombre: "Operaciones" },
-    { id: 3, nombre: "Sistemas" },
-    { id: 4, nombre: "Atención al Cliente" },
-  ];
-
   const CATEGORIAS = [
     { id: 1, nombre: "Firma Electrónica" },
     { id: 2, nombre: "Web App" },
@@ -368,49 +370,189 @@ export default function CasosTickets() {
     { id: 4, nombre: "Escalado" },
   ];
 
-  const handleNuevoTicket = () => {
-    console.log("Nuevo ticket");
-  };
-
   const ModalTicket = () => {
-    const [clienteId, setClienteId] = useState("");
-    const [departamentoId, setDepartamentoId] = useState("");
     const [categoriaId, setCategoriaId] = useState("");
     const [prioridadId, setPrioridadId] = useState("");
     const [estatusId, setEstatusId] = useState("");
     const [canalId, setCanalId] = useState("");
     const [strAsunto, setStrAsunto] = useState("");
-    const [strDescripcion, setStrDescripcion] = useState("");
     const [intSla, setIntSla] = useState(24);
+    const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
-    const handleSubmit = (e) => {
+    const user = useSelector((state) => state.auth?.user);
+    const nombre = user?.nombre;
+    const apellido = user?.apellido;
+
+    // Estado reactivo para el tema basado en la clase del documento
+    const [isDarkMode, setIsDarkMode] = useState(
+      () =>
+        document.documentElement.classList.contains("dark") ||
+        document.body.classList.contains("dark"),
+    );
+
+    // Observer para detectar cambios en tiempo real cuando haces clic en cambiar tema
+    useEffect(() => {
+      const observer = new MutationObserver(() => {
+        const darkActive =
+          document.documentElement.classList.contains("dark") ||
+          document.body.classList.contains("dark");
+        setIsDarkMode(darkActive);
+      });
+
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+
+      return () => observer.disconnect();
+    }, []);
+
+    // Función para manejar la subida local de archivos multimedia por arrastre
+    const uploadFile = async (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+      });
+    };
+
+    // Inicialización del editor recreándose cada vez que cambia isDarkMode
+    const editor = useCreateBlockNote(
+      {
+        uploadFile,
+        dictionary: es,
+      },
+      [isDarkMode],
+    );
+
+    // Función conectada a Ollama local (qwen2.5-coder:7b)
+    const handleGenerarConIA = async () => {
+      if (!strAsunto.trim()) {
+        alert(
+          "Por favor ingrese un Asunto primero para generar el contexto con la IA.",
+        );
+        return;
+      }
+      setIsGeneratingAI(true);
+      try {
+        const response = await fetch("http://localhost:11434/api/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "qwen2.5-coder:7b",
+            prompt: `Actúa como un analista de atencion al cliente de la app de la casa de bolsa Mercosur Casa de Bolsa S.A y redacta una descripción detallada y profesional para un ticket de soporte con el asunto: "${strAsunto}". 
+
+                      Utiliza estrictamente la siguiente estructura de salida:
+
+                      **Ticket de Soporte: [Insertar un breve Resumen del Asunto en Mayúsculas Iniciales]**
+
+                      **Descripción del Problema:**
+                      [Redacta una breve descripción técnica y formal del problema basado en el asunto proporcionado, destacando su impacto o criticidad].
+
+                      **Pruebas Realizadas: [Redactalas en pasado]**
+
+                      1. **[Paso 1 - Título Corto]:** [Descripción clara y accionable de la primera acción técnica o de verificación].
+                      2. **[Paso 2 - Título Corto]:** [Descripción clara de la siguiente acción de diagnóstico o revisión de servicios].
+                      3. **[Paso 3 - Título Corto]:** [Descripción de la solución alternativa o aplicación del procedimiento secundario].
+                      4. **[Paso 4 - Título Corto]:** [Instrucciones para la nueva validación junto con el usuario].
+
+                      Atentamente ${nombre} ${apellido}`,
+            stream: false,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al conectar con el servidor de Ollama");
+        }
+
+        const data = await response.json();
+        const textoGenerado = data.response || "No se pudo generar el texto.";
+
+        await editor.insertBlocks(
+          [
+            {
+              type: "paragraph",
+              content: textoGenerado,
+            },
+          ],
+          editor.document[0],
+          "after",
+        );
+      } catch (error) {
+        console.error("Error de conexión con Ollama:", error);
+        alert(
+          "No se pudo conectar con Ollama local (http://localhost:11434). Verifique que el servicio esté activo.",
+        );
+      } finally {
+        setIsGeneratingAI(false);
+      }
+    };
+
+    const handleSubmit = async (e) => {
       e.preventDefault();
+
+      // Confirmación previa usando únicamente el nombre del analista
+      const confirmado = window.confirm(
+        `¿${nombre ?? "Estimado"}, confirmas que realizaste las acciones descritas antes de crear este ticket?`,
+      );
+
+      if (!confirmado) {
+        return;
+      }
+
+      const descripcionContent = editor.document;
+
       const nuevoTicketData = {
-        cliente_id: Number(clienteId),
         creador_agente_id: null,
         cierre_agente_id: null,
-        departamento_id: Number(departamentoId),
         categoria_id: Number(categoriaId),
         prioridad_id: Number(prioridadId),
         estatus_id: Number(estatusId),
         canal_id: Number(canalId),
         str_asunto: strAsunto,
-        str_descripcion: strDescripcion,
+        str_descripcion: descripcionContent,
         int_sla: Number(intSla),
         dmt_fecha_cierre: null,
       };
 
-      console.log("Guardando ticket:", nuevoTicketData);
-      // Aquí realizas la petición a tu API para guardar en PostgreSQL
+      console.log("Guardando ticket con multimedia e IA:", nuevoTicketData);
       setModal(false);
     };
 
-    return (
-      <div className="ma-overlay" onClick={() => setModal(false)}>
+    // Renderizamos mediante Portal directamente en el body para evitar restricciones de z-index del layout
+    return ReactDOM.createPortal(
+      <div
+        className="ma-overlay"
+        onClick={() => setModal(false)}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: 99999,
+          backgroundColor: "rgba(0, 0, 0, 0.6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <div
           className="ma-modal"
           onClick={(e) => e.stopPropagation()}
-          style={{ maxWidth: 700, maxHeight: "90vh", overflowY: "auto" }}
+          style={{
+            maxWidth: 1020,
+            maxHeight: "92vh",
+            overflowY: "auto",
+            zIndex: 100000,
+          }}
         >
           <div className="ma-modal-head">
             <h3>Nuevo Ticket</h3>
@@ -422,16 +564,29 @@ export default function CasosTickets() {
           <form onSubmit={handleSubmit}>
             <div
               className="ma-modal-body"
-              style={{ display: "flex", flexDirection: "column", gap: 12 }}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "260px 1fr",
+                gap: 20,
+                alignItems: "start",
+              }}
             >
-              {/* Fila 1: Canal y Categoría */}
+              {/* COLUMNA IZQUIERDA: Asunto y Parámetros */}
               <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 12,
-                }}
+                style={{ display: "flex", flexDirection: "column", gap: 10 }}
               >
+                <div className="field">
+                  <label>Asunto</label>
+                  <input
+                    className="inp"
+                    value={strAsunto}
+                    onChange={(e) => setStrAsunto(e.target.value)}
+                    placeholder="Resumen del requerimiento..."
+                    maxLength={100}
+                    required
+                  />
+                </div>
+
                 <div className="field">
                   <label>Canal</label>
                   <select
@@ -440,7 +595,7 @@ export default function CasosTickets() {
                     onChange={(e) => setCanalId(e.target.value)}
                     required
                   >
-                    <option value="">Seleccione un canal...</option>
+                    <option value="">Seleccione canal...</option>
                     {CANALES.map((c, idx) => (
                       <option key={idx} value={idx + 1}>
                         {c}
@@ -448,6 +603,7 @@ export default function CasosTickets() {
                     ))}
                   </select>
                 </div>
+
                 <div className="field">
                   <label>Categoría</label>
                   <select
@@ -456,7 +612,7 @@ export default function CasosTickets() {
                     onChange={(e) => setCategoriaId(e.target.value)}
                     required
                   >
-                    <option value="">Seleccione una categoría...</option>
+                    <option value="">Seleccione categoría...</option>
                     {CATEGORIAS.map((cat) => (
                       <option key={cat.id} value={cat.id}>
                         {cat.nombre}
@@ -464,58 +620,7 @@ export default function CasosTickets() {
                     ))}
                   </select>
                 </div>
-              </div>
 
-              {/* Fila 2: Cliente y Departamento */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 12,
-                }}
-              >
-                <div className="field">
-                  <label>Cliente</label>
-                  <select
-                    className="inp"
-                    value={clienteId}
-                    onChange={(e) => setClienteId(e.target.value)}
-                    required
-                  >
-                    <option value="">Seleccione un cliente...</option>
-                    {clientes.map((cl, idx) => (
-                      <option key={idx} value={idx + 1}>
-                        {cl.nombre} ({cl.cedula})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="field">
-                  <label>Departamento</label>
-                  <select
-                    className="inp"
-                    value={departamentoId}
-                    onChange={(e) => setDepartamentoId(e.target.value)}
-                    required
-                  >
-                    <option value="">Seleccione un departamento...</option>
-                    {DEPARTAMENTOS.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Fila 3: Prioridad, Estatus y SLA */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr",
-                  gap: 12,
-                }}
-              >
                 <div className="field">
                   <label>Prioridad</label>
                   <select
@@ -532,6 +637,7 @@ export default function CasosTickets() {
                     ))}
                   </select>
                 </div>
+
                 <div className="field">
                   <label>Estatus</label>
                   <select
@@ -548,6 +654,7 @@ export default function CasosTickets() {
                     ))}
                   </select>
                 </div>
+
                 <div className="field">
                   <label>SLA en Horas</label>
                   <input
@@ -559,30 +666,55 @@ export default function CasosTickets() {
                 </div>
               </div>
 
-              {/* Asunto */}
-              <div className="field">
-                <label>Asunto</label>
-                <input
-                  className="inp"
-                  value={strAsunto}
-                  onChange={(e) => setStrAsunto(e.target.value)}
-                  placeholder="Resumen del requerimiento..."
-                  maxLength={100}
-                  required
-                />
-              </div>
-
-              {/* Descripción */}
-              <div className="field">
-                <label>Descripción</label>
-                <textarea
-                  className="inp"
-                  rows={3}
-                  value={strDescripcion}
-                  onChange={(e) => setStrDescripcion(e.target.value)}
-                  placeholder="Detalle completo de la solicitud..."
-                  required
-                />
+              {/* COLUMNA DERECHA: Descripción con BlockNote reactivo al tema */}
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 12 }}
+              >
+                <div className="field">
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: 6,
+                    }}
+                  >
+                    <label style={{ margin: 0 }}>Descripción</label>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-ghost"
+                      onClick={handleGenerarConIA}
+                      disabled={isGeneratingAI}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
+                        fontSize: "11px",
+                        padding: "2px 8px",
+                        color: "var(--merco-accent, #2f6fed)",
+                        border: "1px solid var(--merco-border, #444)",
+                      }}
+                      title="Generar estructura y redactar con Ollama (qwen2.5-coder:7b)"
+                    >
+                      <span>✨</span>
+                      {isGeneratingAI ? "Generando..." : "Redactar con IA"}
+                    </button>
+                  </div>
+                  <div
+                    key={isDarkMode ? "editor-dark" : "editor-light"}
+                    style={{
+                      border: "1px solid var(--merco-border, #ccc)",
+                      borderRadius: 6,
+                      padding: "4px",
+                      minHeight: "520px",
+                    }}
+                  >
+                    <BlockNoteView
+                      editor={editor}
+                      theme={isDarkMode ? "dark" : "light"}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -608,7 +740,8 @@ export default function CasosTickets() {
             </div>
           </form>
         </div>
-      </div>
+      </div>,
+      document.body,
     );
   };
 
@@ -620,54 +753,9 @@ export default function CasosTickets() {
           padding: "10px 0",
         }}
       >
-        {/* ENCABEZADO */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
-          {/* <div>
-            <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
-              Casos Tickets
-            </h2>
-          </div> */}
-        </div>
-
         {/* BARRA DE HERRAMIENTAS Y FILTROS */}
         <div className="ma-toolbar" style={{ marginTop: 0 }}>
           <div className="ma-filters">
-            {/* Buscador general */}
-            {/* <div
-              className="ma-search"
-              style={{ position: "relative", maxWidth: 260 }}
-            >
-              <DynamicIcon
-                name="FiSearch"
-                style={{
-                  position: "absolute",
-                  left: 10,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  pointerEvents: "none",
-                  color: "var(--merco-text, inherit)",
-                  opacity: 0.6,
-                  fontSize: 16,
-                }}
-              />
-              <input
-                className="inp"
-                placeholder="Cédula, nombre o descripción..."
-                value={fBuscar}
-                onChange={(e) => setFBuscar(e.target.value)}
-                style={{
-                  paddingLeft: 32, // Espacio para el icono a la izquierda
-                }}
-              />
-            </div> */}
-
             <div
               style={{ position: "relative", minWidth: 170, flex: "1 1 150px" }}
             >

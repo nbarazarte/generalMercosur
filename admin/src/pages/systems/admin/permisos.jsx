@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
 import { useSelector } from "react-redux";
@@ -1492,12 +1493,27 @@ function ModalUsuario({ data, departamentos, onSave, onDelete, onClose }) {
   );
   const [estado, setEstado] = useState(data?.estado || "active");
 
-  return (
-    <div className="ma-overlay" onClick={onClose}>
+  return ReactDOM.createPortal(
+    <div
+      className="ma-overlay"
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 99999,
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <div
         className="ma-modal"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 550 }}
+        style={{ maxWidth: 550, zIndex: 100000 }}
       >
         <div className="ma-modal-head">
           <h3>{editar ? "Editar usuario" : "Nuevo usuario"}</h3>
@@ -1635,7 +1651,8 @@ function ModalUsuario({ data, departamentos, onSave, onDelete, onClose }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -1643,12 +1660,27 @@ function ModalAsignarRol({ sistemas, catRoles, onSaveAsignar, onClose }) {
   const [rolAsignarId, setRolAsignarId] = useState("");
   const [sistemaAsignarId, setSistemaAsignarId] = useState("");
 
-  return (
-    <div className="ma-overlay" onClick={onClose}>
+  return ReactDOM.createPortal(
+    <div
+      className="ma-overlay"
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 99999,
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <div
         className="ma-modal"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 500 }}
+        style={{ maxWidth: 500, zIndex: 100000 }}
       >
         <div className="ma-modal-head">
           <h3>Asignar Rol</h3>
@@ -1720,7 +1752,8 @@ function ModalAsignarRol({ sistemas, catRoles, onSaveAsignar, onClose }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -1805,12 +1838,27 @@ function ModalRol({
     setOpcionIdsSeleccionados([]);
   };
 
-  return (
-    <div className="ma-overlay" onClick={onClose}>
+  return ReactDOM.createPortal(
+    <div
+      className="ma-overlay"
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 99999,
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <div
         className="ma-modal"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: 600 }}
+        style={{ maxWidth: 600, zIndex: 100000 }}
       >
         <div className="ma-modal-head">
           <h3>
@@ -2306,6 +2354,7 @@ function ModalRol({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
