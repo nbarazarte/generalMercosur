@@ -85,9 +85,14 @@
 :root[data-theme="dark"] {
   --background: #0a0a0b;
   --foreground: #fafafa;
-  --card: #141416;
+  --card: rgba(
+    10,
+    10,
+    11,
+    0.85
+  ); /* <- Ligeramente transparente (85% de opacidad) */
   --card-foreground: #fafafa;
-  --popover: #141416;
+  --popover: rgba(10, 10, 11, 0.85); /* <- Ligeramente transparente */
   --popover-foreground: #fafafa;
   --primary: #f97316; /* <- Cambiado a naranja vibrante para modo oscuro */
   --primary-foreground: #ffffff;
@@ -1208,9 +1213,9 @@ ol {
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: rgba(10, 10, 11, 0.85); /* <- Ligeramente transparente */
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: rgba(10, 10, 11, 0.85); /* <- Ligeramente transparente */
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
