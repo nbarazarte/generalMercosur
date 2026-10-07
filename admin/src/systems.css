@@ -55,7 +55,7 @@
   height: 100vh;
   height: 100dvh;
   box-sizing: border-box;
-  z-index: 60;
+  z-index: 1000; /* <- Asegura que el menú esté en la capa superior (nítido) */
   transition:
     margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.25s ease;
@@ -75,7 +75,7 @@ html.dark .ma-side {
   height: 100vh;
   height: 100dvh;
   box-sizing: border-box;
-  z-index: 60;
+  z-index: 1000; /* <- Asegura que el menú esté en la capa superior en modo oscuro */
   border-right: 1px solid var(--merco-border, rgba(255, 255, 255, 0.08));
   transition:
     margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -86,18 +86,6 @@ html.dark .ma-side {
 .ma-side.collapsed {
   margin-left: -260px;
 }
-
-/* Fondo de cuadrícula financiera suave opcional */
-/* .ma-side::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
-  pointer-events: none;
-} */
 
 .ma-side-header {
   display: flex;
@@ -1265,7 +1253,12 @@ html.dark {
   --loader-info-color: #9ca3af;
   --loader-glow-opacity: 0.25;
   --merco-surface: #0a0a0b; /* <- Las tarjetas usarán este mismo color del menú lateral */
-  --merco-surface: rgba(10, 10, 11, 0.85); /* <- Ligeramente transparente (85% de opacidad) */
+  --merco-surface: rgba(
+    10,
+    10,
+    11,
+    0.85
+  ); /* <- Ligeramente transparente (85% de opacidad) */
 }
 
 .system-loader-screen {
@@ -1493,6 +1486,7 @@ html.dark {
   flex-shrink: 0;
 }
 
+/* ---------- Overlay con desenfoque para el contenido ---------- */
 .ma-side-overlay {
   display: none;
   position: fixed;
@@ -1500,9 +1494,12 @@ html.dark {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
-  z-index: 998;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(
+    4px
+  ); /* <- Aplica el efecto borroso al contenido de fondo */
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 900; /* <- Por debajo del menú (1000) pero por encima del contenido */
 }
 
 @keyframes cardAppear {
@@ -1537,7 +1534,7 @@ html.dark {
   .ma-side {
     position: fixed;
     left: -280px;
-    z-index: 999;
+    z-index: 1000; /* <- Menú lateral siempre nítido y por encima en móviles */
     width: 264px;
     margin-left: 0;
     transform: translateX(0);
@@ -1563,7 +1560,7 @@ html.dark {
   }
 
   .ma-side-overlay.open {
-    display: block;
+    display: block; /* <- Muestra el overlay y difumina el contenido al abrir el menú */
   }
 
   .ma-topbar {

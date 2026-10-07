@@ -420,7 +420,7 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
                       fontSize: "1.15rem",
                     }}
                   >
-                    {sistemaNombre}
+                    {sistemaNombre} / {opcionMenu}
                   </h2>
                 </>
               )}
@@ -435,7 +435,7 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
                   {sistemaDescripcion}
                 </p>
               )}
-              <h3
+              {/* <h3
                 style={{
                   wordBreak: "break-word",
                   margin: 0,
@@ -444,7 +444,7 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
                 }}
               >
                 {opcionMenu}
-              </h3>
+              </h3> */}
             </div>
           </div>
         </header>

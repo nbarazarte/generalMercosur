@@ -376,6 +376,7 @@ export default function CasosTickets() {
     const [estatusId, setEstatusId] = useState("");
     const [canalId, setCanalId] = useState("");
     const [strAsunto, setStrAsunto] = useState("");
+    const [strDescripcion, setStrDescripcion] = useState(""); // NUEVO ESTADO PARA LA DESCRIPCIÓN
     const [intSla, setIntSla] = useState(24);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
@@ -430,31 +431,47 @@ export default function CasosTickets() {
       [isDarkMode],
     );
 
-    // Función conectada a Ollama local (qwen2.5-coder:7b)
+    // NUEVA FUNCIÓN: Captura el contenido del editor en texto plano cada vez que cambie
+    const handleEditorChange = async () => {
+      const blocks = editor.document;
+      // Extraemos el texto plano de los bloques de BlockNote para guardarlo en el estado
+      const textContent = blocks
+        .map((block) =>
+          block.content ? block.content.map((c) => c.text).join("") : "",
+        )
+        .join("\n");
+      setStrDescripcion(textContent);
+    };
+
+    // Función conectada a Ollama local (qwen2.5:7b-instruct) usando el texto de la descripción
     const handleGenerarConIA = async () => {
-      if (!strAsunto.trim()) {
+      if (!strDescripcion.trim()) {
         alert(
-          "Por favor ingrese un Asunto primero para generar el contexto con la IA.",
+          "Por favor escriba algo en el editor de Descripción primero para que la IA pueda redactarlo.",
         );
         return;
       }
       setIsGeneratingAI(true);
+
+      const urlIA = "http://192.168.12.29/ollama/api/generate";
+      const modelo = "qwen2.5:7b-instruct";
+
       try {
-        const response = await fetch("http://localhost:11434/api/generate", {
+        const response = await fetch(`${urlIA}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "qwen2.5-coder:7b",
-            prompt: `Actúa como un analista de atencion al cliente de la app de la casa de bolsa Mercosur Casa de Bolsa S.A y redacta una descripción detallada y profesional para un ticket de soporte con el asunto: "${strAsunto}". 
+            model: modelo,
+            prompt: `Actúa como un analista de atencion al cliente de la app de la casa de bolsa Mercosur Casa de Bolsa S.A y redacta una descripción detallada y profesional para un ticket de soporte basándote en la siguiente nota o borrador del analista: "${strDescripcion}". 
 
                       Utiliza estrictamente la siguiente estructura de salida:
 
                       **Ticket de Soporte: [Insertar un breve Resumen del Asunto en Mayúsculas Iniciales]**
 
                       **Descripción del Problema:**
-                      [Redacta una breve descripción técnica y formal del problema basado en el asunto proporcionado, destacando su impacto o criticidad].
+                      [Redacta una breve descripción técnica y formal del problema basado en el texto proporcionado, destacando su impacto o criticidad].
 
                       **Pruebas Realizadas: [Redactalas en pasado y no repitas pasos ya realizados (no redundes)]**
 
@@ -488,7 +505,7 @@ export default function CasosTickets() {
       } catch (error) {
         console.error("Error de conexión con Ollama:", error);
         alert(
-          "No se pudo conectar con Ollama local (http://localhost:11434). Verifique que el servicio esté activo.",
+          "No se pudo conectar con Ollama (http://192.168.12.29/ollama/api/generate). Verifique que el servicio y el proxy estén activos.",
         );
       } finally {
         setIsGeneratingAI(false);
@@ -509,6 +526,20 @@ export default function CasosTickets() {
 
       const descripcionContent = editor.document;
 
+      const extraerTextoDeDescripcion = (descripcionArray) => {
+        if (!Array.isArray(descripcionArray)) return "";
+
+        return descripcionArray
+          .map((block) => {
+            if (!block.content || !Array.isArray(block.content)) return "";
+            return block.content.map((c) => c.text || "").join("");
+          })
+          .join("\n");
+      };
+
+      const textoPlano = extraerTextoDeDescripcion(descripcionContent);
+      //console.log(textoPlano);
+
       const nuevoTicketData = {
         creador_agente_id: null,
         cierre_agente_id: null,
@@ -517,8 +548,7 @@ export default function CasosTickets() {
         estatus_id: Number(estatusId),
         canal_id: Number(canalId),
         str_asunto: strAsunto,
-        str_descripcion: descripcionContent,
-        int_sla: Number(intSla),
+        str_descripcion: textoPlano,
         dmt_fecha_cierre: null,
       };
 
@@ -542,16 +572,20 @@ export default function CasosTickets() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          padding: "16px",
+          boxSizing: "border-box",
         }}
       >
         <div
           className="ma-modal"
           onClick={(e) => e.stopPropagation()}
           style={{
+            width: "100%",
             maxWidth: 1020,
             maxHeight: "92vh",
             overflowY: "auto",
             zIndex: 100000,
+            boxSizing: "border-box",
           }}
         >
           <div className="ma-modal-head">
@@ -566,11 +600,22 @@ export default function CasosTickets() {
               className="ma-modal-body"
               style={{
                 display: "grid",
-                gridTemplateColumns: "260px 1fr",
+                // En pantallas grandes: Columna izquierda de ~280px y la derecha ocupa el doble (1fr y 2fr)
+                // En pantallas pequeñas/móviles: Se vuelve de una sola columna automáticamente
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                 gap: 20,
                 alignItems: "start",
               }}
             >
+              {/* Estilo responsivo inline condicional para asegurar que la derecha sea más ancha en desktop */}
+              <style>{`
+                @media (min-width: 768px) {
+                  .ma-modal-body {
+                    grid-template-columns: 280px 1fr !important;
+                  }
+                }
+              `}</style>
+
               {/* COLUMNA IZQUIERDA: Asunto y Parámetros */}
               <div
                 style={{ display: "flex", flexDirection: "column", gap: 10 }}
@@ -666,7 +711,7 @@ export default function CasosTickets() {
                 </div>
               </div>
 
-              {/* COLUMNA DERECHA: Descripción con BlockNote reactivo al tema */}
+              {/* COLUMNA DERECHA: Descripción con BlockNote reactivo al tema (más amplia) */}
               <div
                 style={{ display: "flex", flexDirection: "column", gap: 12 }}
               >
@@ -682,22 +727,15 @@ export default function CasosTickets() {
                     <label style={{ margin: 0 }}>Descripción</label>
                     <button
                       type="button"
-                      className="btn btn-sm btn-ghost"
+                      className="btn btn-sm"
                       onClick={handleGenerarConIA}
                       disabled={isGeneratingAI}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 4,
-                        fontSize: "11px",
-                        padding: "2px 8px",
-                        color: "var(--merco-accent, #2f6fed)",
-                        border: "1px solid var(--merco-border, #444)",
-                      }}
-                      title="Generar estructura y redactar con Ollama (qwen2.5-coder:7b)"
+                      title="Generar estructura y redactar con Ollama basándose en la descripción"
                     >
                       <span>✨</span>
-                      {isGeneratingAI ? "Generando..." : "Redactar con IA"}
+                      {isGeneratingAI
+                        ? "Generando redaccion del ticket"
+                        : "Mejorar redacion del ticket"}
                     </button>
                   </div>
                   <div
@@ -709,9 +747,11 @@ export default function CasosTickets() {
                       minHeight: "520px",
                     }}
                   >
+                    {/* Añadimos onChange para actualizar el estado strDescripcion en tiempo real */}
                     <BlockNoteView
                       editor={editor}
                       theme={isDarkMode ? "dark" : "light"}
+                      onChange={handleEditorChange}
                     />
                   </div>
                 </div>

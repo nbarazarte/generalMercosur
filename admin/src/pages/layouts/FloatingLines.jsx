@@ -2,12 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import {
-  Clock,
   Mesh,
   OrthographicCamera,
   PlaneGeometry,
   Scene,
   ShaderMaterial,
+  Timer,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -399,7 +399,8 @@ export default function FloatingLines({
     const mesh = new Mesh(geometry, material);
     scene.add(mesh);
 
-    const clock = new Clock();
+    // Cambiado de Clock a Timer
+    const timer = new Timer();
 
     const setSize = () => {
       if (!active) return;
@@ -459,7 +460,9 @@ export default function FloatingLines({
     const renderLoop = () => {
       if (!active) return;
 
-      uniforms.iTime.value = clock.getElapsedTime();
+      // Actualizar el timer en cada frame y obtener el tiempo transcurrido
+      timer.update();
+      uniforms.iTime.value = timer.getElapsed();
 
       if (interactive) {
         currentMouseRef.current.lerp(targetMouseRef.current, mouseDamping);
