@@ -151,11 +151,11 @@ VITE_TOKEN=3594ced6-86ce-4c66-a276-d47399bb4deb
 # para encriptar el token de redux
 VITE_REDUX_SECRET_KEY=3594ced6-86ce-4c66-a276-d47399bb4deb
 
-VITE_URL_API_OLLAMA=http://localhost:11434/api/generate
-VITE_URL_MODELO_OLLAMA=qwen2.5-coder:7b
+# VITE_URL_API_OLLAMA=http://localhost:11434/api/generate
+# VITE_URL_MODELO_OLLAMA=qwen2.5-coder:7b
 
-# VITE_URL_API_OLLAMA=http://192.168.12.29/ollama/api/generate
-# VITE_URL_MODELO_OLLAMA=qwen2.5:7b-instruct";
+VITE_URL_API_OLLAMA=http://192.168.12.29:11434/api/generate
+VITE_URL_MODELO_OLLAMA=qwen2.5:7b-instruct
 
 
 
