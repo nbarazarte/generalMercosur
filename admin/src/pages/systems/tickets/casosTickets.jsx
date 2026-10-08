@@ -364,17 +364,9 @@ export default function CasosTickets() {
     { id: 3, nombre: "Alta" },
   ];
 
-  const ESTATUS_LIST = [
-    { id: 1, nombre: "Pendiente" },
-    { id: 2, nombre: "En Proceso" },
-    { id: 3, nombre: "Resuelto" },
-    { id: 4, nombre: "Escalado" },
-  ];
-
   const ModalTicket = () => {
     const [categoriaId, setCategoriaId] = useState("");
     const [prioridadId, setPrioridadId] = useState("");
-    const [estatusId, setEstatusId] = useState("");
     const [canalId, setCanalId] = useState("");
     const [strAsunto, setStrAsunto] = useState("");
     const [strDescripcion, setStrDescripcion] = useState("");
@@ -473,8 +465,8 @@ export default function CasosTickets() {
       }
       setIsGeneratingAI(true);
 
-      const urlIA = "http://192.168.12.29/ollama/api/generate";
-      const modelo = "qwen2.5:7b-instruct";
+      const urlIA = import.meta.env.VITE_URL_API_OLLAMA;
+      const modelo = import.meta.env.VITE_URL_MODELO_OLLAMA;
 
       try {
         const response = await axios.post(urlIA, {
@@ -568,7 +560,6 @@ export default function CasosTickets() {
         cierre_agente_id: null,
         categoria_id: Number(categoriaId),
         prioridad_id: Number(prioridadId),
-        estatus_id: Number(estatusId),
         canal_id: Number(canalId),
         str_asunto: strAsunto,
         str_descripcion: textoPlano,
@@ -708,23 +699,6 @@ export default function CasosTickets() {
                 </div>
 
                 <div className="field">
-                  <label>Estatus</label>
-                  <select
-                    className="inp"
-                    value={estatusId}
-                    onChange={(e) => setEstatusId(e.target.value)}
-                    required
-                  >
-                    <option value="">Estatus...</option>
-                    {ESTATUS_LIST.map((es) => (
-                      <option key={es.id} value={es.id}>
-                        {es.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="field">
                   <label>SLA en Horas</label>
                   <input
                     type="number"
@@ -751,14 +725,20 @@ export default function CasosTickets() {
                     <label style={{ margin: 0 }}>Descripción</label>
                     <button
                       type="button"
-                      className="btn btn-sm"
+                      className="btn btn-primary"
                       onClick={handleGenerarConIA}
                       disabled={isGeneratingAI}
-                      title="Generar estructura y redactar con Ollama basándose en la descripción"
+                      title="Generar formato"
+                      style={{
+                        padding: "3px 8px",
+                        fontSize: "11.5px",
+                        lineHeight: "1.2",
+                        width: "300px",
+                      }}
                     >
                       <DynamicIcon
                         name="FaRobot"
-                        style={{ fontSize: "20px", color: "#eab308" }}
+                        style={{ fontSize: "16px", color: "#eab308" }}
                       />
                       {isGeneratingAI
                         ? "Comenzando..."
@@ -807,7 +787,7 @@ export default function CasosTickets() {
                             backgroundColor: isDarkMode
                               ? "rgba(0.145 0 0)"
                               : "rgba(255, 255, 255, 0.85)",
-                            color: isDarkMode ? "#ffffff" : "#0284c7",
+                            color: isDarkMode ? "#ffffff" : "#000000",
                             padding: "14px 20px",
                             borderRadius: "8px",
                             border: `1px solid ${isDarkMode ? "#1e293b" : "#cbd5e1"}`,
