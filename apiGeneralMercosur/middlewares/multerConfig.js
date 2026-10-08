@@ -10,37 +10,29 @@ const tiposPermitidos = [
   "text/csv", // .csv
   "application/vnd.ms-excel", // .xls
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  // 💡 Nuevos tipos permitidos para multimedia (Videos y Audios)
+  "video/mp4",
+  "video/webm",
+  "video/ogg",
+  "audio/mpeg",
+  "audio/mp3",
+  "audio/wav",
+  "audio/ogg",
 ];
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "/var/www/uploads");
   },
-  //Esto pone nombres Ramdon a los archivos al subirlos
-  /* filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, file.fieldname + "-" + uniqueSuffix + ext);
-  }, */
-
-  //Esto pone una marca de tiempo a los nombres de los archivos al subirlos
   filename: function (req, file, cb) {
     const timestamp = Date.now();
-    const originalName = file.originalname.replace(/\s+/g, "_"); // opcional: limpia espacios
+    const originalName = file.originalname.replace(/\s+/g, "_");
     cb(null, `${timestamp}-${originalName}`);
-
-    //Esto dejaria el nombre tal cual como fue subido pero si dos usuarios suben un archivo con el mismo nombre sera sobreescrito
-    //cb(null, file.originalname);
   },
 });
 
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
-  /*   if (tiposPermitidos.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Tipo de archivo no permitido"), false);
-  } */
 
   if (
     tiposPermitidos.includes(file.mimetype) &&
@@ -53,13 +45,19 @@ const fileFilter = (req, file, cb) => {
       ".csv",
       ".xls",
       ".xlsx",
+      // 💡 Nuevas extensiones permitidas
+      ".mp4",
+      ".webm",
+      ".ogg",
+      ".mp3",
+      ".wav",
     ].includes(ext)
   ) {
     cb(null, true);
   } else {
     cb(
       new Error(
-        "Tipo de archivo no permitido. Solo .pdf, .png, .jpeg, .jpg, .json, .csv, .xls o .xlsx",
+        "Tipo de archivo no permitido. Solo se permiten documentos, hojas de cálculo, imágenes, videos o audios compatibles.",
       ),
       false,
     );
@@ -69,7 +67,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 500 * 1024 * 1024 }, // 5 MB
+  limits: { fileSize: 500 * 1024 * 1024 }, // 500 MB
 });
 
 module.exports = upload;

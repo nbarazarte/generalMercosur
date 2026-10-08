@@ -2,8 +2,9 @@ import React, { useState, useMemo, useEffect } from "react";
 import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
-import { useSelector, useDispatch } from "react-redux";
-import axios from "axios";
+import { useSelector } from "react-redux";
+import axios from "axios"; // Axios plano para peticiones externas independientes (como Ollama)
+import axiosTickets from "../../utils/axiosTickets"; // axiosTickets para las peticiones seguras al backend de Mercosur
 
 // Importaciones de BlockNote corregidas
 import { useCreateBlockNote } from "@blocknote/react";
@@ -417,7 +418,7 @@ export default function CasosTickets() {
         reader.onload = () => {
           const base64Data = reader.result;
 
-          // Agregamos el archivo al estado local con su metadata y contenido base64
+          // Agregamos el archivo al estado local con su metadata, base64 y el archivo real nativo
           setArchivosAdjuntos((prev) => [
             ...prev,
             {
@@ -425,6 +426,7 @@ export default function CasosTickets() {
               type: file.type,
               size: file.size,
               data: base64Data,
+              rawFile: file,
             },
           ]);
 
@@ -455,7 +457,7 @@ export default function CasosTickets() {
       setStrDescripcion(textContent);
     };
 
-    // Función conectada a Ollama local usando Axios
+    // Función conectada a Ollama local usando Axios plano (sin interceptores de admin)
     const handleGenerarConIA = async () => {
       if (!strDescripcion.trim()) {
         alert(
@@ -494,15 +496,12 @@ export default function CasosTickets() {
         const textoGenerado =
           response.data.response || "No se pudo generar el texto.";
 
-        // Si hay bloques en el editor, actualizamos el primero directamente con el texto generado
-        // para evitar que quede una línea vacía o fantasma arriba ("Escribe o teclea '/'...").
         if (editor.document.length > 0) {
           await editor.updateBlock(editor.document[0], {
             type: "paragraph",
             content: textoGenerado,
           });
 
-          // Si la IA generó múltiples líneas o saltos de párrafo, removemos los bloques sobrantes si existieran y dejamos el limpio
           if (editor.document.length > 1) {
             const extraBlocks = editor.document.slice(1);
             await editor.removeBlocks(extraBlocks);
@@ -522,7 +521,7 @@ export default function CasosTickets() {
       } catch (error) {
         console.error("Error de conexión con Ollama:", error);
         alert(
-          "No se pudo conectar con Ollama (http://192.168.12.29/ollama/api/generate). Verifique que el servicio y el proxy estén activos.",
+          "No se pudo conectar con Ollama. Verifique que el servicio y la red estén activos.",
         );
       } finally {
         setIsGeneratingAI(false);
@@ -536,9 +535,7 @@ export default function CasosTickets() {
         `¿${nombre ?? "Estimado"}, confirmas que realizaste las acciones descritas antes de crear este ticket?`,
       );
 
-      if (!confirmado) {
-        return;
-      }
+      if (!confirmado) return;
 
       const descripcionContent = editor.document;
 
@@ -555,20 +552,43 @@ export default function CasosTickets() {
 
       const textoPlano = extraerTextoDeDescripcion(descripcionContent);
 
-      const nuevoTicketData = {
-        creador_agente_id: null,
-        cierre_agente_id: null,
-        categoria_id: Number(categoriaId),
-        prioridad_id: Number(prioridadId),
-        canal_id: Number(canalId),
-        str_asunto: strAsunto,
-        str_descripcion: textoPlano,
-        archivos_multimedia: archivosAdjuntos, // Archivos multimedia capturados del editor listos para enviar
-        dmt_fecha_cierre: null,
-      };
+      const formData = new FormData();
+      formData.append("str_asunto", strAsunto);
+      formData.append("str_descripcion", textoPlano);
+      formData.append("canal_id", Number(canalId));
+      formData.append("categoria_id", Number(categoriaId));
+      formData.append("prioridad_id", Number(prioridadId));
+      formData.append("int_sla", Number(intSla));
+      formData.append("estatus_id", 1); // Pendiente
+      formData.append("departamento_id", 1); // Ajusta según tu lógica
 
-      console.log("Guardando ticket con multimedia e IA:", nuevoTicketData);
-      setModal(false);
+      // Adjuntar cada archivo multimedia recopilado en el estado
+      archivosAdjuntos.forEach((fileObj, index) => {
+        if (fileObj.rawFile) {
+          formData.append(`multimedia_${index}`, fileObj.rawFile);
+        }
+      });
+
+      try {
+        // Petición POST utilizando axiosTickets (gestiona tokens automáticamente)
+        const response = await axiosTickets.post("/crear", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        if (response.data.success) {
+          alert("Ticket creado y archivos multimedia guardados con éxito.");
+          setModal(false);
+          // Recargar lista de tickets o actualizar estado local aquí
+        }
+      } catch (error) {
+        console.error("Error al enviar el ticket:", error);
+        alert(
+          error.response?.data?.error ||
+            "Ocurrió un error al procesar la solicitud del ticket.",
+        );
+      }
     };
 
     // Renderizamos mediante Portal directamente en el body
