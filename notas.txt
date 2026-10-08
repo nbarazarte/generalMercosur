@@ -142,6 +142,7 @@ VITE_URL_API_LOCAL_SEGURIDAD=http://localhost:3000/seguridad
 
 VITE_URL_API_SEGURIDAD=http://localhost:3000/seguridad
 VITE_URL_API_ADMIN=http://localhost:3000/admin
+VITE_URL_API_TICKETS=http://localhost:3000/tickets
 VITE_URL_API_LOCAL_VER=http://localhost:3000
 
 # TOKEN de la api
@@ -174,3 +175,9 @@ sudo systemctl daemon-reload
 sudo systemctl restart ollama
 
 env | grep -i ollama
+
+
+ALTER TABLE tickets.tbl_tickets 
+ADD COLUMN IF NOT EXISTS str_ruta_imagen TEXT,
+ADD COLUMN IF NOT EXISTS str_ruta_video TEXT,
+ADD COLUMN IF NOT EXISTS str_ruta_audio TEXT;

@@ -5,6 +5,7 @@ import { DynamicIcon } from "../../components/IconCatalog";
 import { useSelector } from "react-redux";
 import axios from "axios"; // Axios plano para peticiones externas independientes (como Ollama)
 import axiosTickets from "../../utils/axiosTickets"; // axiosTickets para las peticiones seguras al backend de Mercosur
+import { useNavigate } from "react-router-dom"; // 1. Importa useNavigate
 
 // Importaciones de BlockNote corregidas
 import { useCreateBlockNote } from "@blocknote/react";
@@ -307,6 +308,7 @@ function humanLeft(mins) {
 
 /* ============================ COMPONENTE CASOSTICKETS ============================ */
 export default function CasosTickets() {
+  const navigate = useNavigate(); // 2. Inicializa el hook
   const [casos] = useState(CASOS_INIT);
   const [clientes] = useState(CLIENTES_INIT);
 
@@ -1032,7 +1034,18 @@ export default function CasosTickets() {
             </button>
           </div>
 
-          <div>
+{/* CONTENEDOR DE BOTONES DE ACCIÓN */}
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button 
+              className="btn btn-secondary" 
+              onClick={() => navigate("/tickets/nuevo-ticket")}
+            >
+              <span>
+                <DynamicIcon name="FiFilePlus" />
+              </span>{" "}
+              Ir a Vista de Nuevo Ticket
+            </button>
+
             <button className="btn btn-accent" onClick={() => setModal(true)}>
               <span>
                 <DynamicIcon name="FiPlus" />
