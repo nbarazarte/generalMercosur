@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
 import { useSelector } from "react-redux";
-import axios from "axios"; // Axios plano para peticiones externas independientes (como Ollama)
-import axiosTickets from "../../utils/axiosTickets"; // axiosTickets para las peticiones seguras al backend de Mercosur
+import axios from "axios";
+import axiosTickets from "../../utils/axiosTickets";
 
 // Importaciones de BlockNote corregidas
 import { useCreateBlockNote } from "@blocknote/react";
@@ -50,29 +50,25 @@ export default function NuevoTicket() {
   const [categoriaId, setCategoriaId] = useState("");
   const [prioridadId, setPrioridadId] = useState("");
   const [canalId, setCanalId] = useState("");
-  const [departamentoId, setDepartamentoId] = useState("1"); // Por defecto el primero
+  const [departamentoId, setDepartamentoId] = useState("");
   const [strAsunto, setStrAsunto] = useState("");
   const [strDescripcion, setStrDescripcion] = useState("");
   const [intSla, setIntSla] = useState(24);
 
-  // Estado para almacenar los archivos multimedia adjuntos en el editor
   const [archivosAdjuntos, setArchivosAdjuntos] = useState([]);
-
-  // Estado para la IA
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   const user = useSelector((state) => state.auth?.user);
   const nombre = user?.nombre || "Analista";
   const apellido = user?.apellido || "";
 
-  // Estado reactivo para el tema basado en la clase del documento
+  // Detector de tema en tiempo real idéntico al de MiFicha
   const [isDarkMode, setIsDarkMode] = useState(
     () =>
       document.documentElement.classList.contains("dark") ||
       document.body.classList.contains("dark"),
   );
 
-  // Observer para detectar cambios en tiempo real cuando haces clic en cambiar tema
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const darkActive =
@@ -93,13 +89,11 @@ export default function NuevoTicket() {
     return () => observer.disconnect();
   }, []);
 
-  // Función para manejar la subida local de archivos multimedia por arrastre y guardarlos en el estado
   const uploadFile = async (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
         const base64Data = reader.result;
-
         setArchivosAdjuntos((prev) => [
           ...prev,
           {
@@ -110,7 +104,6 @@ export default function NuevoTicket() {
             rawFile: file,
           },
         ]);
-
         resolve(base64Data);
       };
       reader.onerror = (error) => reject(error);
@@ -118,7 +111,6 @@ export default function NuevoTicket() {
     });
   };
 
-  // Inicialización del editor recreándose cada vez que cambia isDarkMode
   const editor = useCreateBlockNote(
     {
       uploadFile,
@@ -127,7 +119,6 @@ export default function NuevoTicket() {
     [isDarkMode],
   );
 
-  // Captura el contenido del editor en texto plano cada vez que cambie
   const handleEditorChange = async () => {
     const blocks = editor.document;
     const textContent = blocks
@@ -138,19 +129,17 @@ export default function NuevoTicket() {
     setStrDescripcion(textContent);
   };
 
-  // Función centralizada para limpiar todo el formulario y dejar el editor completamente vacío sin líneas residuales
   const handleLimpiarTodo = async () => {
     setStrAsunto("");
     setCanalId("");
     setCategoriaId("");
     setPrioridadId("");
-    setDepartamentoId("1");
+    setDepartamentoId(""); // Limpia el departamento dejándolo en blanco
     setIntSla(24);
     setArchivosAdjuntos([]);
     setStrDescripcion("");
 
     if (editor) {
-      // Reemplaza todo el documento por un único bloque completamente vacío
       await editor.replaceBlocks(editor.document, [
         {
           type: "paragraph",
@@ -160,7 +149,6 @@ export default function NuevoTicket() {
     }
   };
 
-  // Función conectada a Ollama local usando Axios plano con efecto de tipeo progresivo
   const handleGenerarConIA = async () => {
     if (!strDescripcion.trim()) {
       alert(
@@ -196,11 +184,8 @@ export default function NuevoTicket() {
 
       const textoGenerado =
         response.data.response || "No se pudo generar el texto.";
-
-      // Ocultamos el efecto de "Generando respuesta" antes de iniciar el tipeo
       setIsGeneratingAI(false);
 
-      // Preparamos el editor dejándolo inicialmente con un párrafo vacío
       if (editor.document.length > 0) {
         await editor.updateBlock(editor.document[0], {
           type: "paragraph",
@@ -224,7 +209,6 @@ export default function NuevoTicket() {
         );
       }
 
-      // Efecto de tipeo progresivo carácter por carácter
       let textoActual = "";
       for (let i = 0; i < textoGenerado.length; i++) {
         textoActual += textoGenerado[i];
@@ -255,10 +239,8 @@ export default function NuevoTicket() {
     if (!confirmado) return;
 
     const descripcionContent = editor.document;
-
     const extraerTextoDeDescripcion = (descripcionArray) => {
       if (!Array.isArray(descripcionArray)) return "";
-
       return descripcionArray
         .map((block) => {
           if (!block.content || !Array.isArray(block.content)) return "";
@@ -277,7 +259,7 @@ export default function NuevoTicket() {
     formData.append("prioridad_id", Number(prioridadId));
     formData.append("departamento_id", Number(departamentoId));
     formData.append("int_sla", Number(intSla));
-    formData.append("estatus_id", 1); // Pendiente
+    formData.append("estatus_id", 1);
 
     archivosAdjuntos.forEach((fileObj, index) => {
       if (fileObj.rawFile) {
@@ -294,7 +276,7 @@ export default function NuevoTicket() {
 
       if (response.data.success) {
         alert("Ticket creado y archivos multimedia guardados con éxito.");
-        await handleLimpiarTodo(); // Limpia campos y deja el editor limpio sin líneas de más
+        await handleLimpiarTodo();
       }
     } catch (error) {
       console.error("Error al enviar el ticket:", error);
@@ -311,12 +293,10 @@ export default function NuevoTicket() {
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
           padding: "10px 0",
-          maxWidth: "1400px",
-          margin: "0 auto",
         }}
       >
-        <div className="ma-card" style={{ padding: "28px" }}>
-          <form onSubmit={handleSubmit}>
+        <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
+          <form onSubmit={handleSubmit} style={{ padding: "24px" }}>
             {/* CONTENEDOR DE DOS COLUMNAS */}
             <div
               style={{
@@ -326,123 +306,41 @@ export default function NuevoTicket() {
                 alignItems: "start",
               }}
             >
-              {/* COLUMNA IZQUIERDA: ESTILO CORREO CON ASUNTO, DEPARTAMENTO Y PARÁMETROS */}
+              {/* COLUMNA IZQUIERDA: ESTILO Y COLORES UNIFICADOS CON MI FICHA */}
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "14px",
-                  background: isDarkMode
-                    ? "var(--bn-colors-editor-background, #1e1e1e)"
-                    : "var(--bn-colors-editor-background, #ffffff)",
-                  border: "1px solid var(--merco-border, #e2e8f0)",
+                  gap: "16px",
+                  background: "var(--merco-bg-subtle, rgba(0, 0, 0, 0.02))",
+                  border: "1px solid var(--merco-border, #ccc)",
                   borderRadius: "8px",
-                  padding: "18px",
+                  padding: "20px",
                 }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    borderBottom: "1px solid var(--merco-border, #e2e8f0)",
-                    paddingBottom: "10px",
-                    marginBottom: "4px",
-                  }}
-                >
-                  <DynamicIcon
-                    name="FaRegEnvelope"
-                    style={{ fontSize: "16px", color: "#3b82f6" }}
-                  />
-                  <span
-                    style={{
-                      fontSize: "13px",
-                      fontWeight: "600",
-                      color: "var(--merco-text)",
-                    }}
-                  >
-                    Detalles del Envío (Correo / Ticket)
-                  </span>
-                </div>
-
                 {/* DE (REMITENTE) */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    fontSize: "12.5px",
-                    gap: "8px",
-                  }}
-                >
-                  <span
-                    style={{
-                      minWidth: "90px",
-                      color: "var(--merco-text-muted, #64748b)",
-                      fontWeight: "500",
-                    }}
-                  >
-                    De:
-                  </span>
-                  <span
-                    style={{ fontWeight: "600", color: "var(--merco-text)" }}
-                  >
-                    {nombre} {apellido} &lt;
-                    {user?.email || "analista@mercosur.com"}&gt;
-                  </span>
+                <div className="field">
+                  <label>De (Remitente)</label>
+                  <input
+                    className="inp"
+                    value={`${nombre} ${apellido} <${user?.email || "analista@mercosur.com"}>`}
+                    readOnly
+                    disabled
+                  />
                 </div>
 
                 {/* ASIGNAR A (DEPARTAMENTO) */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    fontSize: "12.5px",
-                    gap: "8px",
-                  }}
-                >
-                  <span
-                    style={{
-                      minWidth: "90px",
-                      color: "var(--merco-text-muted, #64748b)",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Para (Depto):
-                  </span>
+                <div className="field">
+                  <label>Para (Departamento)</label>
                   <select
                     className="inp"
                     value={departamentoId}
                     onChange={(e) => setDepartamentoId(e.target.value)}
                     required
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 8px",
-                      height: "30px",
-                      backgroundColor: isDarkMode
-                        ? "var(--bn-colors-editor-background, #1e1e1e)"
-                        : "var(--bn-colors-editor-background, #ffffff)",
-                      color: "var(--merco-text)",
-                      borderColor: "var(--merco-border, #cbd5e1)",
-                    }}
                   >
-                    <option
-                      value=""
-                      style={{
-                        backgroundColor: isDarkMode ? "#1e1e1e" : "#ffffff",
-                        color: "var(--merco-text)",
-                      }}
-                    >
-                      Seleccione departamento...
-                    </option>
+                    <option value="">Seleccione departamento...</option>
                     {DEPARTAMENTOS.map((dep) => (
-                      <option
-                        key={dep.id}
-                        value={dep.id}
-                        style={{
-                          backgroundColor: isDarkMode ? "#1e1e1e" : "#ffffff",
-                          color: "var(--merco-text)",
-                        }}
-                      >
+                      <option key={dep.id} value={dep.id}>
                         {dep.nombre}
                       </option>
                     ))}
@@ -450,23 +348,8 @@ export default function NuevoTicket() {
                 </div>
 
                 {/* CAMPO ASUNTO */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    fontSize: "12.5px",
-                    gap: "8px",
-                  }}
-                >
-                  <span
-                    style={{
-                      minWidth: "90px",
-                      color: "var(--merco-text-muted, #64748b)",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Asunto:
-                  </span>
+                <div className="field">
+                  <label>Asunto</label>
                   <input
                     className="inp"
                     value={strAsunto}
@@ -474,76 +357,31 @@ export default function NuevoTicket() {
                     placeholder="Resumen breve del requerimiento..."
                     maxLength={100}
                     required
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 8px",
-                      height: "30px",
-                      flex: 1,
-                      backgroundColor: isDarkMode
-                        ? "var(--bn-colors-editor-background, #1e1e1e)"
-                        : "var(--bn-colors-editor-background, #ffffff)",
-                      color: "var(--merco-text)",
-                      borderColor: "var(--merco-border, #cbd5e1)",
-                    }}
                   />
                 </div>
 
                 {/* SLA */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    fontSize: "12.5px",
-                    gap: "8px",
-                  }}
-                >
-                  <span
-                    style={{
-                      minWidth: "90px",
-                      color: "var(--merco-text-muted, #64748b)",
-                      fontWeight: "500",
-                    }}
-                  >
-                    SLA (Horas):
-                  </span>
+                <div className="field">
+                  <label>SLA (Horas)</label>
                   <input
                     type="number"
                     className="inp"
                     value={intSla}
                     onChange={(e) => setIntSla(e.target.value)}
-                    style={{
-                      fontSize: "12px",
-                      padding: "4px 8px",
-                      height: "30px",
-                      width: "90px",
-                      backgroundColor: isDarkMode
-                        ? "var(--bn-colors-editor-background, #1e1e1e)"
-                        : "var(--bn-colors-editor-background, #ffffff)",
-                      color: "var(--merco-text)",
-                      borderColor: "var(--merco-border, #cbd5e1)",
-                    }}
                   />
                 </div>
 
                 <hr
                   style={{
                     border: "none",
-                    borderTop: "1px solid var(--merco-border, #e2e8f0)",
+                    borderTop: "1px solid var(--merco-border, #ccc)",
                     margin: "4px 0",
                   }}
                 />
 
-                {/* CANAL (RADIO BUTTONS) */}
+                {/* CANAL CON RADIO BUTTONS REDUCIDOS */}
                 <div className="field">
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "6px",
-                      fontSize: "12.5px",
-                      fontWeight: "600",
-                      color: "var(--merco-text-muted, #64748b)",
-                    }}
-                  >
+                  <label style={{ marginBottom: "8px", display: "block" }}>
                     Canal de Recepción
                   </label>
                   <div
@@ -558,20 +396,26 @@ export default function NuevoTicket() {
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "5px",
+                            gap: "6px",
                             fontSize: "12px",
                             cursor: "pointer",
-                            padding: "3px 7px",
-                            borderRadius: "4px",
+                            padding: "5px 8px",
+                            borderRadius: "6px",
                             color: "var(--merco-text)",
                             backgroundColor: isSelected
                               ? isDarkMode
-                                ? "rgba(59, 130, 246, 0.3)"
-                                : "rgba(59, 130, 246, 0.12)"
+                                ? "rgba(249, 87, 0, 0.25)"
+                                : "rgba(249, 87, 0, 0.12)"
                               : isDarkMode
                                 ? "rgba(255, 255, 255, 0.03)"
-                                : "transparent",
-                            border: `1px solid ${isSelected ? "#3b82f6" : "var(--merco-border, #cbd5e1)"}`,
+                                : "var(--merco-bg-card, #fff)",
+                            border: `1px solid ${
+                              isSelected
+                                ? "var(--merco-accent, #f95700)"
+                                : "var(--merco-border, #ccc)"
+                            }`,
+                            fontWeight: isSelected ? "600" : "400",
+                            transition: "all 0.15s ease",
                           }}
                         >
                           <input
@@ -581,7 +425,32 @@ export default function NuevoTicket() {
                             checked={isSelected}
                             onChange={(e) => setCanalId(e.target.value)}
                             required
-                            style={{ cursor: "pointer", margin: 0 }}
+                            style={{
+                              appearance: "none",
+                              WebkitAppearance: "none",
+                              width: "12px",
+                              height: "12px",
+                              borderRadius: "50%",
+                              border: `2px solid ${
+                                isSelected
+                                  ? "var(--merco-accent, #f95700)"
+                                  : "var(--merco-border, #999)"
+                              }`,
+                              outline: "none",
+                              backgroundColor: isSelected
+                                ? "var(--merco-accent, #f95700)"
+                                : "transparent",
+                              boxShadow: isSelected
+                                ? isDarkMode
+                                  ? "inset 0 0 0 2px #1e1e1e"
+                                  : "inset 0 0 0 2px #fff"
+                                : "none",
+                              cursor: "pointer",
+                              margin: 0,
+                              display: "grid",
+                              placeContent: "center",
+                              transition: "all 0.15s ease",
+                            }}
                           />
                           {c}
                         </label>
@@ -590,17 +459,9 @@ export default function NuevoTicket() {
                   </div>
                 </div>
 
-                {/* CATEGORÍA (RADIO BUTTONS) */}
+                {/* CATEGORÍA CON RADIO BUTTONS REDUCIDOS */}
                 <div className="field">
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "6px",
-                      fontSize: "12.5px",
-                      fontWeight: "600",
-                      color: "var(--merco-text-muted, #64748b)",
-                    }}
-                  >
+                  <label style={{ marginBottom: "8px", display: "block" }}>
                     Categoría del Requerimiento
                   </label>
                   <div
@@ -614,20 +475,26 @@ export default function NuevoTicket() {
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "5px",
+                            gap: "6px",
                             fontSize: "12px",
                             cursor: "pointer",
-                            padding: "3px 7px",
-                            borderRadius: "4px",
+                            padding: "5px 8px",
+                            borderRadius: "6px",
                             color: "var(--merco-text)",
                             backgroundColor: isSelected
                               ? isDarkMode
-                                ? "rgba(59, 130, 246, 0.3)"
-                                : "rgba(59, 130, 246, 0.12)"
+                                ? "rgba(249, 87, 0, 0.25)"
+                                : "rgba(249, 87, 0, 0.12)"
                               : isDarkMode
                                 ? "rgba(255, 255, 255, 0.03)"
-                                : "transparent",
-                            border: `1px solid ${isSelected ? "#3b82f6" : "var(--merco-border, #cbd5e1)"}`,
+                                : "var(--merco-bg-card, #fff)",
+                            border: `1px solid ${
+                              isSelected
+                                ? "var(--merco-accent, #f95700)"
+                                : "var(--merco-border, #ccc)"
+                            }`,
+                            fontWeight: isSelected ? "600" : "400",
+                            transition: "all 0.15s ease",
                           }}
                         >
                           <input
@@ -637,7 +504,32 @@ export default function NuevoTicket() {
                             checked={isSelected}
                             onChange={(e) => setCategoriaId(e.target.value)}
                             required
-                            style={{ cursor: "pointer", margin: 0 }}
+                            style={{
+                              appearance: "none",
+                              WebkitAppearance: "none",
+                              width: "12px",
+                              height: "12px",
+                              borderRadius: "50%",
+                              border: `2px solid ${
+                                isSelected
+                                  ? "var(--merco-accent, #f95700)"
+                                  : "var(--merco-border, #999)"
+                              }`,
+                              outline: "none",
+                              backgroundColor: isSelected
+                                ? "var(--merco-accent, #f95700)"
+                                : "transparent",
+                              boxShadow: isSelected
+                                ? isDarkMode
+                                  ? "inset 0 0 0 2px #1e1e1e"
+                                  : "inset 0 0 0 2px #fff"
+                                : "none",
+                              cursor: "pointer",
+                              margin: 0,
+                              display: "grid",
+                              placeContent: "center",
+                              transition: "all 0.15s ease",
+                            }}
                           />
                           {cat.nombre}
                         </label>
@@ -646,17 +538,9 @@ export default function NuevoTicket() {
                   </div>
                 </div>
 
-                {/* PRIORIDAD (RADIO BUTTONS) */}
+                {/* PRIORIDAD CON RADIO BUTTONS REDUCIDOS */}
                 <div className="field">
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "6px",
-                      fontSize: "12.5px",
-                      fontWeight: "600",
-                      color: "var(--merco-text-muted, #64748b)",
-                    }}
-                  >
+                  <label style={{ marginBottom: "8px", display: "block" }}>
                     Nivel de Prioridad
                   </label>
                   <div
@@ -670,20 +554,26 @@ export default function NuevoTicket() {
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "5px",
+                            gap: "6px",
                             fontSize: "12px",
                             cursor: "pointer",
-                            padding: "3px 7px",
-                            borderRadius: "4px",
+                            padding: "5px 8px",
+                            borderRadius: "6px",
                             color: "var(--merco-text)",
                             backgroundColor: isSelected
                               ? isDarkMode
-                                ? "rgba(59, 130, 246, 0.3)"
-                                : "rgba(59, 130, 246, 0.12)"
+                                ? "rgba(249, 87, 0, 0.25)"
+                                : "rgba(249, 87, 0, 0.12)"
                               : isDarkMode
                                 ? "rgba(255, 255, 255, 0.03)"
-                                : "transparent",
-                            border: `1px solid ${isSelected ? "#3b82f6" : "var(--merco-border, #cbd5e1)"}`,
+                                : "var(--merco-bg-card, #fff)",
+                            border: `1px solid ${
+                              isSelected
+                                ? "var(--merco-accent, #f95700)"
+                                : "var(--merco-border, #ccc)"
+                            }`,
+                            fontWeight: isSelected ? "600" : "400",
+                            transition: "all 0.15s ease",
                           }}
                         >
                           <input
@@ -693,7 +583,32 @@ export default function NuevoTicket() {
                             checked={isSelected}
                             onChange={(e) => setPrioridadId(e.target.value)}
                             required
-                            style={{ cursor: "pointer", margin: 0 }}
+                            style={{
+                              appearance: "none",
+                              WebkitAppearance: "none",
+                              width: "12px",
+                              height: "12px",
+                              borderRadius: "50%",
+                              border: `2px solid ${
+                                isSelected
+                                  ? "var(--merco-accent, #f95700)"
+                                  : "var(--merco-border, #999)"
+                              }`,
+                              outline: "none",
+                              backgroundColor: isSelected
+                                ? "var(--merco-accent, #f95700)"
+                                : "transparent",
+                              boxShadow: isSelected
+                                ? isDarkMode
+                                  ? "inset 0 0 0 2px #1e1e1e"
+                                  : "inset 0 0 0 2px #fff"
+                                : "none",
+                              cursor: "pointer",
+                              margin: 0,
+                              display: "grid",
+                              placeContent: "center",
+                              transition: "all 0.15s ease",
+                            }}
                           />
                           {p.nombre}
                         </label>
@@ -711,53 +626,48 @@ export default function NuevoTicket() {
                   gap: "20px",
                 }}
               >
-                {/* SECCIÓN 2: DESCRIPCIÓN DETALLADA Y MULTIMEDIA */}
                 <div>
                   <div
+                    className="field"
                     style={{
                       display: "flex",
-                      justifyContent: "space-between",
+                      flexDirection: "row",
                       alignItems: "center",
-                      marginBottom: "10px",
-                      flexWrap: "wrap",
-                      gap: "10px",
+                      gap: "8px",
+                      marginBottom: "6px",
                     }}
                   >
-                    <h3
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "600",
-                        margin: 0,
-                        color: "var(--merco-text)",
-                      }}
-                    >
-                      Cuerpo del Mensaje / Descripción
-                    </h3>
+                    <label style={{ margin: 0, lineHeight: "1" }}>
+                      Descripción
+                    </label>
+
                     <button
                       type="button"
-                      className="btn btn-primary"
+                      className="btn btn-ghost"
                       onClick={handleGenerarConIA}
-                      disabled={isGeneratingAI}
-                      title="Generar formato"
                       style={{
-                        padding: "6px 12px",
-                        fontSize: "12px",
+                        cursor: "pointer",
+                        padding: "4px 8px",
                         display: "flex",
                         alignItems: "center",
-                        gap: "6px",
+                        justifyContent: "center",
+                        border: "1px solid var(--merco-border, #ccc)",
+                        borderRadius: "6px",
                       }}
+                      disabled={isGeneratingAI}
+                      title={
+                        isGeneratingAI
+                          ? "Redactando nueva descripción..."
+                          : "Mejorar redacción del ticket con IA"
+                      }
                     >
                       <DynamicIcon
                         name="FaRobot"
                         style={{ fontSize: "15px", color: "#eab308" }}
                       />
-                      {isGeneratingAI
-                        ? "Comenzando..."
-                        : "Mejorar redacción del ticket con IA"}
                     </button>
                   </div>
 
-                  {/* Contenedor principal del editor con position relative para loader */}
                   <div
                     style={{
                       position: "relative",
@@ -784,7 +694,6 @@ export default function NuevoTicket() {
                           alignItems: "center",
                           justifyContent: "center",
                           backdropFilter: "blur(4px)",
-                          WebkitBackdropFilter: "blur(4px)",
                           borderRadius: "inherit",
                         }}
                       >
@@ -794,9 +703,6 @@ export default function NuevoTicket() {
                             alignItems: "center",
                             gap: "12px",
                             fontFamily: "monospace",
-                            backgroundColor: isDarkMode
-                              ? "rgba(15, 23, 42, 0.85)"
-                              : "rgba(255, 255, 255, 0.85)",
                             color: isDarkMode ? "#ffffff" : "#000000",
                             padding: "14px 20px",
                             borderRadius: "8px",
@@ -811,10 +717,9 @@ export default function NuevoTicket() {
                             style={{
                               color: "#eab308",
                               fontSize: "20px",
-                              animation: "spin 2s linear infinite",
                             }}
                           />
-                          Generando redacción...
+                          Generando formato al ticket...
                         </div>
                       </div>
                     )}
@@ -831,7 +736,6 @@ export default function NuevoTicket() {
                     </div>
                   </div>
 
-                  {/* LISTADO DE ARCHIVOS MULTIMEDIA ADJUNTOS */}
                   {archivosAdjuntos.length > 0 && (
                     <div
                       style={{
@@ -868,11 +772,11 @@ export default function NuevoTicket() {
                               alignItems: "center",
                               gap: "8px",
                               background: isDarkMode
-                                ? "rgba(255,255,255,0.05)"
-                                : "rgba(0,0,0,0.04)",
+                                ? "rgba(255, 255, 255, 0.05)"
+                                : "var(--merco-bg-card, #fff)",
                               padding: "4px 10px",
                               borderRadius: "4px",
-                              border: "1px solid var(--merco-border, #ddd)",
+                              border: "1px solid var(--merco-border, #ccc)",
                               color: "var(--merco-text)",
                             }}
                           >
@@ -882,6 +786,7 @@ export default function NuevoTicket() {
                                 textOverflow: "ellipsis",
                                 whiteSpace: "nowrap",
                                 maxWidth: "200px",
+                                color: "var(--merco-text)",
                               }}
                               title={file.name}
                             >
@@ -889,11 +794,13 @@ export default function NuevoTicket() {
                             </span>
                             <button
                               type="button"
-                              className="btn btn-ghost btn-sm"
+                              className="btn-icon"
                               style={{
                                 fontSize: "11px",
-                                padding: "1px 5px",
                                 color: "var(--merco-danger, #d1435b)",
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
                               }}
                               onClick={() =>
                                 setArchivosAdjuntos(
@@ -914,15 +821,15 @@ export default function NuevoTicket() {
               </div>
             </div>
 
-            {/* BOTONES DE ACCIÓN */}
+            {/* BOTÓN INFERIOR DE ACCIÓN */}
             <div
               style={{
                 display: "flex",
                 justifyContent: "flex-end",
                 gap: 12,
-                marginTop: 20,
-                borderTop: "1px solid var(--merco-border, #eee)",
-                paddingTop: "18px",
+                marginTop: 24,
+                paddingTop: 16,
+                borderTop: "1px solid var(--merco-border, #ccc)",
               }}
             >
               <button
@@ -938,7 +845,7 @@ export default function NuevoTicket() {
                 className="btn btn-primary"
                 disabled={isGeneratingAI}
               >
-                Crear Ticket
+                <DynamicIcon name="FiSave" /> Crear Ticket
               </button>
             </div>
           </form>
