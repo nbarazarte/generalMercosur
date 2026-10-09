@@ -12,45 +12,22 @@ import { es } from "@blocknote/core/locales";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 
-/* ====== CONSTANTES DE CONFIGURACIÓN Y VALORES ====== */
-const CANALES = [
-  "Wasapi",
-  "Tickets",
-  "Presencial",
-  "Telefónico",
-  "Correo electrónico",
-  "Telegram",
-  "Instagram",
-];
-
-const CATEGORIAS = [
-  { id: 1, nombre: "Firma Electrónica" },
-  { id: 2, nombre: "Web App" },
-  { id: 3, nombre: "Mercado de Valores" },
-  { id: 4, nombre: "Generar Certificado" },
-  { id: 5, nombre: "Caja Venezolana de Valores" },
-  { id: 6, nombre: "Otros" },
-];
-
-const PRIORIDADES_LIST = [
-  { id: 1, nombre: "Baja" },
-  { id: 2, nombre: "Media" },
-  { id: 3, nombre: "Alta" },
-];
-
-const DEPARTAMENTOS = [
-  { id: 1, nombre: "Soporte Técnico e Infraestructura" },
-  { id: 2, nombre: "Mesa de Operaciones y Valores" },
-  { id: 3, nombre: "Atención al Cliente" },
-  { id: 4, nombre: "Cumplimiento y Oficialía" },
-  { id: 5, nombre: "Administración y Finanzas" },
-];
-
 export default function NuevoTicket() {
   const [categoriaId, setCategoriaId] = useState("");
   const [prioridadId, setPrioridadId] = useState("");
   const [canalId, setCanalId] = useState("");
   const [departamentoId, setDepartamentoId] = useState("");
+  const [usuarioId, setUsuarioId] = useState(""); // Empleado asignado opcional
+
+  // Estados para catálogos dinámicos desde la BD
+  const [listaDepartamentos, setListaDepartamentos] = useState([]);
+  const [listaUsuarios, setListaUsuarios] = useState([]);
+  const [empleadosFiltrados, setEmpleadosFiltrados] = useState([]);
+  
+  const [listaCanales, setListaCanales] = useState([]);
+  const [listaCategorias, setListaCategorias] = useState([]);
+  const [listaPrioridades, setListaPrioridades] = useState([]);
+
   const [strAsunto, setStrAsunto] = useState("");
   const [strDescripcion, setStrDescripcion] = useState("");
   const [intSla, setIntSla] = useState(24);
@@ -88,6 +65,45 @@ export default function NuevoTicket() {
 
     return () => observer.disconnect();
   }, []);
+
+  // Cargar departamentos, usuarios y datos maestros desde el backend al montar el componente
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Petición combinada de departamentos y usuarios
+        const resDeptUsers = await axiosTickets.get("/departamentos-usuarios");
+        if (resDeptUsers.data.success) {
+          setListaDepartamentos(resDeptUsers.data.departamentos);
+          setListaUsuarios(resDeptUsers.data.usuarios);
+        }
+
+        // Petición de datos maestros (canales, categorías, prioridades)
+        const resMaestros = await axiosTickets.get("/datos-maestros");
+        if (resMaestros.data.success) {
+          setListaCanales(resMaestros.data.canales);
+          setListaCategorias(resMaestros.data.categorias);
+          setListaPrioridades(resMaestros.data.prioridades);
+        }
+      } catch (error) {
+        console.error("Error al cargar los catálogos del sistema:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Filtrar empleados cada vez que cambie el departamento seleccionado
+  useEffect(() => {
+    if (departamentoId) {
+      const filtrados = listaUsuarios.filter(
+        (u) => Number(u.departamento_id) === Number(departamentoId)
+      );
+      setEmpleadosFiltrados(filtrados);
+    } else {
+      setEmpleadosFiltrados([]);
+    }
+    setUsuarioId(""); // Limpiar selección de empleado al cambiar de departamento
+  }, [departamentoId, listaUsuarios]);
 
   const uploadFile = async (file) => {
     return new Promise((resolve, reject) => {
@@ -134,7 +150,8 @@ export default function NuevoTicket() {
     setCanalId("");
     setCategoriaId("");
     setPrioridadId("");
-    setDepartamentoId(""); // Limpia el departamento dejándolo en blanco
+    setDepartamentoId("");
+    setUsuarioId("");
     setIntSla(24);
     setArchivosAdjuntos([]);
     setStrDescripcion("");
@@ -258,6 +275,12 @@ export default function NuevoTicket() {
     formData.append("categoria_id", Number(categoriaId));
     formData.append("prioridad_id", Number(prioridadId));
     formData.append("departamento_id", Number(departamentoId));
+    
+    // Enviar usuario_id solo si fue seleccionado (opcional)
+    if (usuarioId) {
+      formData.append("usuario_id", Number(usuarioId));
+    }
+
     formData.append("int_sla", Number(intSla));
     formData.append("estatus_id", 1);
 
@@ -306,7 +329,7 @@ export default function NuevoTicket() {
                 alignItems: "start",
               }}
             >
-              {/* COLUMNA IZQUIERDA: ESTILO Y COLORES UNIFICADOS CON MI FICHA */}
+              {/* COLUMNA IZQUIERDA */}
               <div
                 style={{
                   display: "flex",
@@ -329,7 +352,7 @@ export default function NuevoTicket() {
                   />
                 </div>
 
-                {/* ASIGNAR A (DEPARTAMENTO) */}
+                {/* ASIGNAR A (DEPARTAMENTO DINÁMICO) */}
                 <div className="field">
                   <label>Para (Departamento)</label>
                   <select
@@ -339,9 +362,29 @@ export default function NuevoTicket() {
                     required
                   >
                     <option value="">Seleccione departamento...</option>
-                    {DEPARTAMENTOS.map((dep) => (
+                    {listaDepartamentos.map((dep) => (
                       <option key={dep.id} value={dep.id}>
-                        {dep.nombre}
+                        {dep.str_nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* EMPLEADO / USUARIO ASIGNADO (FILTRADO Y OPCIONAL) */}
+                <div className="field">
+                  <label>Empleado Asignado (Opcional)</label>
+                  <select
+                    className="inp"
+                    value={usuarioId}
+                    onChange={(e) => setUsuarioId(e.target.value)}
+                    disabled={!departamentoId}
+                  >
+                    <option value="">
+                      {departamentoId ? "Sin empleado específico (Opcional)" : "Primero seleccione un departamento..."}
+                    </option>
+                    {empleadosFiltrados.map((emp) => (
+                      <option key={emp.id} value={emp.id}>
+                        {emp.str_nombre} {emp.str_apellido} ({emp.str_email})
                       </option>
                     ))}
                   </select>
@@ -379,7 +422,7 @@ export default function NuevoTicket() {
                   }}
                 />
 
-                {/* CANAL CON RADIO BUTTONS REDUCIDOS */}
+                {/* CANAL DE RECEPCIÓN (DINÁMICO CON RADIO BUTTONS) */}
                 <div className="field">
                   <label style={{ marginBottom: "8px", display: "block" }}>
                     Canal de Recepción
@@ -387,12 +430,11 @@ export default function NuevoTicket() {
                   <div
                     style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}
                   >
-                    {CANALES.map((c, idx) => {
-                      const val = idx + 1;
-                      const isSelected = Number(canalId) === val;
+                    {listaCanales.map((c) => {
+                      const isSelected = Number(canalId) === c.id;
                       return (
                         <label
-                          key={idx}
+                          key={c.id}
                           style={{
                             display: "flex",
                             alignItems: "center",
@@ -421,7 +463,7 @@ export default function NuevoTicket() {
                           <input
                             type="radio"
                             name="canal_id"
-                            value={val}
+                            value={c.id}
                             checked={isSelected}
                             onChange={(e) => setCanalId(e.target.value)}
                             required
@@ -452,14 +494,14 @@ export default function NuevoTicket() {
                               transition: "all 0.15s ease",
                             }}
                           />
-                          {c}
+                          {c.str_nombre}
                         </label>
                       );
                     })}
                   </div>
                 </div>
 
-                {/* CATEGORÍA CON RADIO BUTTONS REDUCIDOS */}
+                {/* CATEGORÍA DEL REQUERIMIENTO (DINÁMICA CON RADIO BUTTONS) */}
                 <div className="field">
                   <label style={{ marginBottom: "8px", display: "block" }}>
                     Categoría del Requerimiento
@@ -467,7 +509,7 @@ export default function NuevoTicket() {
                   <div
                     style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}
                   >
-                    {CATEGORIAS.map((cat) => {
+                    {listaCategorias.map((cat) => {
                       const isSelected = Number(categoriaId) === cat.id;
                       return (
                         <label
@@ -531,14 +573,14 @@ export default function NuevoTicket() {
                               transition: "all 0.15s ease",
                             }}
                           />
-                          {cat.nombre}
+                          {cat.str_nombre}
                         </label>
                       );
                     })}
                   </div>
                 </div>
 
-                {/* PRIORIDAD CON RADIO BUTTONS REDUCIDOS */}
+                {/* NIVEL DE PRIORIDAD (DINÁMICO CON RADIO BUTTONS) */}
                 <div className="field">
                   <label style={{ marginBottom: "8px", display: "block" }}>
                     Nivel de Prioridad
@@ -546,7 +588,7 @@ export default function NuevoTicket() {
                   <div
                     style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}
                   >
-                    {PRIORIDADES_LIST.map((p) => {
+                    {listaPrioridades.map((p) => {
                       const isSelected = Number(prioridadId) === p.id;
                       return (
                         <label
@@ -610,7 +652,7 @@ export default function NuevoTicket() {
                               transition: "all 0.15s ease",
                             }}
                           />
-                          {p.nombre}
+                          {p.str_nombre}
                         </label>
                       );
                     })}
