@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict YTaEwSNcuCrIe0VVmIpJ2HQUbmNRQkTynXW6g2UgkzeyQNec8zXwxUk15JFJu7G
+\restrict fXhcVTgNMOxt7m1AiWbVn7E5oyt8hcgFuz707o2S7WOXxWpFnSMkLhe3vkYfFxv
 
 -- Dumped from database version 18.6 (Ubuntu 18.6-1.pgdg22.04+2)
 -- Dumped by pg_dump version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 
--- Started on 2026-10-09 17:00:17 -04
+-- Started on 2026-10-09 19:09:01 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1809,8 +1809,7 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 --
 
 COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, str_device_id, str_device_name) FROM stdin;
-359	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkxNTc5NDU5LCJleHAiOjE3OTE1ODMwNTl9.zXmyc4-qC7kA7v0b3IvT9FVBoIxhKXs6Mo7dbthW1A4	2026-10-09 16:52:51.352587-04	2026-10-09 17:57:39.502101-04	f	36e1b679-61d3-446f-9f21-e38130298595	Chrome en Linux PC
-357	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkxNTc0OTc3LCJleHAiOjE3OTE1Nzg1Nzd9.I3zJGKwseLn6Y1KuezsSvS9SbJFxFst90shg2qMElzo	2026-10-09 15:42:53.833001-04	2026-10-09 16:42:57.270943-04	f	0cb78981-4e62-48a4-a73d-bc9db449b81f	Chrome en Linux PC
+358	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkxNTg1MzE0LCJleHAiOjE3OTE1ODg5MTR9.Ido6jakN3_xpYMTy60-YNPyI8XI6268UwKFunQ2LZxQ	2026-10-09 18:35:09.363445-04	2026-10-09 19:35:14.530056-04	f	c4cc3f9c-e3d7-4768-b662-5168b29fc22d	Chrome en Linux PC
 \.
 
 
@@ -1923,7 +1922,7 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 100	9	32227070	Willianyelis Sarait	Vasquez Villamizar	wvasquez@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:10.842593-04	\N	\N	wvasquez	\N	\N	\N
 101	3	21436685	Zaidi Raida	Zambrano Aranguren	zzambrano@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:27.482944-04	\N	\N	zzambrano	\N	\N	\N
 102	5	32061634	Cladimar Oriana	Zambrano Baez	czambrano@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:44.710836-04	\N	\N	czambrano	\N	\N	\N
-4	1	16379712	Neel	Barazarte	nbarazarte@mercosur.com.ve	$2a$10$br0xuzJKv8bxt3t866k2eO4GAcOsuu6kXJOLnOKIPqbz37dtz9lEa	t	2026-10-01 14:51:25.418478-04	2026-10-01 14:51:25.418478-04	\N	\N	nbarazarte	\N	\N	2026-10-09 16:52:51.372373
+4	1	16379712	Neel	Barazarte	nbarazarte@mercosur.com.ve	$2a$10$br0xuzJKv8bxt3t866k2eO4GAcOsuu6kXJOLnOKIPqbz37dtz9lEa	t	2026-10-01 14:51:25.418478-04	2026-10-01 14:51:25.418478-04	\N	\N	nbarazarte	\N	\N	2026-10-09 18:35:09.487605
 1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$sQJ1WZfXydLA91xjFb59AeyIMxmQ7xa66uPnYq8FtBjQIFUM3zbZK	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-10-09 14:40:11.630112
 \.
 
@@ -2131,7 +2130,7 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 10, true);
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 357, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 358, true);
 
 
 --
@@ -2275,7 +2274,7 @@ SELECT pg_catalog.setval('tickets.tbl_clientes_id_seq', 1, true);
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 6, true);
+SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 7, true);
 
 
 --
@@ -2892,11 +2891,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT fk_tickets_usuario_asignado FOREIGN KEY (usuario_id) REFERENCES public.tbl_usuarios(id) ON UPDATE CASCADE ON DELETE SET NULL;
 
 
--- Completed on 2026-10-09 17:00:21 -04
+-- Completed on 2026-10-09 19:09:12 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict YTaEwSNcuCrIe0VVmIpJ2HQUbmNRQkTynXW6g2UgkzeyQNec8zXwxUk15JFJu7G
+\unrestrict fXhcVTgNMOxt7m1AiWbVn7E5oyt8hcgFuz707o2S7WOXxWpFnSMkLhe3vkYfFxv
 
