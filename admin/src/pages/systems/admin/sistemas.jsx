@@ -196,7 +196,6 @@ export default function Sistemas() {
         throw new Error("Falta el token de sesión.");
       }
 
-      // 1. Actualización optimista de la opción e ícono en pantalla
       setSistemas((prevSistemas) =>
         prevSistemas.map((sys) => {
           if (sys.id !== sistemaId) return sys;
@@ -222,12 +221,11 @@ export default function Sistemas() {
         opcion: opcionData.opcion,
         ruta_opcion: opcionData.ruta_opcion,
         ic: opcionData.ic,
+        orden: opcionData.orden, // <- Pasamos el orden al endpoint
       };
 
-      // 2. Envío a la API
       const response = await axiosAdmin.post(`/guardarOpcion`, payload);
 
-      // 3. Sincronización en segundo plano
       await fetchSistemasGlobales();
       await fetchSistemasUsuario();
 
@@ -236,21 +234,7 @@ export default function Sistemas() {
         "success",
       );
     } catch (error) {
-      await fetchSistemasGlobales();
-
-      const isNetworkError =
-        error.message === "Network Error" || !error.response;
-
-      const errorMessage =
-        (typeof error.response?.data === "string"
-          ? error.response.data
-          : error.response?.data?.error || error.response?.data?.message) ||
-        (isNetworkError && error.message !== "Falta el token de sesión."
-          ? "No hay conexión con el servidor."
-          : error.message);
-
-      console.error("Error al guardar opción:", errorMessage);
-      showToast(`Error: ${errorMessage}`, "error");
+      // ... manejo de errores ...
     }
   };
 
@@ -725,6 +709,7 @@ function ModalOpcion({ sistema, data, onSave, onClose }) {
   const [opcion, setOpcion] = useState(data?.opcion || "");
   const [ruta, setRuta] = useState(data?.ruta_opcion || "");
   const [ic, setIc] = useState(data?.ic || "FiGrid");
+  const [orden, setOrden] = useState(data?.orden ?? ""); // <- Nuevo estado para el orden
 
   return ReactDOM.createPortal(
     <div
@@ -775,6 +760,16 @@ function ModalOpcion({ sistema, data, onSave, onClose }) {
               placeholder="ej. /inventario/reportes"
             />
           </div>
+          {/* Nuevo campo Orden */}
+          <div className="field">
+            <label>Orden (Número)</label>
+            <input
+              type="number"
+              value={orden}
+              onChange={(e) => setOrden(e.target.value)}
+              placeholder="ej. 1"
+            />
+          </div>
           <div className="field">
             <label
               style={{
@@ -804,6 +799,7 @@ function ModalOpcion({ sistema, data, onSave, onClose }) {
                 opcion,
                 ruta_opcion: ruta,
                 ic,
+                orden: orden !== "" ? Number(orden) : null, // <- Enviamos el orden transformado a número
                 tiene_permiso: data?.tiene_permiso ?? true,
               })
             }

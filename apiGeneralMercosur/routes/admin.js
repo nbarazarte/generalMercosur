@@ -92,6 +92,7 @@ router.get("/fetchSistemas", async (req, res) => {
               opcion: row.opcion_nombre,
               ruta_opcion: row.str_ruta_opcion,
               ic: row.opcion_icono || "FiCheckSquare",
+              orden: row.int_orden
             });
           }
         }
@@ -417,7 +418,7 @@ router.post("/guardarOpcion", async (req, res) => {
   const client = await pool.connect();
 
   try {
-    const { id, sistemaId, opcion, ruta_opcion, ic } = req.body;
+    const { id, sistemaId, opcion, ruta_opcion, ic, orden } = req.body; // <- Recibimos orden
 
     if (!sistemaId || !opcion || !ruta_opcion) {
       return res.status(400).json({
@@ -434,15 +435,17 @@ router.post("/guardarOpcion", async (req, res) => {
         SET 
           str_nombre = $1,
           str_ruta_opcion = $2,
-          str_icono = $3
-        WHERE id = $4
-        RETURNING id, str_nombre, str_ruta_opcion, str_icono;
+          str_icono = $3,
+          int_orden = $4
+        WHERE id = $5
+        RETURNING id, str_nombre, str_ruta_opcion, str_icono, int_orden;
       `;
 
       const resUpdate = await client.query(updateQuery, [
         opcion,
         ruta_opcion,
         ic || "FiCheckSquare",
+        orden !== undefined && orden !== "" ? Number(orden) : null,
         id,
       ]);
 
@@ -461,6 +464,7 @@ router.post("/guardarOpcion", async (req, res) => {
           opcion: resUpdate.rows[0].str_nombre,
           ruta_opcion: resUpdate.rows[0].str_ruta_opcion,
           ic: resUpdate.rows[0].str_icono || "FiCheckSquare",
+          orden: resUpdate.rows[0].int_orden,
         },
       });
     }
@@ -483,14 +487,15 @@ router.post("/guardarOpcion", async (req, res) => {
     }
 
     const insertOpcionQuery = `
-      INSERT INTO public.cat_opciones (str_nombre, str_ruta_opcion, str_icono, bol_eliminado)
-      VALUES ($1, $2, $3, false)
-      RETURNING id, str_nombre, str_ruta_opcion, str_icono;
+      INSERT INTO public.cat_opciones (str_nombre, str_ruta_opcion, str_icono, int_orden, bol_eliminado)
+      VALUES ($1, $2, $3, $4, false)
+      RETURNING id, str_nombre, str_ruta_opcion, str_icono, int_orden;
     `;
     const resOpcion = await client.query(insertOpcionQuery, [
       opcion,
       ruta_opcion,
       ic || "FiCheckSquare",
+      orden !== undefined && orden !== "" ? Number(orden) : null,
     ]);
     const nuevaOpcion = resOpcion.rows[0];
 
@@ -510,6 +515,7 @@ router.post("/guardarOpcion", async (req, res) => {
         opcion: nuevaOpcion.str_nombre,
         ruta_opcion: nuevaOpcion.str_ruta_opcion,
         ic: nuevaOpcion.str_icono || "FiCheckSquare",
+        orden: nuevaOpcion.int_orden,
       },
     });
   } catch (err) {
