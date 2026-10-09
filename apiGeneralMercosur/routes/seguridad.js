@@ -22,15 +22,16 @@ const verificarMantenimiento = (req, res, next) => {
 };
 
 router.use(verificarMantenimiento);
-router.use(verificarClienteFrontend);
+
+// ==========================================
+// --- RUTAS PÚBLICAS (SIN TOKEN REQUERIDO) ---
+// ==========================================
 
 router.get("/config/mantenimiento", (req, res) => {
   res.status(200).json({
     mantenimiento: process.env.MAINTENANCE_MODE === "true",
   });
 });
-
-// --- RUTAS PÚBLICAS CLIENTES ---
 
 router.post("/request-register", async (req, res) => {
   let { email } = req.body;
@@ -63,7 +64,101 @@ router.post("/request-register", async (req, res) => {
       to: email,
       subject:
         "Confirmación de correo electrónico - Plataforma de Registro de Nuevo Cliente",
-      html: `...`,
+      html: `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #f4f6f9;
+                    margin: 0;
+                    padding: 0;
+                    color: #333333;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 20px auto;
+                    background: #ffffff;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+                }
+                .header {
+                    background-color: #0b2545;
+                    color: #ffffff;
+                    padding: 24px;
+                    text-align: center;
+                }
+                .header h1 {
+                    margin: 0;
+                    font-size: 20px;
+                    font-weight: 600;
+                    letter-spacing: 0.5px;
+                }
+                .content {
+                    padding: 30px;
+                    line-height: 1.6;
+                }
+                .content p {
+                    margin: 0 0 16px;
+                }
+                .btn-container {
+                    text-align: center;
+                    margin: 30px 0;
+                }
+                .btn {
+                    background-color: #134074;
+                    color: #ffffff !important;
+                    text-decoration: none;
+                    padding: 12px 28px;
+                    border-radius: 4px;
+                    font-weight: bold;
+                    display: inline-block;
+                }
+                .footer {
+                    background-color: #f8f9fa;
+                    padding: 16px;
+                    text-align: center;
+                    font-size: 12px;
+                    color: #777777;
+                    border-top: 1px solid #eeeeee;
+                }
+                .link-alternative {
+                    word-break: break-all;
+                    font-size: 12px;
+                    color: #555555;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Mercosur Casa de Bolsa, S.A.</h1>
+                </div>
+                <div class="content">
+                    <p>Estimado/a usuario/a,</p>
+                    <p>Has solicitado iniciar el proceso de registro como nuevo cliente en nuestra plataforma digital. Para continuar con la verificación de tu correo electrónico, por favor haz clic en el siguiente botón:</p>
+                    
+                    <div class="btn-container">
+                        <a href="${verificationLink}" class="btn" target="_blank">Completar Registro</a>
+                    </div>
+                    
+                    <p>Este enlace de seguridad tiene una validez de <strong>15 minutos</strong>. Si no solicitaste este registro, puedes ignorar este mensaje de manera segura.</p>
+                    
+                    <p style="margin-top: 30px; font-size: 13px; color: #555;">
+                        Si el botón no funciona, copia y pega el siguiente enlace en tu navegador web:
+                    </p>
+                    <p class="link-alternative">${verificationLink}</p>
+                </div>
+                <div class="footer">
+                    <p>&copy; ${currentYear} Mercosur Casa de Bolsa, S.A. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </body>
+        </html>
+      `,
     });
 
     res.status(200).json({
@@ -72,67 +167,6 @@ router.post("/request-register", async (req, res) => {
   } catch (error) {
     console.error("Error en el proceso de registro:", error);
     res.status(500).json({ error: "Error al procesar la solicitud." });
-  }
-});
-
-async function obtenerSistemasYOpciones(userId) {
-  const resultado = await pool.query(
-    "SELECT * FROM public.view_usuarios_opciones_sistemas WHERE usuario_id = $1",
-    [userId],
-  );
-
-  if (resultado.rows.length === 0) return null;
-
-  return Object.values(
-    resultado.rows.reduce((acc, row) => {
-      const {
-        sistema,
-        icono,
-        color,
-        ruta_sistema,
-        descripcion,
-        opcion,
-        ruta_opcion,
-        tiene_permiso,
-        rol,
-        opcion_icono,
-      } = row;
-
-      if (!acc[sistema]) {
-        acc[sistema] = {
-          sistema: sistema,
-          icono: icono,
-          color: color,
-          ruta_sistema: ruta_sistema,
-          descripcion: descripcion,
-          rol: rol,
-          opciones: [],
-        };
-      }
-
-      acc[sistema].opciones.push({
-        opcion: opcion,
-        ruta_opcion: ruta_opcion,
-        tiene_permiso: tiene_permiso,
-        opcion_icono: opcion_icono,
-      });
-
-      return acc;
-    }, {}),
-  );
-}
-
-router.get("/sistemas-opciones/:usuario_id", async (req, res) => {
-  try {
-    const { usuario_id } = req.params;
-    const sistemasOpciones = await obtenerSistemasYOpciones(usuario_id);
-    if (!sistemasOpciones) {
-      return res.status(404).send("Usuario sin sistemas asignados");
-    }
-    res.json(sistemasOpciones);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Error en el servidor");
   }
 });
 
@@ -235,56 +269,6 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/refresh-token", verificarClienteFrontend, async (req, res) => {
-  const { refreshToken } = req.body;
-
-  if (!refreshToken) {
-    return res
-      .status(401)
-      .json({ error: "No se proporcionó un Refresh Token." });
-  }
-
-  try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-
-    const userResult = await pool.query(
-      "SELECT bol_activo FROM tbl_usuarios WHERE id = $1",
-      [decoded.id],
-    );
-
-    if (
-      userResult.rows.length === 0 ||
-      userResult.rows[0].bol_activo === false
-    ) {
-      return res
-        .status(403)
-        .json({ error: "Usuario inactivo o no encontrado." });
-    }
-
-    // PRUEBA: Nuevo token de acceso de 1 hora
-    const newAccessToken = jwt.sign(
-      { id: decoded.id, username: decoded.username },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" },
-    );
-
-    // PRUEBA: Actualizar token activo en BD por 1 hora
-    await pool.query(
-      `UPDATE tbl_auth_tokens 
-       SET token = $1, expires_at = NOW() + INTERVAL '1 hour' 
-       WHERE user_id = $2`,
-      [newAccessToken, decoded.id],
-    );
-
-    res.json({ token: newAccessToken });
-  } catch (err) {
-    console.error("Error al refrescar el token:", err.message);
-    return res
-      .status(403)
-      .json({ error: "Refresh Token inválido o expirado." });
-  }
-});
-
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).send("Correo Electrónico requerido");
@@ -353,6 +337,128 @@ router.post("/reset-password", async (req, res) => {
     res.status(200).json({ message: "Contraseña actualizada correctamente." });
   } catch (err) {
     res.status(401).json({ error: "El enlace es inválido o ha expirado." });
+  }
+});
+
+
+// ==========================================
+// --- APLICACIÓN DEL MIDDLEWARE DE TOKEN ---
+// ==========================================
+router.use(verificarClienteFrontend);
+
+
+// ==========================================
+// --- RUTAS PROTEGIDAS (EXIGEN TOKEN) ---
+// ==========================================
+
+async function obtenerSistemasYOpciones(userId) {
+  const resultado = await pool.query(
+    "SELECT * FROM public.view_usuarios_opciones_sistemas WHERE usuario_id = $1",
+    [userId],
+  );
+
+  if (resultado.rows.length === 0) return null;
+
+  return Object.values(
+    resultado.rows.reduce((acc, row) => {
+      const {
+        sistema,
+        icono,
+        color,
+        ruta_sistema,
+        descripcion,
+        opcion,
+        ruta_opcion,
+        tiene_permiso,
+        rol,
+        opcion_icono,
+      } = row;
+
+      if (!acc[sistema]) {
+        acc[sistema] = {
+          sistema: sistema,
+          icono: icono,
+          color: color,
+          ruta_sistema: ruta_sistema,
+          descripcion: descripcion,
+          rol: rol,
+          opciones: [],
+        };
+      }
+
+      acc[sistema].opciones.push({
+        opcion: opcion,
+        ruta_opcion: ruta_opcion,
+        tiene_permiso: tiene_permiso,
+        opcion_icono: opcion_icono,
+      });
+
+      return acc;
+    }, {}),
+  );
+}
+
+router.get("/sistemas-opciones/:usuario_id", async (req, res) => {
+  try {
+    const { usuario_id } = req.params;
+    const sistemasOpciones = await obtenerSistemasYOpciones(usuario_id);
+    if (!sistemasOpciones) {
+      return res.status(404).send("Usuario sin sistemas asignados");
+    }
+    res.json(sistemasOpciones);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Error en el servidor");
+  }
+});
+
+router.post("/refresh-token", async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res
+      .status(401)
+      .json({ error: "No se proporcionó un Refresh Token." });
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+    const userResult = await pool.query(
+      "SELECT bol_activo FROM tbl_usuarios WHERE id = $1",
+      [decoded.id],
+    );
+
+    if (
+      userResult.rows.length === 0 ||
+      userResult.rows[0].bol_activo === false
+    ) {
+      return res
+        .status(403)
+        .json({ error: "Usuario inactivo o no encontrado." });
+    }
+
+    // PRUEBA: Nuevo token de acceso de 1 hora
+    const newAccessToken = jwt.sign(
+      { id: decoded.id, username: decoded.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" },
+    );
+
+    // PRUEBA: Actualizar token activo en BD por 1 hora
+    await pool.query(
+      `UPDATE tbl_auth_tokens 
+       SET token = $1, expires_at = NOW() + INTERVAL '1 hour' 
+       WHERE user_id = $2`,
+      [newAccessToken, decoded.id],
+    );
+
+    res.json({ token: newAccessToken });
+  } catch (err) {
+    console.error("Error al refrescar el token:", err.message);
+    return res
+      .status(403)
+      .json({ error: "Refresh Token inválido o expirado." });
   }
 });
 

@@ -75,7 +75,11 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
   // --- INICIO DE TEMPORIZADORES CONDICIONALES Y VALIDACIÓN AL MONTAR ---
   useEffect(() => {
     // Si estamos en la página de login, no ejecutamos ningún temporizador
-    if (location.pathname === "/login" || location.pathname === "/") {
+    if (
+      location.pathname === "/login" ||
+      location.pathname === "/" ||
+      location.pathname.startsWith("/resetear-contrasena")
+    ) {
       clearSessionTimers();
       setShowWarning(false);
       return;

@@ -202,20 +202,19 @@ function App() {
           </Route>
         </Route>
 
-        <Route element={<PublicOnlyRoute />}>
-          <Route
-            element={
-              <HomeLayout
-                asideContent={ResetPasswordAside}
-                showLogout={false}
-              />
-            }
-          >
-            <Route
-              path="/resetear-contrasena"
-              element={<ResetearContrasena />}
+        {/* Ruta de restablecer contraseña abierta para procesar el token del correo sin bloqueos */}
+        <Route
+          element={
+            <HomeLayout
+              asideContent={ResetPasswordAside}
+              showLogout={false}
             />
-          </Route>
+          }
+        >
+          <Route
+            path="/resetear-contrasena"
+            element={<ResetearContrasena />}
+          />
         </Route>
 
         {/* Rutas Protegidas (Solo accesibles si ESTÁS autenticado) */}
