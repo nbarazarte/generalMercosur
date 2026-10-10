@@ -4,16 +4,13 @@
    ========================================================================== */
 
 :root {
-  --merco-navy: #0a1628; /* Fondo oscuro principal */
-  --merco-navy-700: #0c1f3d; /* Fondo oscuro secundario */
-  --merco-navy-500: #1e3a5f; /* Tonos intermedios y contenedores */
-  --merco-accent: #f97316; /* Naranja vibrante corporativo */
-  --merco-accent-dark: #c2410c; /* Naranja oscuro / quemado */
+  --merco-navy: #0a1628;
+  --merco-navy-700: #0c1f3d;
+  --merco-navy-500: #1e3a5f;
+  --merco-accent: #f97316;
+  --merco-accent-dark: #c2410c;
+  --merco-blue: #f97316;
 
-  /* CAMBIO: Reemplaza el azul antiguo por el acento naranja o un tono neutro */
-  --merco-blue: #f97316; /* <- Cambiado de #2f6fed a #F97316 */
-
-  /* Mapeo dinámico a las variables de tema globales de index.css */
   --merco-bg: var(--background, #f8fafc);
   --merco-surface: var(--card, #ffffff);
   --merco-border: var(--border, #e2e8f0);
@@ -30,7 +27,7 @@
   --ma-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Base Layout (Flexbox unificado para colapso fluido en escritorio y expansión total) */
+/* Base Layout */
 .ma-shell {
   display: flex;
   width: 100%;
@@ -55,41 +52,25 @@
   height: 100vh;
   height: 100dvh;
   box-sizing: border-box;
-  z-index: 1000; /* <- Asegura que el menú esté en la capa superior (nítido) */
+  z-index: 1000;
   transition:
     margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.25s ease;
 }
 
 html.dark .ma-side {
-  width: 260px;
-  min-width: 260px;
   background: #0a0a0b;
   background-color: #0a0a0b;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  padding: 22px 16px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100dvh;
-  box-sizing: border-box;
-  z-index: 1000; /* <- Asegura que el menú esté en la capa superior en modo oscuro */
   border-right: 1px solid var(--merco-border, rgba(255, 255, 255, 0.08));
-  transition:
-    margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.25s ease;
 }
 
-/* Estado Oculto/Colapsado: desplaza la barra fuera del flujo principal */
 .ma-side.collapsed {
   margin-left: -260px;
 }
 
 .ma-side-header {
   display: flex;
-  justify-content: flex-end; /* X a la derecha */
+  justify-content: flex-end;
   padding: 10px;
   flex-shrink: 0;
 }
@@ -117,7 +98,6 @@ html.dark .ma-side {
   flex-shrink: 0;
 }
 
-/* Footer del Sidebar: ocupa el espacio restante y empuja los botones al fondo */
 .ma-side-footer {
   display: flex;
   flex-direction: column;
@@ -158,7 +138,6 @@ html.dark .ma-side {
   text-overflow: ellipsis;
 }
 
-/* Botones inferiores enviados al fondo absoluto */
 .ma-bottom-actions {
   margin-top: auto;
   display: flex;
@@ -274,7 +253,7 @@ html.dark .ma-side {
 /* ---------- Main Container ---------- */
 .ma-main {
   flex: 1 1 auto;
-  min-width: 0; /* Evita desbordamientos por flexbox */
+  min-width: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -1204,7 +1183,6 @@ html.dark .ma-side {
   margin-bottom: 14px;
 }
 
-/* Filtros e Integración de Barras de Búsqueda */
 .filter-bar {
   display: flex;
   align-items: center;
@@ -1243,7 +1221,7 @@ html.dark .ma-side {
 
 html.dark {
   --loader-bg: var(--background, #0b0f19);
-  --loader-card-bg: rgba(0, 0, 0, 0);
+  --loader-card-bg: rgba(10, 10, 11, 0.85);
   --loader-card-border: rgba(255, 255, 255, 0.08);
   --loader-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   --loader-core-bg: rgba(255, 255, 255, 0.03);
@@ -1252,13 +1230,7 @@ html.dark {
   --loader-track-bg: rgba(255, 255, 255, 0.08);
   --loader-info-color: #9ca3af;
   --loader-glow-opacity: 0.25;
-  --merco-surface: #0a0a0b; /* <- Las tarjetas usarán este mismo color del menú lateral */
-  --merco-surface: rgba(
-    10,
-    10,
-    11,
-    0.85
-  ); /* <- Ligeramente transparente (85% de opacidad) */
+  --merco-surface: rgba(10, 10, 11, 0.85);
 }
 
 .system-loader-screen {
@@ -1486,7 +1458,6 @@ html.dark {
   flex-shrink: 0;
 }
 
-/* ---------- Overlay con desenfoque para el contenido ---------- */
 .ma-side-overlay {
   display: none;
   position: fixed;
@@ -1495,11 +1466,9 @@ html.dark {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(
-    4px
-  ); /* <- Aplica el efecto borroso al contenido de fondo */
+  backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  z-index: 900; /* <- Por debajo del menú (1000) pero por encima del contenido */
+  z-index: 900;
 }
 
 @keyframes cardAppear {
@@ -1534,7 +1503,7 @@ html.dark {
   .ma-side {
     position: fixed;
     left: -280px;
-    z-index: 1000; /* <- Menú lateral siempre nítido y por encima en móviles */
+    z-index: 1000;
     width: 264px;
     margin-left: 0;
     transform: translateX(0);
@@ -1560,7 +1529,7 @@ html.dark {
   }
 
   .ma-side-overlay.open {
-    display: block; /* <- Muestra el overlay y difumina el contenido al abrir el menú */
+    display: block;
   }
 
   .ma-topbar {
@@ -1628,5 +1597,26 @@ html.dark {
 
   .ma-actions {
     justify-content: flex-start;
+  }
+}
+
+/* Por defecto (pantallas grandes): Mostramos radios, ocultamos selects */
+.desktop-selector {
+  display: flex !important;
+}
+.mobile-selector {
+  display: none !important;
+}
+
+/* En dispositivos móviles (<= 768px): Mostramos selects, ocultamos radios */
+@media (max-width: 768px) {
+  .desktop-selector {
+    display: none !important;
+  }
+  .mobile-selector {
+    display: block !important;
+  }
+  .ticket-grid-container {
+    grid-template-columns: 1fr !important;
   }
 }

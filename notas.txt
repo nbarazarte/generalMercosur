@@ -181,3 +181,5 @@ ALTER TABLE tickets.tbl_tickets
 ADD COLUMN IF NOT EXISTS str_ruta_imagen TEXT,
 ADD COLUMN IF NOT EXISTS str_ruta_video TEXT,
 ADD COLUMN IF NOT EXISTS str_ruta_audio TEXT;
+
+SELECT setval(pg_get_serial_sequence('public.cat_datos_maestros', 'id'), COALESCE(MAX(id), 1)) FROM public.cat_datos_maestros;

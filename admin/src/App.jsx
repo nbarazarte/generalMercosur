@@ -7,7 +7,7 @@ import Home, { HomeAside } from "./pages/systems/home/home";
 import ResetearContrasena, {
   ResetPasswordAside,
 } from "./pages/auth/resetearContrasena";
-
+import FloatingLines from "./pages/layouts/FloatingLines";
 import { DynamicIcon } from "../src/pages/components/IconCatalog";
 
 // Rutas de los sistemas:
@@ -71,12 +71,10 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
   const sistemas =
     useSelector((state) => state.auth?.user.sistemasOpciones) || [];
 
-  // Filtramos el sistema actual basándonos en el systemName recibido por props
   const currentSystemData = sistemas.find(
     (sys) => sys.sistema.toLowerCase() === systemName.toLowerCase(),
   );
 
-  // Extraemos el icono y el color (con valores por defecto por seguridad)
   const iconName = currentSystemData?.icono || "FiMonitor";
   const systemColor = currentSystemData?.color || "#2f6fed";
 
@@ -86,7 +84,6 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
     localStorage.setItem(`loader_seen_${systemKey}`, "true");
     localStorage.setItem("active_system", systemKey);
 
-    // Oculta el loader tras 1.5 segundos exactos
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1500);
@@ -95,12 +92,60 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
   }, [shouldShowLoader, systemKey]);
 
   if (loading) {
+    // Comprobamos si el tema actual guardado es oscuro
+    const isDarkMode = localStorage.getItem("theme") === "dark";
+
     return (
-      <div className="system-loader-screen">
+      <div className="system-loader-screen relative overflow-hidden">
+        {/* Solo renderiza FloatingLines si el tema es oscuro */}
+        {isDarkMode && (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 0,
+            }}
+          >
+            <FloatingLines
+              enabledWaves={["top", "middle", "bottom"]}
+              lineCount={8}
+              lineDistance={8}
+              bendRadius={8}
+              bendStrength={-2}
+              interactive
+              parallax={true}
+              animationSpeed={1}
+              linesGradient={[
+                "#F97316",
+                "#C2410C",
+                "#6f6f6f",
+                "#3a3a3a",
+                "#0a1628",
+              ]}
+            />
+          </div>
+        )}
+
         <div className="loader-bg-glow glow-1"></div>
         <div className="loader-bg-glow glow-2"></div>
 
-        <div className="loader-card">
+        <div
+          className={`loader-card relative z-10 ${
+            isDarkMode ? "system-card glass-card" : ""
+          }`}
+          style={
+            isDarkMode
+              ? {
+                  backgroundColor: "rgba(10, 10, 11, 0.85)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                }
+              : undefined
+          }
+        >
           <div className="loader-icon-container">
             <div className="loader-ring"></div>
             <div className="loader-ring ring-reverse"></div>
@@ -108,14 +153,14 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
               <DynamicIcon
                 name={iconName}
                 style={{
-                  background: systemColor + "42", // Color con opacidad para el fondo
-                  color: systemColor, // Color principal para el icono
+                  background: systemColor + "42",
+                  color: systemColor,
                   fontSize: 42,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  borderRadius: "12px", // Esquinas redondeadas (ajusta los píxeles a tu gusto)
-                  padding: "10px", // Opcional: añade espacio interno para que el fondo luzca mejor
+                  borderRadius: "12px",
+                  padding: "10px",
                 }}
               />
             </div>
@@ -205,16 +250,10 @@ function App() {
         {/* Ruta de restablecer contraseña abierta para procesar el token del correo sin bloqueos */}
         <Route
           element={
-            <HomeLayout
-              asideContent={ResetPasswordAside}
-              showLogout={false}
-            />
+            <HomeLayout asideContent={ResetPasswordAside} showLogout={false} />
           }
         >
-          <Route
-            path="/resetear-contrasena"
-            element={<ResetearContrasena />}
-          />
+          <Route path="/resetear-contrasena" element={<ResetearContrasena />} />
         </Route>
 
         {/* Rutas Protegidas (Solo accesibles si ESTÁS autenticado) */}

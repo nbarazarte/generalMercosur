@@ -16,7 +16,13 @@ router.post(
   "/crear",
   upload.any(), // Acepta cualquier campo de archivo enviado desde el formulario multipart/form-data
   async (req, res) => {
+    // Obtenemos un cliente del pool para manejar la transacción de forma segura
+    const client = await pool.connect();
+
     try {
+      // Iniciamos la transacción SQL
+      await client.query("BEGIN");
+
       const {
         cliente_id,
         cierre_agente_id,
@@ -31,28 +37,31 @@ router.post(
         usuario_asignado_id, // Capturamos el usuario_asignado_id opcional enviado desde el frontend
       } = req.body;
 
-      /* console.table({
-        cliente_id,
-        cierre_agente_id,
-        departamento_id,
-        categoria_id,
-        prioridad_id,
-        estatus_id,
-        canal_id,
-        str_asunto,
-        str_descripcion,
-        int_sla,
-        usuario_asignado_id,
-      }); */
+      const usuarioIdSesion = req.user?.id;
 
-      const usuarioIdSesion = req.usuario?.id; // viene de la sesion activa y lo obtengo del middelware de verificacion
+      // Obtener año y mes actual para el correlativo
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1; // 1 - 12
+      const monthStr = String(month).padStart(2, "0");
 
-      // Generar código único para el ticket (ej: TCK-2026-0006)
-      const ticketSeqResult = await pool.query(
-        "SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM tickets.tbl_tickets",
+      // 💡 Operación Atómica (UPSERT): Incrementa el correlativo del mes/año actual en 1
+      // de forma segura frente a concurrencia masiva.
+      const seqResult = await client.query(
+        `
+        INSERT INTO tickets.tbl_secuencias_tickets (int_anio, int_mes, int_ultimo_secuencial)
+        VALUES ($1, $2, 1)
+        ON CONFLICT (int_anio, int_mes)
+        DO UPDATE SET int_ultimo_secuencial = tickets.tbl_secuencias_tickets.int_ultimo_secuencial + 1
+        RETURNING int_ultimo_secuencial;
+        `,
+        [year, month],
       );
-      const nextId = ticketSeqResult.rows[0].next_id;
-      const str_ticket = `TCK-${new Date().getFullYear()}-${String(nextId).padStart(4, "0")}`;
+
+      const nextNumber = seqResult.rows[0].int_ultimo_secuencial;
+
+      // Generar código único robusto (ej: TCK-2026-10-000001)
+      const str_ticket = `TCK${year}-${monthStr}-${String(nextNumber).padStart(6, "0")}`; // O ajusta con el prefijo "TCK-" si lo deseas completo: `TCK-${year}-${monthStr}-${String(nextNumber).padStart(6, "0")}`
 
       // Clasificación de los archivos subidos por multer
       const archivos = req.files || [];
@@ -81,7 +90,7 @@ router.post(
       const str_ruta_audio =
         rutasAudios.length > 0 ? rutasAudios.join(",") : null;
 
-      // Inserción en la base de datos incluyendo usuario_asignado_id
+      // Inserción en la tabla de tickets usando el cliente de la transacción
       const queryInsert = `
         INSERT INTO tickets.tbl_tickets (
           str_ticket, cliente_id, creador_agente_id, cierre_agente_id, 
@@ -111,7 +120,10 @@ router.post(
         usuario_asignado_id ? Number(usuario_asignado_id) : null, // que pertenece a departamento_id
       ];
 
-      const nuevoTicket = await pool.query(queryInsert, values);
+      const nuevoTicket = await client.query(queryInsert, values);
+
+      // Si todo sale bien, confirmamos los cambios en la base de datos
+      await client.query("COMMIT");
 
       res.status(201).json({
         success: true,
@@ -119,11 +131,16 @@ router.post(
         ticket: nuevoTicket.rows[0],
       });
     } catch (err) {
+      // Si ocurre cualquier error, revertimos cualquier cambio realizado
+      await client.query("ROLLBACK");
       console.error("Error al crear el ticket con multimedia:", err.message);
       res.status(500).json({
         success: false,
         error: "Error interno al procesar la solicitud del ticket.",
       });
+    } finally {
+      // Muy importante: Liberar el cliente de vuelta al pool de conexiones
+      client.release();
     }
   },
 );

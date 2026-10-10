@@ -70,14 +70,12 @@ export default function NuevoTicket() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Petición combinada de departamentos y usuarios
         const resDeptUsers = await axiosTickets.get("/departamentos-usuarios");
         if (resDeptUsers.data.success) {
           setListaDepartamentos(resDeptUsers.data.departamentos);
           setListaUsuarios(resDeptUsers.data.usuarios);
         }
 
-        // Petición de datos maestros (canales, categorías, prioridades)
         const resMaestros = await axiosTickets.get("/datos-maestros");
         if (resMaestros.data.success) {
           setListaCanales(resMaestros.data.canales);
@@ -102,12 +100,11 @@ export default function NuevoTicket() {
     } else {
       setEmpleadosFiltrados([]);
     }
-    setUsuarioId(""); // Limpiar selección de empleado al cambiar de departamento
+    setUsuarioId("");
   }, [departamentoId, listaUsuarios]);
 
   const obtenerIconoPorTipo = (tipoMime, nombreArchivo) => {
     if (!tipoMime) {
-      // Fallback basado en extensión si el tipoMime viene vacío
       const ext = nombreArchivo?.split(".").pop().toLowerCase();
       if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext))
         return "FiImage";
@@ -169,6 +166,7 @@ export default function NuevoTicket() {
   );
 
   const handleEditorChange = async () => {
+    if (!editor) return;
     const blocks = editor.document;
     const textContent = blocks
       .map((block) =>
@@ -190,12 +188,16 @@ export default function NuevoTicket() {
     setStrDescripcion("");
 
     if (editor) {
-      await editor.replaceBlocks(editor.document, [
-        {
-          type: "paragraph",
-          content: "",
-        },
-      ]);
+      try {
+        await editor.replaceBlocks(editor.document, [
+          {
+            type: "paragraph",
+            content: "",
+          },
+        ]);
+      } catch (err) {
+        console.error("Error al limpiar los bloques del editor:", err);
+      }
     }
   };
 
@@ -223,12 +225,12 @@ export default function NuevoTicket() {
         **Descripción del Problema:**
         [Redacta una breve descripción técnica y formal del problema basado en el texto proporcionado, destacando su impacto o criticidad].
 
-        **Pruebas Realizadas: [Redactalas en pasado y no repitas pasos ya realizados (no redundes)]**
+        **Pruebas Realizadas:**
 
-        1. **[Paso 1 - Título Corto]:** [Descripción clara y accionable de la primera acción técnica o de verificación].
-        2. **[Paso 2 - Título Corto]:** [Descripción clara de la siguiente acción de diagnóstico o revisión de servicios].
-        3. **[Paso 3 - Título Corto]:** [Descripción de la solución alternativa o aplicación del procedimiento secundario].
-        4. **[Paso 4 - Título Corto]:** [Instrucciones para la nueva validación junto con el usuario].`,
+        1. **[Paso 1 - Título Corto]:** [Descripción clara y accionable].
+        2. **[Paso 2 - Título Corto]:** [Descripción clara de la siguiente acción].
+        3. **[Paso 3 - Título Corto]:** [Descripción de la solución alternativa].
+        4. **[Paso 4 - Título Corto]:** [Instrucciones para la nueva validación].`,
         stream: false,
       });
 
@@ -236,7 +238,7 @@ export default function NuevoTicket() {
         response.data.response || "No se pudo generar el texto.";
       setIsGeneratingAI(false);
 
-      if (editor.document.length > 0) {
+      if (editor && editor.document.length > 0) {
         await editor.updateBlock(editor.document[0], {
           type: "paragraph",
           content: "",
@@ -246,29 +248,18 @@ export default function NuevoTicket() {
           const extraBlocks = editor.document.slice(1);
           await editor.removeBlocks(extraBlocks);
         }
-      } else {
-        await editor.insertBlocks(
-          [
-            {
-              type: "paragraph",
-              content: "",
-            },
-          ],
-          editor.document[0],
-          "after",
-        );
       }
 
       let textoActual = "";
       for (let i = 0; i < textoGenerado.length; i++) {
         textoActual += textoGenerado[i];
-        if (editor.document.length > 0) {
+        if (editor && editor.document.length > 0) {
           await editor.updateBlock(editor.document[0], {
             type: "paragraph",
             content: textoActual,
           });
         }
-        await new Promise((resolve) => setTimeout(resolve, 8));
+        await new Promise((resolve) => setTimeout(resolve, 1));
       }
     } catch (error) {
       console.error("Error de conexión con Ollama:", error);
@@ -288,7 +279,7 @@ export default function NuevoTicket() {
 
     if (!confirmado) return;
 
-    const descripcionContent = editor.document;
+    const descripcionContent = editor ? editor.document : [];
     const extraerTextoDeDescripcion = (descripcionArray) => {
       if (!Array.isArray(descripcionArray)) return "";
       return descripcionArray
@@ -309,7 +300,6 @@ export default function NuevoTicket() {
     formData.append("prioridad_id", Number(prioridadId));
     formData.append("departamento_id", Number(departamentoId));
 
-    // Enviar usuario_asignado_id solo si fue seleccionado (opcional)
     if (usuarioId) {
       formData.append("usuario_asignado_id", Number(usuarioId));
     }
@@ -345,6 +335,10 @@ export default function NuevoTicket() {
 
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Nuevo Ticket">
+      <style>{`
+
+      `}</style>
+
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
@@ -353,8 +347,8 @@ export default function NuevoTicket() {
       >
         <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
           <form onSubmit={handleSubmit} style={{ padding: "24px" }}>
-            {/* CONTENEDOR DE DOS COLUMNAS */}
             <div
+              className="ticket-grid-container"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1.6fr",
@@ -362,7 +356,7 @@ export default function NuevoTicket() {
                 alignItems: "start",
               }}
             >
-              {/* COLUMNA IZQUIERDA */}
+              {/* Columna Izquierda */}
               <div
                 style={{
                   display: "flex",
@@ -374,7 +368,6 @@ export default function NuevoTicket() {
                   padding: "20px",
                 }}
               >
-                {/* DE (REMITENTE) */}
                 <div className="field">
                   <label>De (Remitente)</label>
                   <input
@@ -385,7 +378,6 @@ export default function NuevoTicket() {
                   />
                 </div>
 
-                {/* ASIGNAR A (DEPARTAMENTO DINÁMICO) */}
                 <div className="field">
                   <label>Para (Departamento)</label>
                   <select
@@ -403,7 +395,6 @@ export default function NuevoTicket() {
                   </select>
                 </div>
 
-                {/* EMPLEADO / USUARIO ASIGNADO (FILTRADO Y OPCIONAL) */}
                 <div className="field">
                   <label>Empleado Asignado (Opcional)</label>
                   <select
@@ -425,7 +416,6 @@ export default function NuevoTicket() {
                   </select>
                 </div>
 
-                {/* CAMPO ASUNTO */}
                 <div className="field">
                   <label>Asunto</label>
                   <input
@@ -438,7 +428,6 @@ export default function NuevoTicket() {
                   />
                 </div>
 
-                {/* SLA */}
                 <div className="field">
                   <label>SLA (Horas)</label>
                   <input
@@ -457,13 +446,16 @@ export default function NuevoTicket() {
                   }}
                 />
 
-                {/* CANAL DE RECEPCIÓN (DINÁMICO CON RADIO BUTTONS) */}
+                {/* --- CANAL DE RECEPCIÓN (Responsive Automático) --- */}
                 <div className="field">
                   <label style={{ marginBottom: "8px", display: "block" }}>
                     Canal de Recepción
                   </label>
+
+                  {/* Versión Escritorio (Radios) */}
                   <div
-                    style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}
+                    className="desktop-selector"
+                    style={{ flexWrap: "wrap", gap: "6px" }}
                   >
                     {listaCanales.map((c) => {
                       const isSelected = Number(canalId) === c.id;
@@ -497,7 +489,7 @@ export default function NuevoTicket() {
                         >
                           <input
                             type="radio"
-                            name="canal_id"
+                            name="canal_id_desk"
                             value={c.id}
                             checked={isSelected}
                             onChange={(e) => setCanalId(e.target.value)}
@@ -534,15 +526,35 @@ export default function NuevoTicket() {
                       );
                     })}
                   </div>
+
+                  {/* Versión Móvil (Select) */}
+                  <div className="mobile-selector">
+                    <select
+                      className="inp"
+                      value={canalId}
+                      onChange={(e) => setCanalId(e.target.value)}
+                      required
+                    >
+                      <option value="">Seleccione canal...</option>
+                      {listaCanales.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.str_nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                {/* CATEGORÍA DEL REQUERIMIENTO (DINÁMICA CON RADIO BUTTONS) */}
+                {/* --- CATEGORÍA DEL REQUERIMIENTO (Responsive Automático) --- */}
                 <div className="field">
                   <label style={{ marginBottom: "8px", display: "block" }}>
                     Categoría del Requerimiento
                   </label>
+
+                  {/* Versión Escritorio (Radios) */}
                   <div
-                    style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}
+                    className="desktop-selector"
+                    style={{ flexWrap: "wrap", gap: "6px" }}
                   >
                     {listaCategorias.map((cat) => {
                       const isSelected = Number(categoriaId) === cat.id;
@@ -576,7 +588,7 @@ export default function NuevoTicket() {
                         >
                           <input
                             type="radio"
-                            name="categoria_id"
+                            name="categoria_id_desk"
                             value={cat.id}
                             checked={isSelected}
                             onChange={(e) => setCategoriaId(e.target.value)}
@@ -613,15 +625,35 @@ export default function NuevoTicket() {
                       );
                     })}
                   </div>
+
+                  {/* Versión Móvil (Select) */}
+                  <div className="mobile-selector">
+                    <select
+                      className="inp"
+                      value={categoriaId}
+                      onChange={(e) => setCategoriaId(e.target.value)}
+                      required
+                    >
+                      <option value="">Seleccione categoría...</option>
+                      {listaCategorias.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.str_nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                {/* NIVEL DE PRIORIDAD (DINÁMICO CON RADIO BUTTONS) */}
+                {/* --- NIVEL DE PRIORIDAD (Responsive Automático) --- */}
                 <div className="field">
                   <label style={{ marginBottom: "8px", display: "block" }}>
                     Nivel de Prioridad
                   </label>
+
+                  {/* Versión Escritorio (Radios) */}
                   <div
-                    style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}
+                    className="desktop-selector"
+                    style={{ flexWrap: "wrap", gap: "6px" }}
                   >
                     {listaPrioridades.map((p) => {
                       const isSelected = Number(prioridadId) === p.id;
@@ -655,7 +687,7 @@ export default function NuevoTicket() {
                         >
                           <input
                             type="radio"
-                            name="prioridad_id"
+                            name="prioridad_id_desk"
                             value={p.id}
                             checked={isSelected}
                             onChange={(e) => setPrioridadId(e.target.value)}
@@ -692,10 +724,27 @@ export default function NuevoTicket() {
                       );
                     })}
                   </div>
+
+                  {/* Versión Móvil (Select) */}
+                  <div className="mobile-selector">
+                    <select
+                      className="inp"
+                      value={prioridadId}
+                      onChange={(e) => setPrioridadId(e.target.value)}
+                      required
+                    >
+                      <option value="">Seleccione prioridad...</option>
+                      {listaPrioridades.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.str_nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              {/* COLUMNA DERECHA: BLOCKNOTE Y MULTIMEDIA */}
+              {/* Columna Derecha: BlockNote y Multimedia */}
               <div
                 style={{
                   display: "flex",
@@ -783,7 +832,7 @@ export default function NuevoTicket() {
                             color: isDarkMode ? "#ffffff" : "#000000",
                             padding: "14px 20px",
                             borderRadius: "8px",
-                            border: `1px solid ${isDarkMode ? "#334155" : "#cbd5e1"}`, // Cambiado a 1px y color visible para modo oscuro
+                            border: `1px solid ${isDarkMode ? "#334155" : "#cbd5e1"}`,
                             boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.2)",
                             fontSize: "14px",
                             fontWeight: "bold",
@@ -802,11 +851,13 @@ export default function NuevoTicket() {
                     )}
 
                     <div style={{ width: "100%", height: "100%" }}>
-                      <BlockNoteView
-                        editor={editor}
-                        theme={isDarkMode ? "dark" : "light"}
-                        onChange={handleEditorChange}
-                      />
+                      {editor && (
+                        <BlockNoteView
+                          editor={editor}
+                          theme={isDarkMode ? "dark" : "light"}
+                          onChange={handleEditorChange}
+                        />
+                      )}
                     </div>
                   </div>
 
@@ -860,7 +911,6 @@ export default function NuevoTicket() {
                                 color: "var(--merco-text)",
                               }}
                             >
-                              {/* Icono dinámico según el tipo de archivo */}
                               <DynamicIcon
                                 name={nombreIcono}
                                 style={{
@@ -911,7 +961,7 @@ export default function NuevoTicket() {
               </div>
             </div>
 
-            {/* BOTÓN INFERIOR DE ACCIÓN */}
+            {/* Botones inferiores */}
             <div
               style={{
                 display: "flex",
