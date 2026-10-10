@@ -156,7 +156,10 @@ export default function DashboardSistemasUsuarios() {
   };
 
   return (
-    <SystemLayout identificacion="Administración General" opcionMenu="Dashboard">
+    <SystemLayout
+      identificacion="Administración General"
+      opcionMenu="Dashboard"
+    >
       {toast && (
         <div
           style={{

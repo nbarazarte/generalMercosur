@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict D8KIgtbMUArru9ALJibhcJzK1gHP9W6i8bCY1qqgBYQQARaEvSgIvxchcRcO4b0
+\restrict ImZfOvaIgsdvVAHhh8G2zOioLu5EcBodPksSoICgW7WfiHYgNBHeTxZ545SNfvs
 
 -- Dumped from database version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 
--- Started on 2026-10-09 22:19:02 -04
+-- Started on 2026-10-10 00:09:59 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1812,7 +1812,7 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 --
 
 COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, str_device_id, str_device_name) FROM stdin;
-372	64	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjQsInVzZXJuYW1lIjoieWNlcnZhbnRlcyIsImlhdCI6MTc5MTU5ODQwMywiZXhwIjoxNzkxNjAyMDAzfQ.h3TahxXB7Ko2y-OTxT4NF_ErX9Jfr0fDK1XFRY20nQs	2026-10-09 22:02:58.807147-04	2026-10-09 23:13:23.094363-04	f	4fc2ccf7-ec1d-4f54-8326-56212e950bd2	Chrome en Linux PC
+380	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MTYwNTM1MiwiZXhwIjoxNzkxNjA4OTUyfQ.XfZygn4od5VuT7OOVZ-m8nF4Modg3Mj5sR8FWQ5WUoI	2026-10-09 23:49:58.003137-04	2026-10-10 01:09:12.235981-04	f	1c67d135-61d2-41b4-ae8e-b7cc15160c45	Chrome en Linux PC
 \.
 
 
@@ -1923,9 +1923,9 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 100	9	32227070	Willianyelis Sarait	Vasquez Villamizar	wvasquez@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:10.842593-04	\N	\N	wvasquez	\N	\N	\N
 101	3	21436685	Zaidi Raida	Zambrano Aranguren	zzambrano@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:27.482944-04	\N	\N	zzambrano	\N	\N	\N
 102	5	32061634	Cladimar Oriana	Zambrano Baez	czambrano@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:44.710836-04	\N	\N	czambrano	\N	\N	\N
-1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$sQJ1WZfXydLA91xjFb59AeyIMxmQ7xa66uPnYq8FtBjQIFUM3zbZK	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-10-09 21:35:52.021265
 4	1	16379712	Neel Ezequiel	Barazarte Aché	nbarazarte@mercosur.com.ve	$2a$10$XmwnY2gfUArfm7Gtl2B5R.Dxl9JNK2SECdsZaconwOTK6x7Da5ayK	t	2026-10-01 14:51:25.418478-04	2026-10-09 21:12:50.402422-04	\N	\N	nbarazarte	\N	\N	2026-10-09 21:41:19.974439
-64	5	32560280	Yarbelis Carolina	Cervantes Herrera	ycervantes@mercosur.com.ve	$2a$10$J7CUsv2bsMGkjSrM3hS/puqHuIv/D7UJ1UeCENPvOMFfBctHZgdXm	t	2026-10-01 16:41:00.998101-04	2026-10-09 21:11:34.545712-04	\N	\N	ycervantes	\N	\N	2026-10-09 22:02:58.809136
+64	5	32560280	Yarbelis Carolina	Cervantes Herrera	ycervantes@mercosur.com.ve	$2a$10$J7CUsv2bsMGkjSrM3hS/puqHuIv/D7UJ1UeCENPvOMFfBctHZgdXm	t	2026-10-01 16:41:00.998101-04	2026-10-09 21:11:34.545712-04	\N	\N	ycervantes	\N	\N	2026-10-09 22:26:54.512744
+1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$sQJ1WZfXydLA91xjFb59AeyIMxmQ7xa66uPnYq8FtBjQIFUM3zbZK	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-10-09 23:49:58.005485
 \.
 
 
@@ -2066,7 +2066,7 @@ COPY tickets.tbl_clientes (id, str_cedula, str_nombre, str_apellido, str_telefon
 --
 
 COPY tickets.tbl_secuencias_tickets (int_anio, int_mes, int_ultimo_secuencial) FROM stdin;
-2026	10	2
+2026	10	5
 \.
 
 
@@ -2079,6 +2079,9 @@ COPY tickets.tbl_secuencias_tickets (int_anio, int_mes, int_ultimo_secuencial) F
 COPY tickets.tbl_tickets (id, str_ticket, cliente_id, creador_agente_id, cierre_agente_id, departamento_id, categoria_id, prioridad_id, estatus_id, canal_id, str_asunto, str_descripcion, int_sla, dmt_fecha_cierre, created_at, updated_at, str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id) FROM stdin;
 23	TCK2026-10-000001	\N	64	\N	1	9	16	1	3	Problemas al guardar su ficha	**Ticket de Soporte: PROBLEMAS AL GUARDAR FICHA DE ONBOARDING**\r\n\r\n**Descripción del Problema:**\r\nEl usuario está experimentando problemas al intentar guardar su ficha de onboarding en la aplicación de Mercosur Casa de Bolsa S.A. El sistema no permite finalizar el proceso de onboarding debido a un error interno que impide la correcta persistencia de los datos.\r\n\r\n**Pruebas Realizadas:**\r\n1. **Verificación de Conexión:** El usuario informó que su conexión a internet es estable y funcional.\r\n2. **Reinicio de la Aplicación:** Se intentó reiniciar la aplicación, pero el problema persiste.\r\n3. **Cierre e Inicio del Servicio de Mercosur Casa de Bolsa:** Se reinició el servicio en la tienda de aplicaciones, sin éxito.\r\n\r\n**Paso 1 - RECOLECCIÓN DE INFORMACIÓN ADICIONAL:**\r\nSolicitar al usuario que proporcioné detalles adicionales sobre los pasos específicos que realiza para reproducir el problema y cualquier mensaje de error o alerta que aparece en pantalla.\r\n\r\n**Paso 2 - COMPROBACIÓN DE ACTUALIZACIONES:**\r\nVerificar si la aplicación está actualizada a la versión más reciente. Si no es así, proceder con la actualización y luego intentar guardar la ficha de onboarding nuevamente.\r\n\r\n**Paso 3 - LIMPIEZA DEL CACHE:** \r\nGuiar al usuario para limpiar el caché de la aplicación, siguiendo las instrucciones específicas proporcionadas por Mercosur Casa de Bolsa S.A. en su base de conocimientos o soporte técnico.\r\n\r\n**Paso 4 - VALIDACIÓN FINAL:**\r\nPedir al usuario que inicie sesión nuevamente y trate de guardar su ficha de onboarding. Si el problema persiste, solicitar una captura de pantalla del error y redirigirlo a nuestro equipo de soporte técnico para un análisis adicional.	24	\N	2026-10-09 22:12:09.567823-04	2026-10-09 22:12:09.567823-04	\N	\N	\N	\N
 24	TCK2026-10-000002	\N	64	\N	1	9	15	1	2	Cliente no ve su saldo	**Ticket de Soporte: CLIENTE NO VE SU SALDO**\r\n\r\n**Descripción del Problema:**\r\nEl cliente informa que no puede ver su saldo en la aplicación de Mercosur Casa de Bolsa S.A. Este problema tiene una criticidad media, ya que afecta directamente la capacidad del cliente de gestionar sus finanzas y realizar transacciones importantes.\r\n\r\n**Pruebas Realizadas:**\r\n\r\n1. **Verificación de Conexión a Internet:** El cliente confirmó que tiene conexión estable a internet.\r\n2. **Reinicio de la Aplicación:** El cliente ha reiniciado la aplicación, pero el problema persiste.\r\n3. **Sincronización de Datos:** Se intentó sincronizar los datos del cliente, pero no hubo cambios en el saldo visible.\r\n\r\n**Pruebas Futuras a Realizar:**\r\n1. **Reinicio Completo del Dispositivo:** Sugerir al cliente reiniciar su dispositivo para limpiar cualquier problema de memoria o aplicación.\r\n2. **Desinstalación y Reinstalación de la Aplicación:** Recomendar desinstalar y luego reinstalar la aplicación para eliminar posibles problemas de instalación.\r\n\r\n**Paso 1 - Verificación del Balance Actual:**\r\nRevisar en el backend el saldo actual del cliente para asegurarnos de que no hay errores o inconsistencias en los datos.\r\n\r\n**Paso 2 - Comprobación de Credenciales:**\r\nVerificar que las credenciales proporcionadas por el cliente sean correctas y coincidan con los registros del sistema.\r\n\r\n**Paso 3 - Actualización de la Aplicación:**\r\nComprobar si hay una actualización disponible para la aplicación que podría solucionar el problema. Si es necesario, instalar la última versión.\r\n\r\n**Paso 4 - Contacto Con Soporte Técnico Externo (SI APLICA):**\r\nSi después de todas las acciones anteriores el problema persiste, sugerir al cliente contactarse con soporte técnico de Mercosur Casa de Bolsa S.A. para que puedan hacer un diagnóstico más profundo.\r\n\r\n**Paso 5 - Nueva Validación:**\r\nDespués de solucionar el problema, pedirle al cliente que revise su saldo nuevamente y confirmar si el problema ha sido resuelto.	24	\N	2026-10-09 22:15:59.351512-04	2026-10-09 22:15:59.351512-04	\N	\N	\N	3
+25	TCK2026-10-000003	\N	1	\N	1	9	16	1	2	falla al comprar titulo	**Ticket de Soporte: CLIENTE NO SABE COMO COMPRAR**\r\n\r\n**Descripción del Problema:** \r\nEl cliente ha expresado dificultades para realizar una compra en nuestra aplicación de Casa de Bolsa S.A. El problema se centra en la falta de conocimiento sobre los procesos y pasos necesarios para llevar a cabo una transacción de compra.\r\n\r\n**Pruebas Realizadas:**\r\n1. **Verificación de Conexión:** El cliente ha confirmado que su conexión a Internet es estable.\r\n2. **Revisión del Tutorial Inicial:** Se intentó reproducir el tutorial inicial proporcionado en la aplicación para instruir al cliente sobre cómo realizar una compra, pero no resultó eficaz.\r\n\r\n**Paso 1 - INICIO DE SESIÓN Y NAVEGACIÓN:**\r\n- Asegúrate de que el cliente esté logrado sesión correctamente y pueda navegar por las secciones principales de la aplicación.\r\n\r\n**Paso 2 - SELECCIÓN DEL PRODUCTO:**\r\n- Verifica si el cliente puede seleccionar un producto específico para comprar. Si no, proporciona pasos detallados sobre cómo hacerlo.\r\n  \r\n**Paso 3 - FORMULARIO DE COMPRA:**\r\n- Instruye al cliente a completar los campos del formulario de compra correctamente. Proporciona ejemplos de datos que deben ser ingresados.\r\n\r\n**Paso 4 - REALIZACIÓN DE LA COMPRA:**\r\n- Asegúrate de que el cliente pueda revisar y confirmar su pedido antes de finalizar la transacción.\r\n  \r\n**Instrucciones para la Nueva Validación junto con el Usuario:** \r\nPor favor, verifica de nuevo los pasos proporcionados. En caso de seguir teniendo problemas, proporciona un ejemplo de cómo realizar una compra con éxito en nuestra aplicación y asegúrate de que todo esté funcionando según lo esperado.	24	\N	2026-10-09 22:50:53.53959-04	2026-10-09 22:50:53.53959-04	\N	\N	\N	57
+26	TCK2026-10-000004	\N	1	\N	1	10	16	1	3	dsad	no puede recargar saldo	24	\N	2026-10-09 23:11:57.530325-04	2026-10-09 23:11:57.530325-04	\N	\N	\N	4
+27	TCK2026-10-000005	\N	1	\N	1	9	16	1	5	otro	**Ticket de Soporte: FACEMATCH NUNCA COINCIDE**\r\n\r\n**Descripción del Problema:**\r\nEl usuario reporta que el sistema FACEMATCH no está realizando una coincidencia efectiva entre las imágenes de los clientes presentes en la aplicación de Casa de Bolsa S.A y sus registros. Este problema ha incidido en la capacidad de la casa de bolsa para verificar el identidad de los usuarios durante ciertas transacciones, lo que podría comprometer la seguridad del sistema.\r\n\r\n**Pruebas Realizadas:**\r\n\r\n1. **Verificación de Actualizaciones del Sistema:** El cliente se aseguró de estar utilizando la versión más reciente de la aplicación.\r\n2. **Reinicio del Dispositivo:** El cliente reinició su dispositivo para verificar si el problema persistía después de la actualización.\r\n3. **Probando Con Imágenes Alternativas:** Se intentó utilizar imágenes alternativas de los clientes para ver si hubiera alguna coincidencia, pero esto no solucionó el problema.\r\n4. **Validación de Datos del Usuario:** El cliente confirmó que todos sus datos personales están correctos en la aplicación y que ninguna información relevante ha cambiado.\r\n\r\n**Instrucciones para la Nueva Validación:**\r\nPor favor, realice las siguientes acciones para asegurar una mejor identificación del problema:\r\n\r\n1. **Comprobación de Sistema:** Asegúrese de que el sistema FACEMATCH no esté experimentando algún fallo general o mantenimiento.\r\n2. **Contacto con Soporte Tecnico:** Comuníquese con el departamento de soporte técnico local para verificar si hay alguna incidencia conocida o parche pendiente relacionado con FACEMATCH.\r\n3. **Pruebas Aisladas del Usuario:** Realice pruebas individuales con diferentes usuarios y imágenes para identificar si el problema es específico a ciertos usuarios o imágenes.\r\n4. **Documentación de Casos Afectados:** Documente completamente todos los casos en los que FACEMATCH no realiza coincidencias, incluyendo detalles sobre las imágenes utilizadas, la fecha exacta y cualquier otra información relevante.\r\n\r\nAguarde su respuesta para que podamos tomar las medidas necesarias para resolver este problema.	24	\N	2026-10-09 23:15:33.980518-04	2026-10-09 23:15:33.980518-04	\N	\N	\N	2
 \.
 
 
@@ -2125,7 +2128,7 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 10, true);
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 372, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 380, true);
 
 
 --
@@ -2269,7 +2272,7 @@ SELECT pg_catalog.setval('tickets.tbl_clientes_id_seq', 1, true);
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 24, true);
+SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 27, true);
 
 
 --
@@ -2886,11 +2889,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT fk_tickets_usuario_asignado FOREIGN KEY (usuario_asignado_id) REFERENCES public.tbl_usuarios(id) ON UPDATE CASCADE ON DELETE SET NULL;
 
 
--- Completed on 2026-10-09 22:19:02 -04
+-- Completed on 2026-10-10 00:09:59 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict D8KIgtbMUArru9ALJibhcJzK1gHP9W6i8bCY1qqgBYQQARaEvSgIvxchcRcO4b0
+\unrestrict ImZfOvaIgsdvVAHhh8G2zOioLu5EcBodPksSoICgW7WfiHYgNBHeTxZ545SNfvs
 

@@ -16,7 +16,6 @@ import FloatingLines from "../layouts/FloatingLines";
 import { useSelector, useDispatch } from "react-redux";
 import { updateAccessToken, logout } from "../../store/authSlice";
 import axiosSeguridad from "../utils/axiosSeguridad";
-import "../../../src/systems.css";
 
 export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);

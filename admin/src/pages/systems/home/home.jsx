@@ -286,9 +286,9 @@ const Home = () => {
   };
 
   return (
-    <div className="systems-wrapper w-full flex flex-col items-center">
-      <div className="form-header text-center flex flex-col items-center justify-center w-full mb-6">
-        <h2>Menú de Sistemas</h2>
+    <div className="systems-wrapper w-full flex flex-col mx-auto">
+      <div className="flex flex-col w-full items-center justify-center">
+        <h1 className="text-3xl font-bold pt-32">Menú de Sistemas</h1>
         <p className="subtitle">¿A cuál deseas acceder, {usuario}?</p>
       </div>
 
