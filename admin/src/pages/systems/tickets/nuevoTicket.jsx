@@ -39,7 +39,7 @@ export default function NuevoTicket() {
   const nombre = user?.nombre || "Analista";
   const apellido = user?.apellido || "";
 
-  // Detector de tema en tiempo real idéntico al de MiFicha
+  // Detector de tema en tiempo real idéntico al de MiFicha y Permisos
   const [isDarkMode, setIsDarkMode] = useState(
     () =>
       document.documentElement.classList.contains("dark") ||
@@ -335,10 +335,6 @@ export default function NuevoTicket() {
 
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Nuevo Ticket">
-      <style>{`
-
-      `}</style>
-
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
@@ -371,20 +367,39 @@ export default function NuevoTicket() {
                 <div className="field">
                   <label>De (Remitente)</label>
                   <input
-                    className="inp"
+                    className="field input"
                     value={`${nombre} ${apellido} <${user?.email || "analista@mercosur.com"}>`}
                     readOnly
                     disabled
+                    style={{
+                      width: "100%",
+                      padding: "10px 13px",
+                      border: "1px solid var(--merco-border)",
+                      borderRadius: "9px",
+                      fontFamily: "inherit",
+                      fontSize: "14px",
+                      background: "var(--input, var(--merco-surface))",
+                      color: "var(--merco-text)",
+                    }}
                   />
                 </div>
 
                 <div className="field">
                   <label>Para (Departamento)</label>
                   <select
-                    className="inp"
                     value={departamentoId}
                     onChange={(e) => setDepartamentoId(e.target.value)}
                     required
+                    style={{
+                      width: "100%",
+                      padding: "10px 13px",
+                      border: "1px solid var(--merco-border)",
+                      borderRadius: "9px",
+                      fontFamily: "inherit",
+                      fontSize: "14px",
+                      background: "var(--input, var(--merco-surface))",
+                      color: "var(--merco-text)",
+                    }}
                   >
                     <option value="">Seleccione departamento...</option>
                     {listaDepartamentos.map((dep) => (
@@ -398,10 +413,19 @@ export default function NuevoTicket() {
                 <div className="field">
                   <label>Empleado Asignado (Opcional)</label>
                   <select
-                    className="inp"
                     value={usuarioId}
                     onChange={(e) => setUsuarioId(e.target.value)}
                     disabled={!departamentoId}
+                    style={{
+                      width: "100%",
+                      padding: "10px 13px",
+                      border: "1px solid var(--merco-border)",
+                      borderRadius: "9px",
+                      fontFamily: "inherit",
+                      fontSize: "14px",
+                      background: "var(--input, var(--merco-surface))",
+                      color: "var(--merco-text)",
+                    }}
                   >
                     <option value="">
                       {departamentoId
@@ -419,12 +443,21 @@ export default function NuevoTicket() {
                 <div className="field">
                   <label>Asunto</label>
                   <input
-                    className="inp"
                     value={strAsunto}
                     onChange={(e) => setStrAsunto(e.target.value)}
                     placeholder="Resumen breve del requerimiento..."
                     maxLength={100}
                     required
+                    style={{
+                      width: "100%",
+                      padding: "10px 13px",
+                      border: "1px solid var(--merco-border)",
+                      borderRadius: "9px",
+                      fontFamily: "inherit",
+                      fontSize: "14px",
+                      background: "var(--input, var(--merco-surface))",
+                      color: "var(--merco-text)",
+                    }}
                   />
                 </div>
 
@@ -432,9 +465,18 @@ export default function NuevoTicket() {
                   <label>SLA (Horas)</label>
                   <input
                     type="number"
-                    className="inp"
                     value={intSla}
                     onChange={(e) => setIntSla(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "10px 13px",
+                      border: "1px solid var(--merco-border)",
+                      borderRadius: "9px",
+                      fontFamily: "inherit",
+                      fontSize: "14px",
+                      background: "var(--input, var(--merco-surface))",
+                      color: "var(--merco-text)",
+                    }}
                   />
                 </div>
 
@@ -530,10 +572,19 @@ export default function NuevoTicket() {
                   {/* Versión Móvil (Select) */}
                   <div className="mobile-selector">
                     <select
-                      className="inp"
                       value={canalId}
                       onChange={(e) => setCanalId(e.target.value)}
                       required
+                      style={{
+                        width: "100%",
+                        padding: "10px 13px",
+                        border: "1px solid var(--merco-border)",
+                        borderRadius: "9px",
+                        fontFamily: "inherit",
+                        fontSize: "14px",
+                        background: "var(--input, var(--merco-surface))",
+                        color: "var(--merco-text)",
+                      }}
                     >
                       <option value="">Seleccione canal...</option>
                       {listaCanales.map((c) => (
@@ -629,10 +680,19 @@ export default function NuevoTicket() {
                   {/* Versión Móvil (Select) */}
                   <div className="mobile-selector">
                     <select
-                      className="inp"
                       value={categoriaId}
                       onChange={(e) => setCategoriaId(e.target.value)}
                       required
+                      style={{
+                        width: "100%",
+                        padding: "10px 13px",
+                        border: "1px solid var(--merco-border)",
+                        borderRadius: "9px",
+                        fontFamily: "inherit",
+                        fontSize: "14px",
+                        background: "var(--input, var(--merco-surface))",
+                        color: "var(--merco-text)",
+                      }}
                     >
                       <option value="">Seleccione categoría...</option>
                       {listaCategorias.map((cat) => (
@@ -728,10 +788,19 @@ export default function NuevoTicket() {
                   {/* Versión Móvil (Select) */}
                   <div className="mobile-selector">
                     <select
-                      className="inp"
                       value={prioridadId}
                       onChange={(e) => setPrioridadId(e.target.value)}
                       required
+                      style={{
+                        width: "100%",
+                        padding: "10px 13px",
+                        border: "1px solid var(--merco-border)",
+                        borderRadius: "9px",
+                        fontFamily: "inherit",
+                        fontSize: "14px",
+                        background: "var(--input, var(--merco-surface))",
+                        color: "var(--merco-text)",
+                      }}
                     >
                       <option value="">Seleccione prioridad...</option>
                       {listaPrioridades.map((p) => (
@@ -744,7 +813,7 @@ export default function NuevoTicket() {
                 </div>
               </div>
 
-              {/* Columna Derecha: BlockNote y Multimedia */}
+              {/* Columna Derecha: BlockNote, Multimedia y Botones */}
               <div
                 style={{
                   display: "flex",
@@ -957,36 +1026,36 @@ export default function NuevoTicket() {
                       </div>
                     </div>
                   )}
+
+                  {/* Botones inferiores ubicados justo al final del editor BlockNote */}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: 12,
+                      marginTop: 20,
+                      paddingTop: 16,
+                      borderTop: "1px solid var(--merco-border, #ccc)",
+                    }}
+                  >
+                    <button
+                      type="button"
+                      className="btn btn-ghost"
+                      onClick={handleLimpiarTodo}
+                      disabled={isGeneratingAI}
+                    >
+                      Limpiar Formulario
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={isGeneratingAI}
+                    >
+                      <DynamicIcon name="FiSave" /> Crear Ticket
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Botones inferiores */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: 12,
-                marginTop: 24,
-                paddingTop: 16,
-                borderTop: "1px solid var(--merco-border, #ccc)",
-              }}
-            >
-              <button
-                type="button"
-                className="btn btn-ghost"
-                onClick={handleLimpiarTodo}
-                disabled={isGeneratingAI}
-              >
-                Limpiar Formulario
-              </button>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={isGeneratingAI}
-              >
-                <DynamicIcon name="FiSave" /> Crear Ticket
-              </button>
             </div>
           </form>
         </div>

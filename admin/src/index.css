@@ -2787,3 +2787,20 @@ html.dark .ma-side {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ===== FIX PARA SELECT Y OPTIONS EN MODO OSCURO (GRIS) ===== */
+:root.dark select option,
+:root[data-theme="dark"] select option,
+.dark select option {
+  background-color: #0a0a0b !important;
+  color: var(--merco-text, #fafafa) !important;
+}
+
+/* Cambiar el color azul nativo de la opción seleccionada/hover por un gris elegante */
+.dark select option:checked,
+.dark select option:hover,
+:root.dark select option:checked,
+:root.dark select option:hover {
+  background-color: #27272a !important; /* Gris oscuro acorde a tu interfaz */
+  color: #ffffff !important;
+}
