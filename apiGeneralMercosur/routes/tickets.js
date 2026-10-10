@@ -19,7 +19,6 @@ router.post(
     try {
       const {
         cliente_id,
-        creador_agente_id,
         cierre_agente_id,
         departamento_id,
         categoria_id,
@@ -29,10 +28,24 @@ router.post(
         str_asunto,
         str_descripcion,
         int_sla,
-        usuario_id, // Capturamos el usuario_id opcional enviado desde el frontend
+        usuario_asignado_id, // Capturamos el usuario_asignado_id opcional enviado desde el frontend
       } = req.body;
 
-      const usuarioIdSesion = req.usuario?.id || creador_agente_id || 1;
+      /* console.table({
+        cliente_id,
+        cierre_agente_id,
+        departamento_id,
+        categoria_id,
+        prioridad_id,
+        estatus_id,
+        canal_id,
+        str_asunto,
+        str_descripcion,
+        int_sla,
+        usuario_asignado_id,
+      }); */
+
+      const usuarioIdSesion = req.usuario?.id; // viene de la sesion activa y lo obtengo del middelware de verificacion
 
       // Generar código único para el ticket (ej: TCK-2026-0006)
       const ticketSeqResult = await pool.query(
@@ -68,34 +81,34 @@ router.post(
       const str_ruta_audio =
         rutasAudios.length > 0 ? rutasAudios.join(",") : null;
 
-      // Inserción en la base de datos incluyendo usuario_id
+      // Inserción en la base de datos incluyendo usuario_asignado_id
       const queryInsert = `
         INSERT INTO tickets.tbl_tickets (
           str_ticket, cliente_id, creador_agente_id, cierre_agente_id, 
           departamento_id, categoria_id, prioridad_id, estatus_id, 
           canal_id, str_asunto, str_descripcion, int_sla, 
-          str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_id, created_at, updated_at
+          str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id, created_at, updated_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
         RETURNING *;
       `;
 
       const values = [
         str_ticket,
-        cliente_id || 1, // Valor por defecto o dinámico según tu lógica de clientes
-        usuarioIdSesion,
+        cliente_id || null,
+        usuarioIdSesion, // es el valor que se guarda en creador_agente_id de la tabla
         cierre_agente_id || null,
-        departamento_id || 1,
+        departamento_id,
         categoria_id,
         prioridad_id,
-        estatus_id || 1, // Pendiente por defecto
+        estatus_id,
         canal_id,
         str_asunto,
         str_descripcion,
-        int_sla || 24,
+        int_sla,
         str_ruta_imagen,
         str_ruta_video,
         str_ruta_audio,
-        usuario_id ? Number(usuario_id) : null, // Se asigna el ID o null si no se seleccionó empleado
+        usuario_asignado_id ? Number(usuario_asignado_id) : null, // que pertenece a departamento_id
       ];
 
       const nuevoTicket = await pool.query(queryInsert, values);
@@ -183,7 +196,6 @@ router.get("/datos-maestros", async (req, res) => {
     `;
     const resultado = await pool.query(query);
 
-    // Separar los resultados por tipo para facilitar el consumo en el frontend
     const datos = resultado.rows;
     const canales = datos.filter((item) => item.str_tipo === "CANAL");
     const categorias = datos.filter((item) => item.str_tipo === "CATEGORIA");

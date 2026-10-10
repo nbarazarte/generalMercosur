@@ -23,7 +23,7 @@ export default function NuevoTicket() {
   const [listaDepartamentos, setListaDepartamentos] = useState([]);
   const [listaUsuarios, setListaUsuarios] = useState([]);
   const [empleadosFiltrados, setEmpleadosFiltrados] = useState([]);
-  
+
   const [listaCanales, setListaCanales] = useState([]);
   const [listaCategorias, setListaCategorias] = useState([]);
   const [listaPrioridades, setListaPrioridades] = useState([]);
@@ -96,7 +96,7 @@ export default function NuevoTicket() {
   useEffect(() => {
     if (departamentoId) {
       const filtrados = listaUsuarios.filter(
-        (u) => Number(u.departamento_id) === Number(departamentoId)
+        (u) => Number(u.departamento_id) === Number(departamentoId),
       );
       setEmpleadosFiltrados(filtrados);
     } else {
@@ -104,6 +104,39 @@ export default function NuevoTicket() {
     }
     setUsuarioId(""); // Limpiar selección de empleado al cambiar de departamento
   }, [departamentoId, listaUsuarios]);
+
+  const obtenerIconoPorTipo = (tipoMime, nombreArchivo) => {
+    if (!tipoMime) {
+      // Fallback basado en extensión si el tipoMime viene vacío
+      const ext = nombreArchivo?.split(".").pop().toLowerCase();
+      if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext))
+        return "FiImage";
+      if (["pdf"].includes(ext)) return "FiFileText";
+      if (["zip", "rar", "7z", "tar", "gz"].includes(ext)) return "FiArchive";
+      return "FiFile";
+    }
+
+    if (tipoMime.startsWith("image/")) return "FiImage";
+    if (tipoMime.startsWith("video/")) return "FiVideo";
+    if (tipoMime.startsWith("audio/")) return "FiMusic";
+    if (tipoMime.includes("pdf")) return "FiFileText";
+    if (
+      tipoMime.includes("sheet") ||
+      tipoMime.includes("excel") ||
+      tipoMime.includes("csv")
+    )
+      return "FiFileSpreadsheet";
+    if (tipoMime.includes("word") || tipoMime.includes("document"))
+      return "FiFileText";
+    if (
+      tipoMime.includes("zip") ||
+      tipoMime.includes("compressed") ||
+      tipoMime.includes("tar")
+    )
+      return "FiArchive";
+
+    return "FiFile";
+  };
 
   const uploadFile = async (file) => {
     return new Promise((resolve, reject) => {
@@ -132,7 +165,7 @@ export default function NuevoTicket() {
       uploadFile,
       dictionary: es,
     },
-    [isDarkMode],
+    [],
   );
 
   const handleEditorChange = async () => {
@@ -275,10 +308,10 @@ export default function NuevoTicket() {
     formData.append("categoria_id", Number(categoriaId));
     formData.append("prioridad_id", Number(prioridadId));
     formData.append("departamento_id", Number(departamentoId));
-    
-    // Enviar usuario_id solo si fue seleccionado (opcional)
+
+    // Enviar usuario_asignado_id solo si fue seleccionado (opcional)
     if (usuarioId) {
-      formData.append("usuario_id", Number(usuarioId));
+      formData.append("usuario_asignado_id", Number(usuarioId));
     }
 
     formData.append("int_sla", Number(intSla));
@@ -380,7 +413,9 @@ export default function NuevoTicket() {
                     disabled={!departamentoId}
                   >
                     <option value="">
-                      {departamentoId ? "Sin empleado específico (Opcional)" : "Primero seleccione un departamento..."}
+                      {departamentoId
+                        ? "Sin empleado específico (Opcional)"
+                        : "Primero seleccione un departamento..."}
                     </option>
                     {empleadosFiltrados.map((emp) => (
                       <option key={emp.id} value={emp.id}>
@@ -728,7 +763,7 @@ export default function NuevoTicket() {
                           width: "100%",
                           height: "100%",
                           backgroundColor: isDarkMode
-                            ? "rgba(15, 23, 42, 0.35)"
+                            ? "rgba(0, 0, 0, 0.35)"
                             : "rgba(255, 255, 255, 0.35)",
                           zIndex: 10,
                           display: "flex",
@@ -748,7 +783,7 @@ export default function NuevoTicket() {
                             color: isDarkMode ? "#ffffff" : "#000000",
                             padding: "14px 20px",
                             borderRadius: "8px",
-                            border: `1px solid ${isDarkMode ? "#1e293b" : "#cbd5e1"}`,
+                            border: `1px solid ${isDarkMode ? "#334155" : "#cbd5e1"}`, // Cambiado a 1px y color visible para modo oscuro
                             boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.2)",
                             fontSize: "14px",
                             fontWeight: "bold",
@@ -766,10 +801,7 @@ export default function NuevoTicket() {
                       </div>
                     )}
 
-                    <div
-                      key={isDarkMode ? "editor-dark" : "editor-light"}
-                      style={{ width: "100%", height: "100%" }}
-                    >
+                    <div style={{ width: "100%", height: "100%" }}>
                       <BlockNoteView
                         editor={editor}
                         theme={isDarkMode ? "dark" : "light"}
@@ -806,56 +838,72 @@ export default function NuevoTicket() {
                           gap: "8px",
                         }}
                       >
-                        {archivosAdjuntos.map((file, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                              background: isDarkMode
-                                ? "rgba(255, 255, 255, 0.05)"
-                                : "var(--merco-bg-card, #fff)",
-                              padding: "4px 10px",
-                              borderRadius: "4px",
-                              border: "1px solid var(--merco-border, #ccc)",
-                              color: "var(--merco-text)",
-                            }}
-                          >
-                            <span
+                        {archivosAdjuntos.map((file, index) => {
+                          const nombreIcono = obtenerIconoPorTipo(
+                            file.type,
+                            file.name,
+                          );
+
+                          return (
+                            <div
+                              key={index}
                               style={{
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                whiteSpace: "nowrap",
-                                maxWidth: "200px",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                background: isDarkMode
+                                  ? "rgba(255, 255, 255, 0.05)"
+                                  : "var(--merco-bg-card, #fff)",
+                                padding: "6px 10px",
+                                borderRadius: "4px",
+                                border: "1px solid var(--merco-border, #ccc)",
                                 color: "var(--merco-text)",
                               }}
-                              title={file.name}
                             >
-                              📎 {file.name} ({Math.round(file.size / 1024)} KB)
-                            </span>
-                            <button
-                              type="button"
-                              className="btn-icon"
-                              style={{
-                                fontSize: "11px",
-                                color: "var(--merco-danger, #d1435b)",
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                              }}
-                              onClick={() =>
-                                setArchivosAdjuntos(
-                                  archivosAdjuntos.filter(
-                                    (_, i) => i !== index,
-                                  ),
-                                )
-                              }
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        ))}
+                              {/* Icono dinámico según el tipo de archivo */}
+                              <DynamicIcon
+                                name={nombreIcono}
+                                style={{
+                                  fontSize: "16px",
+                                  color: "var(--merco-accent, #f95700)",
+                                }}
+                              />
+
+                              <span
+                                style={{
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  maxWidth: "200px",
+                                  color: "var(--merco-text)",
+                                }}
+                                title={file.name}
+                              >
+                                {file.name} ({Math.round(file.size / 1024)} KB)
+                              </span>
+                              <button
+                                type="button"
+                                className="btn-icon"
+                                style={{
+                                  fontSize: "11px",
+                                  color: "var(--merco-danger, #d1435b)",
+                                  background: "none",
+                                  border: "none",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() =>
+                                  setArchivosAdjuntos(
+                                    archivosAdjuntos.filter(
+                                      (_, i) => i !== index,
+                                    ),
+                                  )
+                                }
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
