@@ -1,8 +1,13 @@
 import logoImg from "../../assets/images/Logo - negativo naranja.png";
+import logoImgDark from "../../assets/images/Logo - original.png";
 
-const Logo = () => {
+const Logo = ({ theme }) => {
   return (
-    <img src={logoImg} alt="Mercosur Casa de Bolsa" className="w-32 h-auto" />
+    <img
+      src={theme === "light" ? logoImgDark : logoImg}
+      alt="Mercosur Casa de Bolsa"
+      className="w-16 h-auto"
+    />
   );
 };
 

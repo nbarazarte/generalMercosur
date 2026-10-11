@@ -18,10 +18,19 @@ import { updateAccessToken, logout } from "../../store/authSlice";
 import axiosSeguridad from "../utils/axiosSeguridad";
 
 export default function SystemLayout({ children, identificacion, opcionMenu }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem("sidebarOpen");
+    // Si existe en localStorage, lo convertimos a booleano, si no, por defecto será true
+    return savedState !== null ? JSON.parse(savedState) : true;
+  });
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Guardar en localStorage cada vez que cambie sidebarOpen
+  useEffect(() => {
+    localStorage.setItem("sidebarOpen", JSON.stringify(sidebarOpen));
+  }, [sidebarOpen]);
 
   const userId = useSelector((state) => state.auth?.user?.id);
   const usuario = useSelector((state) => state.auth?.user);
@@ -410,40 +419,31 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
 
             <div style={{ minWidth: 0 }}>
               {sistemaNombre && (
-                <>
-                  <h2
-                    style={{
-                      wordBreak: "break-word",
-                      margin: 0,
-                      lineHeight: 1.2,
-                      fontSize: "1.15rem",
-                    }}
-                  >
-                    {sistemaNombre} / {opcionMenu}
-                  </h2>
-                </>
+                <div className="flex flex-row items-center justify-center gap-2.5">
+                  <Logo theme={theme} />
+                  <div className="flex flex-col">
+                    <h2
+                      style={{
+                        wordBreak: "break-word",
+                        margin: 0,
+                        lineHeight: 1.2,
+                        fontSize: "1.15rem",
+                      }}
+                    >
+                      {sistemaNombre} / {opcionMenu}
+                    </h2>
+                    <p
+                      style={{
+                        margin: "2px 0 0 0",
+                        lineHeight: 1.2,
+                        fontSize: "0.825rem",
+                      }}
+                    >
+                      {sistemaDescripcion}
+                    </p>
+                  </div>
+                </div>
               )}
-              {sistemaDescripcion && (
-                <p
-                  style={{
-                    margin: "2px 0 0 0",
-                    lineHeight: 1.2,
-                    fontSize: "0.825rem",
-                  }}
-                >
-                  {sistemaDescripcion}
-                </p>
-              )}
-              {/* <h3
-                style={{
-                  wordBreak: "break-word",
-                  margin: 0,
-                  lineHeight: 1.2,
-                  fontSize: "1.15rem",
-                }}
-              >
-                {opcionMenu}
-              </h3> */}
             </div>
           </div>
         </header>

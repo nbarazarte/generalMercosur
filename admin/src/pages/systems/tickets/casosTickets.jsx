@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
 import { useNavigate } from "react-router-dom";
@@ -235,7 +236,7 @@ export default function CasosTickets() {
       if (fBuscar) {
         const q = fBuscar.toLowerCase().trim();
         const texto =
-          `${t.str_ticket} ${t.cliente_nombre || ""} ${t.cliente_cedula || ""} ${t.str_asunto} ${t.str_descripcion}`.toLowerCase();
+          `${t.str_ticket} ${t.cliente_nombre || ""} ${t.cliente_cedula || ""} ${t.str_cedula_cliente || ""} ${t.str_correo_cliente || ""} ${t.creador_nombre || ""} ${t.str_asunto} ${t.str_descripcion}`.toLowerCase();
         if (!texto.includes(q)) return false;
       }
       return true;
@@ -304,7 +305,7 @@ export default function CasosTickets() {
               onChange={(e) => setFTipoTicket(e.target.value)}
               style={filtroStyle}
             >
-              <option value="">Tipo de Ticket</option>
+              <option value="">Todos los tickets</option>
               {tiposTicket.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.str_nombre}
@@ -330,7 +331,7 @@ export default function CasosTickets() {
               onChange={(e) => setFDepartamento(e.target.value)}
               style={filtroStyle}
             >
-              <option value="">Departamentos</option>
+              <option value="">Todos los departamentos</option>
               {listaDepartamentos.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.str_nombre}
@@ -343,7 +344,7 @@ export default function CasosTickets() {
               onChange={(e) => setFAgente(e.target.value)}
               style={filtroStyle}
             >
-              <option value="">Empleado Asignado</option>
+              <option value="">Asignado a</option>
               {empleadosFiltrados.map((emp) => (
                 <option key={emp.id} value={emp.id}>
                   {emp.str_nombre} {emp.str_apellido}
@@ -356,7 +357,7 @@ export default function CasosTickets() {
               onChange={(e) => setFPrioridad(e.target.value)}
               style={filtroStyle}
             >
-              <option value="">Prioridad</option>
+              <option value="">Todas las prioridades</option>
               {prioridades.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.str_nombre}
@@ -370,7 +371,7 @@ export default function CasosTickets() {
                 onChange={(e) => setFCanal(e.target.value)}
                 style={filtroStyle}
               >
-                <option value="">Canal</option>
+                <option value="">Todos los canales</option>
                 {canales.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.str_nombre}
@@ -400,10 +401,10 @@ export default function CasosTickets() {
                 }}
                 style={filtroStyle}
               >
-                <option value="">Filtrar por fecha...</option>
-                <option value="creacion">Fecha de Creación</option>
-                <option value="vencimiento">Fecha de Vencimiento</option>
-                <option value="cierre">Fecha de Cierre</option>
+                <option value="">Filtrar por</option>
+                <option value="creacion">Fecha de creación</option>
+                <option value="vencimiento">Fecha de vencimiento</option>
+                <option value="cierre">Fecha de cierre</option>
               </select>
 
               <input
@@ -488,7 +489,7 @@ export default function CasosTickets() {
               />
               <input
                 type="text"
-                placeholder="Buscar por N° Ticket, cédula, asunto o descripción..."
+                placeholder="Buscar por N° Ticket, cédula, correo, solicitante o asunto"
                 value={fBuscar}
                 onChange={(e) => setFBuscar(e.target.value)}
                 style={{
@@ -557,6 +558,10 @@ export default function CasosTickets() {
                 ) : (
                   ticketsFiltrados.map((t) => {
                     const tipoLower = (t.tipo_ticket || "").toLowerCase();
+                    const esExterno =
+                      tipoLower.includes("externo") ||
+                      tipoLower.includes("app");
+
                     let estiloTipo = {
                       background: "rgba(59, 130, 246, 0.1)",
                       color: "#3b82f6",
@@ -664,6 +669,11 @@ export default function CasosTickets() {
                       solicitanteApellido,
                     );
 
+                    const nombreCreadorCorto = obtenerPrimerNombreApellido(
+                      t.creador_nombre,
+                      t.creador_apellido,
+                    );
+
                     const nombreAsignadoCorto = obtenerPrimerNombreApellido(
                       t.asignado_nombre,
                       t.asignado_apellido,
@@ -705,30 +715,77 @@ export default function CasosTickets() {
                           </span>
                         </td>
                         <td>
-                          <div>
-                            <b>{nombreClienteCorto}</b>
-                            <small
-                              style={{
-                                display: "block",
-                                color: "var(--merco-muted)",
-                                fontSize: "11px",
-                              }}
-                            >
-                              {t.cliente_cedula || "Interno"}
-                            </small>
+                          {esExterno ? (
+                            <div>
+                              <div>
+                                <span
+                                  style={{
+                                    fontSize: "11px",
+                                    color: "var(--merco-muted)",
+                                  }}
+                                >
+                                  Cliente:
+                                </span>{" "}
+                                <b
+                                  style={{
+                                    color: "var(--merco-accent, #f95700)",
+                                  }}
+                                >
+                                  {t.str_cedula_cliente || "—"}
+                                </b>
+                                <small
+                                  style={{
+                                    display: "block",
+                                    color: "var(--merco-muted)",
+                                    fontSize: "11px",
+                                  }}
+                                >
+                                  {t.str_correo_cliente || "—"}
+                                </small>
+                              </div>
+                              <div
+                                style={{
+                                  marginTop: "4px",
+                                  paddingTop: "4px",
+                                  borderTop: "1px dashed var(--merco-border)",
+                                  fontSize: "11px",
+                                  color: "var(--merco-muted)",
+                                }}
+                              >
+                                <span>
+                                  Solicitante: <b>{nombreCreadorCorto}</b>
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <b>{nombreClienteCorto}</b>
+                              <small
+                                style={{
+                                  display: "block",
+                                  color: "var(--merco-muted)",
+                                  fontSize: "11px",
+                                }}
+                              >
+                                {t.cliente_cedula || "Interno"}
+                              </small>
+                            </div>
+                          )}
+                        </td>
+                        <td style={{ maxWidth: 180 }}>
+                          <div
+                            style={{
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              width: "100%",
+                            }}
+                            title={t.str_asunto}
+                          >
+                            {t.str_asunto}
                           </div>
                         </td>
-                        <td
-                          style={{
-                            maxWidth: 180,
-                            textOverflow: "ellipsis",
-                            overflow: "hidden",
-                            whiteSpace: "nowrap",
-                          }}
-                          title={t.str_asunto}
-                        >
-                          {t.str_asunto}
-                        </td>
+
                         <td>{t.departamento_nombre || "—"}</td>
                         <td>
                           <span
@@ -823,222 +880,146 @@ export default function CasosTickets() {
       </div>
 
       {/* MODAL DE DETALLE, RESPUESTA Y CAMBIO DE ESTATUS */}
-      {ticketSeleccionado && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10000,
-            backdropFilter: "blur(4px)",
-          }}
-        >
+      {ticketSeleccionado &&
+        ReactDOM.createPortal(
           <div
-            className="ma-card"
             style={{
-              width: "90%",
-              maxWidth: 650,
-              maxHeight: "90vh",
-              overflowY: "auto",
-              background: "var(--merco-surface)",
-              padding: 24,
-              borderRadius: 10,
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 100000,
+              backdropFilter: "blur(4px)",
             }}
           >
             <div
+              className="ma-modal"
+              onClick={(e) => e.stopPropagation()}
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 16,
+                width: "90%",
+                maxWidth: 850,
+                maxHeight: "90vh",
+                overflowY: "auto",
+                background: "var(--merco-surface)",
+                padding: 24,
+                borderRadius: 10,
               }}
             >
               <div
-                style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 16,
+                }}
               >
-                <h3 style={{ margin: 0 }}>
-                  Ticket: {ticketSeleccionado.str_ticket}
-                </h3>
-                {esTicketCerrado && (
-                  <span
-                    style={{
-                      padding: "2px 8px",
-                      borderRadius: 10,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      background: "rgba(107, 114, 128, 0.1)",
-                      color: "#6b7280",
-                    }}
-                  >
-                    Cerrado (Solo lectura)
-                  </span>
-                )}
-              </div>
-              <button
-                className="btn-icon"
-                onClick={() => setTicketSeleccionado(null)}
-              >
-                <DynamicIcon name="FiX" />
-              </button>
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 12,
-                fontSize: 13,
-                marginBottom: 16,
-                background: "var(--merco-bg-subtle)",
-                padding: 12,
-                borderRadius: 6,
-              }}
-            >
-              <div>
-                <b>Asunto:</b> {ticketSeleccionado.str_asunto}
-              </div>
-              <div>
-                <b>Tipo:</b> {ticketSeleccionado.tipo_ticket}
-              </div>
-              <div>
-                <b>Departamento:</b> {ticketSeleccionado.departamento_nombre}
-              </div>
-              <div>
-                <b>Categoría:</b> {ticketSeleccionado.categoria_nombre}
-              </div>
-              <div>
-                <b>Prioridad:</b> {ticketSeleccionado.prioridad_nombre}
-              </div>
-              <div>
-                <b>SLA:</b>{" "}
-                <span style={{ color: "#f59e0b", fontWeight: 600 }}>
-                  {ticketSeleccionado.int_sla
-                    ? `${ticketSeleccionado.int_sla} horas`
-                    : "—"}
-                </span>
-              </div>
-              <div>
-                <b>F. Vencimiento:</b>{" "}
-                {ticketSeleccionado.dmt_fecha_vencimiento_sla
-                  ? new Date(
-                      ticketSeleccionado.dmt_fecha_vencimiento_sla,
-                    ).toLocaleString("es-VE")
-                  : "—"}
-              </div>
-
-              {!esTicketDetalleInterno && (
-                <div>
-                  <b>Canal:</b> {ticketSeleccionado.canal_nombre || "N/A"}
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                >
+                  <h3 style={{ margin: 0 }}>
+                    Ticket: {ticketSeleccionado.str_ticket}
+                  </h3>
+                  {esTicketCerrado && (
+                    <span
+                      style={{
+                        padding: "2px 8px",
+                        borderRadius: 10,
+                        fontSize: 11,
+                        fontWeight: 600,
+                        background: "rgba(107, 114, 128, 0.1)",
+                        color: "#6b7280",
+                      }}
+                    >
+                      Cerrado (Solo lectura)
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <label
-                style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  display: "block",
-                  marginBottom: 4,
-                }}
-              >
-                Descripción:
-              </label>
-              <div
-                style={{
-                  padding: 10,
-                  border: "1px solid var(--merco-border)",
-                  borderRadius: 6,
-                  fontSize: 13,
-                  background: "var(--merco-bg-card)",
-                }}
-              >
-                {ticketSeleccionado.str_descripcion}
+                <button
+                  className="btn-icon"
+                  onClick={() => setTicketSeleccionado(null)}
+                >
+                  <DynamicIcon name="FiX" />
+                </button>
               </div>
-            </div>
 
-            <form onSubmit={handleGuardarCambiosTicket}>
               <div
                 style={{
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
                   gap: 12,
-                  marginBottom: 12,
+                  fontSize: 13,
+                  marginBottom: 16,
+                  background: "var(--merco-bg-subtle)",
+                  padding: 12,
+                  borderRadius: 6,
                 }}
               >
                 <div>
-                  <label
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      display: "block",
-                      marginBottom: 4,
-                    }}
-                  >
-                    Cambiar Estatus
-                  </label>
-                  <select
-                    value={nuevoEstatusId}
-                    disabled={esTicketCerrado}
-                    onChange={(e) => setNuevoEstatusId(e.target.value)}
-                    style={{
-                      ...filtroStyle,
-                      width: "100%",
-                      opacity: esTicketCerrado ? 0.7 : 1,
-                      cursor: esTicketCerrado ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    {listaEstatus.map((est) => (
-                      <option key={est.id} value={String(est.id)}>
-                        {est.str_nombre}
-                      </option>
-                    ))}
-                  </select>
+                  <b>Asunto:</b> {ticketSeleccionado.str_asunto}
+                </div>
+                <div>
+                  <b>Tipo:</b> {ticketSeleccionado.tipo_ticket}
+                </div>
+                <div>
+                  <b>Departamento:</b> {ticketSeleccionado.departamento_nombre}
+                </div>
+                <div>
+                  <b>Categoría:</b> {ticketSeleccionado.categoria_nombre}
                 </div>
 
+                {/* Validación para mostrar Cédula y Correo del Cliente si es Externo */}
+                {ticketSeleccionado.tipo_ticket
+                  ?.toLowerCase()
+                  .includes("externo") ||
+                ticketSeleccionado.tipo_ticket
+                  ?.toLowerCase()
+                  .includes("app") ? (
+                  <>
+                    <div>
+                      <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                        Cédula del Cliente:
+                      </b>{" "}
+                      {ticketSeleccionado.str_cedula_cliente || "—"}
+                    </div>
+                    <div>
+                      <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                        Correo del Cliente:
+                      </b>{" "}
+                      {ticketSeleccionado.str_correo_cliente || "—"}
+                    </div>
+                  </>
+                ) : null}
+
                 <div>
-                  <label
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      display: "block",
-                      marginBottom: 4,
-                    }}
-                  >
-                    Asignar a:
-                  </label>
-                  <select
-                    key={`select-asignado-${ticketSeleccionado?.id || "modal"}`}
-                    defaultValue={
-                      ticketSeleccionado?.usuario_asignado_id
-                        ? String(ticketSeleccionado.usuario_asignado_id)
-                        : ""
-                    }
-                    disabled={esTicketCerrado}
-                    onChange={(e) => {
-                      setNuevoAsignadoId(e.target.value);
-                    }}
-                    style={{
-                      ...filtroStyle,
-                      width: "100%",
-                      opacity: esTicketCerrado ? 0.7 : 1,
-                      cursor: esTicketCerrado ? "not-allowed" : "pointer",
-                    }}
-                  >
-                    <option value="">Sin asignar</option>
-                    {listaUsuarios.map((u) => (
-                      <option key={u.id} value={String(u.id)}>
-                        {u.str_nombre} {u.str_apellido}
-                      </option>
-                    ))}
-                  </select>
+                  <b>Prioridad:</b> {ticketSeleccionado.prioridad_nombre}
                 </div>
+                <div>
+                  <b>SLA:</b>{" "}
+                  <span style={{ color: "#f59e0b", fontWeight: 600 }}>
+                    {ticketSeleccionado.int_sla
+                      ? `${ticketSeleccionado.int_sla} horas`
+                      : "—"}
+                  </span>
+                </div>
+                <div>
+                  <b>F. Vencimiento:</b>{" "}
+                  {ticketSeleccionado.dmt_fecha_vencimiento_sla
+                    ? new Date(
+                        ticketSeleccionado.dmt_fecha_vencimiento_sla,
+                      ).toLocaleString("es-VE")
+                    : "—"}
+                </div>
+
+                {!esTicketDetalleInterno && (
+                  <div>
+                    <b>Canal:</b> {ticketSeleccionado.canal_nombre || "N/A"}
+                  </div>
+                )}
               </div>
 
               <div style={{ marginBottom: 16 }}>
@@ -1050,48 +1031,155 @@ export default function CasosTickets() {
                     marginBottom: 4,
                   }}
                 >
-                  Responder
+                  Descripción:
                 </label>
-                <textarea
-                  rows={3}
-                  value={respuestaTexto}
-                  disabled={esTicketCerrado}
-                  onChange={(e) => setRespuestaTexto(e.target.value)}
-                  placeholder={
-                    esTicketCerrado
-                      ? "Este ticket está cerrado y no admite respuestas."
-                      : "Escriba una respuesta o avance para este ticket..."
-                  }
+                <div
                   style={{
-                    ...filtroStyle,
-                    width: "100%",
-                    resize: "vertical",
-                    opacity: esTicketCerrado ? 0.7 : 1,
-                    cursor: esTicketCerrado ? "not-allowed" : "text",
+                    padding: 10,
+                    border: "1px solid var(--merco-border)",
+                    borderRadius: 6,
+                    fontSize: 13,
+                    background: "var(--merco-bg-card)",
                   }}
-                />
+                >
+                  {ticketSeleccionado.str_descripcion}
+                </div>
               </div>
 
-              <div
-                style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}
-              >
-                <button
-                  type="button"
-                  className="btn btn-ghost"
-                  onClick={() => setTicketSeleccionado(null)}
+              <form onSubmit={handleGuardarCambiosTicket}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 12,
+                    marginBottom: 12,
+                  }}
                 >
-                  {esTicketCerrado ? "Cerrar" : "Cancelar"}
-                </button>
-                {!esTicketCerrado && (
-                  <button type="submit" className="btn btn-primary">
-                    <DynamicIcon name="FiSave" /> Guardar Cambios
+                  <div>
+                    <label
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        display: "block",
+                        marginBottom: 4,
+                      }}
+                    >
+                      Cambiar Estatus
+                    </label>
+                    <select
+                      value={nuevoEstatusId}
+                      disabled={esTicketCerrado}
+                      onChange={(e) => setNuevoEstatusId(e.target.value)}
+                      style={{
+                        ...filtroStyle,
+                        width: "100%",
+                        opacity: esTicketCerrado ? 0.7 : 1,
+                        cursor: esTicketCerrado ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      {listaEstatus.map((est) => (
+                        <option key={est.id} value={String(est.id)}>
+                          {est.str_nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        display: "block",
+                        marginBottom: 4,
+                      }}
+                    >
+                      Asignar a:
+                    </label>
+                    <select
+                      key={`select-asignado-${ticketSeleccionado?.id || "modal"}`}
+                      defaultValue={
+                        ticketSeleccionado?.usuario_asignado_id
+                          ? String(ticketSeleccionado.usuario_asignado_id)
+                          : ""
+                      }
+                      disabled={esTicketCerrado}
+                      onChange={(e) => {
+                        setNuevoAsignadoId(e.target.value);
+                      }}
+                      style={{
+                        ...filtroStyle,
+                        width: "100%",
+                        opacity: esTicketCerrado ? 0.7 : 1,
+                        cursor: esTicketCerrado ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      <option value="">Sin asignar</option>
+                      {listaUsuarios.map((u) => (
+                        <option key={u.id} value={String(u.id)}>
+                          {u.str_nombre} {u.str_apellido}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                  <label
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
+                    Responder
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={respuestaTexto}
+                    disabled={esTicketCerrado}
+                    onChange={(e) => setRespuestaTexto(e.target.value)}
+                    placeholder={
+                      esTicketCerrado
+                        ? "Este ticket está cerrado y no admite respuestas."
+                        : "Escriba una respuesta o avance para este ticket..."
+                    }
+                    style={{
+                      ...filtroStyle,
+                      width: "100%",
+                      resize: "vertical",
+                      opacity: esTicketCerrado ? 0.7 : 1,
+                      cursor: esTicketCerrado ? "not-allowed" : "text",
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: 10,
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="btn btn-ghost"
+                    onClick={() => setTicketSeleccionado(null)}
+                  >
+                    {esTicketCerrado ? "Cerrar" : "Cancelar"}
                   </button>
-                )}
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+                  {!esTicketCerrado && (
+                    <button type="submit" className="btn btn-primary">
+                      <DynamicIcon name="FiSave" /> Guardar Cambios
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+          </div>,
+          document.body,
+        )}
     </SystemLayout>
   );
 }

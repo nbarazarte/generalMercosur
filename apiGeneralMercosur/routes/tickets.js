@@ -110,103 +110,91 @@ router.get("/datos-maestros", async (req, res) => {
 });
 
 // Endpoint para crear el ticket y subir archivos multimedia asociados
-router.post(
-  "/crear",
-  upload.any(), // Acepta cualquier campo de archivo enviado desde el formulario multipart/form-data
-  async (req, res) => {
-    // Obtenemos un cliente del pool para manejar la transacción de forma segura
-    const client = await pool.connect();
+router.post("/crear", upload.any(), async (req, res) => {
+  const client = await pool.connect();
 
-    try {
-      // Iniciamos la transacción SQL
-      await client.query("BEGIN");
+  try {
+    await client.query("BEGIN");
 
-      const {
-        tipo_ticket_id,
-        cliente_id,
-        cierre_agente_id,
-        departamento_id,
-        categoria_id,
-        prioridad_id,
-        estatus_id,
-        canal_id,
-        str_asunto,
-        str_descripcion,
-        usuario_asignado_id,
-      } = req.body;
+    const {
+      tipo_ticket_id,
+      cliente_id,
+      cierre_agente_id,
+      departamento_id,
+      categoria_id,
+      prioridad_id,
+      estatus_id,
+      canal_id,
+      str_asunto,
+      str_descripcion,
+      usuario_asignado_id,
+      str_cedula_cliente, // Nuevo campo
+      str_correo_cliente, // Nuevo campo
+    } = req.body;
 
-      const usuarioIdSesion = req.user?.id;
+    const usuarioIdSesion = req.user?.id;
 
-      // Obtener año y mes actual para el correlativo
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth() + 1; // 1 - 12
-      const monthStr = String(month).padStart(2, "0");
+    // Obtener año y mes actual para el correlativo
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const monthStr = String(month).padStart(2, "0");
 
-      // 💡 Operación Atómica (UPSERT): Incrementa el correlativo del mes/año actual en 1
-      // de forma segura frente a concurrencia masiva.
-      const seqResult = await client.query(
-        `
+    const seqResult = await client.query(
+      `
         INSERT INTO tickets.tbl_secuencias_tickets (int_anio, int_mes, int_ultimo_secuencial)
         VALUES ($1, $2, 1)
         ON CONFLICT (int_anio, int_mes)
         DO UPDATE SET int_ultimo_secuencial = tickets.tbl_secuencias_tickets.int_ultimo_secuencial + 1
         RETURNING int_ultimo_secuencial;
         `,
-        [year, month],
-      );
+      [year, month],
+    );
 
-      const nextNumber = seqResult.rows[0].int_ultimo_secuencial;
+    const nextNumber = seqResult.rows[0].int_ultimo_secuencial;
+    const str_ticket = `TCK${year}-${monthStr}-${String(nextNumber).padStart(6, "0")}`;
 
-      // Generar código único robusto (ej: TCK2026-10-000001)
-      const str_ticket = `TCK${year}-${monthStr}-${String(nextNumber).padStart(6, "0")}`;
-
-      // Consultar el SLA configurado en la base de datos según la categoría y prioridad
-      const slaQuery = `
+    const slaQuery = `
         SELECT tiempo_maximo 
         FROM tickets.sla_configuracion 
         WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;
       `;
-      const slaRes = await client.query(slaQuery, [categoria_id, prioridad_id]);
+    const slaRes = await client.query(slaQuery, [categoria_id, prioridad_id]);
+    const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
 
-      // Si existe configuración se usan esas horas, de lo contrario se aplica un valor por defecto (24 horas)
-      const horasSla =
-        slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
+    const archivos = req.files || [];
+    const rutasImagenes = [];
+    const rutasVideos = [];
+    const rutasAudios = [];
 
-      // Clasificación de los archivos subidos por multer
-      const archivos = req.files || [];
-      const rutasImagenes = [];
-      const rutasVideos = [];
-      const rutasAudios = [];
+    archivos.forEach((file) => {
+      const rutaCompleta = `/var/www/uploads/${file.filename}`;
+      const tipoMime = file.mimetype;
 
-      archivos.forEach((file) => {
-        const rutaCompleta = `/var/www/uploads/${file.filename}`;
-        const tipoMime = file.mimetype;
+      if (tipoMime.startsWith("image/")) {
+        rutasImagenes.push(rutaCompleta);
+      } else if (tipoMime.startsWith("video/")) {
+        rutasVideos.push(rutaCompleta);
+      } else if (tipoMime.startsWith("audio/")) {
+        rutasAudios.push(rutaCompleta);
+      }
+    });
 
-        if (tipoMime.startsWith("image/")) {
-          rutasImagenes.push(rutaCompleta);
-        } else if (tipoMime.startsWith("video/")) {
-          rutasVideos.push(rutaCompleta);
-        } else if (tipoMime.startsWith("audio/")) {
-          rutasAudios.push(rutaCompleta);
-        }
-      });
+    const str_ruta_imagen =
+      rutasImagenes.length > 0 ? rutasImagenes.join(",") : null;
+    const str_ruta_video =
+      rutasVideos.length > 0 ? rutasVideos.join(",") : null;
+    const str_ruta_audio =
+      rutasAudios.length > 0 ? rutasAudios.join(",") : null;
 
-      // Convertir arreglos a cadenas separadas por coma o null si está vacío
-      const str_ruta_imagen =
-        rutasImagenes.length > 0 ? rutasImagenes.join(",") : null;
-      const str_ruta_video =
-        rutasVideos.length > 0 ? rutasVideos.join(",") : null;
-      const str_ruta_audio =
-        rutasAudios.length > 0 ? rutasAudios.join(",") : null;
-
-      // Inserción en la tabla de tickets con tipado explícito para evitar inconsistencias
-      const queryInsert = `
+    // Inserción incluyendo las nuevas columnas de cédula y correo del cliente externo
+    const queryInsert = `
         INSERT INTO tickets.tbl_tickets (
           str_ticket, tipo_ticket_id, cliente_id, creador_agente_id, cierre_agente_id, 
           departamento_id, categoria_id, prioridad_id, estatus_id, 
           canal_id, str_asunto, str_descripcion, int_sla, 
           str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id, 
+          str_cedula_cliente, str_correo_cliente,
           dmt_fecha_vencimiento_sla, created_at, updated_at
         ) VALUES (
           $1, 
@@ -226,6 +214,8 @@ router.post(
           $15::text, 
           $16::text, 
           $17::integer, 
+          $18::varchar,
+          $19::varchar,
           CURRENT_TIMESTAMP + ($13::integer * INTERVAL '1 hour'), 
           CURRENT_TIMESTAMP, 
           CURRENT_TIMESTAMP
@@ -233,50 +223,48 @@ router.post(
         RETURNING *;
       `;
 
-      const values = [
-        str_ticket,
-        tipo_ticket_id ? Number(tipo_ticket_id) : null,
-        cliente_id ? Number(cliente_id) : null,
-        usuarioIdSesion ? Number(usuarioIdSesion) : null,
-        cierre_agente_id ? Number(cierre_agente_id) : null,
-        departamento_id ? Number(departamento_id) : null,
-        categoria_id ? Number(categoria_id) : null,
-        prioridad_id ? Number(prioridad_id) : null,
-        estatus_id ? Number(estatus_id) : 17,
-        canal_id ? Number(canal_id) : null,
-        str_asunto || "",
-        str_descripcion || "",
-        Number(horasSla),
-        str_ruta_imagen,
-        str_ruta_video,
-        str_ruta_audio,
-        usuario_asignado_id ? Number(usuario_asignado_id) : null,
-      ];
+    const values = [
+      str_ticket,
+      tipo_ticket_id ? Number(tipo_ticket_id) : null,
+      cliente_id ? Number(cliente_id) : null,
+      usuarioIdSesion ? Number(usuarioIdSesion) : null,
+      cierre_agente_id ? Number(cierre_agente_id) : null,
+      departamento_id ? Number(departamento_id) : null,
+      categoria_id ? Number(categoria_id) : null,
+      prioridad_id ? Number(prioridad_id) : null,
+      estatus_id ? Number(estatus_id) : 17,
+      canal_id ? Number(canal_id) : null,
+      str_asunto || "",
+      str_descripcion || "",
+      Number(horasSla),
+      str_ruta_imagen,
+      str_ruta_video,
+      str_ruta_audio,
+      usuario_asignado_id ? Number(usuario_asignado_id) : null,
+      str_cedula_cliente || null,
+      str_correo_cliente || null,
+    ];
 
-      const nuevoTicket = await client.query(queryInsert, values);
+    const nuevoTicket = await client.query(queryInsert, values);
 
-      // Si todo sale bien, confirmamos los cambios en la base de datos
-      await client.query("COMMIT");
+    await client.query("COMMIT");
 
-      res.status(201).json({
-        success: true,
-        message: "Ticket creado y archivos multimedia guardados exitosamente.",
-        ticket: nuevoTicket.rows[0],
-      });
-    } catch (err) {
-      // Si ocurre cualquier error, revertimos cualquier cambio realizado
-      await client.query("ROLLBACK");
-      console.error("Error al crear el ticket con multimedia:", err.message);
-      res.status(500).json({
-        success: false,
-        error: "Error interno al procesar la solicitud del ticket.",
-      });
-    } finally {
-      // Muy importante: Liberar el cliente de vuelta al pool de conexiones
-      client.release();
-    }
-  },
-);
+    res.status(201).json({
+      success: true,
+      message: "Ticket creado y archivos multimedia guardados exitosamente.",
+      ticket: nuevoTicket.rows[0],
+    });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error al crear el ticket con multimedia:", err.message);
+    res.status(500).json({
+      success: false,
+      error: "Error interno al procesar la solicitud del ticket.",
+    });
+  } finally {
+    client.release();
+  }
+});
 
 // Endpoint para obtener el listado de tickets con filtros avanzados de fecha y relaciones completas
 router.get("/listar", async (req, res) => {
@@ -308,6 +296,8 @@ router.get("/listar", async (req, res) => {
     c.str_cedula AS cliente_cedula,
     c.str_email AS cliente_correo,
     c.str_telefono AS cliente_telefono,
+    t.str_cedula_cliente,      /* <-- Agregado */
+    t.str_correo_cliente,      /* <-- Agregado */
     t.creador_agente_id,
     u_creador.str_nombre AS creador_nombre,
     u_creador.str_apellido AS creador_apellido,

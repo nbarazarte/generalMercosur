@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
@@ -20,6 +20,13 @@ export default function NuevoTicket() {
   const [canalId, setCanalId] = useState("");
   const [departamentoId, setDepartamentoId] = useState("");
   const [usuarioId, setUsuarioId] = useState("");
+
+  // Estados para cédula y correo del cliente externo
+  const [strCedulaCliente, setStrCedulaCliente] = useState("");
+  const [strCorreoCliente, setStrCorreoCliente] = useState("");
+  const [correoInvalido, setCorreoInvalido] = useState(false);
+
+  const correoInputRef = useRef(null);
 
   // Estados para catálogos dinámicos
   const [listaDepartamentos, setListaDepartamentos] = useState([]);
@@ -43,7 +50,6 @@ export default function NuevoTicket() {
   const nombre = user?.nombre || "Analista";
   const apellido = user?.apellido || "";
 
-  // Función showToast integrada
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => {
@@ -96,7 +102,6 @@ export default function NuevoTicket() {
           setListaPrioridades(resMaestros.data.prioridades);
           setListaTipoTicket(resMaestros.data.tipoTicket);
 
-          // Preseleccionar por defecto el tipo externo si existe
           if (
             resMaestros.data.tipoTicket &&
             resMaestros.data.tipoTicket.length > 0
@@ -135,10 +140,10 @@ export default function NuevoTicket() {
     setUsuarioId("");
   }, [departamentoId, listaUsuarios]);
 
-  // Manejar cambio de tipo de ticket: limpia canal si es interno y limpia categoría al cambiar de tipo
   const handleTipoTicketChange = (idSeleccionado) => {
     setTipoTicketId(idSeleccionado);
-    setCategoriaId(""); // Limpiamos la categoría seleccionada al cambiar de tipo
+    setCategoriaId("");
+    setCorreoInvalido(false);
 
     const seleccionadoObj = listaTipoTicket.find(
       (t) => Number(t.id) === Number(idSeleccionado),
@@ -236,6 +241,9 @@ export default function NuevoTicket() {
     setPrioridadId("");
     setDepartamentoId("");
     setUsuarioId("");
+    setStrCedulaCliente("");
+    setStrCorreoCliente("");
+    setCorreoInvalido(false);
     setArchivosAdjuntos([]);
     setStrDescripcion("");
 
@@ -266,30 +274,57 @@ export default function NuevoTicket() {
     const urlIA = import.meta.env.VITE_URL_API_OLLAMA;
     const modelo = import.meta.env.VITE_URL_MODELO_OLLAMA;
 
+    const promptExterno = `Actúa como un analista de atencion al cliente de la app de la casa de bolsa Mercosur Casa de Bolsa S.A y redacta una descripción detallada y profesional para un ticket de soporte basándote en la siguiente nota o borrador del analista: "${strDescripcion}". 
+
+                          Utiliza estrictamente la siguiente estructura de salida:
+
+                          **Ticket de Soporte: [Insertar un breve Resumen del Asunto en Mayúsculas Iniciales]**
+
+                          **Descripción del Problema:**
+                          [Redacta una breve descripción técnica y formal del problema basado en el texto proporcionado, destacando su impacto o criticidad].
+
+                          **Pruebas Realizadas: [Redactalas en pasado y no repitas pasos ya realizados (no redundes)]**
+
+                          1. **[Paso 1 - Título Corto]:** [Descripción clara y accionable de la primera acción técnica o de verificación].
+                          2. **[Paso 2 - Título Corto]:** [Descripción clara de la siguiente acción de diagnóstico o revisión de servicios].
+                          3. **[Paso 3 - Título Corto]:** [Descripción de la solución alternativa o aplicación del procedimiento secundario].
+                          4. **[Paso 4 - Título Corto]:** [Instrucciones para la nueva validación junto con el usuario].`;
+
+    const promptInterno = `Actúa como un asistente que ayuda a los usuarios de Mercosur Casa de Bolsa a redactar sus tickets de soporte/requerimiento.
+
+                          Tu tarea es tomar la siguiente nota o borrador escrito por el usuario y reescribirlo para que sea claro, conciso, educado y bien estructurado.
+
+                          Organiza la redacción utilizando únicamente la siguiente estructura limpia:
+
+                          **Resumen de la Solicitud:**
+                          [Una o dos oraciones breves explicando qué requiere o qué problema presenta el usuario].
+
+                          **Detalle del Requerimiento o Falla:**
+                          [Explicación clara del contexto, los pasos o la situación actual según lo proporcionado por el usuario].
+
+                          **Resultado Esperado:**
+                          [Qué necesita o qué espera que el equipo de soporte / desarrollo resuelva o habilite].
+
+                          Reglas strictly:
+                          - Mantén la intención original del usuario sin inventar información adicional.
+                          - Devuelve únicamente la estructura redactada, sin saludos ni comentarios iniciales o finales.
+
+                          Texto del usuario:
+                          "${strDescripcion}"`;
+
+    const tipoObj = listaTipoTicket.find(
+      (t) => Number(t.id) === Number(tipoTicketId),
+    );
+    const esInterno = tipoObj
+      ? tipoObj.str_nombre.toLowerCase().includes("interno")
+      : false;
+
+    const promptSeleccionado = esInterno ? promptInterno : promptExterno;
+
     try {
       const response = await axios.post(urlIA, {
         model: modelo,
-        prompt: `Actúa como un asistente que ayuda a los usuarios de Mercosur Casa de Bolsa a redactar sus tickets de soporte/requerimiento.
-
-Tu tarea es tomar la siguiente nota o borrador escrito por el usuario y reescribirlo para que sea claro, conciso, educado y bien estructurado.
-
-Organiza la redacción utilizando únicamente la siguiente estructura limpia:
-
-**Resumen de la Solicitud:**
-[Una o dos oraciones breves explicando qué requiere o qué problema presenta el usuario].
-
-**Detalle del Requerimiento o Falla:**
-[Explicación clara del contexto, los pasos o la situación actual según lo proporcionado por el usuario].
-
-**Resultado Esperado:**
-[Qué necesita o qué espera que el equipo de soporte / desarrollo resuelva o habilite].
-
-Reglas estrictas:
-- Mantén la intención original del usuario sin inventar información adicional.
-- Devuelve únicamente la estructura redactada, sin saludos ni comentarios iniciales o finales.
-
-Texto del usuario:
-"${strDescripcion}"`,
+        prompt: promptSeleccionado,
         stream: false,
       });
 
@@ -332,7 +367,6 @@ Texto del usuario:
     }
   };
 
-  // Validar si el tipo de ticket actual es externo (para exigir canal)
   const esTipoExterno = () => {
     const seleccionado = listaTipoTicket.find(
       (t) => Number(t.id) === Number(tipoTicketId),
@@ -343,7 +377,6 @@ Texto del usuario:
       : false;
   };
 
-  // Obtener dinámicamente la lista de categorías según el tipo seleccionado
   const obtenerCategoriasActuales = () => {
     const seleccionado = listaTipoTicket.find(
       (t) => Number(t.id) === Number(tipoTicketId),
@@ -354,12 +387,68 @@ Texto del usuario:
     return esInterno ? listaCategoriasInternas : listaCategoriasExternas;
   };
 
+  // Expresión regular que exige usuario, @, servidor, punto y extensión válida (ej. .com, .com.ve, .net)
+  const validarCorreo = (correo) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(correo.trim());
+  };
+
+  // Validación ejecutada al perder el foco en el campo de correo
+  const handleCorreoBlur = () => {
+    if (!esTipoExterno()) return;
+
+    const valor = strCorreoCliente.trim();
+    if (!valor || !validarCorreo(valor)) {
+      setCorreoInvalido(true);
+      showToast(
+        "Debe ingresar un correo electrónico válido (ejemplo: usuario@dominio.com) para continuar.",
+        "error",
+      );
+      setTimeout(() => {
+        if (correoInputRef.current) {
+          correoInputRef.current.focus();
+        }
+      }, 50);
+    } else {
+      setCorreoInvalido(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!tipoTicketId) {
       showToast("Por favor seleccione el Tipo de Ticket.", "error");
       return;
+    }
+
+    if (esTipoExterno() && !strCedulaCliente.trim()) {
+      showToast(
+        "Por favor ingrese la cédula del cliente para tickets externos.",
+        "error",
+      );
+      return;
+    }
+
+    if (esTipoExterno()) {
+      if (!strCorreoCliente.trim()) {
+        showToast(
+          "Por favor ingrese el correo del cliente para tickets externos.",
+          "error",
+        );
+        if (correoInputRef.current) correoInputRef.current.focus();
+        return;
+      }
+
+      if (!validarCorreo(strCorreoCliente)) {
+        showToast(
+          "El correo electrónico debe incluir un dominio válido completo (ej. cliente@correo.com).",
+          "error",
+        );
+        setCorreoInvalido(true);
+        if (correoInputRef.current) correoInputRef.current.focus();
+        return;
+      }
     }
 
     if (esTipoExterno() && !canalId) {
@@ -399,8 +488,10 @@ Texto del usuario:
     formData.append("str_asunto", strAsunto);
     formData.append("str_descripcion", textoPlano);
 
-    if (esTipoExterno() && canalId) {
-      formData.append("canal_id", Number(canalId));
+    if (esTipoExterno()) {
+      if (canalId) formData.append("canal_id", Number(canalId));
+      formData.append("str_cedula_cliente", strCedulaCliente.trim());
+      formData.append("str_correo_cliente", strCorreoCliente.trim());
     }
 
     formData.append("categoria_id", Number(categoriaId));
@@ -592,7 +683,7 @@ Texto del usuario:
                   />
                 </div>
 
-                {/* Tipo de Ticket (Dinámico desde listaTipoTicket) */}
+                {/* Tipo de Ticket */}
                 <div className="field">
                   <label style={labelStyle}>Tipo de Ticket</label>
                   <div
@@ -663,7 +754,75 @@ Texto del usuario:
                   }}
                 />
 
-                {/* Canal de Recepción (Visible solo si es externo / app) */}
+                {/* DATOS DEL CLIENTE EXTERNO */}
+                {esTipoExterno() && (
+                  <div>
+                    <div className="flex flex-row gap-2.5">
+                      <div className="field">
+                        <label style={labelStyle}>Cédula del Cliente</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={8}
+                          value={strCedulaCliente}
+                          onChange={(e) => {
+                            const valorLimpio = e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 8);
+                            setStrCedulaCliente(valorLimpio);
+                          }}
+                          placeholder="Ej. 12345678"
+                          required={esTipoExterno()}
+                          style={inputStyle}
+                        />
+                      </div>
+
+                      <div className="field" style={{ flex: 1 }}>
+                        <label style={labelStyle}>Correo del Cliente</label>
+                        <input
+                          ref={correoInputRef}
+                          type="text"
+                          value={strCorreoCliente}
+                          onChange={(e) => {
+                            setStrCorreoCliente(e.target.value);
+                            if (
+                              correoInvalido &&
+                              validarCorreo(e.target.value)
+                            ) {
+                              setCorreoInvalido(false);
+                            }
+                          }}
+                          onBlur={handleCorreoBlur}
+                          placeholder="cliente@correo.com"
+                          required={esTipoExterno()}
+                          style={{
+                            ...inputStyle,
+                            border: correoInvalido
+                              ? "1px solid #ef4444"
+                              : inputStyle.border,
+                            boxShadow: correoInvalido
+                              ? "0 0 0 1px #ef4444"
+                              : "none",
+                          }}
+                        />
+                        {correoInvalido && (
+                          <span
+                            style={{
+                              color: "#ef4444",
+                              fontSize: "11px",
+                              marginTop: "3px",
+                              display: "block",
+                            }}
+                          >
+                            Correo no válido (ej. usuario@dominio.com)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Canal de Recepción */}
                 {esTipoExterno() && (
                   <div className="field">
                     <label style={labelStyle}>Canal de Recepción</label>
@@ -732,7 +891,7 @@ Texto del usuario:
                   </div>
                 )}
 
-                {/* Categoría (Cambia dinámicamente entre Externas e Internas) */}
+                {/* Categoría */}
                 <div className="field">
                   <label style={labelStyle}>Categoría</label>
                   <div
@@ -883,7 +1042,7 @@ Texto del usuario:
                     <button
                       type="button"
                       className="btn btn-ghost"
-                      onClick={handleGenerarConIA}
+                      onClick={() => handleGenerarConIA()}
                       style={{
                         cursor: "pointer",
                         padding: "2px 8px",
@@ -1085,7 +1244,7 @@ Texto del usuario:
                     <button
                       type="submit"
                       className="btn btn-primary"
-                      disabled={isGeneratingAI}
+                      disabled={isGeneratingAI || correoInvalido}
                       style={{ padding: "6px 14px", fontSize: "13px" }}
                     >
                       <DynamicIcon name="FiSave" /> Crear Ticket

@@ -634,6 +634,17 @@ function ToolbarFiltros({
     return Array.from(unicos);
   }, [catRoles]);
 
+  // Estilo unificado para los controles e inputs exactamente igual a casosTickets
+  const filtroStyle = {
+    padding: "8px 12px",
+    borderRadius: 6,
+    border: "1px solid var(--merco-border)",
+    fontSize: "12px",
+    background: "var(--merco-surface, #fff)",
+    color: "inherit",
+    outline: "none",
+  };
+
   return (
     <div className="ma-toolbar" style={{ marginBottom: 16 }}>
       <div
@@ -646,18 +657,18 @@ function ToolbarFiltros({
           alignItems: "center",
         }}
       >
-        <div style={{ position: "relative", minWidth: 170, flex: "1 1 150px" }}>
+        {/* Input de Búsqueda estilizado igual a casosTickets */}
+        <div style={{ position: "relative", minWidth: 200, flex: "1 1 200px" }}>
           <DynamicIcon
             name="FiSearch"
             style={{
               position: "absolute",
-              left: 10,
+              left: 12,
               top: "50%",
               transform: "translateY(-50%)",
               pointerEvents: "none",
-              color: "var(--merco-text, inherit)",
               opacity: 0.6,
-              fontSize: 16,
+              fontSize: 14,
             }}
           />
           <input
@@ -666,21 +677,18 @@ function ToolbarFiltros({
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             style={{
+              ...filtroStyle,
               width: "100%",
-              padding: "8px 12px 8px 32px",
-              borderRadius: 6,
-              border: "1px solid var(--merco-border, #444)",
-              background: "var(--merco-bg-subtle, rgba(255, 255, 255, 0.05))",
-              color: "var(--merco-text, inherit)",
-              fontSize: 13,
-              boxSizing: "border-box",
+              paddingLeft: "36px",
             }}
           />
         </div>
 
+        {/* Selects estilizados con filtroStyle */}
         <select
           value={filtroSistema}
           onChange={(e) => setFiltroSistema(e.target.value)}
+          style={filtroStyle}
         >
           <option value="">Todos los sistemas</option>
           {sistemas.map((s, index) => (
@@ -693,6 +701,7 @@ function ToolbarFiltros({
         <select
           value={filtroRol}
           onChange={(e) => setFiltroRol(e.target.value)}
+          style={filtroStyle}
         >
           <option value="">Todos los roles</option>
           {rolesUnicosFiltro.map((rolNombre, index) => (
@@ -705,6 +714,7 @@ function ToolbarFiltros({
         <select
           value={filtroDepartamento}
           onChange={(e) => setFiltroDepartamento(e.target.value)}
+          style={filtroStyle}
         >
           <option value="">Todos los departamentos</option>
           {departamentos?.map((d, index) => (
@@ -717,6 +727,7 @@ function ToolbarFiltros({
         <select
           value={filtroEstado}
           onChange={(e) => setFiltroEstado(e.target.value)}
+          style={filtroStyle}
         >
           <option value="">Todos los estados</option>
           <option value="active">Activo</option>
@@ -726,6 +737,7 @@ function ToolbarFiltros({
         <select
           value={filtroUltimoAcceso}
           onChange={(e) => setFiltroUltimoAcceso(e.target.value)}
+          style={filtroStyle}
         >
           <option value="">Último acceso (Todos)</option>
           <option value="hoy">Hoy</option>
