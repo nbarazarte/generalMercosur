@@ -1,417 +1,339 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
 import { useNavigate } from "react-router-dom";
+import axiosTickets from "../../utils/axiosTickets";
 
-/* ====== CONSTANTES DE CONFIGURACIÓN Y VALORES ====== */
-const CANALES = [
-  "Wasapi",
-  "Tickets",
-  "Presencial",
-  "Telefónico",
-  "Correo electrónico",
-  "Telegram",
-  "Instagram",
-];
-const AGENTES = [
-  "Eleany 1",
-  "Maria J 2",
-  "Andrea 3",
-  "Ira 4",
-  "Moises 5",
-  "Vanessa 6",
-  "Dayerling 7",
-  "Yabelis 8",
-  "Cladimar 9",
-  "Yetsimar 10",
-  "Zulmar 11",
-  "Albert 12",
-];
-const ESTADOS = ["Pendiente", "En Proceso", "Resuelto", "Escalado"];
-const SLA = { Alta: 4, Media: 24, Baja: 72 };
-const NOW = new Date("2026-09-24T15:30:00");
-const H = 3600 * 1000;
-
-/* ====== DATOS DE EJEMPLO DE CLIENTES Y CASOS ====== */
-const CLIENTES_INIT = [
-  {
-    cedula: "12.345.678",
-    nombre: "José Rodríguez",
-    tel: "+58 412-1234567",
-    correo: "jrodriguez@correo.com",
-  },
-  {
-    cedula: "15.987.654",
-    nombre: "María Gómez",
-    tel: "+58 414-9876543",
-    correo: "mgomez@correo.com",
-  },
-  {
-    cedula: "18.223.114",
-    nombre: "Carlos Pérez",
-    tel: "+58 416-5551020",
-    correo: "cperez@correo.com",
-  },
-  {
-    cedula: "20.556.789",
-    nombre: "Ana Fernández",
-    tel: "+58 424-3344556",
-    correo: "afernandez@correo.com",
-  },
-  {
-    cedula: "9.112.334",
-    nombre: "Luis Martínez",
-    tel: "+58 412-7788990",
-    correo: "lmartinez@correo.com",
-  },
-  {
-    cedula: "25.667.001",
-    nombre: "Daniela Suárez",
-    tel: "+58 426-1122334",
-    correo: "dsuarez@correo.com",
-  },
-  {
-    cedula: "14.009.556",
-    nombre: "Pedro Blanco",
-    tel: "+58 414-6677889",
-    correo: "pblanco@correo.com",
-  },
-  {
-    cedula: "22.778.443",
-    nombre: "Gabriela Ríos",
-    tel: "+58 412-2233445",
-    correo: "grios@correo.com",
-  },
-];
-
-const CASOS_INIT = [
-  {
-    id: 1042,
-    cedula: "12.345.678",
-    canal: "Wasapi",
-    tipo: "Firma Electrónica",
-    prioridad: "Alta",
-    estado: "En Proceso",
-    agente: "Eleany 1",
-    opened: new Date(NOW - 6 * H),
-    desc: "Cliente no puede renovar su firma electrónica, el token expiró.",
-    obs: "Escalado a soporte técnico de firma.",
-  },
-  {
-    id: 1041,
-    cedula: "15.987.654",
-    canal: "Tickets",
-    tipo: "Generar Certificado",
-    prioridad: "Media",
-    estado: "Pendiente",
-    agente: "Maria J 2",
-    opened: new Date(NOW - 3 * H),
-    desc: "Solicita certificado de custodia de valores.",
-    obs: "",
-  },
-  {
-    id: 1040,
-    cedula: "18.223.114",
-    canal: "Telefónico",
-    tipo: "Mercado de Valores",
-    prioridad: "Alta",
-    estado: "Pendiente",
-    agente: "Andrea 3",
-    opened: new Date(NOW - 9 * H),
-    desc: "Consulta sobre orden de compra no ejecutada.",
-    obs: "",
-  },
-  {
-    id: 1039,
-    cedula: "20.556.789",
-    canal: "Correo electrónico",
-    tipo: "Web App",
-    prioridad: "Baja",
-    estado: "En Proceso",
-    agente: "Ira 4",
-    opened: new Date(NOW - 30 * H),
-    desc: "No puede iniciar sesión en la Web App del portal.",
-    obs: "Se envió instructivo de recuperación.",
-  },
-  {
-    id: 1038,
-    cedula: "9.112.334",
-    canal: "Presencial",
-    tipo: "Caja Venezolana de Valores",
-    prioridad: "Media",
-    estado: "Resuelto",
-    agente: "Moises 5",
-    opened: new Date(NOW - 40 * H),
-    desc: "Actualización de datos en la CVV.",
-    obs: "Resuelto en sucursal.",
-  },
-  {
-    id: 1037,
-    cedula: "25.667.001",
-    canal: "Instagram",
-    tipo: "Otros",
-    prioridad: "Baja",
-    estado: "Resuelto",
-    agente: "Vanessa 6",
-    opened: new Date(NOW - 52 * H),
-    desc: "Consulta general de horarios de atención.",
-    obs: "",
-  },
-  {
-    id: 1036,
-    cedula: "14.009.556",
-    canal: "Wasapi",
-    tipo: "Legacy",
-    prioridad: "Alta",
-    estado: "Escalado",
-    agente: "Dayerling 7",
-    opened: new Date(NOW - 20 * H),
-    desc: "Error en sistema Legacy al consultar saldo.",
-    obs: "Escalado a área de sistemas.",
-  },
-  {
-    id: 1035,
-    cedula: "22.778.443",
-    canal: "Telegram",
-    tipo: "Akkela",
-    prioridad: "Media",
-    estado: "En Proceso",
-    agente: "Yabelis 8",
-    opened: new Date(NOW - 14 * H),
-    desc: "Problema de acceso a plataforma Akkela.",
-    obs: "",
-  },
-  {
-    id: 1034,
-    cedula: "12.345.678",
-    canal: "Tickets",
-    tipo: "Generar Certificado",
-    prioridad: "Baja",
-    estado: "Resuelto",
-    agente: "Eleany 1",
-    opened: new Date(NOW - 70 * H),
-    desc: "Certificado de tenencia solicitado.",
-    obs: "Enviado por correo.",
-  },
-  {
-    id: 1033,
-    cedula: "15.987.654",
-    canal: "Telefónico",
-    tipo: "Firma Electrónica",
-    prioridad: "Media",
-    estado: "Pendiente",
-    agente: "Cladimar 9",
-    opened: new Date(NOW - 26 * H),
-    desc: "Consulta sobre vigencia de firma electrónica.",
-    obs: "",
-  },
-  {
-    id: 1032,
-    cedula: "18.223.114",
-    canal: "Correo electrónico",
-    tipo: "Mercado de Valores",
-    prioridad: "Baja",
-    estado: "En Proceso",
-    agente: "Yetsimar 10",
-    opened: new Date(NOW - 10 * H),
-    desc: "Información sobre nuevos instrumentos de renta fija.",
-    obs: "",
-  },
-  {
-    id: 1031,
-    cedula: "20.556.789",
-    canal: "Presencial",
-    tipo: "Firma Electrónica",
-    prioridad: "Alta",
-    estado: "Resuelto",
-    agente: "Zulmar 11",
-    opened: new Date(NOW - 48 * H),
-    desc: "Emisión de firma electrónica nueva.",
-    obs: "Completado en sucursal.",
-  },
-  {
-    id: 1030,
-    cedula: "9.112.334",
-    canal: "Wasapi",
-    tipo: "Web App",
-    prioridad: "Media",
-    estado: "Resuelto",
-    agente: "Albert 12",
-    opened: new Date(NOW - 90 * H),
-    desc: "Asistencia para registro en Web App.",
-    obs: "",
-  },
-  {
-    id: 1029,
-    cedula: "25.667.001",
-    canal: "Tickets",
-    tipo: "Otros",
-    prioridad: "Media",
-    estado: "En Proceso",
-    agente: "Eleany 1",
-    opened: new Date(NOW - 2 * H),
-    desc: "Solicitud de estado de cuenta detallado.",
-    obs: "",
-  },
-];
-
-/* ====== UTILIDADES DE FORMATO Y CÁLCULO DE SLA ====== */
-function initials(n) {
-  return n
-    ? n
-        .split(" ")
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
-    : "—";
-}
-
-function fmtDT(d) {
-  return (
-    d.toLocaleDateString("es-VE", { day: "2-digit", month: "short" }) +
-    " " +
-    d.toLocaleTimeString("es-VE", { hour: "2-digit", minute: "2-digit" })
-  );
-}
-
-function slaInfo(c) {
-  if (c.estado === "Resuelto")
-    return { state: "ok", label: "Resuelto", mins: 0 };
-  const due = new Date(c.opened.getTime() + SLA[c.prioridad] * H);
-  const diff = due - NOW;
-  const mins = Math.round(diff / 60000);
-  if (diff <= 0) return { state: "late", label: "Vencido", mins };
-  if (diff <= 2 * H) return { state: "warn", label: "Por vencer", mins, due };
-  return { state: "ok", label: "En plazo", mins, due };
-}
-
-function humanLeft(mins) {
-  const a = Math.abs(mins);
-  const h = Math.floor(a / 60),
-    m = a % 60;
-  const s = (h ? h + "h " : "") + (m + "m");
-  return mins < 0 ? "hace " + s : "en " + s;
-}
-
-/* ============================ COMPONENTE CASOSTICKETS ============================ */
 export default function CasosTickets() {
   const navigate = useNavigate();
-  const [casos] = useState(CASOS_INIT);
-  const [clientes] = useState(CLIENTES_INIT);
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Estados para los Filtros
+  // Catálogos y filtros
+  const [listaDepartamentos, setListaDepartamentos] = useState([]);
+  const [listaUsuarios, setListaUsuarios] = useState([]);
+  const [empleadosFiltrados, setEmpleadosFiltrados] = useState([]);
+
+  const [canales, setCanales] = useState([]);
+  const [prioridades, setPrioridades] = useState([]);
+  const [tiposTicket, setTiposTicket] = useState([]);
+  const [listaEstatus, setListaEstatus] = useState([]);
+
+  // Estados de Filtros de la UI
   const [fBuscar, setFBuscar] = useState("");
+  const [fTipoTicket, setFTipoTicket] = useState("");
   const [fEstado, setFEstado] = useState("");
   const [fPrioridad, setFPrioridad] = useState("");
   const [fCanal, setFCanal] = useState("");
+  const [fDepartamento, setFDepartamento] = useState("");
   const [fAgente, setFAgente] = useState("");
 
-  const clienteDe = (ced) =>
-    clientes.find((c) => c.cedula === ced) || { nombre: "—", cedula: ced };
+  // Filtro unificado de fecha, hora y minutos
+  const [fTipoFecha, setFTipoFecha] = useState(""); // "creacion", "vencimiento", "cierre"
+  const [fFechaCalendario, setFFechaCalendario] = useState(""); // "YYYY-MM-DD"
+  const [fHora, setFHora] = useState(""); // "HH"
+  const [fMinuto, setFMinuto] = useState(""); // "mm"
+
+  // Estado para el Modal de Detalle / Respuesta
+  const [ticketSeleccionado, setTicketSeleccionado] = useState(null);
+  const [nuevoEstatusId, setNuevoEstatusId] = useState("");
+  const [nuevoAsignadoId, setNuevoAsignadoId] = useState("");
+  const [respuestaTexto, setRespuestaTexto] = useState("");
+  const [toast, setToast] = useState(null);
+
+  // Estilo unificado para todos los controles e inputs
+  const filtroStyle = {
+    padding: "8px 12px",
+    borderRadius: 6,
+    border: "1px solid var(--merco-border)",
+    fontSize: "12px",
+    background: "var(--merco-surface, #fff)",
+    color: "inherit",
+    outline: "none",
+  };
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3500);
+  };
+
+  useEffect(() => {
+    fetchCatalogosYTickets();
+  }, []);
+
+  const fetchCatalogosYTickets = async () => {
+    try {
+      setLoading(true);
+      const [resMaestros, resDeptUsers, resTickets] = await Promise.all([
+        axiosTickets.get("/datos-maestros"),
+        axiosTickets.get("/departamentos-usuarios"),
+        axiosTickets.get("/listar"),
+      ]);
+
+      if (resMaestros.data.success) {
+        setCanales(resMaestros.data.canales || []);
+        setPrioridades(resMaestros.data.prioridades || []);
+        setTiposTicket(resMaestros.data.tipoTicket || []);
+        setListaEstatus(resMaestros.data.estatus || []);
+      }
+
+      if (resDeptUsers.data.success) {
+        setListaDepartamentos(resDeptUsers.data.departamentos || []);
+        setListaUsuarios(resDeptUsers.data.usuarios || []);
+      }
+
+      if (resTickets.data.success) {
+        setTickets(resTickets.data.tickets || []);
+      }
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+      showToast("Error al cargar los casos de tickets.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (fDepartamento) {
+      const filtrados = listaUsuarios.filter(
+        (u) => Number(u.departamento_id) === Number(fDepartamento),
+      );
+      setEmpleadosFiltrados(filtrados);
+    } else {
+      setEmpleadosFiltrados(listaUsuarios);
+    }
+    setFAgente("");
+  }, [fDepartamento, listaUsuarios]);
+
+  const esFiltroInterno = useMemo(() => {
+    if (!fTipoTicket) return false;
+    const seleccionado = tiposTicket.find(
+      (t) => Number(t.id) === Number(fTipoTicket),
+    );
+    return seleccionado
+      ? seleccionado.str_nombre.toLowerCase().includes("interno")
+      : false;
+  }, [fTipoTicket, tiposTicket]);
+
+  useEffect(() => {
+    if (esFiltroInterno) {
+      setFCanal("");
+    }
+  }, [esFiltroInterno]);
 
   const limpiarFiltros = () => {
     setFBuscar("");
+    setFTipoTicket("");
     setFEstado("");
     setFPrioridad("");
     setFCanal("");
+    setFDepartamento("");
     setFAgente("");
+    setFTipoFecha("");
+    setFFechaCalendario("");
+    setFHora("");
+    setFMinuto("");
   };
 
-  // Filtrado dinámico de casos
-  const casosFiltrados = useMemo(() => {
-    return casos
-      .filter((c) => {
-        const cl = clienteDe(c.cedula);
-        if (fEstado && c.estado !== fEstado) return false;
-        if (fPrioridad && c.prioridad !== fPrioridad) return false;
-        if (fCanal && c.canal !== fCanal) return false;
-        if (fAgente && c.agente !== fAgente) return false;
-        if (fBuscar) {
-          const q = fBuscar.toLowerCase().trim();
-          const texto =
-            `${cl.cedula} ${cl.nombre} ${c.desc} ${c.tipo} #${c.id}`.toLowerCase();
-          if (!texto.includes(q)) return false;
+  const handleGuardarCambiosTicket = async (e) => {
+    e.preventDefault();
+    if (!ticketSeleccionado) return;
+
+    try {
+      const response = await axiosTickets.put(
+        `/actualizar/${ticketSeleccionado.id}`,
+        {
+          estatus_id:
+            nuevoEstatusId !== ""
+              ? Number(nuevoEstatusId)
+              : Number(ticketSeleccionado.estatus_id),
+          usuario_asignado_id:
+            nuevoAsignadoId !== "" && nuevoAsignadoId !== "null"
+              ? Number(nuevoAsignadoId)
+              : null,
+          str_descripcion_respuesta: respuestaTexto,
+        },
+      );
+
+      if (response.data.success) {
+        showToast("Ticket actualizado exitosamente.", "success");
+        setTicketSeleccionado(null);
+        setRespuestaTexto("");
+        fetchCatalogosYTickets();
+      }
+    } catch (error) {
+      console.error("Error al actualizar ticket:", error);
+      showToast("Error al guardar los cambios del ticket.", "error");
+    }
+  };
+
+  const abrirDetalle = (ticket) => {
+    setTicketSeleccionado(ticket);
+    setNuevoEstatusId(ticket.estatus_id ? String(ticket.estatus_id) : "");
+    setNuevoAsignadoId(
+      ticket.usuario_asignado_id ? String(ticket.usuario_asignado_id) : "",
+    );
+    setRespuestaTexto("");
+  };
+
+  const esTicketDetalleInterno = useMemo(() => {
+    if (!ticketSeleccionado) return false;
+    return ticketSeleccionado.tipo_ticket?.toLowerCase().includes("interno");
+  }, [ticketSeleccionado]);
+
+  // Validar si el ticket seleccionado está cerrado
+  const esTicketCerrado = useMemo(() => {
+    if (!ticketSeleccionado) return false;
+    const estatusStr = (ticketSeleccionado.estatus_nombre || "").toLowerCase();
+    return estatusStr.includes("cerrado");
+  }, [ticketSeleccionado]);
+
+  const ticketsFiltrados = useMemo(() => {
+    return tickets.filter((t) => {
+      if (fTipoTicket && Number(t.tipo_ticket_id) !== Number(fTipoTicket))
+        return false;
+      if (fEstado && Number(t.estatus_id) !== Number(fEstado)) return false;
+      if (fPrioridad && Number(t.prioridad_id) !== Number(fPrioridad))
+        return false;
+      if (!esFiltroInterno && fCanal && Number(t.canal_id) !== Number(fCanal))
+        return false;
+      if (fDepartamento && Number(t.departamento_id) !== Number(fDepartamento))
+        return false;
+      if (fAgente && Number(t.usuario_asignado_id) !== Number(fAgente))
+        return false;
+
+      // Filtro unificado de fecha, hora y minutos
+      if (fTipoFecha && fFechaCalendario) {
+        let fechaTarget = null;
+        if (fTipoFecha === "creacion") fechaTarget = t.created_at;
+        if (fTipoFecha === "vencimiento")
+          fechaTarget = t.dmt_fecha_vencimiento_sla;
+        if (fTipoFecha === "cierre") fechaTarget = t.dmt_fecha_cierre;
+
+        if (!fechaTarget) return false;
+
+        const dTicket = new Date(fechaTarget);
+        const [anio, mes, dia] = fFechaCalendario.split("-").map(Number);
+
+        if (
+          dTicket.getFullYear() !== anio ||
+          dTicket.getMonth() + 1 !== mes ||
+          dTicket.getDate() !== dia
+        ) {
+          return false;
         }
-        return true;
-      })
-      .sort((a, b) => b.opened - a.opened);
-  }, [casos, fBuscar, fEstado, fPrioridad, fCanal, fAgente, clientes]);
+
+        if (fHora !== "") {
+          if (dTicket.getHours() !== Number(fHora)) return false;
+        }
+
+        if (fMinuto !== "") {
+          if (dTicket.getMinutes() !== Number(fMinuto)) return false;
+        }
+      }
+
+      if (fBuscar) {
+        const q = fBuscar.toLowerCase().trim();
+        const texto =
+          `${t.str_ticket} ${t.cliente_nombre || ""} ${t.cliente_cedula || ""} ${t.str_asunto} ${t.str_descripcion}`.toLowerCase();
+        if (!texto.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [
+    tickets,
+    fBuscar,
+    fTipoTicket,
+    fEstado,
+    fPrioridad,
+    fCanal,
+    fDepartamento,
+    fAgente,
+    fTipoFecha,
+    fFechaCalendario,
+    fHora,
+    fMinuto,
+    esFiltroInterno,
+  ]);
 
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Casos Tickets">
-      <div
-        style={{
-          fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
-          padding: "10px 0",
-        }}
-      >
-        {/* BARRA DE HERRAMIENTAS Y FILTROS */}
-        <div className="ma-toolbar" style={{ marginTop: 0 }}>
-          <div className="ma-filters">
-            <div
-              style={{ position: "relative", minWidth: 170, flex: "1 1 150px" }}
-            >
-              <DynamicIcon
-                name="FiSearch"
-                style={{
-                  position: "absolute",
-                  left: 10,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  pointerEvents: "none",
-                  color: "var(--merco-text, inherit)",
-                  opacity: 0.6,
-                  fontSize: 16,
-                }}
-              />
-              <input
-                type="text"
-                placeholder="Cédula, nombre o descripción..."
-                value={fBuscar}
-                onChange={(e) => setFBuscar(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "8px 12px 8px 32px",
-                  borderRadius: 6,
-                  border: "1px solid var(--merco-border, #444)",
-                  background:
-                    "var(--merco-bg-subtle, rgba(255, 255, 255, 0.05))",
-                  color: "var(--merco-text, inherit)",
-                  fontSize: 13,
-                  boxSizing: "border-box",
-                }}
-              />
-            </div>
+      {toast && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            zIndex: 9999,
+            padding: "12px 20px",
+            borderRadius: 8,
+            background: toast.type === "success" ? "#10b981" : "#ef4444",
+            color: "#fff",
+            fontWeight: 500,
+          }}
+        >
+          {toast.message}
+        </div>
+      )}
 
+      <div
+        style={{ fontFamily: "var(--font-sans, system-ui)", padding: "10px 0" }}
+      >
+        {/* BARRA DE FILTROS */}
+        <div
+          className="ma-toolbar"
+          style={{
+            marginTop: 0,
+            flexDirection: "column",
+            alignItems: "stretch",
+            gap: "12px",
+          }}
+        >
+          {/* FILA 1: Selects y Filtros de Fecha Unificados */}
+          <div
+            className="ma-filters"
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px",
+              alignItems: "center",
+            }}
+          >
             <select
-              value={fEstado}
-              onChange={(e) => setFEstado(e.target.value)}
+              value={fTipoTicket}
+              onChange={(e) => setFTipoTicket(e.target.value)}
+              style={filtroStyle}
             >
-              <option value="">Todos los estados</option>
-              {ESTADOS.map((e) => (
-                <option key={e} value={e}>
-                  {e}
+              <option value="">Tipo de Ticket</option>
+              {tiposTicket.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.str_nombre}
                 </option>
               ))}
             </select>
 
             <select
-              value={fPrioridad}
-              onChange={(e) => setFPrioridad(e.target.value)}
+              value={fEstado}
+              onChange={(e) => setFEstado(e.target.value)}
+              style={filtroStyle}
             >
-              <option value="">Toda prioridad</option>
-              <option value="Alta">Alta</option>
-              <option value="Media">Media</option>
-              <option value="Baja">Baja</option>
+              <option value="">Todos los estatus</option>
+              {listaEstatus.map((est) => (
+                <option key={est.id} value={est.id}>
+                  {est.str_nombre}
+                </option>
+              ))}
             </select>
 
-            <select value={fCanal} onChange={(e) => setFCanal(e.target.value)}>
-              <option value="">Todos los canales</option>
-              {CANALES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
+            <select
+              value={fDepartamento}
+              onChange={(e) => setFDepartamento(e.target.value)}
+              style={filtroStyle}
+            >
+              <option value="">Departamentos</option>
+              {listaDepartamentos.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.str_nombre}
                 </option>
               ))}
             </select>
@@ -419,196 +341,476 @@ export default function CasosTickets() {
             <select
               value={fAgente}
               onChange={(e) => setFAgente(e.target.value)}
+              style={filtroStyle}
             >
-              <option value="">Todos los agentes</option>
-              {AGENTES.map((a) => (
-                <option key={a} value={a}>
-                  {a}
+              <option value="">Empleado Asignado</option>
+              {empleadosFiltrados.map((emp) => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.str_nombre} {emp.str_apellido}
                 </option>
               ))}
             </select>
 
-            <button className="btn btn-ghost btn-sm" onClick={limpiarFiltros}>
-              Limpiar
-            </button>
+            <select
+              value={fPrioridad}
+              onChange={(e) => setFPrioridad(e.target.value)}
+              style={filtroStyle}
+            >
+              <option value="">Prioridad</option>
+              {prioridades.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.str_nombre}
+                </option>
+              ))}
+            </select>
+
+            {!esFiltroInterno && (
+              <select
+                value={fCanal}
+                onChange={(e) => setFCanal(e.target.value)}
+                style={filtroStyle}
+              >
+                <option value="">Canal</option>
+                {canales.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.str_nombre}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* SECCIÓN DE FECHA, HORA Y MINUTOS UNIFICADA */}
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <select
+                value={fTipoFecha}
+                onChange={(e) => {
+                  setFTipoFecha(e.target.value);
+                  if (!e.target.value) {
+                    setFFechaCalendario("");
+                    setFHora("");
+                    setFMinuto("");
+                  }
+                }}
+                style={filtroStyle}
+              >
+                <option value="">Filtrar por fecha...</option>
+                <option value="creacion">Fecha de Creación</option>
+                <option value="vencimiento">Fecha de Vencimiento</option>
+                <option value="cierre">Fecha de Cierre</option>
+              </select>
+
+              <input
+                type="date"
+                value={fFechaCalendario}
+                disabled={!fTipoFecha}
+                max={new Date().toISOString().split("T")[0]}
+                onChange={(e) => {
+                  setFFechaCalendario(e.target.value);
+                  if (!e.target.value) {
+                    setFHora("");
+                    setFMinuto("");
+                  }
+                }}
+                style={{
+                  ...filtroStyle,
+                  opacity: fTipoFecha ? 1 : 0.6,
+                }}
+              />
+
+              <select
+                value={fHora}
+                disabled={!fFechaCalendario}
+                onChange={(e) => {
+                  setFHora(e.target.value);
+                  if (!e.target.value) setFMinuto("");
+                }}
+                style={{
+                  ...filtroStyle,
+                  opacity: fFechaCalendario ? 1 : 0.6,
+                }}
+              >
+                <option value="">Hora</option>
+                {Array.from({ length: 24 }, (_, i) => (
+                  <option key={i} value={i}>
+                    {String(i).padStart(2, "0")}h
+                  </option>
+                ))}
+              </select>
+
+              <span>:</span>
+
+              <select
+                value={fMinuto}
+                disabled={!fFechaCalendario || fHora === ""}
+                onChange={(e) => setFMinuto(e.target.value)}
+                style={{
+                  ...filtroStyle,
+                  opacity: fFechaCalendario && fHora !== "" ? 1 : 0.6,
+                }}
+              >
+                <option value="">Min</option>
+                {Array.from({ length: 60 }, (_, i) => (
+                  <option key={i} value={i}>
+                    {String(i).padStart(2, "0")}m
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* CONTENEDOR DE BOTONES DE ACCIÓN */}
-          <div style={{ display: "flex", gap: "10px" }}>
+          {/* FILA 2: Input de Búsqueda y Botón Limpiar */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              borderTop: "1px solid var(--merco-border)",
+              paddingTop: "10px",
+            }}
+          >
+            <div style={{ position: "relative", flex: 1 }}>
+              <DynamicIcon
+                name="FiSearch"
+                style={{
+                  position: "absolute",
+                  left: 12,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  opacity: 0.6,
+                }}
+              />
+              <input
+                type="text"
+                placeholder="Buscar por N° Ticket, cédula, asunto o descripción..."
+                value={fBuscar}
+                onChange={(e) => setFBuscar(e.target.value)}
+                style={{
+                  ...filtroStyle,
+                  width: "100%",
+                  paddingLeft: "36px",
+                }}
+              />
+            </div>
+
             <button
-              className="btn btn-accent"
-              onClick={() => navigate("/tickets/nuevo-ticket")}
+              className="btn btn-ghost btn-sm"
+              onClick={limpiarFiltros}
+              style={{ whiteSpace: "nowrap" }}
             >
-              <span>
-                <DynamicIcon name="FiPlus" />
-              </span>{" "}
-              Nuevo ticket
+              Limpiar Filtros
             </button>
           </div>
         </div>
 
         {/* TABLA DE CASOS / TICKETS */}
-        <div className="ma-card">
+        <div className="ma-card" style={{ marginTop: 15 }}>
           <div style={{ overflowX: "auto" }}>
-            <table className="ma-table">
+            <table className="ma-table" style={{ fontSize: "12px" }}>
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>CLIENTE</th>
+                  <th>TICKET</th>
+                  <th>TIPO</th>
                   <th>CANAL</th>
-                  <th>TIPO DE CONSULTA</th>
+                  <th>CLIENTE / SOLICITANTE</th>
+                  <th>ASUNTO</th>
+                  <th>DEPARTAMENTO</th>
                   <th>PRIORIDAD</th>
-                  <th>ESTADO</th>
-                  <th>AGENTE</th>
-                  <th>FECHA</th>
+                  <th>ASIGNADO A</th>
+                  <th>CREACIÓN</th>
+                  <th>VENCIMIENTO</th>
+                  <th>CIERRE</th>
                   <th>SLA</th>
-                  <th>ACCIONES</th>
+                  <th>ESTADO</th>
+                  <th>DURACION</th>
                 </tr>
               </thead>
               <tbody>
-                {casosFiltrados.length === 0 ? (
+                {loading ? (
                   <tr>
                     <td
-                      colSpan="10"
+                      colSpan="14"
+                      style={{ textAlign: "center", padding: "30px" }}
+                    >
+                      Cargando tickets...
+                    </td>
+                  </tr>
+                ) : ticketsFiltrados.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="14"
                       style={{
                         textAlign: "center",
                         padding: "40px",
                         color: "var(--merco-muted)",
                       }}
                     >
-                      Sin casos que coincidan con los filtros aplicados
+                      No se encontraron tickets con los filtros aplicados.
                     </td>
                   </tr>
                 ) : (
-                  casosFiltrados.map((c) => {
-                    const cl = clienteDe(c.cedula);
-                    const s = slaInfo(c);
+                  ticketsFiltrados.map((t) => {
+                    const tipoLower = (t.tipo_ticket || "").toLowerCase();
+                    let estiloTipo = {
+                      background: "rgba(59, 130, 246, 0.1)",
+                      color: "#3b82f6",
+                    };
+                    if (tipoLower.includes("interno")) {
+                      estiloTipo = {
+                        background: "rgba(147, 51, 234, 0.1)",
+                        color: "#9333ea",
+                      };
+                    }
+
+                    const prioridadLower = (
+                      t.prioridad_nombre || ""
+                    ).toLowerCase();
+                    let estiloPrioridad = {
+                      background: "rgba(108, 117, 125, 0.1)",
+                      color: "#6c757d",
+                    };
+
+                    if (
+                      prioridadLower.includes("alta") ||
+                      prioridadLower.includes("urgente") ||
+                      prioridadLower.includes("crítica")
+                    ) {
+                      estiloPrioridad = {
+                        background: "rgba(239, 68, 68, 0.1)",
+                        color: "#ef4444",
+                      };
+                    } else if (prioridadLower.includes("media")) {
+                      estiloPrioridad = {
+                        background: "rgba(245, 158, 11, 0.1)",
+                        color: "#f59e0b",
+                      };
+                    } else if (prioridadLower.includes("baja")) {
+                      estiloPrioridad = {
+                        background: "rgba(16, 185, 129, 0.1)",
+                        color: "#10b981",
+                      };
+                    }
+
+                    const estatusLower = (t.estatus_nombre || "").toLowerCase();
+                    let estiloEstatus = {
+                      background: "rgba(47, 111, 237, 0.1)",
+                      color: "var(--merco-blue)",
+                    };
+
+                    if (estatusLower.includes("en proceso")) {
+                      estiloEstatus = {
+                        background: "rgba(59, 130, 246, 0.1)",
+                        color: "#3b82f6",
+                      };
+                    } else if (estatusLower.includes("pendiente de usuario")) {
+                      estiloEstatus = {
+                        background: "rgba(245, 158, 11, 0.1)",
+                        color: "#f59e0b",
+                      };
+                    } else if (estatusLower.includes("pendiente de terceros")) {
+                      estiloEstatus = {
+                        background: "rgba(168, 85, 247, 0.1)",
+                        color: "#a855f7",
+                      };
+                    } else if (estatusLower.includes("en aprobación")) {
+                      estiloEstatus = {
+                        background: "rgba(236, 72, 153, 0.1)",
+                        color: "#ec4899",
+                      };
+                    } else if (estatusLower.includes("resuelto")) {
+                      estiloEstatus = {
+                        background: "rgba(16, 185, 129, 0.1)",
+                        color: "#10b981",
+                      };
+                    } else if (estatusLower.includes("cerrado")) {
+                      estiloEstatus = {
+                        background: "rgba(107, 114, 128, 0.1)",
+                        color: "#6b7280",
+                      };
+                    } else if (estatusLower.includes("cancelado")) {
+                      estiloEstatus = {
+                        background: "rgba(239, 68, 68, 0.1)",
+                        color: "#ef4444",
+                      };
+                    }
+
+                    const obtenerPrimerNombreApellido = (
+                      nombreCompleto,
+                      apellidoCompleto,
+                    ) => {
+                      const primerNombre =
+                        (nombreCompleto || "").trim().split(" ")[0] || "";
+                      const primerApellido =
+                        (apellidoCompleto || "").trim().split(" ")[0] || "";
+                      const resultado =
+                        `${primerNombre} ${primerApellido}`.trim();
+                      return resultado || "—";
+                    };
+
+                    const solicitanteNombre = t.cliente_nombre
+                      ? t.cliente_nombre
+                      : t.creador_nombre;
+                    const solicitanteApellido = t.cliente_apellido
+                      ? t.cliente_apellido
+                      : t.creador_apellido;
+                    const nombreClienteCorto = obtenerPrimerNombreApellido(
+                      solicitanteNombre,
+                      solicitanteApellido,
+                    );
+
+                    const nombreAsignadoCorto = obtenerPrimerNombreApellido(
+                      t.asignado_nombre,
+                      t.asignado_apellido,
+                    );
 
                     return (
-                      <tr key={c.id}>
+                      <tr
+                        key={t.id}
+                        onClick={() => abrirDetalle(t)}
+                        style={{ fontSize: "12px", cursor: "pointer" }}
+                        title="Haz clic para ver detalles"
+                      >
                         <td>
-                          <b
-                            style={{
-                              color: "var(--merco-text)",
-                              fontWeight: 700,
-                            }}
-                          >
-                            #{c.id}
-                          </b>
+                          <b>{t.str_ticket}</b>
                         </td>
                         <td>
-                          <div className="ma-user-cell">
-                            <div
-                              className="ma-ava"
+                          <span
+                            style={{
+                              padding: "3px 8px",
+                              borderRadius: 10,
+                              fontSize: 11,
+                              fontWeight: 600,
+                              ...estiloTipo,
+                            }}
+                          >
+                            {t.tipo_ticket || "—"}
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className="tag"
+                            style={{
+                              fontSize: 11,
+                              background: "rgba(14, 165, 233, 0.1)",
+                              color: "#0ea5e9",
+                            }}
+                          >
+                            {t.canal_nombre || "—"}
+                          </span>
+                        </td>
+                        <td>
+                          <div>
+                            <b>{nombreClienteCorto}</b>
+                            <small
                               style={{
-                                background: "var(--secondary)",
-                                color: "var(--merco-text)",
+                                display: "block",
+                                color: "var(--merco-muted)",
+                                fontSize: "11px",
                               }}
                             >
-                              {initials(cl.nombre)}
-                            </div>
-                            <div>
-                              <b
-                                style={{
-                                  color: "var(--merco-text)",
-                                  display: "block",
-                                }}
-                              >
-                                {cl.nombre}
-                              </b>
-                              <small style={{ color: "var(--merco-muted)" }}>
-                                {cl.cedula}
-                              </small>
-                            </div>
+                              {t.cliente_cedula || "Interno"}
+                            </small>
                           </div>
-                        </td>
-                        <td>
-                          <span className="tag">{c.canal}</span>
-                        </td>
-                        <td style={{ color: "var(--merco-text)" }}>{c.tipo}</td>
-                        <td style={{ fontWeight: 600 }}>
-                          <span
-                            style={{
-                              color:
-                                c.prioridad === "Alta"
-                                  ? "var(--merco-danger, #DC2626)"
-                                  : c.prioridad === "Media"
-                                    ? "var(--merco-warning, #D97706)"
-                                    : "var(--merco-success, #1f9d63)",
-                            }}
-                          >
-                            ● {c.prioridad}
-                          </span>
-                        </td>
-                        <td>
-                          <span
-                            style={{
-                              padding: "3px 10px",
-                              borderRadius: 12,
-                              fontSize: 12,
-                              fontWeight: 500,
-                              background:
-                                c.estado === "Pendiente"
-                                  ? "rgba(47, 111, 237, 0.15)"
-                                  : c.estado === "En Proceso"
-                                    ? "rgba(216, 153, 42, 0.15)"
-                                    : c.estado === "Resuelto"
-                                      ? "rgba(31, 157, 99, 0.15)"
-                                      : "rgba(209, 67, 91, 0.15)",
-                              color:
-                                c.estado === "Pendiente"
-                                  ? "var(--merco-blue, #2f6fed)"
-                                  : c.estado === "En Proceso"
-                                    ? "var(--merco-warning, #d8992a)"
-                                    : c.estado === "Resuelto"
-                                      ? "var(--merco-success, #1f9d63)"
-                                      : "var(--merco-danger, #d1435b)",
-                            }}
-                          >
-                            ● {c.estado}
-                          </span>
-                        </td>
-                        <td style={{ color: "var(--merco-muted)" }}>
-                          {c.agente}
                         </td>
                         <td
                           style={{
+                            maxWidth: 180,
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
                             whiteSpace: "nowrap",
-                            color: "var(--merco-muted)",
-                            fontSize: 12,
                           }}
+                          title={t.str_asunto}
                         >
-                          {fmtDT(c.opened)}
+                          {t.str_asunto}
                         </td>
+                        <td>{t.departamento_nombre || "—"}</td>
                         <td>
                           <span
                             style={{
+                              padding: "3px 8px",
+                              borderRadius: 10,
+                              fontSize: 11,
                               fontWeight: 600,
-                              color:
-                                s.state === "late"
-                                  ? "var(--merco-danger, #DC2626)"
-                                  : s.state === "warn"
-                                    ? "var(--merco-warning, #D97706)"
-                                    : "var(--merco-success, #1f9d63)",
+                              ...estiloPrioridad,
                             }}
                           >
-                            {s.label}
+                            {t.prioridad_nombre || "—"}
                           </span>
-                          {c.estado !== "Resuelto" && (
-                            <div
-                              style={{
-                                fontSize: 11,
-                                color: "var(--merco-muted)",
-                              }}
-                            >
-                              {humanLeft(s.mins)}
-                            </div>
-                          )}
                         </td>
                         <td>
-                          <button className="btn-icon" title="Ver detalle">
-                            <DynamicIcon name="FiEye" />
-                          </button>
+                          {nombreAsignadoCorto === "—"
+                            ? "Sin asignar"
+                            : nombreAsignadoCorto}
+                        </td>
+                        {/* Creación */}
+                        <td style={{ fontSize: 11, whiteSpace: "nowrap" }}>
+                          {new Date(t.created_at).toLocaleString("es-VE")}
+                        </td>
+                        {/* Vencimiento */}
+                        <td style={{ fontSize: 11, whiteSpace: "nowrap" }}>
+                          {t.dmt_fecha_vencimiento_sla
+                            ? new Date(
+                                t.dmt_fecha_vencimiento_sla,
+                              ).toLocaleString("es-VE")
+                            : "—"}
+                        </td>
+                        {/* Cierre */}
+                        <td style={{ fontSize: 11, whiteSpace: "nowrap" }}>
+                          {t.dmt_fecha_cierre
+                            ? new Date(t.dmt_fecha_cierre).toLocaleString(
+                                "es-VE",
+                              )
+                            : "—"}
+                        </td>
+                        {/* SLA */}
+                        <td style={{ whiteSpace: "nowrap" }}>
+                          <span
+                            className="tag"
+                            style={{
+                              fontSize: 11,
+                              background: "rgba(245, 158, 11, 0.1)",
+                              color: "#f59e0b",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {t.int_sla ? `${t.int_sla} hrs` : "—"}
+                          </span>
+                        </td>
+                        {/* Estado antes de Duración */}
+                        <td style={{ whiteSpace: "nowrap" }}>
+                          <span
+                            style={{
+                              padding: "3px 8px",
+                              borderRadius: 10,
+                              fontSize: 11,
+                              fontWeight: 600,
+                              ...estiloEstatus,
+                            }}
+                          >
+                            {t.estatus_nombre || "En Proceso"}
+                          </span>
+                        </td>
+                        {/* Duración */}
+                        <td style={{ fontSize: 11, whiteSpace: "nowrap" }}>
+                          <span
+                            className="tag"
+                            style={{
+                              fontSize: 11,
+                              background: t.dmt_fecha_cierre
+                                ? "rgba(16, 185, 129, 0.1)"
+                                : "rgba(107, 114, 128, 0.1)",
+                              color: t.dmt_fecha_cierre ? "#10b981" : "#6b7280",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {t.tiempo_resolucion || "En curso"}
+                          </span>
                         </td>
                       </tr>
                     );
@@ -617,22 +819,279 @@ export default function CasosTickets() {
               </tbody>
             </table>
           </div>
-
-          <div
-            style={{
-              padding: "12px 18px",
-              borderTop: "1px solid var(--merco-border)",
-              fontSize: 12.5,
-              color: "var(--merco-muted)",
-            }}
-          >
-            <b>{casosFiltrados.length}</b>{" "}
-            {casosFiltrados.length === 1
-              ? "caso encontrado"
-              : "casos encontrados"}
-          </div>
         </div>
       </div>
+
+      {/* MODAL DE DETALLE, RESPUESTA Y CAMBIO DE ESTATUS */}
+      {ticketSeleccionado && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10000,
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          <div
+            className="ma-card"
+            style={{
+              width: "90%",
+              maxWidth: 650,
+              maxHeight: "90vh",
+              overflowY: "auto",
+              background: "var(--merco-surface)",
+              padding: 24,
+              borderRadius: 10,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "10px" }}
+              >
+                <h3 style={{ margin: 0 }}>
+                  Ticket: {ticketSeleccionado.str_ticket}
+                </h3>
+                {esTicketCerrado && (
+                  <span
+                    style={{
+                      padding: "2px 8px",
+                      borderRadius: 10,
+                      fontSize: 11,
+                      fontWeight: 600,
+                      background: "rgba(107, 114, 128, 0.1)",
+                      color: "#6b7280",
+                    }}
+                  >
+                    Cerrado (Solo lectura)
+                  </span>
+                )}
+              </div>
+              <button
+                className="btn-icon"
+                onClick={() => setTicketSeleccionado(null)}
+              >
+                <DynamicIcon name="FiX" />
+              </button>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 12,
+                fontSize: 13,
+                marginBottom: 16,
+                background: "var(--merco-bg-subtle)",
+                padding: 12,
+                borderRadius: 6,
+              }}
+            >
+              <div>
+                <b>Asunto:</b> {ticketSeleccionado.str_asunto}
+              </div>
+              <div>
+                <b>Tipo:</b> {ticketSeleccionado.tipo_ticket}
+              </div>
+              <div>
+                <b>Departamento:</b> {ticketSeleccionado.departamento_nombre}
+              </div>
+              <div>
+                <b>Categoría:</b> {ticketSeleccionado.categoria_nombre}
+              </div>
+              <div>
+                <b>Prioridad:</b> {ticketSeleccionado.prioridad_nombre}
+              </div>
+              <div>
+                <b>SLA:</b>{" "}
+                <span style={{ color: "#f59e0b", fontWeight: 600 }}>
+                  {ticketSeleccionado.int_sla
+                    ? `${ticketSeleccionado.int_sla} horas`
+                    : "—"}
+                </span>
+              </div>
+              <div>
+                <b>F. Vencimiento:</b>{" "}
+                {ticketSeleccionado.dmt_fecha_vencimiento_sla
+                  ? new Date(
+                      ticketSeleccionado.dmt_fecha_vencimiento_sla,
+                    ).toLocaleString("es-VE")
+                  : "—"}
+              </div>
+
+              {!esTicketDetalleInterno && (
+                <div>
+                  <b>Canal:</b> {ticketSeleccionado.canal_nombre || "N/A"}
+                </div>
+              )}
+            </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <label
+                style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  display: "block",
+                  marginBottom: 4,
+                }}
+              >
+                Descripción:
+              </label>
+              <div
+                style={{
+                  padding: 10,
+                  border: "1px solid var(--merco-border)",
+                  borderRadius: 6,
+                  fontSize: 13,
+                  background: "var(--merco-bg-card)",
+                }}
+              >
+                {ticketSeleccionado.str_descripcion}
+              </div>
+            </div>
+
+            <form onSubmit={handleGuardarCambiosTicket}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 12,
+                  marginBottom: 12,
+                }}
+              >
+                <div>
+                  <label
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
+                    Cambiar Estatus
+                  </label>
+                  <select
+                    value={nuevoEstatusId}
+                    disabled={esTicketCerrado}
+                    onChange={(e) => setNuevoEstatusId(e.target.value)}
+                    style={{
+                      ...filtroStyle,
+                      width: "100%",
+                      opacity: esTicketCerrado ? 0.7 : 1,
+                      cursor: esTicketCerrado ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {listaEstatus.map((est) => (
+                      <option key={est.id} value={String(est.id)}>
+                        {est.str_nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label
+                    style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      display: "block",
+                      marginBottom: 4,
+                    }}
+                  >
+                    Asignar a:
+                  </label>
+                  <select
+                    key={`select-asignado-${ticketSeleccionado?.id || "modal"}`}
+                    defaultValue={
+                      ticketSeleccionado?.usuario_asignado_id
+                        ? String(ticketSeleccionado.usuario_asignado_id)
+                        : ""
+                    }
+                    disabled={esTicketCerrado}
+                    onChange={(e) => {
+                      setNuevoAsignadoId(e.target.value);
+                    }}
+                    style={{
+                      ...filtroStyle,
+                      width: "100%",
+                      opacity: esTicketCerrado ? 0.7 : 1,
+                      cursor: esTicketCerrado ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    <option value="">Sin asignar</option>
+                    {listaUsuarios.map((u) => (
+                      <option key={u.id} value={String(u.id)}>
+                        {u.str_nombre} {u.str_apellido}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 600,
+                    display: "block",
+                    marginBottom: 4,
+                  }}
+                >
+                  Responder
+                </label>
+                <textarea
+                  rows={3}
+                  value={respuestaTexto}
+                  disabled={esTicketCerrado}
+                  onChange={(e) => setRespuestaTexto(e.target.value)}
+                  placeholder={
+                    esTicketCerrado
+                      ? "Este ticket está cerrado y no admite respuestas."
+                      : "Escriba una respuesta o avance para este ticket..."
+                  }
+                  style={{
+                    ...filtroStyle,
+                    width: "100%",
+                    resize: "vertical",
+                    opacity: esTicketCerrado ? 0.7 : 1,
+                    cursor: esTicketCerrado ? "not-allowed" : "text",
+                  }}
+                />
+              </div>
+
+              <div
+                style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}
+              >
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => setTicketSeleccionado(null)}
+                >
+                  {esTicketCerrado ? "Cerrar" : "Cancelar"}
+                </button>
+                {!esTicketCerrado && (
+                  <button type="submit" className="btn btn-primary">
+                    <DynamicIcon name="FiSave" /> Guardar Cambios
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </SystemLayout>
   );
 }

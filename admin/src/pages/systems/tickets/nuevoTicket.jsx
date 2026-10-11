@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import axiosTickets from "../../utils/axiosTickets";
 
-// Importaciones de BlockNote corregidas
+// Importaciones de BlockNote
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import { es } from "@blocknote/core/locales";
@@ -13,33 +14,44 @@ import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 
 export default function NuevoTicket() {
+  const [tipoTicketId, setTipoTicketId] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
   const [prioridadId, setPrioridadId] = useState("");
   const [canalId, setCanalId] = useState("");
   const [departamentoId, setDepartamentoId] = useState("");
-  const [usuarioId, setUsuarioId] = useState(""); // Empleado asignado opcional
+  const [usuarioId, setUsuarioId] = useState("");
 
-  // Estados para catálogos dinámicos desde la BD
+  // Estados para catálogos dinámicos
   const [listaDepartamentos, setListaDepartamentos] = useState([]);
   const [listaUsuarios, setListaUsuarios] = useState([]);
   const [empleadosFiltrados, setEmpleadosFiltrados] = useState([]);
 
   const [listaCanales, setListaCanales] = useState([]);
-  const [listaCategorias, setListaCategorias] = useState([]);
+  const [listaCategoriasExternas, setListaCategoriasExternas] = useState([]);
+  const [listaCategoriasInternas, setListaCategoriasInternas] = useState([]);
   const [listaPrioridades, setListaPrioridades] = useState([]);
+  const [listaTipoTicket, setListaTipoTicket] = useState([]);
 
   const [strAsunto, setStrAsunto] = useState("");
   const [strDescripcion, setStrDescripcion] = useState("");
-  const [intSla, setIntSla] = useState(24);
 
   const [archivosAdjuntos, setArchivosAdjuntos] = useState([]);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const user = useSelector((state) => state.auth?.user);
   const nombre = user?.nombre || "Analista";
   const apellido = user?.apellido || "";
 
-  // Detector de tema en tiempo real idéntico al de MiFicha y Permisos
+  // Función showToast integrada
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 3500);
+  };
+
+  // Detector de tema en tiempo real
   const [isDarkMode, setIsDarkMode] = useState(
     () =>
       document.documentElement.classList.contains("dark") ||
@@ -66,7 +78,7 @@ export default function NuevoTicket() {
     return () => observer.disconnect();
   }, []);
 
-  // Cargar departamentos, usuarios y datos maestros desde el backend al montar el componente
+  // Cargar catálogos
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -79,18 +91,38 @@ export default function NuevoTicket() {
         const resMaestros = await axiosTickets.get("/datos-maestros");
         if (resMaestros.data.success) {
           setListaCanales(resMaestros.data.canales);
-          setListaCategorias(resMaestros.data.categorias);
+          setListaCategoriasExternas(resMaestros.data.categoria_externa || []);
+          setListaCategoriasInternas(resMaestros.data.categoria_interna || []);
           setListaPrioridades(resMaestros.data.prioridades);
+          setListaTipoTicket(resMaestros.data.tipoTicket);
+
+          // Preseleccionar por defecto el tipo externo si existe
+          if (
+            resMaestros.data.tipoTicket &&
+            resMaestros.data.tipoTicket.length > 0
+          ) {
+            const externoDefault = resMaestros.data.tipoTicket.find(
+              (t) =>
+                t.str_nombre.toLowerCase().includes("externo") ||
+                t.str_nombre.toLowerCase().includes("app"),
+            );
+            setTipoTicketId(
+              externoDefault
+                ? String(externoDefault.id)
+                : String(resMaestros.data.tipoTicket[0].id),
+            );
+          }
         }
       } catch (error) {
         console.error("Error al cargar los catálogos del sistema:", error);
+        showToast("Error al cargar los catálogos del sistema.", "error");
       }
     };
 
     fetchData();
   }, []);
 
-  // Filtrar empleados cada vez que cambie el departamento seleccionado
+  // Filtrar empleados por departamento
   useEffect(() => {
     if (departamentoId) {
       const filtrados = listaUsuarios.filter(
@@ -102,6 +134,22 @@ export default function NuevoTicket() {
     }
     setUsuarioId("");
   }, [departamentoId, listaUsuarios]);
+
+  // Manejar cambio de tipo de ticket: limpia canal si es interno y limpia categoría al cambiar de tipo
+  const handleTipoTicketChange = (idSeleccionado) => {
+    setTipoTicketId(idSeleccionado);
+    setCategoriaId(""); // Limpiamos la categoría seleccionada al cambiar de tipo
+
+    const seleccionadoObj = listaTipoTicket.find(
+      (t) => Number(t.id) === Number(idSeleccionado),
+    );
+    if (
+      seleccionadoObj &&
+      seleccionadoObj.str_nombre.toLowerCase().includes("interno")
+    ) {
+      setCanalId("");
+    }
+  };
 
   const obtenerIconoPorTipo = (tipoMime, nombreArchivo) => {
     if (!tipoMime) {
@@ -177,13 +225,17 @@ export default function NuevoTicket() {
   };
 
   const handleLimpiarTodo = async () => {
+    if (listaTipoTicket.length > 0) {
+      setTipoTicketId(String(listaTipoTicket[0].id));
+    } else {
+      setTipoTicketId("");
+    }
     setStrAsunto("");
     setCanalId("");
     setCategoriaId("");
     setPrioridadId("");
     setDepartamentoId("");
     setUsuarioId("");
-    setIntSla(24);
     setArchivosAdjuntos([]);
     setStrDescripcion("");
 
@@ -203,8 +255,9 @@ export default function NuevoTicket() {
 
   const handleGenerarConIA = async () => {
     if (!strDescripcion.trim()) {
-      alert(
+      showToast(
         "Por favor escriba algo en el editor de Descripción primero para que la IA pueda redactarlo.",
+        "error",
       );
       return;
     }
@@ -216,21 +269,27 @@ export default function NuevoTicket() {
     try {
       const response = await axios.post(urlIA, {
         model: modelo,
-        prompt: `Actúa como un analista de atencion al cliente de la app de la casa de bolsa Mercosur Casa de Bolsa S.A y redacta una descripción detallada y profesional para un ticket de soporte basándote en la siguiente nota o borrador del analista: "${strDescripcion}". 
+        prompt: `Actúa como un asistente que ayuda a los usuarios de Mercosur Casa de Bolsa a redactar sus tickets de soporte/requerimiento.
 
-        Utiliza estrictamente la siguiente estructura de salida:
+Tu tarea es tomar la siguiente nota o borrador escrito por el usuario y reescribirlo para que sea claro, conciso, educado y bien estructurado.
 
-        **Ticket de Soporte: [Insertar un breve Resumen del Asunto en Mayúsculas Iniciales]**
+Organiza la redacción utilizando únicamente la siguiente estructura limpia:
 
-        **Descripción del Problema:**
-        [Redacta una breve descripción técnica y formal del problema basado en el texto proporcionado, destacando su impacto o criticidad].
+**Resumen de la Solicitud:**
+[Una o dos oraciones breves explicando qué requiere o qué problema presenta el usuario].
 
-        **Pruebas Realizadas:**
+**Detalle del Requerimiento o Falla:**
+[Explicación clara del contexto, los pasos o la situación actual según lo proporcionado por el usuario].
 
-        1. **[Paso 1 - Título Corto]:** [Descripción clara y accionable].
-        2. **[Paso 2 - Título Corto]:** [Descripción clara de la siguiente acción].
-        3. **[Paso 3 - Título Corto]:** [Descripción de la solución alternativa].
-        4. **[Paso 4 - Título Corto]:** [Instrucciones para la nueva validación].`,
+**Resultado Esperado:**
+[Qué necesita o qué espera que el equipo de soporte / desarrollo resuelva o habilite].
+
+Reglas estrictas:
+- Mantén la intención original del usuario sin inventar información adicional.
+- Devuelve únicamente la estructura redactada, sin saludos ni comentarios iniciales o finales.
+
+Texto del usuario:
+"${strDescripcion}"`,
         stream: false,
       });
 
@@ -253,25 +312,68 @@ export default function NuevoTicket() {
       let textoActual = "";
       for (let i = 0; i < textoGenerado.length; i++) {
         textoActual += textoGenerado[i];
-        if (editor && editor.document.length > 0) {
-          await editor.updateBlock(editor.document[0], {
-            type: "paragraph",
-            content: textoActual,
-          });
+        if (i % 3 === 0 || i === textoGenerado.length - 1) {
+          if (editor && editor.document.length > 0) {
+            await editor.updateBlock(editor.document[0], {
+              type: "paragraph",
+              content: textoActual,
+            });
+          }
         }
-        await new Promise((resolve) => setTimeout(resolve, 1));
+        await new Promise((resolve) => setTimeout(resolve, 5));
       }
     } catch (error) {
       console.error("Error de conexión con Ollama:", error);
-      alert(
+      showToast(
         "No se pudo conectar con Ollama. Verifique que el servicio y la red estén activos.",
+        "error",
       );
       setIsGeneratingAI(false);
     }
   };
 
+  // Validar si el tipo de ticket actual es externo (para exigir canal)
+  const esTipoExterno = () => {
+    const seleccionado = listaTipoTicket.find(
+      (t) => Number(t.id) === Number(tipoTicketId),
+    );
+    return seleccionado
+      ? seleccionado.str_nombre.toLowerCase().includes("externo") ||
+          seleccionado.str_nombre.toLowerCase().includes("app")
+      : false;
+  };
+
+  // Obtener dinámicamente la lista de categorías según el tipo seleccionado
+  const obtenerCategoriasActuales = () => {
+    const seleccionado = listaTipoTicket.find(
+      (t) => Number(t.id) === Number(tipoTicketId),
+    );
+    if (!seleccionado) return listaCategoriasExternas;
+
+    const esInterno = seleccionado.str_nombre.toLowerCase().includes("interno");
+    return esInterno ? listaCategoriasInternas : listaCategoriasExternas;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!tipoTicketId) {
+      showToast("Por favor seleccione el Tipo de Ticket.", "error");
+      return;
+    }
+
+    if (esTipoExterno() && !canalId) {
+      showToast(
+        "Por favor seleccione un Canal de Recepción para tickets externos.",
+        "error",
+      );
+      return;
+    }
+
+    if (!categoriaId) {
+      showToast("Por favor seleccione una Categoría.", "error");
+      return;
+    }
 
     const confirmado = window.confirm(
       `¿${nombre}, confirmas que realizaste las acciones descritas y estás de acuerdo con la redacción final para crear este ticket?`,
@@ -293,9 +395,14 @@ export default function NuevoTicket() {
     const textoPlano = extraerTextoDeDescripcion(descripcionContent);
 
     const formData = new FormData();
+    formData.append("tipo_ticket_id", Number(tipoTicketId));
     formData.append("str_asunto", strAsunto);
     formData.append("str_descripcion", textoPlano);
-    formData.append("canal_id", Number(canalId));
+
+    if (esTipoExterno() && canalId) {
+      formData.append("canal_id", Number(canalId));
+    }
+
     formData.append("categoria_id", Number(categoriaId));
     formData.append("prioridad_id", Number(prioridadId));
     formData.append("departamento_id", Number(departamentoId));
@@ -304,7 +411,6 @@ export default function NuevoTicket() {
       formData.append("usuario_asignado_id", Number(usuarioId));
     }
 
-    formData.append("int_sla", Number(intSla));
     formData.append("estatus_id", 1);
 
     archivosAdjuntos.forEach((fileObj, index) => {
@@ -321,116 +427,149 @@ export default function NuevoTicket() {
       });
 
       if (response.data.success) {
-        alert("Ticket creado y archivos multimedia guardados con éxito.");
+        showToast("Ticket creado con éxito.", "success");
         await handleLimpiarTodo();
       }
     } catch (error) {
       console.error("Error al enviar el ticket:", error);
-      alert(
+      showToast(
         error.response?.data?.error ||
           "Ocurrió un error al procesar la solicitud del ticket.",
+        "error",
       );
     }
   };
 
+  const inputStyle = {
+    width: "100%",
+    padding: "6px 10px",
+    border: "1px solid var(--merco-border, #ccc)",
+    borderRadius: "6px",
+    fontFamily: "inherit",
+    fontSize: "13px",
+    background: "var(--input, var(--merco-surface))",
+    color: "var(--merco-text)",
+  };
+
+  const labelStyle = {
+    fontSize: "12px",
+    fontWeight: "600",
+    marginBottom: "4px",
+    display: "block",
+  };
+
+  const categoriasActuales = obtenerCategoriasActuales();
+
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Nuevo Ticket">
+      {toast && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "12px 20px",
+            borderRadius: 8,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            backgroundColor: toast.type === "success" ? "#10b981" : "#ef4444",
+            color: "#ffffff",
+            fontWeight: 500,
+            fontSize: 14,
+            animation: "fadeIn 0.3s ease-in-out",
+          }}
+        >
+          <DynamicIcon
+            name={
+              toast.type === "success" ? "FiCheckCircle" : "FiAlertTriangle"
+            }
+          />
+          <span>{toast.message}</span>
+        </div>
+      )}
+
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
-          padding: "10px 0",
+          padding: "4px 0",
         }}
       >
         <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
-          <form onSubmit={handleSubmit} style={{ padding: "24px" }}>
+          <form onSubmit={handleSubmit} style={{ padding: "16px" }}>
             <div
               className="ticket-grid-container"
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1.6fr",
-                gap: "24px",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: "16px",
                 alignItems: "start",
               }}
             >
-              {/* Columna Izquierda */}
+              {/* Columna Izquierda: Parámetros del Ticket */}
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "16px",
+                  gap: "12px",
                   background: "var(--merco-bg-subtle, rgba(0, 0, 0, 0.02))",
                   border: "1px solid var(--merco-border, #ccc)",
                   borderRadius: "8px",
-                  padding: "20px",
+                  padding: "14px",
                 }}
               >
-                <div className="field">
-                  <label>De (Remitente)</label>
-                  <input
-                    className="field input"
-                    value={`${nombre} ${apellido} <${user?.email || "analista@mercosur.com"}>`}
-                    readOnly
-                    disabled
-                    style={{
-                      width: "100%",
-                      padding: "10px 13px",
-                      border: "1px solid var(--merco-border)",
-                      borderRadius: "9px",
-                      fontFamily: "inherit",
-                      fontSize: "14px",
-                      background: "var(--input, var(--merco-surface))",
-                      color: "var(--merco-text)",
-                    }}
-                  />
+                {/* Remitente y Departamento */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                    gap: "10px",
+                  }}
+                >
+                  <div className="field">
+                    <label style={labelStyle}>De (Remitente)</label>
+                    <input
+                      className="field input"
+                      value={`${nombre} ${apellido}`}
+                      readOnly
+                      disabled
+                      title={`${nombre} ${apellido} <${user?.email || "analista@mercosur.com"}>`}
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  <div className="field">
+                    <label style={labelStyle}>Para (Departamento)</label>
+                    <select
+                      value={departamentoId}
+                      onChange={(e) => setDepartamentoId(e.target.value)}
+                      required
+                      style={inputStyle}
+                    >
+                      <option value="">Seleccione...</option>
+                      {listaDepartamentos.map((dep) => (
+                        <option key={dep.id} value={dep.id}>
+                          {dep.str_nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 <div className="field">
-                  <label>Para (Departamento)</label>
-                  <select
-                    value={departamentoId}
-                    onChange={(e) => setDepartamentoId(e.target.value)}
-                    required
-                    style={{
-                      width: "100%",
-                      padding: "10px 13px",
-                      border: "1px solid var(--merco-border)",
-                      borderRadius: "9px",
-                      fontFamily: "inherit",
-                      fontSize: "14px",
-                      background: "var(--input, var(--merco-surface))",
-                      color: "var(--merco-text)",
-                    }}
-                  >
-                    <option value="">Seleccione departamento...</option>
-                    {listaDepartamentos.map((dep) => (
-                      <option key={dep.id} value={dep.id}>
-                        {dep.str_nombre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="field">
-                  <label>Empleado Asignado (Opcional)</label>
+                  <label style={labelStyle}>Empleado Asignado (Opcional)</label>
                   <select
                     value={usuarioId}
                     onChange={(e) => setUsuarioId(e.target.value)}
                     disabled={!departamentoId}
-                    style={{
-                      width: "100%",
-                      padding: "10px 13px",
-                      border: "1px solid var(--merco-border)",
-                      borderRadius: "9px",
-                      fontFamily: "inherit",
-                      fontSize: "14px",
-                      background: "var(--input, var(--merco-surface))",
-                      color: "var(--merco-text)",
-                    }}
+                    style={inputStyle}
                   >
                     <option value="">
                       {departamentoId
-                        ? "Sin empleado específico (Opcional)"
-                        : "Primero seleccione un departamento..."}
+                        ? "Sin asignación directa"
+                        : "Seleccione departamento primero..."}
                     </option>
                     {empleadosFiltrados.map((emp) => (
                       <option key={emp.id} value={emp.id}>
@@ -440,78 +579,39 @@ export default function NuevoTicket() {
                   </select>
                 </div>
 
+                {/* Asunto */}
                 <div className="field">
-                  <label>Asunto</label>
+                  <label style={labelStyle}>Asunto</label>
                   <input
                     value={strAsunto}
                     onChange={(e) => setStrAsunto(e.target.value)}
-                    placeholder="Resumen breve del requerimiento..."
+                    placeholder="Resumen del requerimiento..."
                     maxLength={100}
                     required
-                    style={{
-                      width: "100%",
-                      padding: "10px 13px",
-                      border: "1px solid var(--merco-border)",
-                      borderRadius: "9px",
-                      fontFamily: "inherit",
-                      fontSize: "14px",
-                      background: "var(--input, var(--merco-surface))",
-                      color: "var(--merco-text)",
-                    }}
+                    style={inputStyle}
                   />
                 </div>
 
+                {/* Tipo de Ticket (Dinámico desde listaTipoTicket) */}
                 <div className="field">
-                  <label>SLA (Horas)</label>
-                  <input
-                    type="number"
-                    value={intSla}
-                    onChange={(e) => setIntSla(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "10px 13px",
-                      border: "1px solid var(--merco-border)",
-                      borderRadius: "9px",
-                      fontFamily: "inherit",
-                      fontSize: "14px",
-                      background: "var(--input, var(--merco-surface))",
-                      color: "var(--merco-text)",
-                    }}
-                  />
-                </div>
-
-                <hr
-                  style={{
-                    border: "none",
-                    borderTop: "1px solid var(--merco-border, #ccc)",
-                    margin: "4px 0",
-                  }}
-                />
-
-                {/* --- CANAL DE RECEPCIÓN (Responsive Automático) --- */}
-                <div className="field">
-                  <label style={{ marginBottom: "8px", display: "block" }}>
-                    Canal de Recepción
-                  </label>
-
-                  {/* Versión Escritorio (Radios) */}
+                  <label style={labelStyle}>Tipo de Ticket</label>
                   <div
                     className="desktop-selector"
-                    style={{ flexWrap: "wrap", gap: "6px" }}
+                    style={{ flexWrap: "wrap", gap: "4px" }}
                   >
-                    {listaCanales.map((c) => {
-                      const isSelected = Number(canalId) === c.id;
+                    {listaTipoTicket.map((t) => {
+                      const isSelected = Number(tipoTicketId) === t.id;
                       return (
                         <label
-                          key={c.id}
+                          key={t.id}
                           style={{
-                            display: "flex",
+                            display: "inline-flex",
                             alignItems: "center",
-                            gap: "6px",
-                            fontSize: "12px",
+                            gap: "5px",
+                            fontSize: "11px",
                             cursor: "pointer",
-                            padding: "5px 8px",
-                            borderRadius: "6px",
+                            padding: "3px 8px",
+                            borderRadius: "4px",
                             color: "var(--merco-text)",
                             backgroundColor: isSelected
                               ? isDarkMode
@@ -520,106 +620,138 @@ export default function NuevoTicket() {
                               : isDarkMode
                                 ? "rgba(255, 255, 255, 0.03)"
                                 : "var(--merco-bg-card, #fff)",
-                            border: `1px solid ${
-                              isSelected
-                                ? "var(--merco-accent, #f95700)"
-                                : "var(--merco-border, #ccc)"
-                            }`,
+                            border: `1px solid ${isSelected ? "var(--merco-accent, #f95700)" : "var(--merco-border, #ccc)"}`,
                             fontWeight: isSelected ? "600" : "400",
-                            transition: "all 0.15s ease",
                           }}
                         >
                           <input
                             type="radio"
-                            name="canal_id_desk"
-                            value={c.id}
+                            name="tipo_ticket_id_desk"
+                            value={t.id}
                             checked={isSelected}
-                            onChange={(e) => setCanalId(e.target.value)}
+                            onChange={() => handleTipoTicketChange(t.id)}
                             required
-                            style={{
-                              appearance: "none",
-                              WebkitAppearance: "none",
-                              width: "12px",
-                              height: "12px",
-                              borderRadius: "50%",
-                              border: `2px solid ${
-                                isSelected
-                                  ? "var(--merco-accent, #f95700)"
-                                  : "var(--merco-border, #999)"
-                              }`,
-                              outline: "none",
-                              backgroundColor: isSelected
-                                ? "var(--merco-accent, #f95700)"
-                                : "transparent",
-                              boxShadow: isSelected
-                                ? isDarkMode
-                                  ? "inset 0 0 0 2px #1e1e1e"
-                                  : "inset 0 0 0 2px #fff"
-                                : "none",
-                              cursor: "pointer",
-                              margin: 0,
-                              display: "grid",
-                              placeContent: "center",
-                              transition: "all 0.15s ease",
-                            }}
+                            style={{ margin: 0, width: "11px", height: "11px" }}
                           />
-                          {c.str_nombre}
+                          {t.str_nombre}
                         </label>
                       );
                     })}
                   </div>
-
-                  {/* Versión Móvil (Select) */}
                   <div className="mobile-selector">
                     <select
-                      value={canalId}
-                      onChange={(e) => setCanalId(e.target.value)}
+                      value={tipoTicketId}
+                      onChange={(e) => handleTipoTicketChange(e.target.value)}
                       required
-                      style={{
-                        width: "100%",
-                        padding: "10px 13px",
-                        border: "1px solid var(--merco-border)",
-                        borderRadius: "9px",
-                        fontFamily: "inherit",
-                        fontSize: "14px",
-                        background: "var(--input, var(--merco-surface))",
-                        color: "var(--merco-text)",
-                      }}
+                      style={inputStyle}
                     >
-                      <option value="">Seleccione canal...</option>
-                      {listaCanales.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.str_nombre}
+                      <option value="">Seleccione tipo de ticket...</option>
+                      {listaTipoTicket.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.str_nombre}
                         </option>
                       ))}
                     </select>
                   </div>
                 </div>
 
-                {/* --- CATEGORÍA DEL REQUERIMIENTO (Responsive Automático) --- */}
-                <div className="field">
-                  <label style={{ marginBottom: "8px", display: "block" }}>
-                    Categoría del Requerimiento
-                  </label>
+                <hr
+                  style={{
+                    border: "none",
+                    borderTop: "1px solid var(--merco-border, #ccc)",
+                    margin: "2px 0",
+                  }}
+                />
 
-                  {/* Versión Escritorio (Radios) */}
+                {/* Canal de Recepción (Visible solo si es externo / app) */}
+                {esTipoExterno() && (
+                  <div className="field">
+                    <label style={labelStyle}>Canal de Recepción</label>
+                    <div
+                      className="desktop-selector"
+                      style={{ flexWrap: "wrap", gap: "4px" }}
+                    >
+                      {listaCanales.map((c) => {
+                        const isSelected = Number(canalId) === c.id;
+                        return (
+                          <label
+                            key={c.id}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "5px",
+                              fontSize: "11px",
+                              cursor: "pointer",
+                              padding: "3px 8px",
+                              borderRadius: "4px",
+                              color: "var(--merco-text)",
+                              backgroundColor: isSelected
+                                ? isDarkMode
+                                  ? "rgba(249, 87, 0, 0.25)"
+                                  : "rgba(249, 87, 0, 0.12)"
+                                : isDarkMode
+                                  ? "rgba(255, 255, 255, 0.03)"
+                                  : "var(--merco-bg-card, #fff)",
+                              border: `1px solid ${isSelected ? "var(--merco-accent, #f95700)" : "var(--merco-border, #ccc)"}`,
+                              fontWeight: isSelected ? "600" : "400",
+                            }}
+                          >
+                            <input
+                              type="radio"
+                              name="canal_id_desk"
+                              value={c.id}
+                              checked={isSelected}
+                              onChange={(e) => setCanalId(e.target.value)}
+                              required={esTipoExterno()}
+                              style={{
+                                margin: 0,
+                                width: "11px",
+                                height: "11px",
+                              }}
+                            />
+                            {c.str_nombre}
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <div className="mobile-selector">
+                      <select
+                        value={canalId}
+                        onChange={(e) => setCanalId(e.target.value)}
+                        required={esTipoExterno()}
+                        style={inputStyle}
+                      >
+                        <option value="">Seleccione canal...</option>
+                        {listaCanales.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.str_nombre}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {/* Categoría (Cambia dinámicamente entre Externas e Internas) */}
+                <div className="field">
+                  <label style={labelStyle}>Categoría</label>
                   <div
                     className="desktop-selector"
-                    style={{ flexWrap: "wrap", gap: "6px" }}
+                    style={{ flexWrap: "wrap", gap: "4px" }}
                   >
-                    {listaCategorias.map((cat) => {
+                    {categoriasActuales.map((cat) => {
                       const isSelected = Number(categoriaId) === cat.id;
                       return (
                         <label
                           key={cat.id}
                           style={{
-                            display: "flex",
+                            display: "inline-flex",
                             alignItems: "center",
-                            gap: "6px",
-                            fontSize: "12px",
+                            gap: "5px",
+                            fontSize: "11px",
                             cursor: "pointer",
-                            padding: "5px 8px",
-                            borderRadius: "6px",
+                            padding: "3px 8px",
+                            borderRadius: "4px",
                             color: "var(--merco-text)",
                             backgroundColor: isSelected
                               ? isDarkMode
@@ -628,13 +760,8 @@ export default function NuevoTicket() {
                               : isDarkMode
                                 ? "rgba(255, 255, 255, 0.03)"
                                 : "var(--merco-bg-card, #fff)",
-                            border: `1px solid ${
-                              isSelected
-                                ? "var(--merco-accent, #f95700)"
-                                : "var(--merco-border, #ccc)"
-                            }`,
+                            border: `1px solid ${isSelected ? "var(--merco-accent, #f95700)" : "var(--merco-border, #ccc)"}`,
                             fontWeight: isSelected ? "600" : "400",
-                            transition: "all 0.15s ease",
                           }}
                         >
                           <input
@@ -644,58 +771,22 @@ export default function NuevoTicket() {
                             checked={isSelected}
                             onChange={(e) => setCategoriaId(e.target.value)}
                             required
-                            style={{
-                              appearance: "none",
-                              WebkitAppearance: "none",
-                              width: "12px",
-                              height: "12px",
-                              borderRadius: "50%",
-                              border: `2px solid ${
-                                isSelected
-                                  ? "var(--merco-accent, #f95700)"
-                                  : "var(--merco-border, #999)"
-                              }`,
-                              outline: "none",
-                              backgroundColor: isSelected
-                                ? "var(--merco-accent, #f95700)"
-                                : "transparent",
-                              boxShadow: isSelected
-                                ? isDarkMode
-                                  ? "inset 0 0 0 2px #1e1e1e"
-                                  : "inset 0 0 0 2px #fff"
-                                : "none",
-                              cursor: "pointer",
-                              margin: 0,
-                              display: "grid",
-                              placeContent: "center",
-                              transition: "all 0.15s ease",
-                            }}
+                            style={{ margin: 0, width: "11px", height: "11px" }}
                           />
                           {cat.str_nombre}
                         </label>
                       );
                     })}
                   </div>
-
-                  {/* Versión Móvil (Select) */}
                   <div className="mobile-selector">
                     <select
                       value={categoriaId}
                       onChange={(e) => setCategoriaId(e.target.value)}
                       required
-                      style={{
-                        width: "100%",
-                        padding: "10px 13px",
-                        border: "1px solid var(--merco-border)",
-                        borderRadius: "9px",
-                        fontFamily: "inherit",
-                        fontSize: "14px",
-                        background: "var(--input, var(--merco-surface))",
-                        color: "var(--merco-text)",
-                      }}
+                      style={inputStyle}
                     >
                       <option value="">Seleccione categoría...</option>
-                      {listaCategorias.map((cat) => (
+                      {categoriasActuales.map((cat) => (
                         <option key={cat.id} value={cat.id}>
                           {cat.str_nombre}
                         </option>
@@ -704,16 +795,12 @@ export default function NuevoTicket() {
                   </div>
                 </div>
 
-                {/* --- NIVEL DE PRIORIDAD (Responsive Automático) --- */}
+                {/* Prioridad */}
                 <div className="field">
-                  <label style={{ marginBottom: "8px", display: "block" }}>
-                    Nivel de Prioridad
-                  </label>
-
-                  {/* Versión Escritorio (Radios) */}
+                  <label style={labelStyle}>Prioridad</label>
                   <div
                     className="desktop-selector"
-                    style={{ flexWrap: "wrap", gap: "6px" }}
+                    style={{ flexWrap: "wrap", gap: "4px" }}
                   >
                     {listaPrioridades.map((p) => {
                       const isSelected = Number(prioridadId) === p.id;
@@ -721,13 +808,13 @@ export default function NuevoTicket() {
                         <label
                           key={p.id}
                           style={{
-                            display: "flex",
+                            display: "inline-flex",
                             alignItems: "center",
-                            gap: "6px",
-                            fontSize: "12px",
+                            gap: "5px",
+                            fontSize: "11px",
                             cursor: "pointer",
-                            padding: "5px 8px",
-                            borderRadius: "6px",
+                            padding: "3px 8px",
+                            borderRadius: "4px",
                             color: "var(--merco-text)",
                             backgroundColor: isSelected
                               ? isDarkMode
@@ -736,13 +823,8 @@ export default function NuevoTicket() {
                               : isDarkMode
                                 ? "rgba(255, 255, 255, 0.03)"
                                 : "var(--merco-bg-card, #fff)",
-                            border: `1px solid ${
-                              isSelected
-                                ? "var(--merco-accent, #f95700)"
-                                : "var(--merco-border, #ccc)"
-                            }`,
+                            border: `1px solid ${isSelected ? "var(--merco-accent, #f95700)" : "var(--merco-border, #ccc)"}`,
                             fontWeight: isSelected ? "600" : "400",
-                            transition: "all 0.15s ease",
                           }}
                         >
                           <input
@@ -752,55 +834,19 @@ export default function NuevoTicket() {
                             checked={isSelected}
                             onChange={(e) => setPrioridadId(e.target.value)}
                             required
-                            style={{
-                              appearance: "none",
-                              WebkitAppearance: "none",
-                              width: "12px",
-                              height: "12px",
-                              borderRadius: "50%",
-                              border: `2px solid ${
-                                isSelected
-                                  ? "var(--merco-accent, #f95700)"
-                                  : "var(--merco-border, #999)"
-                              }`,
-                              outline: "none",
-                              backgroundColor: isSelected
-                                ? "var(--merco-accent, #f95700)"
-                                : "transparent",
-                              boxShadow: isSelected
-                                ? isDarkMode
-                                  ? "inset 0 0 0 2px #1e1e1e"
-                                  : "inset 0 0 0 2px #fff"
-                                : "none",
-                              cursor: "pointer",
-                              margin: 0,
-                              display: "grid",
-                              placeContent: "center",
-                              transition: "all 0.15s ease",
-                            }}
+                            style={{ margin: 0, width: "11px", height: "11px" }}
                           />
                           {p.str_nombre}
                         </label>
                       );
                     })}
                   </div>
-
-                  {/* Versión Móvil (Select) */}
                   <div className="mobile-selector">
                     <select
                       value={prioridadId}
                       onChange={(e) => setPrioridadId(e.target.value)}
                       required
-                      style={{
-                        width: "100%",
-                        padding: "10px 13px",
-                        border: "1px solid var(--merco-border)",
-                        borderRadius: "9px",
-                        fontFamily: "inherit",
-                        fontSize: "14px",
-                        background: "var(--input, var(--merco-surface))",
-                        color: "var(--merco-text)",
-                      }}
+                      style={inputStyle}
                     >
                       <option value="">Seleccione prioridad...</option>
                       {listaPrioridades.map((p) => (
@@ -813,27 +859,25 @@ export default function NuevoTicket() {
                 </div>
               </div>
 
-              {/* Columna Derecha: BlockNote, Multimedia y Botones */}
+              {/* Columna Derecha: BlockNote y Botones */}
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "20px",
+                  gap: "12px",
                 }}
               >
                 <div>
                   <div
-                    className="field"
                     style={{
                       display: "flex",
-                      flexDirection: "row",
                       alignItems: "center",
-                      gap: "8px",
+                      justifyContent: "space-between",
                       marginBottom: "6px",
                     }}
                   >
-                    <label style={{ margin: 0, lineHeight: "1" }}>
-                      Descripción
+                    <label style={{ ...labelStyle, margin: 0 }}>
+                      Descripción del Ticket
                     </label>
 
                     <button
@@ -842,34 +886,33 @@ export default function NuevoTicket() {
                       onClick={handleGenerarConIA}
                       style={{
                         cursor: "pointer",
-                        padding: "4px 8px",
+                        padding: "2px 8px",
+                        fontSize: "12px",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
+                        gap: "4px",
                         border: "1px solid var(--merco-border, #ccc)",
-                        borderRadius: "6px",
+                        borderRadius: "5px",
                       }}
                       disabled={isGeneratingAI}
-                      title={
-                        isGeneratingAI
-                          ? "Redactando nueva descripción..."
-                          : "Mejorar redacción del ticket con IA"
-                      }
+                      title="Redactar/Mejorar con IA"
                     >
                       <DynamicIcon
                         name="FaRobot"
-                        style={{ fontSize: "15px", color: "#eab308" }}
+                        style={{ fontSize: "13px", color: "#eab308" }}
                       />
+                      <span style={{ fontSize: "11px" }}>Formatear IA</span>
                     </button>
                   </div>
 
+                  {/* Contenedor Editor */}
                   <div
                     style={{
                       position: "relative",
                       border: "1px solid var(--merco-border, #ccc)",
                       borderRadius: 6,
-                      padding: "4px",
-                      minHeight: "500px",
+                      padding: "2px",
+                      minHeight: "320px",
                     }}
                   >
                     {isGeneratingAI && (
@@ -881,14 +924,13 @@ export default function NuevoTicket() {
                           width: "100%",
                           height: "100%",
                           backgroundColor: isDarkMode
-                            ? "rgba(0, 0, 0, 0.35)"
-                            : "rgba(255, 255, 255, 0.35)",
+                            ? "rgba(0, 0, 0, 0.45)"
+                            : "rgba(255, 255, 255, 0.45)",
                           zIndex: 10,
                           display: "flex",
-                          flexDirection: "column",
                           alignItems: "center",
                           justifyContent: "center",
-                          backdropFilter: "blur(4px)",
+                          backdropFilter: "blur(3px)",
                           borderRadius: "inherit",
                         }}
                       >
@@ -896,25 +938,22 @@ export default function NuevoTicket() {
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "12px",
+                            gap: "8px",
                             fontFamily: "monospace",
                             color: isDarkMode ? "#ffffff" : "#000000",
-                            padding: "14px 20px",
-                            borderRadius: "8px",
+                            padding: "8px 14px",
+                            borderRadius: "6px",
                             border: `1px solid ${isDarkMode ? "#334155" : "#cbd5e1"}`,
-                            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.2)",
-                            fontSize: "14px",
+                            background: isDarkMode ? "#0f172a" : "#ffffff",
+                            fontSize: "13px",
                             fontWeight: "bold",
                           }}
                         >
                           <DynamicIcon
                             name="FaRobot"
-                            style={{
-                              color: "#eab308",
-                              fontSize: "20px",
-                            }}
+                            style={{ color: "#eab308", fontSize: "16px" }}
                           />
-                          Generando formato al ticket...
+                          Analizando descripción del ticket...
                         </div>
                       </div>
                     )}
@@ -930,32 +969,32 @@ export default function NuevoTicket() {
                     </div>
                   </div>
 
+                  {/* Archivos adjuntos */}
                   {archivosAdjuntos.length > 0 && (
                     <div
                       style={{
-                        marginTop: 12,
-                        padding: "10px 14px",
+                        marginTop: 8,
+                        padding: "6px 10px",
                         background: "var(--merco-bg-subtle, rgba(0,0,0,0.03))",
                         borderRadius: 6,
-                        fontSize: 12.5,
+                        fontSize: "11px",
                         border: "1px solid var(--merco-border, #ccc)",
                       }}
                     >
                       <b
                         style={{
                           display: "block",
-                          marginBottom: 6,
+                          marginBottom: 4,
                           color: "var(--merco-text)",
                         }}
                       >
-                        Archivos multimedia adjuntos ({archivosAdjuntos.length}
-                        ):
+                        Archivos adjuntos ({archivosAdjuntos.length}):
                       </b>
                       <div
                         style={{
                           display: "flex",
                           flexWrap: "wrap",
-                          gap: "8px",
+                          gap: "6px",
                         }}
                       >
                         {archivosAdjuntos.map((file, index) => {
@@ -963,18 +1002,17 @@ export default function NuevoTicket() {
                             file.type,
                             file.name,
                           );
-
                           return (
                             <div
                               key={index}
                               style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "8px",
+                                gap: "6px",
                                 background: isDarkMode
                                   ? "rgba(255, 255, 255, 0.05)"
                                   : "var(--merco-bg-card, #fff)",
-                                padding: "6px 10px",
+                                padding: "3px 8px",
                                 borderRadius: "4px",
                                 border: "1px solid var(--merco-border, #ccc)",
                                 color: "var(--merco-text)",
@@ -983,18 +1021,16 @@ export default function NuevoTicket() {
                               <DynamicIcon
                                 name={nombreIcono}
                                 style={{
-                                  fontSize: "16px",
+                                  fontSize: "13px",
                                   color: "var(--merco-accent, #f95700)",
                                 }}
                               />
-
                               <span
                                 style={{
                                   overflow: "hidden",
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
-                                  maxWidth: "200px",
-                                  color: "var(--merco-text)",
+                                  maxWidth: "160px",
                                 }}
                                 title={file.name}
                               >
@@ -1002,9 +1038,8 @@ export default function NuevoTicket() {
                               </span>
                               <button
                                 type="button"
-                                className="btn-icon"
                                 style={{
-                                  fontSize: "11px",
+                                  fontSize: "10px",
                                   color: "var(--merco-danger, #d1435b)",
                                   background: "none",
                                   border: "none",
@@ -1027,14 +1062,14 @@ export default function NuevoTicket() {
                     </div>
                   )}
 
-                  {/* Botones inferiores ubicados justo al final del editor BlockNote */}
+                  {/* Acciones del Formulario */}
                   <div
                     style={{
                       display: "flex",
                       justifyContent: "flex-end",
-                      gap: 12,
-                      marginTop: 20,
-                      paddingTop: 16,
+                      gap: 10,
+                      marginTop: 12,
+                      paddingTop: 10,
                       borderTop: "1px solid var(--merco-border, #ccc)",
                     }}
                   >
@@ -1043,13 +1078,15 @@ export default function NuevoTicket() {
                       className="btn btn-ghost"
                       onClick={handleLimpiarTodo}
                       disabled={isGeneratingAI}
+                      style={{ padding: "6px 12px", fontSize: "13px" }}
                     >
-                      Limpiar Formulario
+                      Limpiar
                     </button>
                     <button
                       type="submit"
                       className="btn btn-primary"
                       disabled={isGeneratingAI}
+                      style={{ padding: "6px 14px", fontSize: "13px" }}
                     >
                       <DynamicIcon name="FiSave" /> Crear Ticket
                     </button>
