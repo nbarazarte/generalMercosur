@@ -6,6 +6,8 @@ const pool = require("../db");
 const verificarClienteFrontend = require("../middlewares/autenticarToken");
 const verificarSesion = require("../middlewares/verificarSesion");
 const upload = require("../middlewares/multerConfig"); // Middleware configurado en /var/www/uploads
+const path = require("path");
+const fs = require("fs");
 
 // 🔒 Doble capa de seguridad global
 router.use(verificarClienteFrontend);
@@ -166,16 +168,52 @@ router.post("/crear", upload.any(), async (req, res) => {
     const rutasVideos = [];
     const rutasAudios = [];
 
+    // Contadores independientes para el sufijo numérico
+    let contadorImagen = 1;
+    let contadorVideo = 1;
+    let contadorAudio = 1;
+
     archivos.forEach((file) => {
-      const rutaCompleta = `/var/www/uploads/${file.filename}`;
       const tipoMime = file.mimetype;
+      const extension = path.extname(file.originalname); // Obtiene la extensión (.jpg, .png, etc.)
+
+      let nuevoNombreArchivo = "";
 
       if (tipoMime.startsWith("image/")) {
-        rutasImagenes.push(rutaCompleta);
+        nuevoNombreArchivo = `${str_ticket}-${contadorImagen}${extension}`;
+        contadorImagen++;
       } else if (tipoMime.startsWith("video/")) {
-        rutasVideos.push(rutaCompleta);
+        nuevoNombreArchivo = `${str_ticket}-vid-${contadorVideo}${extension}`;
+        contadorVideo++;
       } else if (tipoMime.startsWith("audio/")) {
-        rutasAudios.push(rutaCompleta);
+        nuevoNombreArchivo = `${str_ticket}-aud-${contadorAudio}${extension}`;
+        contadorAudio++;
+      } else {
+        nuevoNombreArchivo = `${str_ticket}-file-${contadorImagen}${extension}`;
+        contadorImagen++;
+      }
+
+      const rutaAntigua = file.path; // Ruta temporal donde multer lo guardó
+      const rutaNueva = path.join("/var/www/uploads", nuevoNombreArchivo);
+
+      // Renombrar y mover físicamente el archivo en el servidor
+      try {
+        fs.renameSync(rutaAntigua, rutaNueva);
+      } catch (renameErr) {
+        console.error(
+          "Error al renombrar el archivo físico:",
+          renameErr.message,
+        );
+      }
+
+      const rutaCompletaBD = `/var/www/uploads/${nuevoNombreArchivo}`;
+
+      if (tipoMime.startsWith("image/")) {
+        rutasImagenes.push(rutaCompletaBD);
+      } else if (tipoMime.startsWith("video/")) {
+        rutasVideos.push(rutaCompletaBD);
+      } else if (tipoMime.startsWith("audio/")) {
+        rutasAudios.push(rutaCompletaBD);
       }
     });
 
@@ -186,7 +224,6 @@ router.post("/crear", upload.any(), async (req, res) => {
     const str_ruta_audio =
       rutasAudios.length > 0 ? rutasAudios.join(",") : null;
 
-    // Inserción sin estatus_id (se omite de la sentencia SQL y de los parámetros)
     const queryInsert = `
         INSERT INTO tickets.tbl_tickets (
           str_ticket, tipo_ticket_id, cliente_id, creador_agente_id, cierre_agente_id, 
@@ -196,24 +233,11 @@ router.post("/crear", upload.any(), async (req, res) => {
           str_cedula_cliente, str_correo_cliente,
           dmt_fecha_vencimiento_sla, created_at, updated_at
         ) VALUES (
-          $1, 
-          $2::integer, 
-          $3::integer, 
-          $4::integer, 
-          $5::integer, 
-          $6::integer, 
-          $7::integer, 
-          $8::integer, 
-          $9::integer, 
-          $10::varchar, 
-          $11::text, 
-          $12::integer, 
-          $13::text, 
-          $14::text, 
-          $15::text, 
-          $16::integer, 
-          $17::varchar,
-          $18::varchar,
+          $1, $2::integer, $3::integer, $4::integer, $5::integer, 
+          $6::integer, $7::integer, $8::integer, $9::integer, 
+          $10::varchar, $11::text, $12::integer, 
+          $13::text, $14::text, $15::text, $16::integer, 
+          $17::varchar, $18::varchar,
           CURRENT_TIMESTAMP + ($12::integer * INTERVAL '1 hour'), 
           CURRENT_TIMESTAMP, 
           CURRENT_TIMESTAMP
@@ -248,7 +272,7 @@ router.post("/crear", upload.any(), async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Ticket creado y archivos multimedia guardados exitosamente.",
+      message: "Ticket creado y archivos multimedia renombrados exitosamente.",
       ticket: nuevoTicket.rows[0],
     });
   } catch (err) {

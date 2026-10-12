@@ -47,6 +47,7 @@ export default function CasosTickets() {
   const [nuevoPrioridadId, setNuevoPrioridadId] = useState("");
   const [modalDepartamentoId, setModalDepartamentoId] = useState("");
   const [respuestaTexto, setRespuestaTexto] = useState("");
+  const [tabActiva, setTabActiva] = useState("descripcion"); // Pestaña activa en el modal
   const [toast, setToast] = useState(null);
 
   // Estilo unificado para todos los controles e inputs
@@ -66,10 +67,10 @@ export default function CasosTickets() {
   };
 
   // Función para copiar al portapapeles
-  const copiarCodigoTicket = (e, codigo) => {
+  const copiarTextoClipboard = (e, texto, etiqueta = "Texto") => {
     e.stopPropagation();
-    copy(codigo);
-    showToast(`¡Código ${codigo} copiado al portapapeles!`, "success");
+    copy(texto);
+    showToast(`¡${etiqueta} copiado al portapapeles!`, "success");
   };
 
   useEffect(() => {
@@ -129,7 +130,7 @@ export default function CasosTickets() {
     );
   }, [modalDepartamentoId, listaUsuarios]);
 
-  // Lista completa de estatus disponibles en el modal (incluyendo Vencido)
+  // Lista completa de estatus disponibles en el modal
   const estatusModalDisponibles = useMemo(() => {
     return listaEstatus;
   }, [listaEstatus]);
@@ -231,12 +232,8 @@ export default function CasosTickets() {
       ticket.departamento_id ? String(ticket.departamento_id) : "",
     );
     setRespuestaTexto("");
+    setTabActiva("descripcion");
   };
-
-  const esTicketDetalleInterno = useMemo(() => {
-    if (!ticketSeleccionado) return false;
-    return ticketSeleccionado.tipo_ticket?.toLowerCase().includes("interno");
-  }, [ticketSeleccionado]);
 
   const esTicketBloqueado = useMemo(() => {
     if (!ticketSeleccionado) return false;
@@ -735,8 +732,8 @@ export default function CasosTickets() {
                       };
                     } else if (estatusLower.includes("cancelado")) {
                       estiloEstatus = {
-                        background: "rgba(239, 68, 68, 0.1)",
-                        color: "#ef4444",
+                        background: "rgba(14, 165, 233, 0.1)",
+                        color: "#0ea5e9",
                       };
                     }
 
@@ -815,7 +812,11 @@ export default function CasosTickets() {
                             <button
                               className="btn-icon"
                               onClick={(e) =>
-                                copiarCodigoTicket(e, t.str_ticket)
+                                copiarTextoClipboard(
+                                  e,
+                                  t.str_ticket,
+                                  `Código ${t.str_ticket}`,
+                                )
                               }
                               title="Copiar código de ticket"
                               style={{ padding: "4px" }}
@@ -845,8 +846,6 @@ export default function CasosTickets() {
                             className="tag"
                             style={{
                               fontSize: 11,
-                              background: "rgba(14, 165, 233, 0.1)",
-                              color: "#0ea5e9",
                             }}
                           >
                             {t.canal_nombre || "—"}
@@ -982,14 +981,14 @@ export default function CasosTickets() {
                             style={{
                               fontSize: 11,
                               background: esCancelado
-                                ? "rgba(239, 68, 68, 0.1)"
+                                ? "rgba(14, 165, 233, 0.1)"
                                 : excedeSLA
                                   ? "rgba(239, 68, 68, 0.1)"
                                   : t.dmt_fecha_cierre
                                     ? "rgba(16, 185, 129, 0.1)"
                                     : "rgba(59, 130, 246, 0.1)",
                               color: esCancelado
-                                ? "#ef4444"
+                                ? "#0ea5e9"
                                 : excedeSLA
                                   ? "#ef4444"
                                   : t.dmt_fecha_cierre
@@ -1150,7 +1149,11 @@ export default function CasosTickets() {
                   <button
                     className="btn-icon"
                     onClick={(e) =>
-                      copiarCodigoTicket(e, ticketSeleccionado.str_ticket)
+                      copiarTextoClipboard(
+                        e,
+                        ticketSeleccionado.str_ticket,
+                        `Código ${ticketSeleccionado.str_ticket}`,
+                      )
                     }
                     title="Copiar código"
                   >
@@ -1161,9 +1164,8 @@ export default function CasosTickets() {
                       const estName = (
                         ticketSeleccionado.estatus_nombre || ""
                       ).toLowerCase();
-                      const esRojo =
-                        estName.includes("cancelado") ||
-                        estName.includes("vencido");
+                      const esCanceladoModal = estName.includes("cancelado");
+                      const esRojo = estName.includes("vencido");
                       return (
                         <span
                           style={{
@@ -1171,10 +1173,16 @@ export default function CasosTickets() {
                             borderRadius: 10,
                             fontSize: 11,
                             fontWeight: 600,
-                            background: esRojo
-                              ? "rgba(239, 68, 68, 0.1)"
-                              : "rgba(16, 185, 129, 0.1)",
-                            color: esRojo ? "#ef4444" : "#10b981",
+                            background: esCanceladoModal
+                              ? "rgba(14, 165, 233, 0.1)"
+                              : esRojo
+                                ? "rgba(239, 68, 68, 0.1)"
+                                : "rgba(16, 185, 129, 0.1)",
+                            color: esCanceladoModal
+                              ? "#0ea5e9"
+                              : esRojo
+                                ? "#ef4444"
+                                : "#10b981",
                           }}
                         >
                           {ticketSeleccionado.estatus_nombre || "Bloqueado"}{" "}
@@ -1203,6 +1211,78 @@ export default function CasosTickets() {
                   borderRadius: 6,
                 }}
               >
+                {(() => {
+                  const nombreCompletoSolicitante = `${
+                    ticketSeleccionado.creador_nombre || ""
+                  } ${ticketSeleccionado.creador_apellido || ""}`.trim();
+                  const correoSolicitante =
+                    ticketSeleccionado.creador_correo || "";
+                  return (
+                    <>
+                      {nombreCompletoSolicitante && (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                          }}
+                        >
+                          <div>
+                            <b>Solicitante:</b> {nombreCompletoSolicitante}
+                          </div>
+                          <button
+                            className="btn-icon"
+                            onClick={(e) =>
+                              copiarTextoClipboard(
+                                e,
+                                nombreCompletoSolicitante,
+                                "Solicitante",
+                              )
+                            }
+                            title="Copiar solicitante"
+                            style={{ padding: "4px" }}
+                          >
+                            <DynamicIcon
+                              name="FiCopy"
+                              style={{ fontSize: 13 }}
+                            />
+                          </button>
+                        </div>
+                      )}
+                      {correoSolicitante && (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                          }}
+                        >
+                          <div>
+                            <b>Correo del Solicitante:</b> {correoSolicitante}
+                          </div>
+                          <button
+                            className="btn-icon"
+                            onClick={(e) =>
+                              copiarTextoClipboard(
+                                e,
+                                correoSolicitante,
+                                "Correo del solicitante",
+                              )
+                            }
+                            title="Copiar correo del solicitante"
+                            style={{ padding: "4px" }}
+                          >
+                            <DynamicIcon
+                              name="FiCopy"
+                              style={{ fontSize: 13 }}
+                            />
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+
                 <div>
                   <b>Asunto:</b> {ticketSeleccionado.str_asunto}
                 </div>
@@ -1213,6 +1293,17 @@ export default function CasosTickets() {
                   <b>Categoría:</b> {ticketSeleccionado.categoria_nombre}
                 </div>
 
+                {(ticketSeleccionado.tipo_ticket
+                  ?.toLowerCase()
+                  .includes("externo") ||
+                  ticketSeleccionado.tipo_ticket
+                    ?.toLowerCase()
+                    .includes("app")) && (
+                  <div>
+                    <b>Canal:</b> {ticketSeleccionado.canal_nombre || "N/A"}
+                  </div>
+                )}
+
                 {ticketSeleccionado.tipo_ticket
                   ?.toLowerCase()
                   .includes("externo") ||
@@ -1220,17 +1311,65 @@ export default function CasosTickets() {
                   ?.toLowerCase()
                   .includes("app") ? (
                   <>
-                    <div>
-                      <b style={{ color: "var(--merco-accent, #f95700)" }}>
-                        Cédula del Cliente:
-                      </b>{" "}
-                      {ticketSeleccionado.str_cedula_cliente || "—"}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}
+                    >
+                      <div>
+                        <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                          Cédula del Cliente:
+                        </b>{" "}
+                        {ticketSeleccionado.str_cedula_cliente || "—"}
+                      </div>
+                      {ticketSeleccionado.str_cedula_cliente && (
+                        <button
+                          className="btn-icon"
+                          onClick={(e) =>
+                            copiarTextoClipboard(
+                              e,
+                              ticketSeleccionado.str_cedula_cliente,
+                              "Cédula",
+                            )
+                          }
+                          title="Copiar cédula"
+                          style={{ padding: "4px" }}
+                        >
+                          <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
+                        </button>
+                      )}
                     </div>
-                    <div>
-                      <b style={{ color: "var(--merco-accent, #f95700)" }}>
-                        Correo del Cliente:
-                      </b>{" "}
-                      {ticketSeleccionado.str_correo_cliente || "—"}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}
+                    >
+                      <div>
+                        <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                          Correo del Cliente:
+                        </b>{" "}
+                        {ticketSeleccionado.str_correo_cliente || "—"}
+                      </div>
+                      {ticketSeleccionado.str_correo_cliente && (
+                        <button
+                          className="btn-icon"
+                          onClick={(e) =>
+                            copiarTextoClipboard(
+                              e,
+                              ticketSeleccionado.str_correo_cliente,
+                              "Correo",
+                            )
+                          }
+                          title="Copiar correo"
+                          style={{ padding: "4px" }}
+                        >
+                          <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
+                        </button>
+                      )}
                     </div>
                   </>
                 ) : null}
@@ -1238,14 +1377,7 @@ export default function CasosTickets() {
                 <div>
                   <b>Prioridad Actual:</b> {ticketSeleccionado.prioridad_nombre}
                 </div>
-                <div>
-                  <b>SLA:</b>{" "}
-                  <span style={{ color: "#f59e0b", fontWeight: 600 }}>
-                    {ticketSeleccionado.int_sla
-                      ? `${ticketSeleccionado.int_sla} horas`
-                      : "—"}
-                  </span>
-                </div>
+
                 <div>
                   <b>Fecha de Creación:</b>{" "}
                   {ticketSeleccionado.created_at
@@ -1261,6 +1393,14 @@ export default function CasosTickets() {
                         ticketSeleccionado.dmt_fecha_vencimiento_sla,
                       ).toLocaleString("es-VE")
                     : "—"}
+                </div>
+                <div>
+                  <b>SLA:</b>{" "}
+                  <span style={{ color: "#f59e0b", fontWeight: 600 }}>
+                    {ticketSeleccionado.int_sla
+                      ? `${ticketSeleccionado.int_sla} horas`
+                      : "—"}
+                  </span>
                 </div>
                 <div>
                   <b>Fecha de Cierre:</b>{" "}
@@ -1281,37 +1421,295 @@ export default function CasosTickets() {
                     {ticketSeleccionado.tiempo_resolucion || "En curso"}
                   </span>
                 </div>
+              </div>
 
-                {!esTicketDetalleInterno && (
-                  <div>
-                    <b>Canal:</b> {ticketSeleccionado.canal_nombre || "N/A"}
+              {/* SECCIÓN DE DESCRIPCIÓN CON PESTAÑAS MULTIMEDIA */}
+              {(() => {
+                const imagenes = ticketSeleccionado.str_ruta_imagen
+                  ? ticketSeleccionado.str_ruta_imagen.split(",")
+                  : [];
+                const videos = ticketSeleccionado.str_ruta_video
+                  ? ticketSeleccionado.str_ruta_video.split(",")
+                  : [];
+                const audios = ticketSeleccionado.str_ruta_audio
+                  ? ticketSeleccionado.str_ruta_audio.split(",")
+                  : [];
+                const tieneMultimedia =
+                  imagenes.length > 0 || videos.length > 0 || audios.length > 0;
+
+                // Obtenemos la URL base del backend desde axiosTickets.defaults.baseURL o la URL actual
+                const backendUrl = import.meta.env.VITE_URL_API_LOCAL_VER;
+
+                return (
+                  <div style={{ marginBottom: 16 }}>
+                    <label
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        display: "block",
+                        marginBottom: 4,
+                      }}
+                    >
+                      Descripción y Archivos Adjuntos:
+                    </label>
+
+                    {tieneMultimedia && (
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "4px",
+                          borderBottom: "1px solid var(--merco-border)",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setTabActiva("descripcion")}
+                          style={{
+                            padding: "8px 16px",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            background:
+                              tabActiva === "descripcion"
+                                ? "var(--merco-surface)"
+                                : "transparent",
+                            color:
+                              tabActiva === "descripcion"
+                                ? "var(--merco-accent, #f95700)"
+                                : "inherit",
+                            border: "none",
+                            borderBottom:
+                              tabActiva === "descripcion"
+                                ? "2px solid var(--merco-accent, #f95700)"
+                                : "2px solid transparent",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Descripción
+                        </button>
+
+                        {imagenes.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setTabActiva("imagenes")}
+                            style={{
+                              padding: "8px 16px",
+                              fontSize: 12,
+                              fontWeight: 600,
+                              background:
+                                tabActiva === "imagenes"
+                                  ? "var(--merco-surface)"
+                                  : "transparent",
+                              color:
+                                tabActiva === "imagenes"
+                                  ? "var(--merco-accent, #f95700)"
+                                  : "inherit",
+                              border: "none",
+                              borderBottom:
+                                tabActiva === "imagenes"
+                                  ? "2px solid var(--merco-accent, #f95700)"
+                                  : "2px solid transparent",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Imágenes ({imagenes.length})
+                          </button>
+                        )}
+
+                        {videos.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setTabActiva("videos")}
+                            style={{
+                              padding: "8px 16px",
+                              fontSize: 12,
+                              fontWeight: 600,
+                              background:
+                                tabActiva === "videos"
+                                  ? "var(--merco-surface)"
+                                  : "transparent",
+                              color:
+                                tabActiva === "videos"
+                                  ? "var(--merco-accent, #f95700)"
+                                  : "inherit",
+                              border: "none",
+                              borderBottom:
+                                tabActiva === "videos"
+                                  ? "2px solid var(--merco-accent, #f95700)"
+                                  : "2px solid transparent",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Videos ({videos.length})
+                          </button>
+                        )}
+
+                        {audios.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => setTabActiva("audios")}
+                            style={{
+                              padding: "8px 16px",
+                              fontSize: 12,
+                              fontWeight: 600,
+                              background:
+                                tabActiva === "audios"
+                                  ? "var(--merco-surface)"
+                                  : "transparent",
+                              color:
+                                tabActiva === "audios"
+                                  ? "var(--merco-accent, #f95700)"
+                                  : "inherit",
+                              border: "none",
+                              borderBottom:
+                                tabActiva === "audios"
+                                  ? "2px solid var(--merco-accent, #f95700)"
+                                  : "2px solid transparent",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Audios ({audios.length})
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    <div
+                      style={{
+                        padding: 10,
+                        border: "1px solid var(--merco-border)",
+                        borderRadius: 6,
+                        fontSize: 13,
+                        background: "var(--merco-bg-card)",
+                        minHeight: "80px",
+                      }}
+                    >
+                      {(!tieneMultimedia || tabActiva === "descripcion") && (
+                        <div style={{ whiteSpace: "pre-wrap" }}>
+                          {ticketSeleccionado.str_descripcion}
+                        </div>
+                      )}
+
+                      {tabActiva === "imagenes" && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "10px",
+                          }}
+                        >
+                          {imagenes.map((img, idx) => {
+                            const nombreArchivo = img.trim().split("/").pop();
+                            const urlArchivo = `${backendUrl}/uploads/${nombreArchivo}`;
+                            return (
+                              <div key={idx} style={{ textAlign: "center" }}>
+                                <a
+                                  href={urlArchivo}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <img
+                                    src={urlArchivo}
+                                    alt={`Evidencia ${idx + 1}`}
+                                    style={{
+                                      maxWidth: "150px",
+                                      maxHeight: "150px",
+                                      objectFit: "cover",
+                                      borderRadius: 4,
+                                      border: "1px solid var(--merco-border)",
+                                    }}
+                                  />
+                                </a>
+                                <div
+                                  style={{
+                                    fontSize: "10px",
+                                    color: "var(--merco-muted)",
+                                    marginTop: "4px",
+                                  }}
+                                >
+                                  {nombreArchivo}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {tabActiva === "videos" && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "15px",
+                          }}
+                        >
+                          {videos.map((vid, idx) => {
+                            const nombreArchivo = vid.trim().split("/").pop();
+                            const urlArchivo = `${backendUrl}/uploads/${nombreArchivo}`;
+                            return (
+                              <div key={idx}>
+                                <video
+                                  controls
+                                  style={{
+                                    maxWidth: "280px",
+                                    maxHeight: "180px",
+                                    borderRadius: 4,
+                                  }}
+                                >
+                                  <source src={urlArchivo} />
+                                  Tu navegador no soporta la reproducción de
+                                  video.
+                                </video>
+                                <div
+                                  style={{
+                                    fontSize: "10px",
+                                    color: "var(--merco-muted)",
+                                    marginTop: "4px",
+                                  }}
+                                >
+                                  {nombreArchivo}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {tabActiva === "audios" && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "10px",
+                          }}
+                        >
+                          {audios.map((aud, idx) => {
+                            const nombreArchivo = aud.trim().split("/").pop();
+                            const urlArchivo = `${backendUrl}/uploads/${nombreArchivo}`;
+                            return (
+                              <div key={idx}>
+                                <div
+                                  style={{
+                                    fontSize: "11px",
+                                    marginBottom: "4px",
+                                  }}
+                                >
+                                  {nombreArchivo}
+                                </div>
+                                <audio controls style={{ width: "100%" }}>
+                                  <source src={urlArchivo} />
+                                  Tu navegador no soporta la reproducción de
+                                  audio.
+                                </audio>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
-
-              <div style={{ marginBottom: 16 }}>
-                <label
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    display: "block",
-                    marginBottom: 4,
-                  }}
-                >
-                  Descripción:
-                </label>
-                <div
-                  style={{
-                    padding: 10,
-                    border: "1px solid var(--merco-border)",
-                    borderRadius: 6,
-                    fontSize: 13,
-                    background: "var(--merco-bg-card)",
-                  }}
-                >
-                  {ticketSeleccionado.str_descripcion}
-                </div>
-              </div>
+                );
+              })()}
 
               <form onSubmit={handleGuardarCambiosTicket}>
                 <div

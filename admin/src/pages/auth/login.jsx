@@ -280,8 +280,8 @@ const Login = () => {
       </div>
 
       <div className="view-login active" id="viewLogin">
-        <div className="form-header">
-          <h2>Iniciar sesión</h2>
+        <div className="flex flex-col w-full items-center justify-center">
+          <h2 className="text-3xl font-bold pt-32">Iniciar sesión</h2>
         </div>
 
         <div className="glass-card">

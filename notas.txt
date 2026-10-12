@@ -214,21 +214,16 @@ CREATE EXTENSION IF NOT EXISTS pg_cron;
 
 -- Programar la ejecución cada 5 minutos
 SELECT cron.schedule(
-    'actualizar-tickets-vencidos-job',  -- Nombre único del job
-    '*/5 * * * *',                       -- Patrón Cron (cada 5 minutos)
+    'actualizar-tickets-vencidos-job',  
+    '* * * * *',                         -- Patrón Cron (cada 1 minuto)
     'SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();'
 );
 
-Comandos útiles para administrar tus Jobs en pg_cron:
-Ver los trabajos programados:
-
-SQL
+--Ver los trabajos programados:
 SELECT * FROM cron.job;
-Ver el historial de ejecuciones:
 
-SQL
+--Ver el historial de ejecuciones:
 SELECT * FROM cron.job_run_details ORDER BY start_time DESC LIMIT 10;
-Eliminar o desprogramar el trabajo si necesitas modificarlo:
 
-SQL
+--Eliminar o desprogramar el trabajo si necesitas modificarlo:
 SELECT cron.unschedule('actualizar-tickets-vencidos-job');
