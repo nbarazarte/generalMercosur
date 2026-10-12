@@ -502,8 +502,6 @@ export default function NuevoTicket() {
       formData.append("usuario_asignado_id", Number(usuarioId));
     }
 
-    //formData.append("estatus_id", 1);
-
     archivosAdjuntos.forEach((fileObj, index) => {
       if (fileObj.rawFile) {
         formData.append(`multimedia_${index}`, fileObj.rawFile);
@@ -722,7 +720,11 @@ export default function NuevoTicket() {
                             checked={isSelected}
                             onChange={() => handleTipoTicketChange(t.id)}
                             required
-                            style={{ margin: 0, width: "11px", height: "11px" }}
+                            style={{
+                              margin: 0,
+                              width: "11px",
+                              height: "11px",
+                            }}
                           />
                           {t.str_nombre}
                         </label>
@@ -930,7 +932,11 @@ export default function NuevoTicket() {
                             checked={isSelected}
                             onChange={(e) => setCategoriaId(e.target.value)}
                             required
-                            style={{ margin: 0, width: "11px", height: "11px" }}
+                            style={{
+                              margin: 0,
+                              width: "11px",
+                              height: "11px",
+                            }}
                           />
                           {cat.str_nombre}
                         </label>
@@ -993,7 +999,11 @@ export default function NuevoTicket() {
                             checked={isSelected}
                             onChange={(e) => setPrioridadId(e.target.value)}
                             required
-                            style={{ margin: 0, width: "11px", height: "11px" }}
+                            style={{
+                              margin: 0,
+                              width: "11px",
+                              height: "11px",
+                            }}
                           />
                           {p.str_nombre}
                         </label>

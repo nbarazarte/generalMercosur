@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict tG2fRP3pCggUs0Kaby3zOZ1ucCY1P7Gur0XLvOe1cDZgCJSvX48cJbyM6EAJciO
+\restrict qgqrceVF4NDWrbMneZbs8WgSHNmQ7lyTYJ7AalMQnupvOXtalseD0EuZfB2zRa0
 
 -- Dumped from database version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 
--- Started on 2026-10-12 15:49:37 -04
+-- Started on 2026-10-12 16:59:21 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -30,7 +30,7 @@ CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 3849 (class 0 OID 0)
+-- TOC entry 3863 (class 0 OID 0)
 -- Dependencies: 2
 -- Name: EXTENSION pg_cron; Type: COMMENT; Schema: -; Owner: 
 --
@@ -49,7 +49,7 @@ CREATE SCHEMA kcs;
 ALTER SCHEMA kcs OWNER TO postgres;
 
 --
--- TOC entry 3850 (class 0 OID 0)
+-- TOC entry 3864 (class 0 OID 0)
 -- Dependencies: 7
 -- Name: SCHEMA kcs; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -68,7 +68,7 @@ CREATE SCHEMA rrhh;
 ALTER SCHEMA rrhh OWNER TO postgres;
 
 --
--- TOC entry 3851 (class 0 OID 0)
+-- TOC entry 3865 (class 0 OID 0)
 -- Dependencies: 8
 -- Name: SCHEMA rrhh; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -87,7 +87,7 @@ CREATE SCHEMA tickets;
 ALTER SCHEMA tickets OWNER TO postgres;
 
 --
--- TOC entry 3852 (class 0 OID 0)
+-- TOC entry 3866 (class 0 OID 0)
 -- Dependencies: 9
 -- Name: SCHEMA tickets; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -96,7 +96,7 @@ COMMENT ON SCHEMA tickets IS 'Esquema del Sistema de Tickets para ATC.';
 
 
 --
--- TOC entry 280 (class 1255 OID 65539)
+-- TOC entry 282 (class 1255 OID 65539)
 -- Name: crear_datos_tablas_public(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -165,7 +165,7 @@ $_$;
 ALTER FUNCTION public.crear_datos_tablas_public() OWNER TO postgres;
 
 --
--- TOC entry 281 (class 1255 OID 65540)
+-- TOC entry 283 (class 1255 OID 65540)
 -- Name: limpiar_tablas_public(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -195,7 +195,7 @@ $$;
 ALTER FUNCTION public.limpiar_tablas_public() OWNER TO postgres;
 
 --
--- TOC entry 284 (class 1255 OID 66072)
+-- TOC entry 286 (class 1255 OID 66072)
 -- Name: fn_verificar_y_actualizar_tickets_vencidos(); Type: FUNCTION; Schema: tickets; Owner: postgres
 --
 
@@ -218,8 +218,8 @@ $$;
 ALTER FUNCTION tickets.fn_verificar_y_actualizar_tickets_vencidos() OWNER TO postgres;
 
 --
--- TOC entry 3853 (class 0 OID 0)
--- Dependencies: 284
+-- TOC entry 3867 (class 0 OID 0)
+-- Dependencies: 286
 -- Name: FUNCTION fn_verificar_y_actualizar_tickets_vencidos(); Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
@@ -279,7 +279,7 @@ CREATE TABLE public.cat_datos_maestros (
 ALTER TABLE public.cat_datos_maestros OWNER TO postgres;
 
 --
--- TOC entry 3854 (class 0 OID 0)
+-- TOC entry 3868 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: TABLE cat_datos_maestros; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -304,7 +304,7 @@ CREATE SEQUENCE public.cat_datos_maestros_id_seq
 ALTER SEQUENCE public.cat_datos_maestros_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3855 (class 0 OID 0)
+-- TOC entry 3869 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: cat_datos_maestros_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -329,7 +329,7 @@ CREATE TABLE public.cat_departamentos (
 ALTER TABLE public.cat_departamentos OWNER TO postgres;
 
 --
--- TOC entry 3856 (class 0 OID 0)
+-- TOC entry 3870 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: TABLE cat_departamentos; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -354,7 +354,7 @@ CREATE SEQUENCE public.cat_departamentos_id_seq
 ALTER SEQUENCE public.cat_departamentos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3857 (class 0 OID 0)
+-- TOC entry 3871 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: cat_departamentos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -381,7 +381,7 @@ CREATE TABLE public.cat_opciones (
 ALTER TABLE public.cat_opciones OWNER TO postgres;
 
 --
--- TOC entry 3858 (class 0 OID 0)
+-- TOC entry 3872 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: TABLE cat_opciones; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -406,7 +406,7 @@ CREATE TABLE public.cat_roles (
 ALTER TABLE public.cat_roles OWNER TO postgres;
 
 --
--- TOC entry 3859 (class 0 OID 0)
+-- TOC entry 3873 (class 0 OID 0)
 -- Dependencies: 228
 -- Name: TABLE cat_roles; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -435,7 +435,7 @@ CREATE TABLE public.cat_sistemas (
 ALTER TABLE public.cat_sistemas OWNER TO postgres;
 
 --
--- TOC entry 3860 (class 0 OID 0)
+-- TOC entry 3874 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: TABLE cat_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -463,7 +463,7 @@ CREATE TABLE public.tbl_auth_tokens (
 ALTER TABLE public.tbl_auth_tokens OWNER TO postgres;
 
 --
--- TOC entry 3861 (class 0 OID 0)
+-- TOC entry 3875 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: TABLE tbl_auth_tokens; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -488,7 +488,7 @@ CREATE SEQUENCE public.tbl_auth_tokens_id_seq
 ALTER SEQUENCE public.tbl_auth_tokens_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3862 (class 0 OID 0)
+-- TOC entry 3876 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -513,7 +513,7 @@ CREATE SEQUENCE public.tbl_opciones_id_seq
 ALTER SEQUENCE public.tbl_opciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3863 (class 0 OID 0)
+-- TOC entry 3877 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -538,7 +538,7 @@ CREATE SEQUENCE public.tbl_roles_id_seq
 ALTER SEQUENCE public.tbl_roles_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3864 (class 0 OID 0)
+-- TOC entry 3878 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: tbl_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -564,7 +564,7 @@ CREATE TABLE public.tbl_roles_sistemas (
 ALTER TABLE public.tbl_roles_sistemas OWNER TO postgres;
 
 --
--- TOC entry 3865 (class 0 OID 0)
+-- TOC entry 3879 (class 0 OID 0)
 -- Dependencies: 234
 -- Name: TABLE tbl_roles_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -589,7 +589,7 @@ CREATE SEQUENCE public.tbl_roles_opciones_id_seq
 ALTER SEQUENCE public.tbl_roles_opciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3866 (class 0 OID 0)
+-- TOC entry 3880 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -612,7 +612,7 @@ CREATE TABLE public.tbl_roles_sistemas_opciones (
 ALTER TABLE public.tbl_roles_sistemas_opciones OWNER TO postgres;
 
 --
--- TOC entry 3867 (class 0 OID 0)
+-- TOC entry 3881 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: TABLE tbl_roles_sistemas_opciones; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -637,7 +637,7 @@ CREATE SEQUENCE public.tbl_roles_sistemas_opciones_id_seq
 ALTER SEQUENCE public.tbl_roles_sistemas_opciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3868 (class 0 OID 0)
+-- TOC entry 3882 (class 0 OID 0)
 -- Dependencies: 237
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -662,7 +662,7 @@ CREATE SEQUENCE public.tbl_sistemas_id_seq
 ALTER SEQUENCE public.tbl_sistemas_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3869 (class 0 OID 0)
+-- TOC entry 3883 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -698,7 +698,7 @@ CREATE TABLE public.tbl_usuarios (
 ALTER TABLE public.tbl_usuarios OWNER TO postgres;
 
 --
--- TOC entry 3870 (class 0 OID 0)
+-- TOC entry 3884 (class 0 OID 0)
 -- Dependencies: 239
 -- Name: TABLE tbl_usuarios; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -724,7 +724,7 @@ CREATE TABLE public.tbl_usuarios_opciones_excepciones (
 ALTER TABLE public.tbl_usuarios_opciones_excepciones OWNER TO postgres;
 
 --
--- TOC entry 3871 (class 0 OID 0)
+-- TOC entry 3885 (class 0 OID 0)
 -- Dependencies: 240
 -- Name: TABLE tbl_usuarios_opciones_excepciones; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -749,7 +749,7 @@ CREATE SEQUENCE public.tbl_usuarios_opciones_excepciones_id_seq
 ALTER SEQUENCE public.tbl_usuarios_opciones_excepciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3872 (class 0 OID 0)
+-- TOC entry 3886 (class 0 OID 0)
 -- Dependencies: 241
 -- Name: tbl_usuarios_opciones_excepciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -775,7 +775,7 @@ CREATE TABLE public.tbl_usuarios_roles_sistemas (
 ALTER TABLE public.tbl_usuarios_roles_sistemas OWNER TO postgres;
 
 --
--- TOC entry 3873 (class 0 OID 0)
+-- TOC entry 3887 (class 0 OID 0)
 -- Dependencies: 242
 -- Name: TABLE tbl_usuarios_roles_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -800,7 +800,7 @@ CREATE SEQUENCE public.tbl_usuarios_roles_sistemas_id_seq
 ALTER SEQUENCE public.tbl_usuarios_roles_sistemas_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3874 (class 0 OID 0)
+-- TOC entry 3888 (class 0 OID 0)
 -- Dependencies: 243
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -825,7 +825,7 @@ CREATE SEQUENCE public.usuarios_id_seq
 ALTER SEQUENCE public.usuarios_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3875 (class 0 OID 0)
+-- TOC entry 3889 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: usuarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -1059,7 +1059,7 @@ CREATE VIEW public.view_usuarios_opciones_sistemas AS
 ALTER VIEW public.view_usuarios_opciones_sistemas OWNER TO postgres;
 
 --
--- TOC entry 3876 (class 0 OID 0)
+-- TOC entry 3890 (class 0 OID 0)
 -- Dependencies: 253
 -- Name: VIEW view_usuarios_opciones_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
@@ -1158,7 +1158,7 @@ CREATE SEQUENCE rrhh.tbl_amonestaciones_id_seq
 ALTER SEQUENCE rrhh.tbl_amonestaciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3877 (class 0 OID 0)
+-- TOC entry 3891 (class 0 OID 0)
 -- Dependencies: 257
 -- Name: tbl_amonestaciones_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
@@ -1201,7 +1201,7 @@ CREATE SEQUENCE rrhh.tbl_carga_familiar_id_seq
 ALTER SEQUENCE rrhh.tbl_carga_familiar_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3878 (class 0 OID 0)
+-- TOC entry 3892 (class 0 OID 0)
 -- Dependencies: 259
 -- Name: tbl_carga_familiar_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
@@ -1254,7 +1254,7 @@ CREATE SEQUENCE rrhh.tbl_expediente_id_seq
 ALTER SEQUENCE rrhh.tbl_expediente_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3879 (class 0 OID 0)
+-- TOC entry 3893 (class 0 OID 0)
 -- Dependencies: 261
 -- Name: tbl_expediente_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
@@ -1297,7 +1297,7 @@ CREATE SEQUENCE rrhh.tbl_permisos_id_seq
 ALTER SEQUENCE rrhh.tbl_permisos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3880 (class 0 OID 0)
+-- TOC entry 3894 (class 0 OID 0)
 -- Dependencies: 263
 -- Name: tbl_permisos_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
@@ -1340,7 +1340,7 @@ CREATE SEQUENCE rrhh.tbl_reposos_id_seq
 ALTER SEQUENCE rrhh.tbl_reposos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3881 (class 0 OID 0)
+-- TOC entry 3895 (class 0 OID 0)
 -- Dependencies: 265
 -- Name: tbl_reposos_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
@@ -1386,7 +1386,7 @@ CREATE SEQUENCE rrhh.tbl_vacaciones_id_seq
 ALTER SEQUENCE rrhh.tbl_vacaciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3882 (class 0 OID 0)
+-- TOC entry 3896 (class 0 OID 0)
 -- Dependencies: 267
 -- Name: tbl_vacaciones_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
@@ -1426,7 +1426,7 @@ CREATE SEQUENCE tickets.sla_configuracion_id_seq
 ALTER SEQUENCE tickets.sla_configuracion_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3883 (class 0 OID 0)
+-- TOC entry 3897 (class 0 OID 0)
 -- Dependencies: 274
 -- Name: sla_configuracion_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
@@ -1457,7 +1457,7 @@ CREATE TABLE tickets.tbl_clientes (
 ALTER TABLE tickets.tbl_clientes OWNER TO postgres;
 
 --
--- TOC entry 3884 (class 0 OID 0)
+-- TOC entry 3898 (class 0 OID 0)
 -- Dependencies: 269
 -- Name: TABLE tbl_clientes; Type: COMMENT; Schema: tickets; Owner: postgres
 --
@@ -1466,7 +1466,7 @@ COMMENT ON TABLE tickets.tbl_clientes IS 'Tabla transaccional que guarda la info
 
 
 --
--- TOC entry 3885 (class 0 OID 0)
+-- TOC entry 3899 (class 0 OID 0)
 -- Dependencies: 269
 -- Name: COLUMN tbl_clientes.condicion_cliente_id; Type: COMMENT; Schema: tickets; Owner: postgres
 --
@@ -1491,7 +1491,7 @@ CREATE SEQUENCE tickets.tbl_clientes_id_seq
 ALTER SEQUENCE tickets.tbl_clientes_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3886 (class 0 OID 0)
+-- TOC entry 3900 (class 0 OID 0)
 -- Dependencies: 270
 -- Name: tbl_clientes_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
@@ -1551,7 +1551,7 @@ CREATE TABLE tickets.tbl_tickets (
 ALTER TABLE tickets.tbl_tickets OWNER TO postgres;
 
 --
--- TOC entry 3887 (class 0 OID 0)
+-- TOC entry 3901 (class 0 OID 0)
 -- Dependencies: 271
 -- Name: TABLE tbl_tickets; Type: COMMENT; Schema: tickets; Owner: postgres
 --
@@ -1560,7 +1560,7 @@ COMMENT ON TABLE tickets.tbl_tickets IS 'Tabla transaccional principal que manej
 
 
 --
--- TOC entry 3888 (class 0 OID 0)
+-- TOC entry 3902 (class 0 OID 0)
 -- Dependencies: 271
 -- Name: COLUMN tbl_tickets.str_cedula_cliente; Type: COMMENT; Schema: tickets; Owner: postgres
 --
@@ -1569,12 +1569,62 @@ COMMENT ON COLUMN tickets.tbl_tickets.str_cedula_cliente IS 'Cédula del cliente
 
 
 --
--- TOC entry 3889 (class 0 OID 0)
+-- TOC entry 3903 (class 0 OID 0)
 -- Dependencies: 271
 -- Name: COLUMN tbl_tickets.str_correo_cliente; Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
 COMMENT ON COLUMN tickets.tbl_tickets.str_correo_cliente IS 'Correo electrónico del cliente para tickets externos (Opcional)';
+
+
+--
+-- TOC entry 281 (class 1259 OID 66146)
+-- Name: tbl_tickets_bitacora; Type: TABLE; Schema: tickets; Owner: postgres
+--
+
+CREATE TABLE tickets.tbl_tickets_bitacora (
+    id integer NOT NULL,
+    ticket_id integer NOT NULL,
+    usuario_id integer,
+    str_comentario text NOT NULL,
+    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+ALTER TABLE tickets.tbl_tickets_bitacora OWNER TO postgres;
+
+--
+-- TOC entry 3904 (class 0 OID 0)
+-- Dependencies: 281
+-- Name: TABLE tbl_tickets_bitacora; Type: COMMENT; Schema: tickets; Owner: postgres
+--
+
+COMMENT ON TABLE tickets.tbl_tickets_bitacora IS 'Almacena el historial de respuestas, avances y notas de los agentes sobre los tickets.';
+
+
+--
+-- TOC entry 280 (class 1259 OID 66145)
+-- Name: tbl_tickets_bitacora_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
+--
+
+CREATE SEQUENCE tickets.tbl_tickets_bitacora_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE tickets.tbl_tickets_bitacora_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3905 (class 0 OID 0)
+-- Dependencies: 280
+-- Name: tbl_tickets_bitacora_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
+--
+
+ALTER SEQUENCE tickets.tbl_tickets_bitacora_id_seq OWNED BY tickets.tbl_tickets_bitacora.id;
 
 
 --
@@ -1594,7 +1644,7 @@ CREATE SEQUENCE tickets.tbl_tickets_id_seq
 ALTER SEQUENCE tickets.tbl_tickets_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3890 (class 0 OID 0)
+-- TOC entry 3906 (class 0 OID 0)
 -- Dependencies: 272
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
@@ -1670,7 +1720,7 @@ CREATE VIEW tickets.view_listar_tickets AS
 ALTER VIEW tickets.view_listar_tickets OWNER TO postgres;
 
 --
--- TOC entry 3891 (class 0 OID 0)
+-- TOC entry 3907 (class 0 OID 0)
 -- Dependencies: 279
 -- Name: VIEW view_listar_tickets; Type: COMMENT; Schema: tickets; Owner: postgres
 --
@@ -1679,7 +1729,7 @@ COMMENT ON VIEW tickets.view_listar_tickets IS 'Muestra los tickets del sistema'
 
 
 --
--- TOC entry 3471 (class 2604 OID 65754)
+-- TOC entry 3476 (class 2604 OID 65754)
 -- Name: cat_datos_maestros id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1687,7 +1737,7 @@ ALTER TABLE ONLY public.cat_datos_maestros ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3475 (class 2604 OID 65755)
+-- TOC entry 3480 (class 2604 OID 65755)
 -- Name: cat_departamentos id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1695,7 +1745,7 @@ ALTER TABLE ONLY public.cat_departamentos ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3478 (class 2604 OID 65756)
+-- TOC entry 3483 (class 2604 OID 65756)
 -- Name: cat_opciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1703,7 +1753,7 @@ ALTER TABLE ONLY public.cat_opciones ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3481 (class 2604 OID 65757)
+-- TOC entry 3486 (class 2604 OID 65757)
 -- Name: cat_roles id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1711,7 +1761,7 @@ ALTER TABLE ONLY public.cat_roles ALTER COLUMN id SET DEFAULT nextval('public.tb
 
 
 --
--- TOC entry 3484 (class 2604 OID 65758)
+-- TOC entry 3489 (class 2604 OID 65758)
 -- Name: cat_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1719,7 +1769,7 @@ ALTER TABLE ONLY public.cat_sistemas ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3488 (class 2604 OID 65759)
+-- TOC entry 3493 (class 2604 OID 65759)
 -- Name: tbl_auth_tokens id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1727,7 +1777,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3491 (class 2604 OID 65760)
+-- TOC entry 3496 (class 2604 OID 65760)
 -- Name: tbl_roles_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1735,7 +1785,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3495 (class 2604 OID 65761)
+-- TOC entry 3500 (class 2604 OID 65761)
 -- Name: tbl_roles_sistemas_opciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1743,7 +1793,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones ALTER COLUMN id SET DEFAULT 
 
 
 --
--- TOC entry 3496 (class 2604 OID 65762)
+-- TOC entry 3501 (class 2604 OID 65762)
 -- Name: tbl_usuarios id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1751,7 +1801,7 @@ ALTER TABLE ONLY public.tbl_usuarios ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3500 (class 2604 OID 65763)
+-- TOC entry 3505 (class 2604 OID 65763)
 -- Name: tbl_usuarios_opciones_excepciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1759,7 +1809,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones ALTER COLUMN id SET DE
 
 
 --
--- TOC entry 3504 (class 2604 OID 65764)
+-- TOC entry 3509 (class 2604 OID 65764)
 -- Name: tbl_usuarios_roles_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1767,7 +1817,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas ALTER COLUMN id SET DEFAULT 
 
 
 --
--- TOC entry 3510 (class 2604 OID 65765)
+-- TOC entry 3515 (class 2604 OID 65765)
 -- Name: tbl_amonestaciones id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1775,7 +1825,7 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones ALTER COLUMN id SET DEFAULT nextval('rr
 
 
 --
--- TOC entry 3513 (class 2604 OID 65766)
+-- TOC entry 3518 (class 2604 OID 65766)
 -- Name: tbl_carga_familiar id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1783,7 +1833,7 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar ALTER COLUMN id SET DEFAULT nextval('rr
 
 
 --
--- TOC entry 3516 (class 2604 OID 65767)
+-- TOC entry 3521 (class 2604 OID 65767)
 -- Name: tbl_expediente id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1791,7 +1841,7 @@ ALTER TABLE ONLY rrhh.tbl_expediente ALTER COLUMN id SET DEFAULT nextval('rrhh.t
 
 
 --
--- TOC entry 3519 (class 2604 OID 65768)
+-- TOC entry 3524 (class 2604 OID 65768)
 -- Name: tbl_permisos id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1799,7 +1849,7 @@ ALTER TABLE ONLY rrhh.tbl_permisos ALTER COLUMN id SET DEFAULT nextval('rrhh.tbl
 
 
 --
--- TOC entry 3522 (class 2604 OID 65769)
+-- TOC entry 3527 (class 2604 OID 65769)
 -- Name: tbl_reposos id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1807,7 +1857,7 @@ ALTER TABLE ONLY rrhh.tbl_reposos ALTER COLUMN id SET DEFAULT nextval('rrhh.tbl_
 
 
 --
--- TOC entry 3525 (class 2604 OID 65770)
+-- TOC entry 3530 (class 2604 OID 65770)
 -- Name: tbl_vacaciones id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1815,7 +1865,7 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones ALTER COLUMN id SET DEFAULT nextval('rrhh.t
 
 
 --
--- TOC entry 3528 (class 2604 OID 66057)
+-- TOC entry 3533 (class 2604 OID 66057)
 -- Name: sla_configuracion id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1823,7 +1873,7 @@ ALTER TABLE ONLY tickets.sla_configuracion ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3530 (class 2604 OID 65771)
+-- TOC entry 3535 (class 2604 OID 65771)
 -- Name: tbl_clientes id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1831,7 +1881,7 @@ ALTER TABLE ONLY tickets.tbl_clientes ALTER COLUMN id SET DEFAULT nextval('ticke
 
 
 --
--- TOC entry 3533 (class 2604 OID 65772)
+-- TOC entry 3538 (class 2604 OID 65772)
 -- Name: tbl_tickets id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1839,7 +1889,15 @@ ALTER TABLE ONLY tickets.tbl_tickets ALTER COLUMN id SET DEFAULT nextval('ticket
 
 
 --
--- TOC entry 3467 (class 0 OID 66077)
+-- TOC entry 3552 (class 2604 OID 66149)
+-- Name: tbl_tickets_bitacora id; Type: DEFAULT; Schema: tickets; Owner: postgres
+--
+
+ALTER TABLE ONLY tickets.tbl_tickets_bitacora ALTER COLUMN id SET DEFAULT nextval('tickets.tbl_tickets_bitacora_id_seq'::regclass);
+
+
+--
+-- TOC entry 3472 (class 0 OID 66077)
 -- Dependencies: 276
 -- Data for Name: job; Type: TABLE DATA; Schema: cron; Owner: postgres
 --
@@ -1850,7 +1908,7 @@ COPY cron.job (jobid, schedule, command, nodename, nodeport, database, username,
 
 
 --
--- TOC entry 3469 (class 0 OID 66096)
+-- TOC entry 3474 (class 0 OID 66096)
 -- Dependencies: 278
 -- Data for Name: job_run_details; Type: TABLE DATA; Schema: cron; Owner: postgres
 --
@@ -2081,11 +2139,81 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 2	223	180547	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:47:00.008566-04	2026-10-12 15:47:00.009921-04
 2	224	181197	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:48:00.009632-04	2026-10-12 15:48:00.011253-04
 2	225	181960	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:49:00.008534-04	2026-10-12 15:49:00.009591-04
+2	255	202976	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:19:00.007767-04	2026-10-12 16:19:00.009724-04
+2	226	182790	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:50:00.008334-04	2026-10-12 15:50:00.009477-04
+2	235	188376	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:59:00.009049-04	2026-10-12 15:59:00.010614-04
+2	242	193701	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:06:00.008724-04	2026-10-12 16:06:00.009757-04
+2	227	183474	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:51:00.008658-04	2026-10-12 15:51:00.009877-04
+2	252	200884	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:16:00.008891-04	2026-10-12 16:16:00.009989-04
+2	236	189033	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:00:00.009293-04	2026-10-12 16:00:00.010459-04
+2	228	184085	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:52:00.009919-04	2026-10-12 15:52:00.011389-04
+2	248	198050	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:12:00.008276-04	2026-10-12 16:12:00.009872-04
+2	229	184683	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:53:00.009879-04	2026-10-12 15:53:00.011575-04
+2	243	194343	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:07:00.008729-04	2026-10-12 16:07:00.009941-04
+2	237	189704	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:01:00.008394-04	2026-10-12 16:01:00.009534-04
+2	230	185257	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:54:00.008442-04	2026-10-12 15:54:00.009712-04
+2	265	210240	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:29:00.008102-04	2026-10-12 16:29:00.009295-04
+2	231	185849	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:55:00.010378-04	2026-10-12 15:55:00.011691-04
+2	238	190397	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:02:00.008761-04	2026-10-12 16:02:00.010286-04
+2	232	186445	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:56:00.009856-04	2026-10-12 15:56:00.010953-04
+2	244	195141	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:08:00.008551-04	2026-10-12 16:08:00.009842-04
+2	239	191164	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:03:00.008409-04	2026-10-12 16:03:00.009554-04
+2	233	187014	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:57:00.008023-04	2026-10-12 15:57:00.009093-04
+2	249	198799	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:13:00.007975-04	2026-10-12 16:13:00.009104-04
+2	234	187647	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 15:58:00.007726-04	2026-10-12 15:58:00.008834-04
+2	258	205028	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:22:00.00759-04	2026-10-12 16:22:00.00871-04
+2	245	195757	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:09:00.008618-04	2026-10-12 16:09:00.009848-04
+2	240	192156	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:04:00.007515-04	2026-10-12 16:04:00.008839-04
+2	253	201620	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:17:00.009377-04	2026-10-12 16:17:00.010921-04
+2	241	193059	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:05:00.010073-04	2026-10-12 16:05:00.011565-04
+2	250	199562	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:14:00.007741-04	2026-10-12 16:14:00.008809-04
+2	246	196542	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:10:00.009474-04	2026-10-12 16:10:00.010774-04
+2	256	203597	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:20:00.008435-04	2026-10-12 16:20:00.009557-04
+2	247	197221	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:11:00.011387-04	2026-10-12 16:11:00.012967-04
+2	251	200178	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:15:00.007454-04	2026-10-12 16:15:00.008918-04
+2	260	206535	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:24:00.007647-04	2026-10-12 16:24:00.008884-04
+2	254	202242	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:18:00.00943-04	2026-10-12 16:18:00.010985-04
+2	257	204352	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:21:00.009698-04	2026-10-12 16:21:00.010754-04
+2	263	208661	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:27:00.008791-04	2026-10-12 16:27:00.009875-04
+2	262	208020	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:26:00.012499-04	2026-10-12 16:26:00.014051-04
+2	259	205681	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:23:00.008049-04	2026-10-12 16:23:00.009141-04
+2	264	209471	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:28:00.008776-04	2026-10-12 16:28:00.010038-04
+2	261	207257	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:25:00.008383-04	2026-10-12 16:25:00.009514-04
+2	266	210957	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:30:00.009511-04	2026-10-12 16:30:00.011049-04
+2	267	211720	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:31:00.008941-04	2026-10-12 16:31:00.010095-04
+2	268	212375	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:32:00.008394-04	2026-10-12 16:32:00.009559-04
+2	269	212981	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:33:00.007622-04	2026-10-12 16:33:00.008768-04
+2	270	213986	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:34:00.008173-04	2026-10-12 16:34:00.009372-04
+2	292	231328	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:56:00.009129-04	2026-10-12 16:56:00.010293-04
+2	271	214615	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:35:00.008854-04	2026-10-12 16:35:00.010022-04
+2	280	221313	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:44:00.009336-04	2026-10-12 16:44:00.010826-04
+2	287	227043	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:51:00.008858-04	2026-10-12 16:51:00.009942-04
+2	272	215453	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:36:00.010925-04	2026-10-12 16:36:00.012732-04
+2	281	221955	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:45:00.00823-04	2026-10-12 16:45:00.009384-04
+2	273	216503	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:37:00.007993-04	2026-10-12 16:37:00.009226-04
+2	293	232106	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:57:00.008072-04	2026-10-12 16:57:00.009267-04
+2	274	217182	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:38:00.008255-04	2026-10-12 16:38:00.009437-04
+2	288	227964	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:52:00.007394-04	2026-10-12 16:52:00.008576-04
+2	282	222963	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:46:00.009975-04	2026-10-12 16:46:00.011444-04
+2	275	217821	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:39:00.008759-04	2026-10-12 16:39:00.009943-04
+2	276	218499	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:40:00.007629-04	2026-10-12 16:40:00.008838-04
+2	283	223668	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:47:00.009834-04	2026-10-12 16:47:00.011228-04
+2	277	219114	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:41:00.010806-04	2026-10-12 16:41:00.012331-04
+2	289	228805	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:53:00.007983-04	2026-10-12 16:53:00.009515-04
+2	284	224364	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:48:00.008189-04	2026-10-12 16:48:00.009292-04
+2	278	219978	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:42:00.00865-04	2026-10-12 16:42:00.009862-04
+2	294	232821	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:58:00.00723-04	2026-10-12 16:58:00.00832-04
+2	279	220680	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:43:00.009306-04	2026-10-12 16:43:00.010767-04
+2	285	225306	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:49:00.009474-04	2026-10-12 16:49:00.010964-04
+2	290	229674	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:54:00.008018-04	2026-10-12 16:54:00.009198-04
+2	286	225915	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:50:00.00814-04	2026-10-12 16:50:00.00922-04
+2	291	230415	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:55:00.007435-04	2026-10-12 16:55:00.008571-04
+2	295	233759	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-12 16:59:00.008287-04	2026-10-12 16:59:00.009689-04
 \.
 
 
 --
--- TOC entry 3802 (class 0 OID 65542)
+-- TOC entry 3814 (class 0 OID 65542)
 -- Dependencies: 223
 -- Data for Name: cat_datos_maestros; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2132,7 +2260,7 @@ COPY public.cat_datos_maestros (id, str_tipo, str_nombre, str_descripcion, bol_a
 
 
 --
--- TOC entry 3804 (class 0 OID 65551)
+-- TOC entry 3816 (class 0 OID 65551)
 -- Dependencies: 225
 -- Data for Name: cat_departamentos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2152,7 +2280,7 @@ COPY public.cat_departamentos (id, str_nombre, str_descripcion, created_at, upda
 
 
 --
--- TOC entry 3806 (class 0 OID 65557)
+-- TOC entry 3818 (class 0 OID 65557)
 -- Dependencies: 227
 -- Data for Name: cat_opciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2180,7 +2308,7 @@ COPY public.cat_opciones (id, str_nombre, bol_eliminado, fecha_creacion, str_rut
 
 
 --
--- TOC entry 3807 (class 0 OID 65564)
+-- TOC entry 3819 (class 0 OID 65564)
 -- Dependencies: 228
 -- Data for Name: cat_roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2194,7 +2322,7 @@ COPY public.cat_roles (id, str_nombre, str_descripcion, created_at, updated_at) 
 
 
 --
--- TOC entry 3808 (class 0 OID 65569)
+-- TOC entry 3820 (class 0 OID 65569)
 -- Dependencies: 229
 -- Data for Name: cat_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2211,18 +2339,18 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 
 
 --
--- TOC entry 3809 (class 0 OID 65577)
+-- TOC entry 3821 (class 0 OID 65577)
 -- Dependencies: 230
 -- Data for Name: tbl_auth_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, str_device_id, str_device_name) FROM stdin;
-405	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MTgzNDMzMiwiZXhwIjoxNzkxODM3OTMyfQ.hRPI53jBlJGIUoEAF7sptyb_ixtiAGx3N1SvNz7ceYQ	2026-10-12 14:30:21.058-04	2026-10-12 16:45:32.568675-04	f	140a233c-6959-4f5b-ad39-6fdae6540c63	Chrome en Linux PC
+405	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MTgzODQwMiwiZXhwIjoxNzkxODQyMDAyfQ.AGbWxy6uzJ6BuTaus-J5RvWC7CPiK4e4ya5atKkcsSg	2026-10-12 14:30:21.058-04	2026-10-12 17:53:22.750677-04	f	140a233c-6959-4f5b-ad39-6fdae6540c63	Chrome en Linux PC
 \.
 
 
 --
--- TOC entry 3813 (class 0 OID 65587)
+-- TOC entry 3825 (class 0 OID 65587)
 -- Dependencies: 234
 -- Data for Name: tbl_roles_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2242,7 +2370,7 @@ COPY public.tbl_roles_sistemas (id, rol_id, sistema_id, created_at, updated_at, 
 
 
 --
--- TOC entry 3815 (class 0 OID 65594)
+-- TOC entry 3827 (class 0 OID 65594)
 -- Dependencies: 236
 -- Data for Name: tbl_roles_sistemas_opciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2275,7 +2403,7 @@ COPY public.tbl_roles_sistemas_opciones (id, rol_sistema_id, opcion_id) FROM std
 
 
 --
--- TOC entry 3818 (class 0 OID 65599)
+-- TOC entry 3830 (class 0 OID 65599)
 -- Dependencies: 239
 -- Data for Name: tbl_usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2335,7 +2463,7 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 
 
 --
--- TOC entry 3819 (class 0 OID 65607)
+-- TOC entry 3831 (class 0 OID 65607)
 -- Dependencies: 240
 -- Data for Name: tbl_usuarios_opciones_excepciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2345,7 +2473,7 @@ COPY public.tbl_usuarios_opciones_excepciones (id, usuario_id, opcion_id, bol_pe
 
 
 --
--- TOC entry 3821 (class 0 OID 65614)
+-- TOC entry 3833 (class 0 OID 65614)
 -- Dependencies: 242
 -- Data for Name: tbl_usuarios_roles_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -2374,7 +2502,7 @@ COPY public.tbl_usuarios_roles_sistemas (id, usuario_id, rol_sistema_id, bol_act
 
 
 --
--- TOC entry 3825 (class 0 OID 65677)
+-- TOC entry 3837 (class 0 OID 65677)
 -- Dependencies: 256
 -- Data for Name: tbl_amonestaciones; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -2384,7 +2512,7 @@ COPY rrhh.tbl_amonestaciones (id, usuario_id, motivo_id, str_motivo_descripcion,
 
 
 --
--- TOC entry 3827 (class 0 OID 65685)
+-- TOC entry 3839 (class 0 OID 65685)
 -- Dependencies: 258
 -- Data for Name: tbl_carga_familiar; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -2394,7 +2522,7 @@ COPY rrhh.tbl_carga_familiar (id, usuario_id, parentesco_id, nombre_completo, fe
 
 
 --
--- TOC entry 3829 (class 0 OID 65691)
+-- TOC entry 3841 (class 0 OID 65691)
 -- Dependencies: 260
 -- Data for Name: tbl_expediente; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -2404,7 +2532,7 @@ COPY rrhh.tbl_expediente (id, str_num_expediente, usuario_id, dmt_fecha_exp, bol
 
 
 --
--- TOC entry 3831 (class 0 OID 65697)
+-- TOC entry 3843 (class 0 OID 65697)
 -- Dependencies: 262
 -- Data for Name: tbl_permisos; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -2414,7 +2542,7 @@ COPY rrhh.tbl_permisos (id, usuario_id, motivo_id, str_motivo_descripcion, dmt_f
 
 
 --
--- TOC entry 3833 (class 0 OID 65705)
+-- TOC entry 3845 (class 0 OID 65705)
 -- Dependencies: 264
 -- Data for Name: tbl_reposos; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -2424,7 +2552,7 @@ COPY rrhh.tbl_reposos (id, usuario_id, motivo_id, str_motivo_descripcion, tim_fe
 
 
 --
--- TOC entry 3835 (class 0 OID 65713)
+-- TOC entry 3847 (class 0 OID 65713)
 -- Dependencies: 266
 -- Data for Name: tbl_vacaciones; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
@@ -2434,7 +2562,7 @@ COPY rrhh.tbl_vacaciones (id, usuario_id, int_total_dias, dmt_fecha_desde, dmt_f
 
 
 --
--- TOC entry 3837 (class 0 OID 65719)
+-- TOC entry 3849 (class 0 OID 65719)
 -- Dependencies: 268
 -- Data for Name: sla_configuracion; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -2489,7 +2617,7 @@ COPY tickets.sla_configuracion (id, categoria_id, prioridad_id, tiempo_maximo, a
 
 
 --
--- TOC entry 3824 (class 0 OID 65622)
+-- TOC entry 3836 (class 0 OID 65622)
 -- Dependencies: 245
 -- Data for Name: tbl_alertas; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -2499,7 +2627,7 @@ COPY tickets.tbl_alertas (id, caso_id, usuario_id, str_tipo_alerta, str_mensaje,
 
 
 --
--- TOC entry 3838 (class 0 OID 65731)
+-- TOC entry 3850 (class 0 OID 65731)
 -- Dependencies: 269
 -- Data for Name: tbl_clientes; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -2509,7 +2637,7 @@ COPY tickets.tbl_clientes (id, str_cedula, str_nombre, str_apellido, str_telefon
 
 
 --
--- TOC entry 3842 (class 0 OID 65971)
+-- TOC entry 3854 (class 0 OID 65971)
 -- Dependencies: 273
 -- Data for Name: tbl_secuencias_tickets; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -2520,7 +2648,7 @@ COPY tickets.tbl_secuencias_tickets (int_anio, int_mes, int_ultimo_secuencial) F
 
 
 --
--- TOC entry 3840 (class 0 OID 65739)
+-- TOC entry 3852 (class 0 OID 65739)
 -- Dependencies: 271
 -- Data for Name: tbl_tickets; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
@@ -2534,17 +2662,30 @@ COPY tickets.tbl_tickets (id, str_ticket, cliente_id, creador_agente_id, cierre_
 8	TCK2026-10-000008	\N	1	\N	1	9	16	22	2	werwe	listo	4	2026-10-12 00:17:02.266546-04	2026-10-12 00:16:49.906026-04	2026-10-12 00:17:02.266546-04	\N	\N	\N	3	25	2026-10-12 04:16:49.906026-04	\N	0	2314234	ildemar@gmail.com
 5	TCK2026-10-000005	\N	102	\N	1	9	16	23	2	Cliente presenta problemas con facematch	**Ticket de Soporte: PROBLEMAS CON FACEMATCH**\r\n\r\n**Descripción del Problema:**\r\nEl cliente está experimentando problemas con la función de Facematch en nuestra aplicación de Casa de Bolsa S.A. Este error afecta negativamente su experiencia, ya que el sistema no reconoce correctamente su rostro y requiere una nueva verificación manual cada vez que intenta acceder a sus cuentas.\r\n\r\n**Pruebas Realizadas:**\r\n\r\n1. **Verificación del Estado de Cuenta:** Comprobamos el estado actual de cuenta del usuario para asegurarnos de que no haya ninguna incidencia específica asociada con Facematch.\r\n2. **Reinicio de Sesión en la Aplicación:** Solicitamos al cliente realizar un reinicio completo de sesión para verificar si el problema persiste tras un reinicio.\r\n3. **Ajustes del Sistema Operativo:** Se comprueba si hay actualizaciones disponibles para el sistema operativo y se sugiere su instalación.\r\n\r\n**Paso 1 - Verificación del Estado de Cuenta**\r\nComprueba la situación en tu cuenta e informa cualquier mensaje de error o advertencia que puedas estar recibiendo. \r\n\r\n**Paso 2 - Reinicio de Sesión en la Aplicación**\r\nRealiza un cierre completo de sesión en la aplicación y vuelve a iniciarla para ver si el problema persiste.\r\n\r\n**Paso 3 - Ajustes del Sistema Operativo**\r\nVerifica si hay actualizaciones disponibles para tu sistema operativo y realiza las instaladas, luego intenta acceder nuevamente a través de nuestra aplicación.\r\n\r\n**Paso 4 - Nueva Validación por Usuario**\r\nPor favor confirma si después de realizar los pasos anteriores el problema ha sido resuelto.	4	\N	2026-10-12 00:21:42.660966-04	2026-10-12 00:21:42.660966-04	\N	\N	\N	57	25	2026-10-12 04:21:42.660966-04	\N	0	5143077	maritzaache@gmail.com
 7	TCK2026-10-000007	\N	1	\N	1	8	16	22	3	tes	**Ticket de Soporte: USUARIO NO PUEDE FIRMA SU FICHA**\r\n\r\n**Descripción del Problema:**  \r\nEl usuario reporta que no puede firmar su ficha en la aplicación de la Casa de Bolsa S.A. Este problema tiene un impacto crítico, ya que afecta directamente el proceso de finalización de su pedido y la obtención de sus aportes.\r\n\r\n**Pruebas Realizadas:**\r\n1. **Verificación de Conexión:** El usuario ha confirmado que está conectado a Internet correctamente.\r\n2. **Reinicio del Servicio de Aplicación:** Se reinició el servicio de la aplicación, pero el problema persiste.\r\n3. **Actualización de la Aplicación:** El usuario informó que ya tiene la última versión de la aplicación instalada.\r\n\r\n**Paso 1 - Verificación de Credenciales:**\r\nRevisar las credenciales del usuario para asegurarse de que no hay errores o problemas en su cuenta.\r\n\r\n**Paso 2 - Comprobación de la Base de Datos:**\r\nConsultar el sistema interno para verificar si hay algún problema con los datos asociados al usuario o su ficha específica.\r\n\r\n**Paso 3 - Aplicación del Procedimiento Secundario:**\r\nSolicitar al usuario que realice una desincronización y luego sincronización nuevamente de sus aportes y fichas en la aplicación.\r\n\r\n**Paso 4 - Validación Final:**\r\nPedir al usuario que termine el proceso de firma nuevamente y confirmar si el problema ha sido resuelto.	4	2026-10-12 00:21:32.116197-04	2026-10-12 00:21:15.576259-04	2026-10-12 00:21:32.116197-04	\N	\N	\N	4	25	2026-10-12 04:21:15.576259-04	\N	0	20299553	ildemar@gmail.com
+13	TCK2026-10-000013	\N	1	\N	1	9	16	22	1	pruebas	**Ticket de Soporte: INCAPACIDAD DE RECHARGAR SALDO EN CUENTA**\r\n\r\n**Descripción del Problema:** El cliente informa que no puede recargar saldo en su cuenta para comprar títulos. Este problema tiene un impacto crítico ya que se está obstaculizando la capacidad del usuario de realizar transacciones comerciales en la plataforma.\r\n\r\n**Pruebas Realizadas:**\r\n\r\n1. **Verificación de Conexión:** El cliente aseguró que tiene una conexión a Internet estable.\r\n2. **Revisar Estado de Cuenta:** Se verificó el estado general de la cuenta del cliente y no se identificaron errores de saldo o bloqueos.\r\n3. **Prueba de Recharge Vía Web:** Se intentó recargar saldo mediante la interfaz web del servicio, pero el proceso resultó fallido con un mensaje de error indicando que no es posible realizar operaciones en este momento.\r\n\r\n**Paso 1 - Verificación de Servicio de Recarga:**\r\n- Revisar si el servicio de rechazo está temporalmente inactivo o si hay alguna limitación conocida para las operaciones de recarga.\r\n\r\n**Paso 2 - Consulta con Centro de Operaciones:**\r\n- Contactar al Centro de Operaciones para informar del problema y solicitar una aclaración sobre la causa del fallo en el proceso de rechazo.\r\n- Pedir confirmación sobre si el cliente puede realizar la operación mediante otros métodos (por ejemplo, teléfono o aplicación móvil).\r\n\r\n**Paso 3 - Aplicar Procedimiento Alternativo:**\r\n- Proporcionar al cliente las opciones alternativas disponibles para recargar su saldo:\r\n  1. Realizar el rechazo a través del teléfono central de la compañía.\r\n  2. Utilizar la versión móvil de la aplicación en lugar de la web.\r\n  3. Revisar si hay alguna promoción o oferta que permita el rechazo sin necesidad de internet.\r\n\r\n**Paso 4 - Nueva Validación:**\r\n- Solicitar al cliente que realice una nueva prueba del proceso utilizando la opción alternativa proporcionada, por ejemplo, realizando un recarga a través del teléfono central.\r\n- Documentar los resultados y confirmar con el cliente si su problema ha sido resuelto.\r\n\r\n\r\n	4	2026-10-12 16:17:02.811373-04	2026-10-12 14:39:07.310067-04	2026-10-12 16:17:02.811373-04	/var/www/uploads/1791830347299-casa-kame-de-dragon-ball_3840x2160_xtrafondos.com.jpg,/var/www/uploads/1791830347307-image.png	\N	\N	4	25	2026-10-12 18:39:07.310067-04	\N	0	20299553	ildemar@gmail.com
 9	TCK2026-10-000009	\N	1	\N	1	9	16	37	2	otra prueba	pruebas	4	\N	2026-10-11 00:29:32.013019-04	2026-10-12 00:34:51.812075-04	\N	\N	\N	4	25	2026-10-11 04:29:32.013019-04	\N	0	20299553	ildemar@gmail.com
 10	TCK2026-10-000010	\N	1	\N	1	26	16	37	\N	Facturacion	Problemas con la facturacion	4	\N	2026-10-12 00:45:16.837174-04	2026-10-12 11:25:00.011587-04	\N	\N	\N	2	24	2026-10-12 04:45:16.837174-04	\N	0	\N	\N
 11	TCK2026-10-000011	\N	1	\N	1	26	16	37	\N	No hay LA	No hay LA	4	\N	2026-10-12 01:08:12.682604-04	2026-10-12 11:25:00.011587-04	\N	\N	\N	2	24	2026-10-12 05:08:12.682604-04	\N	0	\N	\N
-13	TCK2026-10-000013	\N	1	\N	1	9	16	17	1	pruebas	**Ticket de Soporte: INCAPACIDAD DE RECHARGAR SALDO EN CUENTA**\r\n\r\n**Descripción del Problema:** El cliente informa que no puede recargar saldo en su cuenta para comprar títulos. Este problema tiene un impacto crítico ya que se está obstaculizando la capacidad del usuario de realizar transacciones comerciales en la plataforma.\r\n\r\n**Pruebas Realizadas:**\r\n\r\n1. **Verificación de Conexión:** El cliente aseguró que tiene una conexión a Internet estable.\r\n2. **Revisar Estado de Cuenta:** Se verificó el estado general de la cuenta del cliente y no se identificaron errores de saldo o bloqueos.\r\n3. **Prueba de Recharge Vía Web:** Se intentó recargar saldo mediante la interfaz web del servicio, pero el proceso resultó fallido con un mensaje de error indicando que no es posible realizar operaciones en este momento.\r\n\r\n**Paso 1 - Verificación de Servicio de Recarga:**\r\n- Revisar si el servicio de rechazo está temporalmente inactivo o si hay alguna limitación conocida para las operaciones de recarga.\r\n\r\n**Paso 2 - Consulta con Centro de Operaciones:**\r\n- Contactar al Centro de Operaciones para informar del problema y solicitar una aclaración sobre la causa del fallo en el proceso de rechazo.\r\n- Pedir confirmación sobre si el cliente puede realizar la operación mediante otros métodos (por ejemplo, teléfono o aplicación móvil).\r\n\r\n**Paso 3 - Aplicar Procedimiento Alternativo:**\r\n- Proporcionar al cliente las opciones alternativas disponibles para recargar su saldo:\r\n  1. Realizar el rechazo a través del teléfono central de la compañía.\r\n  2. Utilizar la versión móvil de la aplicación en lugar de la web.\r\n  3. Revisar si hay alguna promoción o oferta que permita el rechazo sin necesidad de internet.\r\n\r\n**Paso 4 - Nueva Validación:**\r\n- Solicitar al cliente que realice una nueva prueba del proceso utilizando la opción alternativa proporcionada, por ejemplo, realizando un recarga a través del teléfono central.\r\n- Documentar los resultados y confirmar con el cliente si su problema ha sido resuelto.\r\n\r\n\r\n	4	\N	2026-10-12 14:39:07.310067-04	2026-10-12 14:39:07.310067-04	/var/www/uploads/1791830347299-casa-kame-de-dragon-ball_3840x2160_xtrafondos.com.jpg,/var/www/uploads/1791830347307-image.png	\N	\N	4	25	2026-10-12 18:39:07.310067-04	\N	0	20299553	ildemar@gmail.com
 12	TCK2026-10-000012	\N	1	\N	1	33	16	37	\N	Creacion de usuarios	Creacion de un usuario nuevo	2	\N	2026-10-12 13:03:32.662631-04	2026-10-12 15:04:00.008582-04	\N	\N	\N	57	24	2026-10-12 15:03:32.662631-04	\N	0	\N	\N
-14	TCK2026-10-000014	\N	1	\N	1	9	16	17	3	otra prueba	**Ticket de Soporte: KYC NO PUEDE SER COMPLETADO**\r\n\r\n**Descripción del Problema:**  \r\nEl cliente está experimentando problemas para completar el proceso de KYC (Know Your Customer) dentro de la aplicación de Mercosur Casa de Bolsa S.A. Este problema tiene un impacto directo en su capacidad para utilizar todos los servicios y funcionalidades disponibles en la plataforma, lo que implica una restricción en su acceso a las operaciones financieras necesarias.\r\n\r\n**Pruebas Realizadas:**\r\n\r\n1. **Verificación del Estado Actual:** El usuario intentó completar el KYC a través de la aplicación pero recibió un mensaje de error indicando que no puede llenar el formulario.\r\n2. **Reinicio de Sesión:** Se solicitó al usuario que reiniciara su sesión y luego intentara nuevamente completar el KYC.\r\n3. **Contacto con Soporte:** El cliente contactó directamente a nuestro servicio al cliente, pero aún no se ha podido resolver el problema.\r\n\r\n**Paso 1 - Verificación de Datos Personales:**\r\nVerifique los datos personales proporcionados por el usuario y asegúrese de que sean correctos y completos. Solicite nuevamente la documentación necesaria para el KYC.\r\n\r\n**Paso 2 - Revisión de Conexión a Internet:** Informe al cliente que verifique su conexión a internet estable y segura, ya que problemas con la conexión pueden causar errores técnicos en la aplicación.\r\n\r\n**Paso 3 - Actualización de Aplicación:** Asegúrese de que el usuario esté utilizando la versión más reciente de la aplicación. Si no es así, instale la actualización y luego intente nuevamente completar el KYC.\r\n\r\n**Paso 4 - Nueva Validación con Usuario:**\r\nSolicite al cliente que realice una nueva validación del KYC a través de la aplicación después de seguir los pasos descritos en los primeros tres pasos. Proporcione instrucciones específicas sobre cómo completar el formulario y qué documentación se requiere, así como cómo contactar nuevamente si continúa experimentando problemas.\r\n\r\n\r\n\r\n	4	\N	2026-10-12 15:06:52.832138-04	2026-10-12 15:06:52.832138-04	/var/www/uploads/TCK2026-10-000014-1.jpg,/var/www/uploads/TCK2026-10-000014-2.png	/var/www/uploads/TCK2026-10-000014-vid-1.webm	\N	57	25	2026-10-12 19:06:52.832138-04	\N	0	12333456	prueba@cliente.com
+14	TCK2026-10-000014	\N	1	\N	1	9	16	22	3	otra prueba	**Ticket de Soporte: KYC NO PUEDE SER COMPLETADO**\r\n\r\n**Descripción del Problema:**  \r\nEl cliente está experimentando problemas para completar el proceso de KYC (Know Your Customer) dentro de la aplicación de Mercosur Casa de Bolsa S.A. Este problema tiene un impacto directo en su capacidad para utilizar todos los servicios y funcionalidades disponibles en la plataforma, lo que implica una restricción en su acceso a las operaciones financieras necesarias.\r\n\r\n**Pruebas Realizadas:**\r\n\r\n1. **Verificación del Estado Actual:** El usuario intentó completar el KYC a través de la aplicación pero recibió un mensaje de error indicando que no puede llenar el formulario.\r\n2. **Reinicio de Sesión:** Se solicitó al usuario que reiniciara su sesión y luego intentara nuevamente completar el KYC.\r\n3. **Contacto con Soporte:** El cliente contactó directamente a nuestro servicio al cliente, pero aún no se ha podido resolver el problema.\r\n\r\n**Paso 1 - Verificación de Datos Personales:**\r\nVerifique los datos personales proporcionados por el usuario y asegúrese de que sean correctos y completos. Solicite nuevamente la documentación necesaria para el KYC.\r\n\r\n**Paso 2 - Revisión de Conexión a Internet:** Informe al cliente que verifique su conexión a internet estable y segura, ya que problemas con la conexión pueden causar errores técnicos en la aplicación.\r\n\r\n**Paso 3 - Actualización de Aplicación:** Asegúrese de que el usuario esté utilizando la versión más reciente de la aplicación. Si no es así, instale la actualización y luego intente nuevamente completar el KYC.\r\n\r\n**Paso 4 - Nueva Validación con Usuario:**\r\nSolicite al cliente que realice una nueva validación del KYC a través de la aplicación después de seguir los pasos descritos en los primeros tres pasos. Proporcione instrucciones específicas sobre cómo completar el formulario y qué documentación se requiere, así como cómo contactar nuevamente si continúa experimentando problemas.\r\n\r\n\r\n\r\n	4	2026-10-12 16:09:28.137937-04	2026-10-12 16:04:32.907129-04	2026-10-12 16:09:28.137937-04	/var/www/uploads/TCK2026-10-000014-1.jpg,/var/www/uploads/TCK2026-10-000014-2.png	/var/www/uploads/TCK2026-10-000014-vid-1.webm	\N	57	25	2026-10-12 20:04:32.907129-04	\N	0	12333456	prueba@cliente.com
 \.
 
 
 --
--- TOC entry 3892 (class 0 OID 0)
+-- TOC entry 3857 (class 0 OID 66146)
+-- Dependencies: 281
+-- Data for Name: tbl_tickets_bitacora; Type: TABLE DATA; Schema: tickets; Owner: postgres
+--
+
+COPY tickets.tbl_tickets_bitacora (id, ticket_id, usuario_id, str_comentario, created_at) FROM stdin;
+1	14	1	haciendo pruebas	2026-10-12 16:04:04.803208-04
+2	14	1	probando de nuevo	2026-10-12 16:04:32.907129-04
+3	13	1	Ya fue solucionado por parte del proveedor.	2026-10-12 16:17:02.811373-04
+\.
+
+
+--
+-- TOC entry 3908 (class 0 OID 0)
 -- Dependencies: 275
 -- Name: jobid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
@@ -2553,16 +2694,16 @@ SELECT pg_catalog.setval('cron.jobid_seq', 2, true);
 
 
 --
--- TOC entry 3893 (class 0 OID 0)
+-- TOC entry 3909 (class 0 OID 0)
 -- Dependencies: 277
 -- Name: runid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
 
-SELECT pg_catalog.setval('cron.runid_seq', 225, true);
+SELECT pg_catalog.setval('cron.runid_seq', 295, true);
 
 
 --
--- TOC entry 3894 (class 0 OID 0)
+-- TOC entry 3910 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: tbl_kcs_articulos_id_seq; Type: SEQUENCE SET; Schema: kcs; Owner: postgres
 --
@@ -2571,7 +2712,7 @@ SELECT pg_catalog.setval('kcs.tbl_kcs_articulos_id_seq', 6, true);
 
 
 --
--- TOC entry 3895 (class 0 OID 0)
+-- TOC entry 3911 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: cat_datos_maestros_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2580,7 +2721,7 @@ SELECT pg_catalog.setval('public.cat_datos_maestros_id_seq', 38, true);
 
 
 --
--- TOC entry 3896 (class 0 OID 0)
+-- TOC entry 3912 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: cat_departamentos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2589,7 +2730,7 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 10, true);
 
 
 --
--- TOC entry 3897 (class 0 OID 0)
+-- TOC entry 3913 (class 0 OID 0)
 -- Dependencies: 231
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2598,7 +2739,7 @@ SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 405, true);
 
 
 --
--- TOC entry 3898 (class 0 OID 0)
+-- TOC entry 3914 (class 0 OID 0)
 -- Dependencies: 232
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2607,7 +2748,7 @@ SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 46, true);
 
 
 --
--- TOC entry 3899 (class 0 OID 0)
+-- TOC entry 3915 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: tbl_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2616,7 +2757,7 @@ SELECT pg_catalog.setval('public.tbl_roles_id_seq', 19, true);
 
 
 --
--- TOC entry 3900 (class 0 OID 0)
+-- TOC entry 3916 (class 0 OID 0)
 -- Dependencies: 235
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2625,7 +2766,7 @@ SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 45, true);
 
 
 --
--- TOC entry 3901 (class 0 OID 0)
+-- TOC entry 3917 (class 0 OID 0)
 -- Dependencies: 237
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2634,7 +2775,7 @@ SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 70, true);
 
 
 --
--- TOC entry 3902 (class 0 OID 0)
+-- TOC entry 3918 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2643,7 +2784,7 @@ SELECT pg_catalog.setval('public.tbl_sistemas_id_seq', 34, true);
 
 
 --
--- TOC entry 3903 (class 0 OID 0)
+-- TOC entry 3919 (class 0 OID 0)
 -- Dependencies: 241
 -- Name: tbl_usuarios_opciones_excepciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2652,7 +2793,7 @@ SELECT pg_catalog.setval('public.tbl_usuarios_opciones_excepciones_id_seq', 1, f
 
 
 --
--- TOC entry 3904 (class 0 OID 0)
+-- TOC entry 3920 (class 0 OID 0)
 -- Dependencies: 243
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2661,7 +2802,7 @@ SELECT pg_catalog.setval('public.tbl_usuarios_roles_sistemas_id_seq', 69, true);
 
 
 --
--- TOC entry 3905 (class 0 OID 0)
+-- TOC entry 3921 (class 0 OID 0)
 -- Dependencies: 244
 -- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -2670,7 +2811,7 @@ SELECT pg_catalog.setval('public.usuarios_id_seq', 104, true);
 
 
 --
--- TOC entry 3906 (class 0 OID 0)
+-- TOC entry 3922 (class 0 OID 0)
 -- Dependencies: 257
 -- Name: tbl_amonestaciones_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
@@ -2679,7 +2820,7 @@ SELECT pg_catalog.setval('rrhh.tbl_amonestaciones_id_seq', 1, false);
 
 
 --
--- TOC entry 3907 (class 0 OID 0)
+-- TOC entry 3923 (class 0 OID 0)
 -- Dependencies: 259
 -- Name: tbl_carga_familiar_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
@@ -2688,7 +2829,7 @@ SELECT pg_catalog.setval('rrhh.tbl_carga_familiar_id_seq', 1, false);
 
 
 --
--- TOC entry 3908 (class 0 OID 0)
+-- TOC entry 3924 (class 0 OID 0)
 -- Dependencies: 261
 -- Name: tbl_expediente_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
@@ -2697,7 +2838,7 @@ SELECT pg_catalog.setval('rrhh.tbl_expediente_id_seq', 1, false);
 
 
 --
--- TOC entry 3909 (class 0 OID 0)
+-- TOC entry 3925 (class 0 OID 0)
 -- Dependencies: 263
 -- Name: tbl_permisos_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
@@ -2706,7 +2847,7 @@ SELECT pg_catalog.setval('rrhh.tbl_permisos_id_seq', 1, false);
 
 
 --
--- TOC entry 3910 (class 0 OID 0)
+-- TOC entry 3926 (class 0 OID 0)
 -- Dependencies: 265
 -- Name: tbl_reposos_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
@@ -2715,7 +2856,7 @@ SELECT pg_catalog.setval('rrhh.tbl_reposos_id_seq', 1, false);
 
 
 --
--- TOC entry 3911 (class 0 OID 0)
+-- TOC entry 3927 (class 0 OID 0)
 -- Dependencies: 267
 -- Name: tbl_vacaciones_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
@@ -2724,7 +2865,7 @@ SELECT pg_catalog.setval('rrhh.tbl_vacaciones_id_seq', 1, false);
 
 
 --
--- TOC entry 3912 (class 0 OID 0)
+-- TOC entry 3928 (class 0 OID 0)
 -- Dependencies: 274
 -- Name: sla_configuracion_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
@@ -2733,7 +2874,7 @@ SELECT pg_catalog.setval('tickets.sla_configuracion_id_seq', 46, true);
 
 
 --
--- TOC entry 3913 (class 0 OID 0)
+-- TOC entry 3929 (class 0 OID 0)
 -- Dependencies: 270
 -- Name: tbl_clientes_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
@@ -2742,7 +2883,16 @@ SELECT pg_catalog.setval('tickets.tbl_clientes_id_seq', 1, true);
 
 
 --
--- TOC entry 3914 (class 0 OID 0)
+-- TOC entry 3930 (class 0 OID 0)
+-- Dependencies: 280
+-- Name: tbl_tickets_bitacora_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tickets.tbl_tickets_bitacora_id_seq', 3, true);
+
+
+--
+-- TOC entry 3931 (class 0 OID 0)
 -- Dependencies: 272
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
@@ -2751,7 +2901,7 @@ SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 14, true);
 
 
 --
--- TOC entry 3548 (class 2606 OID 65775)
+-- TOC entry 3555 (class 2606 OID 65775)
 -- Name: cat_datos_maestros cat_datos_maestros_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2760,7 +2910,7 @@ ALTER TABLE ONLY public.cat_datos_maestros
 
 
 --
--- TOC entry 3550 (class 2606 OID 65777)
+-- TOC entry 3557 (class 2606 OID 65777)
 -- Name: cat_departamentos cat_departamentos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2769,7 +2919,7 @@ ALTER TABLE ONLY public.cat_departamentos
 
 
 --
--- TOC entry 3552 (class 2606 OID 65779)
+-- TOC entry 3559 (class 2606 OID 65779)
 -- Name: cat_departamentos cat_departamentos_str_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2778,7 +2928,7 @@ ALTER TABLE ONLY public.cat_departamentos
 
 
 --
--- TOC entry 3568 (class 2606 OID 65781)
+-- TOC entry 3575 (class 2606 OID 65781)
 -- Name: tbl_roles_sistemas_opciones pk_roles_sistemas_opciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2787,7 +2937,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3562 (class 2606 OID 65783)
+-- TOC entry 3569 (class 2606 OID 65783)
 -- Name: tbl_auth_tokens tbl_auth_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2796,7 +2946,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 3554 (class 2606 OID 65785)
+-- TOC entry 3561 (class 2606 OID 65785)
 -- Name: cat_opciones tbl_opciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2805,7 +2955,7 @@ ALTER TABLE ONLY public.cat_opciones
 
 
 --
--- TOC entry 3556 (class 2606 OID 65787)
+-- TOC entry 3563 (class 2606 OID 65787)
 -- Name: cat_roles tbl_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2814,7 +2964,7 @@ ALTER TABLE ONLY public.cat_roles
 
 
 --
--- TOC entry 3566 (class 2606 OID 65789)
+-- TOC entry 3573 (class 2606 OID 65789)
 -- Name: tbl_roles_sistemas tbl_roles_sistemas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2823,7 +2973,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 3558 (class 2606 OID 65791)
+-- TOC entry 3565 (class 2606 OID 65791)
 -- Name: cat_roles tbl_roles_str_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2832,7 +2982,7 @@ ALTER TABLE ONLY public.cat_roles
 
 
 --
--- TOC entry 3560 (class 2606 OID 65793)
+-- TOC entry 3567 (class 2606 OID 65793)
 -- Name: cat_sistemas tbl_sistemas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2841,7 +2991,7 @@ ALTER TABLE ONLY public.cat_sistemas
 
 
 --
--- TOC entry 3578 (class 2606 OID 65795)
+-- TOC entry 3585 (class 2606 OID 65795)
 -- Name: tbl_usuarios_opciones_excepciones tbl_usuarios_opciones_excepciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2850,7 +3000,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3570 (class 2606 OID 65797)
+-- TOC entry 3577 (class 2606 OID 65797)
 -- Name: tbl_usuarios tbl_usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2859,7 +3009,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3580 (class 2606 OID 65799)
+-- TOC entry 3587 (class 2606 OID 65799)
 -- Name: tbl_usuarios_opciones_excepciones uk_usuario_opcion_excepcion; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2868,7 +3018,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3564 (class 2606 OID 65801)
+-- TOC entry 3571 (class 2606 OID 65801)
 -- Name: tbl_auth_tokens unique_user_device; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2877,7 +3027,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 3582 (class 2606 OID 65803)
+-- TOC entry 3589 (class 2606 OID 65803)
 -- Name: tbl_usuarios_roles_sistemas unique_usuario_rol_sistema; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2886,7 +3036,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3572 (class 2606 OID 65805)
+-- TOC entry 3579 (class 2606 OID 65805)
 -- Name: tbl_usuarios usuarios_str_cedula_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2895,7 +3045,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3574 (class 2606 OID 65807)
+-- TOC entry 3581 (class 2606 OID 65807)
 -- Name: tbl_usuarios usuarios_str_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -2904,7 +3054,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3586 (class 2606 OID 65809)
+-- TOC entry 3593 (class 2606 OID 65809)
 -- Name: tbl_amonestaciones tbl_amonestaciones_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2913,7 +3063,7 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones
 
 
 --
--- TOC entry 3588 (class 2606 OID 65811)
+-- TOC entry 3595 (class 2606 OID 65811)
 -- Name: tbl_carga_familiar tbl_carga_familiar_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2922,7 +3072,7 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar
 
 
 --
--- TOC entry 3590 (class 2606 OID 65813)
+-- TOC entry 3597 (class 2606 OID 65813)
 -- Name: tbl_expediente tbl_expediente_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2931,7 +3081,7 @@ ALTER TABLE ONLY rrhh.tbl_expediente
 
 
 --
--- TOC entry 3592 (class 2606 OID 65815)
+-- TOC entry 3599 (class 2606 OID 65815)
 -- Name: tbl_permisos tbl_permisos_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2940,7 +3090,7 @@ ALTER TABLE ONLY rrhh.tbl_permisos
 
 
 --
--- TOC entry 3594 (class 2606 OID 65817)
+-- TOC entry 3601 (class 2606 OID 65817)
 -- Name: tbl_reposos tbl_reposos_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2949,7 +3099,7 @@ ALTER TABLE ONLY rrhh.tbl_reposos
 
 
 --
--- TOC entry 3596 (class 2606 OID 65819)
+-- TOC entry 3603 (class 2606 OID 65819)
 -- Name: tbl_vacaciones tbl_vacaciones_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -2958,7 +3108,7 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones
 
 
 --
--- TOC entry 3599 (class 2606 OID 65821)
+-- TOC entry 3606 (class 2606 OID 65821)
 -- Name: sla_configuracion sla_configuracion_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2967,7 +3117,7 @@ ALTER TABLE ONLY tickets.sla_configuracion
 
 
 --
--- TOC entry 3584 (class 2606 OID 65825)
+-- TOC entry 3591 (class 2606 OID 65825)
 -- Name: tbl_alertas tbl_alertas_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2976,7 +3126,7 @@ ALTER TABLE ONLY tickets.tbl_alertas
 
 
 --
--- TOC entry 3601 (class 2606 OID 65827)
+-- TOC entry 3608 (class 2606 OID 65827)
 -- Name: tbl_clientes tbl_clientes_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2985,7 +3135,7 @@ ALTER TABLE ONLY tickets.tbl_clientes
 
 
 --
--- TOC entry 3603 (class 2606 OID 65829)
+-- TOC entry 3610 (class 2606 OID 65829)
 -- Name: tbl_clientes tbl_clientes_str_cedula_key; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -2994,7 +3144,7 @@ ALTER TABLE ONLY tickets.tbl_clientes
 
 
 --
--- TOC entry 3605 (class 2606 OID 65831)
+-- TOC entry 3612 (class 2606 OID 65831)
 -- Name: tbl_clientes tbl_clientes_str_email_key; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -3003,7 +3153,7 @@ ALTER TABLE ONLY tickets.tbl_clientes
 
 
 --
--- TOC entry 3618 (class 2606 OID 65976)
+-- TOC entry 3625 (class 2606 OID 65976)
 -- Name: tbl_secuencias_tickets tbl_secuencias_tickets_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -3012,7 +3162,16 @@ ALTER TABLE ONLY tickets.tbl_secuencias_tickets
 
 
 --
--- TOC entry 3614 (class 2606 OID 65835)
+-- TOC entry 3634 (class 2606 OID 66154)
+-- Name: tbl_tickets_bitacora tbl_tickets_bitacora_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
+--
+
+ALTER TABLE ONLY tickets.tbl_tickets_bitacora
+    ADD CONSTRAINT tbl_tickets_bitacora_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3621 (class 2606 OID 65835)
 -- Name: tbl_tickets tbl_tickets_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -3021,7 +3180,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3616 (class 2606 OID 65837)
+-- TOC entry 3623 (class 2606 OID 65837)
 -- Name: tbl_tickets tbl_tickets_str_ticket_key; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -3030,7 +3189,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3575 (class 1259 OID 65840)
+-- TOC entry 3582 (class 1259 OID 65840)
 -- Name: idx_excepciones_opcion; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -3038,7 +3197,7 @@ CREATE INDEX idx_excepciones_opcion ON public.tbl_usuarios_opciones_excepciones 
 
 
 --
--- TOC entry 3576 (class 1259 OID 65841)
+-- TOC entry 3583 (class 1259 OID 65841)
 -- Name: idx_excepciones_usuario; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -3046,7 +3205,7 @@ CREATE INDEX idx_excepciones_usuario ON public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3597 (class 1259 OID 66144)
+-- TOC entry 3604 (class 1259 OID 66144)
 -- Name: idx_sla_config_cat_prio; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -3054,7 +3213,15 @@ CREATE INDEX idx_sla_config_cat_prio ON tickets.sla_configuracion USING btree (c
 
 
 --
--- TOC entry 3606 (class 1259 OID 66141)
+-- TOC entry 3632 (class 1259 OID 66165)
+-- Name: idx_tickets_bitacora_ticket_id; Type: INDEX; Schema: tickets; Owner: postgres
+--
+
+CREATE INDEX idx_tickets_bitacora_ticket_id ON tickets.tbl_tickets_bitacora USING btree (ticket_id);
+
+
+--
+-- TOC entry 3613 (class 1259 OID 66141)
 -- Name: idx_tickets_canal_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -3062,7 +3229,7 @@ CREATE INDEX idx_tickets_canal_id ON tickets.tbl_tickets USING btree (canal_id);
 
 
 --
--- TOC entry 3607 (class 1259 OID 66143)
+-- TOC entry 3614 (class 1259 OID 66143)
 -- Name: idx_tickets_created_at; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -3070,7 +3237,7 @@ CREATE INDEX idx_tickets_created_at ON tickets.tbl_tickets USING btree (created_
 
 
 --
--- TOC entry 3608 (class 1259 OID 66140)
+-- TOC entry 3615 (class 1259 OID 66140)
 -- Name: idx_tickets_departamento_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -3078,7 +3245,7 @@ CREATE INDEX idx_tickets_departamento_id ON tickets.tbl_tickets USING btree (dep
 
 
 --
--- TOC entry 3609 (class 1259 OID 66138)
+-- TOC entry 3616 (class 1259 OID 66138)
 -- Name: idx_tickets_estatus_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -3086,7 +3253,7 @@ CREATE INDEX idx_tickets_estatus_id ON tickets.tbl_tickets USING btree (estatus_
 
 
 --
--- TOC entry 3610 (class 1259 OID 66142)
+-- TOC entry 3617 (class 1259 OID 66142)
 -- Name: idx_tickets_prioridad_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -3094,7 +3261,7 @@ CREATE INDEX idx_tickets_prioridad_id ON tickets.tbl_tickets USING btree (priori
 
 
 --
--- TOC entry 3611 (class 1259 OID 66139)
+-- TOC entry 3618 (class 1259 OID 66139)
 -- Name: idx_tickets_tipo_ticket_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -3102,7 +3269,7 @@ CREATE INDEX idx_tickets_tipo_ticket_id ON tickets.tbl_tickets USING btree (tipo
 
 
 --
--- TOC entry 3612 (class 1259 OID 65995)
+-- TOC entry 3619 (class 1259 OID 65995)
 -- Name: idx_tickets_vencimiento_sla; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -3110,7 +3277,7 @@ CREATE INDEX idx_tickets_vencimiento_sla ON tickets.tbl_tickets USING btree (dmt
 
 
 --
--- TOC entry 3795 (class 2618 OID 65656)
+-- TOC entry 3807 (class 2618 OID 65656)
 -- Name: view_matriz_roles_opciones _RETURN; Type: RULE; Schema: public; Owner: postgres
 --
 
@@ -3134,7 +3301,7 @@ CREATE OR REPLACE VIEW public.view_matriz_roles_opciones AS
 
 
 --
--- TOC entry 3631 (class 2606 OID 65845)
+-- TOC entry 3641 (class 2606 OID 65845)
 -- Name: tbl_usuarios_opciones_excepciones fk_excepciones_opcion; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3143,7 +3310,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3632 (class 2606 OID 65850)
+-- TOC entry 3642 (class 2606 OID 65850)
 -- Name: tbl_usuarios_opciones_excepciones fk_excepciones_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3152,7 +3319,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3628 (class 2606 OID 65855)
+-- TOC entry 3638 (class 2606 OID 65855)
 -- Name: tbl_roles_sistemas_opciones fk_opciones; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3161,7 +3328,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3626 (class 2606 OID 65860)
+-- TOC entry 3636 (class 2606 OID 65860)
 -- Name: tbl_roles_sistemas fk_rol; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3170,8 +3337,8 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 3915 (class 0 OID 0)
--- Dependencies: 3626
+-- TOC entry 3932 (class 0 OID 0)
+-- Dependencies: 3636
 -- Name: CONSTRAINT fk_rol ON tbl_roles_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -3179,7 +3346,7 @@ COMMENT ON CONSTRAINT fk_rol ON public.tbl_roles_sistemas IS 'Relaciona la colum
 
 
 --
--- TOC entry 3629 (class 2606 OID 65865)
+-- TOC entry 3639 (class 2606 OID 65865)
 -- Name: tbl_roles_sistemas_opciones fk_roles_sistemas; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3188,7 +3355,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3627 (class 2606 OID 65870)
+-- TOC entry 3637 (class 2606 OID 65870)
 -- Name: tbl_roles_sistemas fk_sistema; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3197,7 +3364,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 3625 (class 2606 OID 65875)
+-- TOC entry 3635 (class 2606 OID 65875)
 -- Name: tbl_auth_tokens fk_tokens_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3206,8 +3373,8 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 3916 (class 0 OID 0)
--- Dependencies: 3625
+-- TOC entry 3933 (class 0 OID 0)
+-- Dependencies: 3635
 -- Name: CONSTRAINT fk_tokens_usuario ON tbl_auth_tokens; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -3215,7 +3382,7 @@ COMMENT ON CONSTRAINT fk_tokens_usuario ON public.tbl_auth_tokens IS 'Relaciona 
 
 
 --
--- TOC entry 3633 (class 2606 OID 65880)
+-- TOC entry 3643 (class 2606 OID 65880)
 -- Name: tbl_usuarios_roles_sistemas fk_urs_roles_sistemas; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3224,7 +3391,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3634 (class 2606 OID 65885)
+-- TOC entry 3644 (class 2606 OID 65885)
 -- Name: tbl_usuarios_roles_sistemas fk_urs_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3233,7 +3400,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3630 (class 2606 OID 65890)
+-- TOC entry 3640 (class 2606 OID 65890)
 -- Name: tbl_usuarios fk_usuario_departamento; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3242,8 +3409,8 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3917 (class 0 OID 0)
--- Dependencies: 3630
+-- TOC entry 3934 (class 0 OID 0)
+-- Dependencies: 3640
 -- Name: CONSTRAINT fk_usuario_departamento ON tbl_usuarios; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -3251,7 +3418,7 @@ COMMENT ON CONSTRAINT fk_usuario_departamento ON public.tbl_usuarios IS 'Relacio
 
 
 --
--- TOC entry 3636 (class 2606 OID 65895)
+-- TOC entry 3646 (class 2606 OID 65895)
 -- Name: tbl_carga_familiar fk_CargaFamiliar; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -3260,8 +3427,8 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar
 
 
 --
--- TOC entry 3918 (class 0 OID 0)
--- Dependencies: 3636
+-- TOC entry 3935 (class 0 OID 0)
+-- Dependencies: 3646
 -- Name: CONSTRAINT "fk_CargaFamiliar" ON tbl_carga_familiar; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -3269,7 +3436,7 @@ COMMENT ON CONSTRAINT "fk_CargaFamiliar" ON rrhh.tbl_carga_familiar IS 'Relació
 
 
 --
--- TOC entry 3635 (class 2606 OID 65900)
+-- TOC entry 3645 (class 2606 OID 65900)
 -- Name: tbl_amonestaciones fk_amonestaciones; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -3278,8 +3445,8 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones
 
 
 --
--- TOC entry 3919 (class 0 OID 0)
--- Dependencies: 3635
+-- TOC entry 3936 (class 0 OID 0)
+-- Dependencies: 3645
 -- Name: CONSTRAINT fk_amonestaciones ON tbl_amonestaciones; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -3287,7 +3454,7 @@ COMMENT ON CONSTRAINT fk_amonestaciones ON rrhh.tbl_amonestaciones IS 'Relación
 
 
 --
--- TOC entry 3637 (class 2606 OID 65905)
+-- TOC entry 3647 (class 2606 OID 65905)
 -- Name: tbl_expediente fk_expediente_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -3296,8 +3463,8 @@ ALTER TABLE ONLY rrhh.tbl_expediente
 
 
 --
--- TOC entry 3920 (class 0 OID 0)
--- Dependencies: 3637
+-- TOC entry 3937 (class 0 OID 0)
+-- Dependencies: 3647
 -- Name: CONSTRAINT fk_expediente_usuario ON tbl_expediente; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -3305,7 +3472,7 @@ COMMENT ON CONSTRAINT fk_expediente_usuario ON rrhh.tbl_expediente IS 'Relación
 
 
 --
--- TOC entry 3638 (class 2606 OID 65910)
+-- TOC entry 3648 (class 2606 OID 65910)
 -- Name: tbl_permisos fk_permisos_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -3314,8 +3481,8 @@ ALTER TABLE ONLY rrhh.tbl_permisos
 
 
 --
--- TOC entry 3921 (class 0 OID 0)
--- Dependencies: 3638
+-- TOC entry 3938 (class 0 OID 0)
+-- Dependencies: 3648
 -- Name: CONSTRAINT fk_permisos_usuario ON tbl_permisos; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -3323,7 +3490,7 @@ COMMENT ON CONSTRAINT fk_permisos_usuario ON rrhh.tbl_permisos IS 'Relación ent
 
 
 --
--- TOC entry 3639 (class 2606 OID 65915)
+-- TOC entry 3649 (class 2606 OID 65915)
 -- Name: tbl_reposos fk_reposo_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -3332,8 +3499,8 @@ ALTER TABLE ONLY rrhh.tbl_reposos
 
 
 --
--- TOC entry 3922 (class 0 OID 0)
--- Dependencies: 3639
+-- TOC entry 3939 (class 0 OID 0)
+-- Dependencies: 3649
 -- Name: CONSTRAINT fk_reposo_usuario ON tbl_reposos; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -3341,7 +3508,7 @@ COMMENT ON CONSTRAINT fk_reposo_usuario ON rrhh.tbl_reposos IS 'Relación entre 
 
 
 --
--- TOC entry 3640 (class 2606 OID 65920)
+-- TOC entry 3650 (class 2606 OID 65920)
 -- Name: tbl_vacaciones fk_vacaciones_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -3350,8 +3517,8 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones
 
 
 --
--- TOC entry 3923 (class 0 OID 0)
--- Dependencies: 3640
+-- TOC entry 3940 (class 0 OID 0)
+-- Dependencies: 3650
 -- Name: CONSTRAINT fk_vacaciones_usuario ON tbl_vacaciones; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -3359,7 +3526,7 @@ COMMENT ON CONSTRAINT fk_vacaciones_usuario ON rrhh.tbl_vacaciones IS 'Relación
 
 
 --
--- TOC entry 3641 (class 2606 OID 66009)
+-- TOC entry 3651 (class 2606 OID 66009)
 -- Name: sla_configuracion fk_sla_categoria; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -3368,7 +3535,7 @@ ALTER TABLE ONLY tickets.sla_configuracion
 
 
 --
--- TOC entry 3642 (class 2606 OID 66014)
+-- TOC entry 3652 (class 2606 OID 66014)
 -- Name: sla_configuracion fk_sla_prioridad; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -3377,7 +3544,7 @@ ALTER TABLE ONLY tickets.sla_configuracion
 
 
 --
--- TOC entry 3643 (class 2606 OID 65941)
+-- TOC entry 3653 (class 2606 OID 65941)
 -- Name: tbl_tickets fk_tickets_usuario_asignado; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -3386,7 +3553,25 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3644 (class 2606 OID 65989)
+-- TOC entry 3655 (class 2606 OID 66155)
+-- Name: tbl_tickets_bitacora tbl_tickets_bitacora_ticket_id_fkey; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
+--
+
+ALTER TABLE ONLY tickets.tbl_tickets_bitacora
+    ADD CONSTRAINT tbl_tickets_bitacora_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES tickets.tbl_tickets(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3656 (class 2606 OID 66160)
+-- Name: tbl_tickets_bitacora tbl_tickets_bitacora_usuario_id_fkey; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
+--
+
+ALTER TABLE ONLY tickets.tbl_tickets_bitacora
+    ADD CONSTRAINT tbl_tickets_bitacora_usuario_id_fkey FOREIGN KEY (usuario_id) REFERENCES public.tbl_usuarios(id) ON DELETE SET NULL;
+
+
+--
+-- TOC entry 3654 (class 2606 OID 65989)
 -- Name: tbl_tickets tbl_tickets_tipo_ticket_id_fkey; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -3394,11 +3579,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT tbl_tickets_tipo_ticket_id_fkey FOREIGN KEY (tipo_ticket_id) REFERENCES public.cat_datos_maestros(id);
 
 
--- Completed on 2026-10-12 15:49:37 -04
+-- Completed on 2026-10-12 16:59:21 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict tG2fRP3pCggUs0Kaby3zOZ1ucCY1P7Gur0XLvOe1cDZgCJSvX48cJbyM6EAJciO
+\unrestrict qgqrceVF4NDWrbMneZbs8WgSHNmQ7lyTYJ7AalMQnupvOXtalseD0EuZfB2zRa0
 

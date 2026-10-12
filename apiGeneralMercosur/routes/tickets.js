@@ -377,7 +377,39 @@ router.get("/listar", async (req, res) => {
   }
 });
 
-// Endpoint para actualizar estatus, departamento, agente, prioridad, SLA y respuesta de un ticket
+// Endpoint para obtener la bitácora de un ticket
+router.get("/bitacora/:ticket_id", async (req, res) => {
+  const { ticket_id } = req.params;
+  try {
+    const query = `
+      SELECT 
+        b.id,
+        b.ticket_id,
+        b.str_comentario,
+        b.created_at,
+        u.id AS usuario_id,
+        u.str_nombre AS usuario_nombre,
+        u.str_apellido AS usuario_apellido
+      FROM tickets.tbl_tickets_bitacora b
+      LEFT JOIN public.tbl_usuarios u ON b.usuario_id = u.id
+      WHERE b.ticket_id = $1
+      ORDER BY b.created_at ASC;
+    `;
+    const resultado = await pool.query(query, [Number(ticket_id)]);
+    res.status(200).json({
+      success: true,
+      bitacora: resultado.rows,
+    });
+  } catch (err) {
+    console.error("Error al obtener la bitácora:", err.message);
+    res.status(500).json({
+      success: false,
+      error: "Error interno al obtener la bitácora.",
+    });
+  }
+});
+
+// Endpoint para actualizar estatus, departamento, agente, prioridad, SLA y registrar respuesta en la bitácora
 router.put("/actualizar/:id", upload.any(), async (req, res) => {
   const { id } = req.params;
   const {
@@ -388,18 +420,18 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     str_descripcion_respuesta,
   } = req.body;
 
+  const usuarioIdSesion = req.user?.id;
   const client = await pool.connect();
+
   try {
     await client.query("BEGIN");
 
     const nuevoEstatus =
       estatus_id !== undefined && estatus_id !== "" ? Number(estatus_id) : null;
-
     const nuevoDepartamento =
       departamento_id !== undefined && departamento_id !== ""
         ? Number(departamento_id)
         : null;
-
     const nuevaPrioridad =
       prioridad_id !== undefined && prioridad_id !== ""
         ? Number(prioridad_id)
@@ -418,7 +450,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       }
     }
 
-    // 1. Obtener la categoría actual del ticket y la prioridad actual (si no se envía una nueva)
+    // 1. Obtener datos actuales del ticket
     const ticketActualRes = await client.query(
       `SELECT categoria_id, prioridad_id FROM tickets.tbl_tickets WHERE id = $1`,
       [Number(id)],
@@ -449,10 +481,20 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     ]);
     const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
 
-    // 3. Actualizar el ticket recalculando fechas y SLA.
-    // Si el estatus cambia a En Proceso (ej: id u otro estatus activo que no sea cerrado/cancelado),
-    // recalculamos la fecha de vencimiento a partir de CURRENT_TIMESTAMP.
-    // Actualizar el ticket recalculando el SLA, la fecha de vencimiento y reiniciando la fecha de creación si se reactiva
+    // 3. Si se ingresó texto en la respuesta, registrarlo en la tabla de bitácora
+    if (str_descripcion_respuesta && str_descripcion_respuesta.trim() !== "") {
+      await client.query(
+        `INSERT INTO tickets.tbl_tickets_bitacora (ticket_id, usuario_id, str_comentario, created_at) 
+         VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
+        [
+          Number(id),
+          usuarioIdSesion ? Number(usuarioIdSesion) : null,
+          str_descripcion_respuesta.trim(),
+        ],
+      );
+    }
+
+    // 4. Actualizar el ticket
     let queryUpdate = `
       UPDATE tickets.tbl_tickets 
       SET 
@@ -461,7 +503,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         departamento_id = COALESCE($3, departamento_id),
         prioridad_id = COALESCE($4, prioridad_id),
         int_sla = $5::integer,
-        -- Si se pasa a un estatus activo (distinto de Cerrado [22]), actualizamos la creación y el vencimiento desde ahora
         created_at = CASE 
           WHEN $1::integer IS NOT NULL AND $1::integer <> 22 THEN CURRENT_TIMESTAMP 
           ELSE created_at 
@@ -492,7 +533,8 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     await client.query("COMMIT");
     res.status(200).json({
       success: true,
-      message: "Ticket actualizado, fechas y SLA recalculados exitosamente.",
+      message:
+        "Ticket actualizado y respuesta guardada en la bitácora exitosamente.",
       ticket: updateRes.rows[0],
     });
   } catch (err) {

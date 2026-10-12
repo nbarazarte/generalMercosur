@@ -48,6 +48,8 @@ export default function CasosTickets() {
   const [modalDepartamentoId, setModalDepartamentoId] = useState("");
   const [respuestaTexto, setRespuestaTexto] = useState("");
   const [tabActiva, setTabActiva] = useState("descripcion"); // Pestaña activa en el modal
+  const [bitacoraList, setBitacoraList] = useState([]); // Historial de bitácora
+  const [errorModal, setErrorModal] = useState(""); // Mensaje de error dentro del modal
   const [toast, setToast] = useState(null);
 
   // Estilo unificado para todos los controles e inputs
@@ -183,9 +185,106 @@ export default function CasosTickets() {
     setFMinuto("");
   };
 
+  // 1. Exporta TODOS los datos que coinciden con los filtros aplicados con las columnas corregidas
+  const exportarExcel = () => {
+    if (ticketsFiltrados.length === 0) {
+      showToast(
+        "No hay registros para exportar con los filtros actuales.",
+        "error",
+      );
+      return;
+    }
+
+    const cabeceras = [
+      "Ticket",
+      "Tipo",
+      "Canal",
+      "Cliente / Solicitante",
+      "Asunto",
+      "Departamento",
+      "Prioridad",
+      "Asignado A",
+      "Creación",
+      "Vencimiento",
+      "Cierre",
+      "SLA",
+      "Estado",
+      "Duración",
+    ];
+
+    const filas = ticketsFiltrados.map((t) => {
+      const solicitante = t.cliente_nombre
+        ? `${t.cliente_nombre} ${t.cliente_apellido || ""}`
+        : `${t.creador_nombre || ""} ${t.creador_apellido || ""}`;
+      const asignado = t.asignado_nombre
+        ? `${t.asignado_nombre} ${t.asignado_apellido || ""}`
+        : "Sin asignar";
+
+      const formatearFechaPlana = (fechaStr) => {
+        if (!fechaStr) return "";
+        const d = new Date(fechaStr);
+        if (isNaN(d.getTime())) return "";
+        const fecha = d.toLocaleDateString("es-VE");
+        const hora = d.toLocaleTimeString("es-VE", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+        return `${fecha} ${hora}`;
+      };
+
+      return [
+        `"${t.str_ticket || ""}"`,
+        `"${t.tipo_ticket || ""}"`,
+        `"${t.canal_nombre || ""}"`,
+        `"${solicitante.trim().replace(/"/g, '""')}"`,
+        `"${(t.str_asunto || "").replace(/"/g, '""')}"`,
+        `"${t.departamento_nombre || ""}"`,
+        `"${t.prioridad_nombre || ""}"`,
+        `"${asignado.trim().replace(/"/g, '""')}"`,
+        `"${formatearFechaPlana(t.created_at)}"`,
+        `"${formatearFechaPlana(t.dmt_fecha_vencimiento_sla)}"`,
+        `"${formatearFechaPlana(t.dmt_fecha_cierre)}"`,
+        `"${t.int_sla ? t.int_sla + " hrs" : ""}"`,
+        `"${t.estatus_nombre || "En Proceso"}"`,
+        `"${t.tiempo_resolucion || "En curso"}"`,
+      ];
+    });
+
+    const contenidoCSV =
+      "\ufeff" +
+      [cabeceras.join(";"), ...filas.map((f) => f.join(";"))].join("\n");
+
+    const blob = new Blob([contenidoCSV], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `Reporte_Tickets_${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showToast(
+      `Se han exportado ${ticketsFiltrados.length} registros exitosamente.`,
+      "success",
+    );
+  };
+
   const handleGuardarCambiosTicket = async (e) => {
     e.preventDefault();
     if (!ticketSeleccionado) return;
+
+    if (!respuestaTexto || respuestaTexto.trim() === "") {
+      setErrorModal(
+        "Debe llenar el campo de respuesta para guardar los cambios.",
+      );
+      return;
+    }
+
+    setErrorModal("");
 
     try {
       const response = await axiosTickets.put(
@@ -207,14 +306,18 @@ export default function CasosTickets() {
             nuevoPrioridadId !== ""
               ? Number(nuevoPrioridadId)
               : Number(ticketSeleccionado.prioridad_id),
-          str_descripcion_respuesta: respuestaTexto,
+          str_descripcion_respuesta: respuestaTexto.trim(),
         },
       );
 
       if (response.data.success) {
-        showToast("Ticket actualizado exitosamente.", "success");
+        showToast(
+          "Ticket actualizado y bitácora guardada exitosamente.",
+          "success",
+        );
         setTicketSeleccionado(null);
         setRespuestaTexto("");
+        setErrorModal("");
         fetchCatalogosYTickets();
       }
     } catch (error) {
@@ -223,7 +326,7 @@ export default function CasosTickets() {
     }
   };
 
-  const abrirDetalle = (ticket) => {
+  const abrirDetalle = async (ticket) => {
     setTicketSeleccionado(ticket);
     setNuevoEstatusId(ticket.estatus_id ? String(ticket.estatus_id) : "");
     setNuevoAsignadoId(
@@ -234,7 +337,18 @@ export default function CasosTickets() {
       ticket.departamento_id ? String(ticket.departamento_id) : "",
     );
     setRespuestaTexto("");
+    setErrorModal("");
     setTabActiva("descripcion");
+
+    try {
+      const res = await axiosTickets.get(`/bitacora/${ticket.id}`);
+      if (res.data.success) {
+        setBitacoraList(res.data.bitacora || []);
+      }
+    } catch (err) {
+      console.error("Error al cargar la bitácora:", err);
+      setBitacoraList([]);
+    }
   };
 
   const esTicketBloqueado = useMemo(() => {
@@ -560,9 +674,10 @@ export default function CasosTickets() {
               gap: "8px",
               borderTop: "1px solid var(--merco-border)",
               paddingTop: "10px",
+              flexWrap: "wrap",
             }}
           >
-            <div style={{ position: "relative", flex: 1 }}>
+            <div style={{ position: "relative", flex: 1, minWidth: "260px" }}>
               <DynamicIcon
                 name="FiSearch"
                 style={{
@@ -586,13 +701,31 @@ export default function CasosTickets() {
               />
             </div>
 
-            <button
-              className="btn btn-ghost btn-sm"
-              onClick={limpiarFiltros}
-              style={{ whiteSpace: "nowrap" }}
-            >
-              Limpiar Filtros
-            </button>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={limpiarFiltros}
+                style={{ whiteSpace: "nowrap" }}
+              >
+                Limpiar Filtros
+              </button>
+
+              {/* 2. Botón de Exportación con icono oficial de Excel (RiFileExcelLine) */}
+              <button
+                className="btn-icon"
+                onClick={exportarExcel}
+                title="Exportar a Excel"
+                style={{
+                  color: "#10b981",
+                  padding: "6px",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                <DynamicIcon name="RiFileExcel2Line" style={{ fontSize: 22 }} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1183,6 +1316,7 @@ export default function CasosTickets() {
                     const estName = nombreEstatus.toLowerCase();
                     const esCanceladoModal = estName.includes("cancelado");
                     const esRojo = estName.includes("vencido");
+                    const esEnProceso = estName.includes("en proceso");
 
                     return (
                       <span
@@ -1195,12 +1329,16 @@ export default function CasosTickets() {
                             ? "rgba(14, 165, 233, 0.1)"
                             : esRojo
                               ? "rgba(239, 68, 68, 0.1)"
-                              : "rgba(16, 185, 129, 0.1)",
+                              : esEnProceso
+                                ? "rgba(59, 130, 246, 0.1)"
+                                : "rgba(16, 185, 129, 0.1)",
                           color: esCanceladoModal
                             ? "#0ea5e9"
                             : esRojo
                               ? "#ef4444"
-                              : "#10b981",
+                              : esEnProceso
+                                ? "#3b82f6"
+                                : "#10b981",
                         }}
                       >
                         <b>{nombreEstatus}</b>
@@ -1729,180 +1867,286 @@ export default function CasosTickets() {
                 );
               })()}
 
-              <form onSubmit={handleGuardarCambiosTicket}>
-                <div
+              {/* SECCIÓN DE HISTORIAL DE BITÁCORA */}
+              <div
+                style={{
+                  marginBottom: 16,
+                  borderTop: "1px solid var(--merco-border)",
+                  paddingTop: 12,
+                }}
+              >
+                <label
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr 1fr 1fr",
-                    gap: 10,
-                    marginBottom: 12,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    display: "block",
+                    marginBottom: 8,
                   }}
                 >
-                  <div>
-                    <label
+                  Historial del ticket / Respuestas ({bitacoraList.length}):
+                </label>
+                <div
+                  style={{
+                    maxHeight: "180px",
+                    overflowY: "auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                  }}
+                >
+                  {bitacoraList.length === 0 ? (
+                    <div
                       style={{
-                        fontSize: 11,
-                        fontWeight: 600,
-                        display: "block",
-                        marginBottom: 4,
+                        fontSize: 12,
+                        color: "var(--merco-muted)",
+                        fontStyle: "italic",
                       }}
                     >
-                      Departamento
-                    </label>
-                    <select
-                      value={modalDepartamentoId}
-                      disabled={esTicketBloqueado}
-                      onChange={(e) => {
-                        setModalDepartamentoId(e.target.value);
-                        setNuevoAsignadoId("");
-                      }}
-                      style={{
-                        ...filtroStyle,
-                        width: "100%",
-                        opacity: esTicketBloqueado ? 0.7 : 1,
-                        cursor: esTicketBloqueado ? "not-allowed" : "pointer",
-                      }}
-                    >
-                      <option value="">Seleccionar</option>
-                      {listaDepartamentos.map((dep) => (
-                        <option key={dep.id} value={String(dep.id)}>
-                          {dep.str_nombre}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 600,
-                        display: "block",
-                        marginBottom: 4,
-                      }}
-                    >
-                      Asignar a:
-                    </label>
-                    <select
-                      value={nuevoAsignadoId}
-                      disabled={esTicketBloqueado}
-                      onChange={(e) => setNuevoAsignadoId(e.target.value)}
-                      style={{
-                        ...filtroStyle,
-                        width: "100%",
-                        opacity: esTicketBloqueado ? 0.7 : 1,
-                        cursor: esTicketBloqueado ? "not-allowed" : "pointer",
-                      }}
-                    >
-                      <option value="">Sin asignar</option>
-                      {usuariosModalFiltrados.map((u) => (
-                        <option key={u.id} value={String(u.id)}>
-                          {u.str_nombre} {u.str_apellido}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 600,
-                        display: "block",
-                        marginBottom: 4,
-                      }}
-                    >
-                      Prioridad
-                    </label>
-                    <select
-                      value={nuevoPrioridadId}
-                      disabled={esTicketBloqueado}
-                      onChange={(e) => setNuevoPrioridadId(e.target.value)}
-                      style={{
-                        ...filtroStyle,
-                        width: "100%",
-                        opacity: esTicketBloqueado ? 0.7 : 1,
-                        cursor: esTicketBloqueado ? "not-allowed" : "pointer",
-                      }}
-                    >
-                      {prioridades.map((p) => (
-                        <option key={p.id} value={String(p.id)}>
-                          {p.str_nombre}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 600,
-                        display: "block",
-                        marginBottom: 4,
-                      }}
-                    >
-                      Estatus
-                    </label>
-                    <select
-                      value={nuevoEstatusId}
-                      disabled={esTicketBloqueado}
-                      onChange={(e) => setNuevoEstatusId(e.target.value)}
-                      style={{
-                        ...filtroStyle,
-                        width: "100%",
-                        opacity: esTicketBloqueado ? 0.7 : 1,
-                        cursor: esTicketBloqueado ? "not-allowed" : "pointer",
-                      }}
-                    >
-                      {estatusModalDisponibles.map((est) => (
-                        <option key={est.id} value={String(est.id)}>
-                          {est.str_nombre}{" "}
-                          {est.str_descripcion
-                            ? `- ${est.str_descripcion}`
-                            : ""}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                      No hay respuestas o avances registrados en la bitácora
+                      todavía.
+                    </div>
+                  ) : (
+                    bitacoraList.map((item, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: "8px 12px",
+                          background: "var(--merco-bg-subtle)",
+                          borderRadius: 6,
+                          fontSize: 12,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginBottom: 4,
+                            color: "var(--merco-muted)",
+                            fontSize: 11,
+                          }}
+                        >
+                          <b>
+                            {item.usuario_nombre} {item.usuario_apellido}
+                          </b>
+                          <span>
+                            {new Date(item.created_at).toLocaleString("es-VE")}
+                          </span>
+                        </div>
+                        <div style={{ whiteSpace: "pre-wrap" }}>
+                          {item.str_comentario}
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
+              </div>
 
-                <div style={{ marginBottom: 16 }}>
-                  <label
+              {!esTicketBloqueado ? (
+                <form onSubmit={handleGuardarCambiosTicket}>
+                  <div
                     style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      display: "block",
-                      marginBottom: 4,
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr 1fr 1fr",
+                      gap: 10,
+                      marginBottom: 12,
                     }}
                   >
-                    Responder
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={respuestaTexto}
-                    disabled={esTicketBloqueado}
-                    onChange={(e) => setRespuestaTexto(e.target.value)}
-                    placeholder={
-                      esTicketBloqueado
-                        ? "Este ticket se encuentra cerrado, cancelado o vencido y no admite modificaciones ni respuestas."
-                        : "Escriba una respuesta o avance para este ticket..."
-                    }
-                    style={{
-                      ...filtroStyle,
-                      width: "100%",
-                      resize: "vertical",
-                      opacity: esTicketBloqueado ? 0.7 : 1,
-                      cursor: esTicketBloqueado ? "not-allowed" : "text",
-                    }}
-                  />
-                </div>
+                    <div>
+                      <label
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          display: "block",
+                          marginBottom: 4,
+                        }}
+                      >
+                        Departamento
+                      </label>
+                      <select
+                        value={modalDepartamentoId}
+                        onChange={(e) => {
+                          setModalDepartamentoId(e.target.value);
+                          setNuevoAsignadoId("");
+                        }}
+                        style={{
+                          ...filtroStyle,
+                          width: "100%",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <option value="">Seleccionar</option>
+                        {listaDepartamentos.map((dep) => (
+                          <option key={dep.id} value={String(dep.id)}>
+                            {dep.str_nombre}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
+                    <div>
+                      <label
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          display: "block",
+                          marginBottom: 4,
+                        }}
+                      >
+                        Asignar a:
+                      </label>
+                      <select
+                        value={nuevoAsignadoId}
+                        onChange={(e) => setNuevoAsignadoId(e.target.value)}
+                        style={{
+                          ...filtroStyle,
+                          width: "100%",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <option value="">Sin asignar</option>
+                        {usuariosModalFiltrados.map((u) => (
+                          <option key={u.id} value={String(u.id)}>
+                            {u.str_nombre} {u.str_apellido}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          display: "block",
+                          marginBottom: 4,
+                        }}
+                      >
+                        Prioridad
+                      </label>
+                      <select
+                        value={nuevoPrioridadId}
+                        onChange={(e) => setNuevoPrioridadId(e.target.value)}
+                        style={{
+                          ...filtroStyle,
+                          width: "100%",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {prioridades.map((p) => (
+                          <option key={p.id} value={String(p.id)}>
+                            {p.str_nombre}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          display: "block",
+                          marginBottom: 4,
+                        }}
+                      >
+                        Estatus
+                      </label>
+                      <select
+                        value={nuevoEstatusId}
+                        onChange={(e) => setNuevoEstatusId(e.target.value)}
+                        style={{
+                          ...filtroStyle,
+                          width: "100%",
+                          cursor: "pointer",
+                        }}
+                      >
+                        {estatusModalDisponibles.map((est) => (
+                          <option key={est.id} value={String(est.id)}>
+                            {est.str_nombre}{" "}
+                            {est.str_descripcion
+                              ? `- ${est.str_descripcion}`
+                              : ""}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: 16 }}>
+                    <label
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 600,
+                        display: "block",
+                        marginBottom: 4,
+                      }}
+                    >
+                      Responder / Agregar Nota{" "}
+                      <span style={{ color: "#ef4444" }}>*</span>
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={respuestaTexto}
+                      onChange={(e) => {
+                        setRespuestaTexto(e.target.value);
+                        if (errorModal) setErrorModal("");
+                      }}
+                      placeholder="Escriba obligatoriamente una respuesta o avance para registrar en la bitácora..."
+                      style={{
+                        ...filtroStyle,
+                        width: "100%",
+                        resize: "vertical",
+                        borderColor: errorModal
+                          ? "#ef4444"
+                          : "var(--merco-border)",
+                      }}
+                    />
+                    {errorModal && (
+                      <div
+                        style={{
+                          marginTop: 6,
+                          fontSize: 11,
+                          color: "#ef4444",
+                          fontWeight: 600,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 4,
+                        }}
+                      >
+                        <DynamicIcon
+                          name="FiAlertCircle"
+                          style={{ fontSize: 13 }}
+                        />
+                        {errorModal}
+                      </div>
+                    )}
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: 10,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      className="btn btn-ghost"
+                      onClick={() => setTicketSeleccionado(null)}
+                    >
+                      Cancelar
+                    </button>
+                    <button type="submit" className="btn btn-primary">
+                      <DynamicIcon name="FiSave" /> Guardar Cambios
+                    </button>
+                  </div>
+                </form>
+              ) : (
                 <div
                   style={{
                     display: "flex",
                     justifyContent: "flex-end",
-                    gap: 10,
+                    marginTop: 16,
                   }}
                 >
                   <button
@@ -1910,15 +2154,10 @@ export default function CasosTickets() {
                     className="btn btn-ghost"
                     onClick={() => setTicketSeleccionado(null)}
                   >
-                    {esTicketBloqueado ? "Cerrar" : "Cancelar"}
+                    Cerrar
                   </button>
-                  {!esTicketBloqueado && (
-                    <button type="submit" className="btn btn-primary">
-                      <DynamicIcon name="FiSave" /> Guardar Cambios
-                    </button>
-                  )}
                 </div>
-              </form>
+              )}
             </div>
           </div>,
           document.body,
