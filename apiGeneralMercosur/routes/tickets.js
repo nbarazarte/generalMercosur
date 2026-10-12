@@ -123,13 +123,12 @@ router.post("/crear", upload.any(), async (req, res) => {
       departamento_id,
       categoria_id,
       prioridad_id,
-      estatus_id,
       canal_id,
       str_asunto,
       str_descripcion,
       usuario_asignado_id,
-      str_cedula_cliente, // Nuevo campo
-      str_correo_cliente, // Nuevo campo
+      str_cedula_cliente,
+      str_correo_cliente,
     } = req.body;
 
     const usuarioIdSesion = req.user?.id;
@@ -187,11 +186,11 @@ router.post("/crear", upload.any(), async (req, res) => {
     const str_ruta_audio =
       rutasAudios.length > 0 ? rutasAudios.join(",") : null;
 
-    // Inserción incluyendo las nuevas columnas de cédula y correo del cliente externo
+    // Inserción sin estatus_id (se omite de la sentencia SQL y de los parámetros)
     const queryInsert = `
         INSERT INTO tickets.tbl_tickets (
           str_ticket, tipo_ticket_id, cliente_id, creador_agente_id, cierre_agente_id, 
-          departamento_id, categoria_id, prioridad_id, estatus_id, 
+          departamento_id, categoria_id, prioridad_id, 
           canal_id, str_asunto, str_descripcion, int_sla, 
           str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id, 
           str_cedula_cliente, str_correo_cliente,
@@ -206,17 +205,16 @@ router.post("/crear", upload.any(), async (req, res) => {
           $7::integer, 
           $8::integer, 
           $9::integer, 
-          $10::integer, 
-          $11::varchar, 
-          $12::text, 
-          $13::integer, 
+          $10::varchar, 
+          $11::text, 
+          $12::integer, 
+          $13::text, 
           $14::text, 
           $15::text, 
-          $16::text, 
-          $17::integer, 
+          $16::integer, 
+          $17::varchar,
           $18::varchar,
-          $19::varchar,
-          CURRENT_TIMESTAMP + ($13::integer * INTERVAL '1 hour'), 
+          CURRENT_TIMESTAMP + ($12::integer * INTERVAL '1 hour'), 
           CURRENT_TIMESTAMP, 
           CURRENT_TIMESTAMP
         )
@@ -232,7 +230,6 @@ router.post("/crear", upload.any(), async (req, res) => {
       departamento_id ? Number(departamento_id) : null,
       categoria_id ? Number(categoria_id) : null,
       prioridad_id ? Number(prioridad_id) : null,
-      estatus_id ? Number(estatus_id) : 17,
       canal_id ? Number(canal_id) : null,
       str_asunto || "",
       str_descripcion || "",
@@ -284,69 +281,7 @@ router.get("/listar", async (req, res) => {
       vencimiento_hasta,
     } = req.query;
 
-    let query = `
-  SELECT 
-    t.id,
-    t.str_ticket,
-    t.tipo_ticket_id,
-    tt.str_nombre AS tipo_ticket,
-    t.cliente_id,
-    c.str_nombre AS cliente_nombre,
-    c.str_apellido AS cliente_apellido,
-    c.str_cedula AS cliente_cedula,
-    c.str_email AS cliente_correo,
-    c.str_telefono AS cliente_telefono,
-    t.str_cedula_cliente,      /* <-- Agregado */
-    t.str_correo_cliente,      /* <-- Agregado */
-    t.creador_agente_id,
-    u_creador.str_nombre AS creador_nombre,
-    u_creador.str_apellido AS creador_apellido,
-    t.departamento_id,
-    d.str_nombre AS departamento_nombre,
-    t.categoria_id,
-    cat.str_nombre AS categoria_nombre,
-    t.prioridad_id,
-    pri.str_nombre AS prioridad_nombre,
-    t.estatus_id,
-    COALESCE(est.str_nombre, 'En Proceso') AS estatus_nombre,
-    t.canal_id,
-    can.str_nombre AS canal_nombre,
-    t.str_asunto,
-    t.str_descripcion,
-    t.int_sla,
-    t.dmt_fecha_vencimiento_sla,
-    t.dmt_fecha_cierre,
-    t.bool_cumplio_sla,
-    t.created_at,
-    t.updated_at,
-    t.usuario_asignado_id,
-    u_asig.str_nombre AS asignado_nombre,
-    u_asig.str_apellido AS asignado_apellido,
-    t.str_ruta_imagen,
-    t.str_ruta_video,
-    t.str_ruta_audio,
-    CASE 
-      WHEN t.dmt_fecha_cierre IS NOT NULL OR t.estatus_id = 22
-      THEN 
-        TRIM(
-          COALESCE(NULLIF(FLOOR(EXTRACT(EPOCH FROM (COALESCE(t.dmt_fecha_cierre, t.updated_at) - t.created_at)) / 86400)::text, '0') || 'd ', '') ||
-          COALESCE(NULLIF(FLOOR(MOD(EXTRACT(EPOCH FROM (COALESCE(t.dmt_fecha_cierre, t.updated_at) - t.created_at)), 86400) / 3600)::text, '0') || 'h ', '') ||
-          COALESCE(NULLIF(FLOOR(MOD(EXTRACT(EPOCH FROM (COALESCE(t.dmt_fecha_cierre, t.updated_at) - t.created_at)), 3600) / 60)::text, '0') || 'm', '0m')
-        )
-      ELSE 'En curso'
-    END AS tiempo_resolucion
-  FROM tickets.tbl_tickets t
-  LEFT JOIN tickets.tbl_clientes c ON t.cliente_id = c.id
-  LEFT JOIN public.tbl_usuarios u_creador ON t.creador_agente_id = u_creador.id
-  LEFT JOIN public.cat_departamentos d ON t.departamento_id = d.id
-  LEFT JOIN public.cat_datos_maestros tt ON t.tipo_ticket_id = tt.id AND tt.str_tipo = 'TIPO_TICKET'
-  LEFT JOIN public.cat_datos_maestros cat ON t.categoria_id = cat.id
-  LEFT JOIN public.cat_datos_maestros pri ON t.prioridad_id = pri.id AND pri.str_tipo = 'PRIORIDAD'
-  LEFT JOIN public.cat_datos_maestros est ON t.estatus_id = est.id AND est.str_tipo = 'ESTATUSTICKET'
-  LEFT JOIN public.cat_datos_maestros can ON t.canal_id = can.id AND can.str_tipo = 'CANAL'
-  LEFT JOIN public.tbl_usuarios u_asig ON t.usuario_asignado_id = u_asig.id
-  WHERE 1=1
-`;
+    let query = `SELECT * FROM tickets.view_listar_tickets t WHERE 1=1`;
 
     const params = [];
     let paramIndex = 1;
@@ -418,11 +353,16 @@ router.get("/listar", async (req, res) => {
   }
 });
 
-// Endpoint para actualizar el estatus o responder/asignar un ticket
+// Endpoint para actualizar estatus, departamento, agente, prioridad, SLA y respuesta de un ticket
 router.put("/actualizar/:id", upload.any(), async (req, res) => {
   const { id } = req.params;
-  const { estatus_id, usuario_asignado_id, str_descripcion_respuesta } =
-    req.body;
+  const {
+    estatus_id,
+    usuario_asignado_id,
+    departamento_id,
+    prioridad_id,
+    str_descripcion_respuesta,
+  } = req.body;
 
   const client = await pool.connect();
   try {
@@ -430,6 +370,16 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     const nuevoEstatus =
       estatus_id !== undefined && estatus_id !== "" ? Number(estatus_id) : null;
+
+    const nuevoDepartamento =
+      departamento_id !== undefined && departamento_id !== ""
+        ? Number(departamento_id)
+        : null;
+
+    const nuevaPrioridad =
+      prioridad_id !== undefined && prioridad_id !== ""
+        ? Number(prioridad_id)
+        : null;
 
     let nuevoAsignado = undefined;
     if (usuario_asignado_id !== undefined) {
@@ -444,39 +394,81 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       }
     }
 
-    // 💡 Conversión explícita a entero para que la validación del estatus 22 funcione sin errores de tipo
-    let queryUpdate = `
-      UPDATE tickets.tbl_tickets 
-      SET 
-        estatus_id = COALESCE($1, estatus_id),
-        usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
-        dmt_fecha_cierre = CASE 
-          WHEN $1::integer = 22 AND dmt_fecha_cierre IS NULL THEN CURRENT_TIMESTAMP 
-          WHEN $1::integer IS NOT NULL AND $1::integer <> 22 THEN NULL 
-          ELSE dmt_fecha_cierre 
-        END,
-        updated_at = CURRENT_TIMESTAMP
-      WHERE id = $3
-      RETURNING *;
-    `;
+    // 1. Obtener la categoría actual del ticket y la prioridad actual (si no se envía una nueva)
+    const ticketActualRes = await client.query(
+      `SELECT categoria_id, prioridad_id FROM tickets.tbl_tickets WHERE id = $1`,
+      [Number(id)],
+    );
 
-    const updateRes = await client.query(queryUpdate, [
-      nuevoEstatus,
-      nuevoAsignado,
-      Number(id),
-    ]);
-
-    if (updateRes.rows.length === 0) {
+    if (ticketActualRes.rows.length === 0) {
       await client.query("ROLLBACK");
       return res
         .status(404)
         .json({ success: false, error: "Ticket no encontrado." });
     }
 
+    const categoriaId = ticketActualRes.rows[0].categoria_id;
+    const prioridadAUtilizar =
+      nuevaPrioridad !== null
+        ? nuevaPrioridad
+        : ticketActualRes.rows[0].prioridad_id;
+
+    // 2. Consultar el SLA configurado usando la categoría y la prioridad[cite: 11]
+    const slaQuery = `
+      SELECT tiempo_maximo 
+      FROM tickets.sla_configuracion 
+      WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;
+    `;
+    const slaRes = await client.query(slaQuery, [
+      categoriaId,
+      prioridadAUtilizar,
+    ]);
+    const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
+
+    // 3. Actualizar el ticket recalculando fechas y SLA.
+    // Si el estatus cambia a En Proceso (ej: id u otro estatus activo que no sea cerrado/cancelado),
+    // recalculamos la fecha de vencimiento a partir de CURRENT_TIMESTAMP.
+    // Actualizar el ticket recalculando el SLA, la fecha de vencimiento y reiniciando la fecha de creación si se reactiva
+    let queryUpdate = `
+      UPDATE tickets.tbl_tickets 
+      SET 
+        estatus_id = COALESCE($1, estatus_id),
+        usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
+        departamento_id = COALESCE($3, departamento_id),
+        prioridad_id = COALESCE($4, prioridad_id),
+        int_sla = $5::integer,
+        -- Si se pasa a un estatus activo (distinto de Cerrado [22]), actualizamos la creación y el vencimiento desde ahora
+        created_at = CASE 
+          WHEN $1::integer IS NOT NULL AND $1::integer <> 22 THEN CURRENT_TIMESTAMP 
+          ELSE created_at 
+        END,
+        dmt_fecha_vencimiento_sla = CASE 
+          WHEN $1::integer IS NOT NULL AND $1::integer <> 22 THEN CURRENT_TIMESTAMP + ($5::integer * INTERVAL '1 hour')
+          ELSE dmt_fecha_vencimiento_sla 
+        END,
+        dmt_fecha_cierre = CASE 
+          WHEN $1::integer = 22 AND dmt_fecha_cierre IS NULL THEN CURRENT_TIMESTAMP 
+          WHEN $1::integer IS NOT NULL AND $1::integer <> 22 THEN NULL 
+          ELSE dmt_fecha_cierre 
+        END,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = $6
+      RETURNING *;
+    `;
+
+    const updateRes = await client.query(queryUpdate, [
+      nuevoEstatus,
+      nuevoAsignado,
+      nuevoDepartamento,
+      nuevaPrioridad,
+      Number(horasSla),
+      Number(id),
+    ]);
+
     await client.query("COMMIT");
     res.status(200).json({
       success: true,
-      message: "Ticket actualizado exitosamente.",
+      message: "Ticket actualizado, fechas y SLA recalculados exitosamente.",
       ticket: updateRes.rows[0],
     });
   } catch (err) {

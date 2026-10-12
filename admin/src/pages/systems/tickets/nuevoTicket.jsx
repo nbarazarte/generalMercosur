@@ -502,7 +502,7 @@ export default function NuevoTicket() {
       formData.append("usuario_asignado_id", Number(usuarioId));
     }
 
-    formData.append("estatus_id", 1);
+    //formData.append("estatus_id", 1);
 
     archivosAdjuntos.forEach((fileObj, index) => {
       if (fileObj.rawFile) {

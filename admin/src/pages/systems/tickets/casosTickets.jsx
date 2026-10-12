@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import ReactDOM from "react-dom";
+import copy from "copy-to-clipboard";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
 import { useNavigate } from "react-router-dom";
@@ -30,15 +31,21 @@ export default function CasosTickets() {
   const [fAgente, setFAgente] = useState("");
 
   // Filtro unificado de fecha, hora y minutos
-  const [fTipoFecha, setFTipoFecha] = useState(""); // "creacion", "vencimiento", "cierre"
-  const [fFechaCalendario, setFFechaCalendario] = useState(""); // "YYYY-MM-DD"
-  const [fHora, setFHora] = useState(""); // "HH"
-  const [fMinuto, setFMinuto] = useState(""); // "mm"
+  const [fTipoFecha, setFTipoFecha] = useState("");
+  const [fFechaCalendario, setFFechaCalendario] = useState("");
+  const [fHora, setFHora] = useState("");
+  const [fMinuto, setFMinuto] = useState("");
+
+  // Estados de Paginación
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [porPagina, setPorPagina] = useState(5);
 
   // Estado para el Modal de Detalle / Respuesta
   const [ticketSeleccionado, setTicketSeleccionado] = useState(null);
   const [nuevoEstatusId, setNuevoEstatusId] = useState("");
   const [nuevoAsignadoId, setNuevoAsignadoId] = useState("");
+  const [nuevoPrioridadId, setNuevoPrioridadId] = useState("");
+  const [modalDepartamentoId, setModalDepartamentoId] = useState("");
   const [respuestaTexto, setRespuestaTexto] = useState("");
   const [toast, setToast] = useState(null);
 
@@ -56,6 +63,13 @@ export default function CasosTickets() {
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
+  };
+
+  // Función para copiar al portapapeles
+  const copiarCodigoTicket = (e, codigo) => {
+    e.stopPropagation();
+    copy(codigo);
+    showToast(`¡Código ${codigo} copiado al portapapeles!`, "success");
   };
 
   useEffect(() => {
@@ -94,6 +108,7 @@ export default function CasosTickets() {
     }
   };
 
+  // Filtrado de usuarios para la barra de búsqueda principal
   useEffect(() => {
     if (fDepartamento) {
       const filtrados = listaUsuarios.filter(
@@ -105,6 +120,19 @@ export default function CasosTickets() {
     }
     setFAgente("");
   }, [fDepartamento, listaUsuarios]);
+
+  // Filtrado dinámico de usuarios para el modal
+  const usuariosModalFiltrados = useMemo(() => {
+    if (!modalDepartamentoId) return listaUsuarios;
+    return listaUsuarios.filter(
+      (u) => Number(u.departamento_id) === Number(modalDepartamentoId),
+    );
+  }, [modalDepartamentoId, listaUsuarios]);
+
+  // Lista completa de estatus disponibles en el modal (incluyendo Vencido)
+  const estatusModalDisponibles = useMemo(() => {
+    return listaEstatus;
+  }, [listaEstatus]);
 
   const esFiltroInterno = useMemo(() => {
     if (!fTipoTicket) return false;
@@ -121,6 +149,22 @@ export default function CasosTickets() {
       setFCanal("");
     }
   }, [esFiltroInterno]);
+
+  useEffect(() => {
+    setPaginaActual(1);
+  }, [
+    fBuscar,
+    fTipoTicket,
+    fEstado,
+    fPrioridad,
+    fCanal,
+    fDepartamento,
+    fAgente,
+    fTipoFecha,
+    fFechaCalendario,
+    fHora,
+    fMinuto,
+  ]);
 
   const limpiarFiltros = () => {
     setFBuscar("");
@@ -152,6 +196,14 @@ export default function CasosTickets() {
             nuevoAsignadoId !== "" && nuevoAsignadoId !== "null"
               ? Number(nuevoAsignadoId)
               : null,
+          departamento_id:
+            modalDepartamentoId !== ""
+              ? Number(modalDepartamentoId)
+              : Number(ticketSeleccionado.departamento_id),
+          prioridad_id:
+            nuevoPrioridadId !== ""
+              ? Number(nuevoPrioridadId)
+              : Number(ticketSeleccionado.prioridad_id),
           str_descripcion_respuesta: respuestaTexto,
         },
       );
@@ -174,6 +226,10 @@ export default function CasosTickets() {
     setNuevoAsignadoId(
       ticket.usuario_asignado_id ? String(ticket.usuario_asignado_id) : "",
     );
+    setNuevoPrioridadId(ticket.prioridad_id ? String(ticket.prioridad_id) : "");
+    setModalDepartamentoId(
+      ticket.departamento_id ? String(ticket.departamento_id) : "",
+    );
     setRespuestaTexto("");
   };
 
@@ -182,11 +238,14 @@ export default function CasosTickets() {
     return ticketSeleccionado.tipo_ticket?.toLowerCase().includes("interno");
   }, [ticketSeleccionado]);
 
-  // Validar si el ticket seleccionado está cerrado
-  const esTicketCerrado = useMemo(() => {
+  const esTicketBloqueado = useMemo(() => {
     if (!ticketSeleccionado) return false;
     const estatusStr = (ticketSeleccionado.estatus_nombre || "").toLowerCase();
-    return estatusStr.includes("cerrado");
+    return (
+      estatusStr.includes("cerrado") ||
+      estatusStr.includes("cancelado") ||
+      estatusStr.includes("vencido")
+    );
   }, [ticketSeleccionado]);
 
   const ticketsFiltrados = useMemo(() => {
@@ -203,7 +262,6 @@ export default function CasosTickets() {
       if (fAgente && Number(t.usuario_asignado_id) !== Number(fAgente))
         return false;
 
-      // Filtro unificado de fecha, hora y minutos
       if (fTipoFecha && fFechaCalendario) {
         let fechaTarget = null;
         if (fTipoFecha === "creacion") fechaTarget = t.created_at;
@@ -257,6 +315,38 @@ export default function CasosTickets() {
     esFiltroInterno,
   ]);
 
+  const totalPaginas = Math.ceil(ticketsFiltrados.length / porPagina) || 1;
+  const ticketsPaginados = useMemo(() => {
+    const inicio = (paginaActual - 1) * porPagina;
+    return ticketsFiltrados.slice(inicio, inicio + porPagina);
+  }, [ticketsFiltrados, paginaActual, porPagina]);
+
+  const registroInicio =
+    ticketsFiltrados.length === 0 ? 0 : (paginaActual - 1) * porPagina + 1;
+  const registroFin = Math.min(
+    paginaActual * porPagina,
+    ticketsFiltrados.length,
+  );
+
+  const formatearFechaHora = (fechaStr) => {
+    if (!fechaStr) return "—";
+    const fechaObj = new Date(fechaStr);
+    const fechaFormateada = fechaObj.toLocaleDateString("es-VE");
+    const horaFormateada = fechaObj.toLocaleTimeString("es-VE", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    return (
+      <div>
+        <div>{fechaFormateada}</div>
+        <div style={{ color: "var(--merco-muted)", fontSize: "10px" }}>
+          {horaFormateada}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Casos Tickets">
       {toast && (
@@ -290,7 +380,6 @@ export default function CasosTickets() {
             gap: "12px",
           }}
         >
-          {/* FILA 1: Selects y Filtros de Fecha Unificados */}
           <div
             className="ma-filters"
             style={{
@@ -380,7 +469,6 @@ export default function CasosTickets() {
               </select>
             )}
 
-            {/* SECCIÓN DE FECHA, HORA Y MINUTOS UNIFICADA */}
             <div
               style={{
                 display: "flex",
@@ -466,7 +554,6 @@ export default function CasosTickets() {
             </div>
           </div>
 
-          {/* FILA 2: Input de Búsqueda y Botón Limpiar */}
           <div
             style={{
               display: "flex",
@@ -511,7 +598,10 @@ export default function CasosTickets() {
         </div>
 
         {/* TABLA DE CASOS / TICKETS */}
-        <div className="ma-card" style={{ marginTop: 15 }}>
+        <div
+          className="ma-card"
+          style={{ marginTop: 15, display: "flex", flexDirection: "column" }}
+        >
           <div style={{ overflowX: "auto" }}>
             <table className="ma-table" style={{ fontSize: "12px" }}>
               <thead>
@@ -542,7 +632,7 @@ export default function CasosTickets() {
                       Cargando tickets...
                     </td>
                   </tr>
-                ) : ticketsFiltrados.length === 0 ? (
+                ) : ticketsPaginados.length === 0 ? (
                   <tr>
                     <td
                       colSpan="14"
@@ -556,7 +646,7 @@ export default function CasosTickets() {
                     </td>
                   </tr>
                 ) : (
-                  ticketsFiltrados.map((t) => {
+                  ticketsPaginados.map((t) => {
                     const tipoLower = (t.tipo_ticket || "").toLowerCase();
                     const esExterno =
                       tipoLower.includes("externo") ||
@@ -604,8 +694,8 @@ export default function CasosTickets() {
 
                     const estatusLower = (t.estatus_nombre || "").toLowerCase();
                     let estiloEstatus = {
-                      background: "rgba(47, 111, 237, 0.1)",
-                      color: "var(--merco-blue)",
+                      background: "rgba(59, 130, 246, 0.1)",
+                      color: "#3b82f6",
                     };
 
                     if (estatusLower.includes("en proceso")) {
@@ -635,14 +725,39 @@ export default function CasosTickets() {
                       };
                     } else if (estatusLower.includes("cerrado")) {
                       estiloEstatus = {
-                        background: "rgba(107, 114, 128, 0.1)",
-                        color: "#6b7280",
+                        background: "rgba(16, 185, 129, 0.1)",
+                        color: "#10b981",
+                      };
+                    } else if (estatusLower.includes("vencido")) {
+                      estiloEstatus = {
+                        background: "rgba(239, 68, 68, 0.1)",
+                        color: "#ef4444",
                       };
                     } else if (estatusLower.includes("cancelado")) {
                       estiloEstatus = {
                         background: "rgba(239, 68, 68, 0.1)",
                         color: "#ef4444",
                       };
+                    }
+
+                    const tiempoResolucionStr = (
+                      t.tiempo_resolucion || ""
+                    ).toLowerCase();
+                    let excedeSLA =
+                      tiempoResolucionStr.includes("fuera") ||
+                      tiempoResolucionStr.includes("vencido") ||
+                      estatusLower.includes("vencido");
+
+                    if (!excedeSLA && t.int_sla && t.created_at) {
+                      const fechaInicio = new Date(t.created_at);
+                      const fechaFin = t.dmt_fecha_cierre
+                        ? new Date(t.dmt_fecha_cierre)
+                        : new Date();
+                      const diferenciaHoras =
+                        (fechaFin - fechaInicio) / (1000 * 60 * 60);
+                      if (diferenciaHoras > Number(t.int_sla)) {
+                        excedeSLA = true;
+                      }
                     }
 
                     const obtenerPrimerNombreApellido = (
@@ -679,6 +794,8 @@ export default function CasosTickets() {
                       t.asignado_apellido,
                     );
 
+                    const esCancelado = estatusLower.includes("cancelado");
+
                     return (
                       <tr
                         key={t.id}
@@ -687,7 +804,28 @@ export default function CasosTickets() {
                         title="Haz clic para ver detalles"
                       >
                         <td>
-                          <b>{t.str_ticket}</b>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "6px",
+                            }}
+                          >
+                            <b>{t.str_ticket}</b>
+                            <button
+                              className="btn-icon"
+                              onClick={(e) =>
+                                copiarCodigoTicket(e, t.str_ticket)
+                              }
+                              title="Copiar código de ticket"
+                              style={{ padding: "4px" }}
+                            >
+                              <DynamicIcon
+                                name="FiCopy"
+                                style={{ fontSize: 13 }}
+                              />
+                            </button>
+                          </div>
                         </td>
                         <td>
                           <span
@@ -758,17 +896,15 @@ export default function CasosTickets() {
                               </div>
                             </div>
                           ) : (
-                            <div>
+                            <div
+                              style={{
+                                marginTop: "4px",
+                                paddingTop: "4px",
+                                fontSize: "11px",
+                                color: "var(--merco-muted)",
+                              }}
+                            >
                               <b>{nombreClienteCorto}</b>
-                              <small
-                                style={{
-                                  display: "block",
-                                  color: "var(--merco-muted)",
-                                  fontSize: "11px",
-                                }}
-                              >
-                                {t.cliente_cedula || "Interno"}
-                              </small>
                             </div>
                           )}
                         </td>
@@ -805,27 +941,15 @@ export default function CasosTickets() {
                             ? "Sin asignar"
                             : nombreAsignadoCorto}
                         </td>
-                        {/* Creación */}
-                        <td style={{ fontSize: 11, whiteSpace: "nowrap" }}>
-                          {new Date(t.created_at).toLocaleString("es-VE")}
+                        <td style={{ fontSize: 11 }}>
+                          {formatearFechaHora(t.created_at)}
                         </td>
-                        {/* Vencimiento */}
-                        <td style={{ fontSize: 11, whiteSpace: "nowrap" }}>
-                          {t.dmt_fecha_vencimiento_sla
-                            ? new Date(
-                                t.dmt_fecha_vencimiento_sla,
-                              ).toLocaleString("es-VE")
-                            : "—"}
+                        <td style={{ fontSize: 11 }}>
+                          {formatearFechaHora(t.dmt_fecha_vencimiento_sla)}
                         </td>
-                        {/* Cierre */}
-                        <td style={{ fontSize: 11, whiteSpace: "nowrap" }}>
-                          {t.dmt_fecha_cierre
-                            ? new Date(t.dmt_fecha_cierre).toLocaleString(
-                                "es-VE",
-                              )
-                            : "—"}
+                        <td style={{ fontSize: 11 }}>
+                          {formatearFechaHora(t.dmt_fecha_cierre)}
                         </td>
-                        {/* SLA */}
                         <td style={{ whiteSpace: "nowrap" }}>
                           <span
                             className="tag"
@@ -839,7 +963,6 @@ export default function CasosTickets() {
                             {t.int_sla ? `${t.int_sla} hrs` : "—"}
                           </span>
                         </td>
-                        {/* Estado antes de Duración */}
                         <td style={{ whiteSpace: "nowrap" }}>
                           <span
                             style={{
@@ -853,16 +976,25 @@ export default function CasosTickets() {
                             {t.estatus_nombre || "En Proceso"}
                           </span>
                         </td>
-                        {/* Duración */}
-                        <td style={{ fontSize: 11, whiteSpace: "nowrap" }}>
+                        <td style={{ whiteSpace: "nowrap" }}>
                           <span
                             className="tag"
                             style={{
                               fontSize: 11,
-                              background: t.dmt_fecha_cierre
-                                ? "rgba(16, 185, 129, 0.1)"
-                                : "rgba(107, 114, 128, 0.1)",
-                              color: t.dmt_fecha_cierre ? "#10b981" : "#6b7280",
+                              background: esCancelado
+                                ? "rgba(239, 68, 68, 0.1)"
+                                : excedeSLA
+                                  ? "rgba(239, 68, 68, 0.1)"
+                                  : t.dmt_fecha_cierre
+                                    ? "rgba(16, 185, 129, 0.1)"
+                                    : "rgba(59, 130, 246, 0.1)",
+                              color: esCancelado
+                                ? "#ef4444"
+                                : excedeSLA
+                                  ? "#ef4444"
+                                  : t.dmt_fecha_cierre
+                                    ? "#10b981"
+                                    : "#3b82f6",
                               fontWeight: 600,
                             }}
                           >
@@ -875,6 +1007,97 @@ export default function CasosTickets() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "12px 20px",
+              borderTop:
+                "1px solid var(--merco-border, rgba(255, 255, 255, 0.08))",
+              flexWrap: "wrap",
+              gap: 12,
+              fontSize: 13,
+              color: "var(--merco-muted)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <span>
+                Mostrando <b>{registroInicio}</b> a <b>{registroFin}</b> de{" "}
+                <b>{ticketsFiltrados.length}</b> registros
+              </span>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  marginLeft: 8,
+                }}
+              >
+                <span>Filas por página:</span>
+                <select
+                  value={porPagina}
+                  onChange={(e) => {
+                    setPorPagina(Number(e.target.value));
+                    setPaginaActual(1);
+                  }}
+                  style={{
+                    padding: "4px 8px",
+                    borderRadius: 4,
+                    border: "1px solid var(--merco-border, #444)",
+                    background:
+                      "var(--merco-bg-subtle, rgba(255,255,255,0.05))",
+                    color: "inherit",
+                    fontSize: 12,
+                  }}
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <button
+                className="btn btn-ghost"
+                disabled={paginaActual === 1}
+                onClick={() => setPaginaActual((p) => Math.max(p - 1, 1))}
+                style={{
+                  padding: "6px 12px",
+                  fontSize: 12,
+                  opacity: paginaActual === 1 ? 0.5 : 1,
+                  cursor: paginaActual === 1 ? "not-allowed" : "pointer",
+                }}
+              >
+                Anterior
+              </button>
+
+              <span style={{ padding: "0 6px", fontWeight: 500 }}>
+                Página {paginaActual} de {totalPaginas}
+              </span>
+
+              <button
+                className="btn btn-ghost"
+                disabled={paginaActual >= totalPaginas}
+                onClick={() =>
+                  setPaginaActual((p) => Math.min(p + 1, totalPaginas))
+                }
+                style={{
+                  padding: "6px 12px",
+                  fontSize: 12,
+                  opacity: paginaActual >= totalPaginas ? 0.5 : 1,
+                  cursor:
+                    paginaActual >= totalPaginas ? "not-allowed" : "pointer",
+                }}
+              >
+                Siguiente
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -902,7 +1125,7 @@ export default function CasosTickets() {
               onClick={(e) => e.stopPropagation()}
               style={{
                 width: "90%",
-                maxWidth: 850,
+                maxWidth: 900,
                 maxHeight: "90vh",
                 overflowY: "auto",
                 background: "var(--merco-surface)",
@@ -924,20 +1147,41 @@ export default function CasosTickets() {
                   <h3 style={{ margin: 0 }}>
                     Ticket: {ticketSeleccionado.str_ticket}
                   </h3>
-                  {esTicketCerrado && (
-                    <span
-                      style={{
-                        padding: "2px 8px",
-                        borderRadius: 10,
-                        fontSize: 11,
-                        fontWeight: 600,
-                        background: "rgba(107, 114, 128, 0.1)",
-                        color: "#6b7280",
-                      }}
-                    >
-                      Cerrado (Solo lectura)
-                    </span>
-                  )}
+                  <button
+                    className="btn-icon"
+                    onClick={(e) =>
+                      copiarCodigoTicket(e, ticketSeleccionado.str_ticket)
+                    }
+                    title="Copiar código"
+                  >
+                    <DynamicIcon name="FiCopy" style={{ fontSize: 14 }} />
+                  </button>
+                  {esTicketBloqueado &&
+                    (() => {
+                      const estName = (
+                        ticketSeleccionado.estatus_nombre || ""
+                      ).toLowerCase();
+                      const esRojo =
+                        estName.includes("cancelado") ||
+                        estName.includes("vencido");
+                      return (
+                        <span
+                          style={{
+                            padding: "2px 8px",
+                            borderRadius: 10,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            background: esRojo
+                              ? "rgba(239, 68, 68, 0.1)"
+                              : "rgba(16, 185, 129, 0.1)",
+                            color: esRojo ? "#ef4444" : "#10b981",
+                          }}
+                        >
+                          {ticketSeleccionado.estatus_nombre || "Bloqueado"}{" "}
+                          (Solo lectura)
+                        </span>
+                      );
+                    })()}
                 </div>
                 <button
                   className="btn-icon"
@@ -966,13 +1210,9 @@ export default function CasosTickets() {
                   <b>Tipo:</b> {ticketSeleccionado.tipo_ticket}
                 </div>
                 <div>
-                  <b>Departamento:</b> {ticketSeleccionado.departamento_nombre}
-                </div>
-                <div>
                   <b>Categoría:</b> {ticketSeleccionado.categoria_nombre}
                 </div>
 
-                {/* Validación para mostrar Cédula y Correo del Cliente si es Externo */}
                 {ticketSeleccionado.tipo_ticket
                   ?.toLowerCase()
                   .includes("externo") ||
@@ -996,7 +1236,7 @@ export default function CasosTickets() {
                 ) : null}
 
                 <div>
-                  <b>Prioridad:</b> {ticketSeleccionado.prioridad_nombre}
+                  <b>Prioridad Actual:</b> {ticketSeleccionado.prioridad_nombre}
                 </div>
                 <div>
                   <b>SLA:</b>{" "}
@@ -1007,12 +1247,39 @@ export default function CasosTickets() {
                   </span>
                 </div>
                 <div>
+                  <b>Fecha de Creación:</b>{" "}
+                  {ticketSeleccionado.created_at
+                    ? new Date(ticketSeleccionado.created_at).toLocaleString(
+                        "es-VE",
+                      )
+                    : "—"}
+                </div>
+                <div>
                   <b>F. Vencimiento:</b>{" "}
                   {ticketSeleccionado.dmt_fecha_vencimiento_sla
                     ? new Date(
                         ticketSeleccionado.dmt_fecha_vencimiento_sla,
                       ).toLocaleString("es-VE")
                     : "—"}
+                </div>
+                <div>
+                  <b>Fecha de Cierre:</b>{" "}
+                  {ticketSeleccionado.dmt_fecha_cierre
+                    ? new Date(
+                        ticketSeleccionado.dmt_fecha_cierre,
+                      ).toLocaleString("es-VE")
+                    : "—"}
+                </div>
+                <div>
+                  <b>Duración:</b>{" "}
+                  <span
+                    style={{
+                      color: "var(--merco-accent, #3b82f6)",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {ticketSeleccionado.tiempo_resolucion || "En curso"}
+                  </span>
                 </div>
 
                 {!esTicketDetalleInterno && (
@@ -1050,36 +1317,40 @@ export default function CasosTickets() {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 12,
+                    gridTemplateColumns: "1fr 1fr 1fr 1fr",
+                    gap: 10,
                     marginBottom: 12,
                   }}
                 >
                   <div>
                     <label
                       style={{
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: 600,
                         display: "block",
                         marginBottom: 4,
                       }}
                     >
-                      Cambiar Estatus
+                      Departamento
                     </label>
                     <select
-                      value={nuevoEstatusId}
-                      disabled={esTicketCerrado}
-                      onChange={(e) => setNuevoEstatusId(e.target.value)}
+                      value={modalDepartamentoId}
+                      disabled={esTicketBloqueado}
+                      onChange={(e) => {
+                        setModalDepartamentoId(e.target.value);
+                        setNuevoAsignadoId("");
+                      }}
                       style={{
                         ...filtroStyle,
                         width: "100%",
-                        opacity: esTicketCerrado ? 0.7 : 1,
-                        cursor: esTicketCerrado ? "not-allowed" : "pointer",
+                        opacity: esTicketBloqueado ? 0.7 : 1,
+                        cursor: esTicketBloqueado ? "not-allowed" : "pointer",
                       }}
                     >
-                      {listaEstatus.map((est) => (
-                        <option key={est.id} value={String(est.id)}>
-                          {est.str_nombre}
+                      <option value="">Seleccionar</option>
+                      {listaDepartamentos.map((dep) => (
+                        <option key={dep.id} value={String(dep.id)}>
+                          {dep.str_nombre}
                         </option>
                       ))}
                     </select>
@@ -1088,7 +1359,7 @@ export default function CasosTickets() {
                   <div>
                     <label
                       style={{
-                        fontSize: 12,
+                        fontSize: 11,
                         fontWeight: 600,
                         display: "block",
                         marginBottom: 4,
@@ -1097,27 +1368,80 @@ export default function CasosTickets() {
                       Asignar a:
                     </label>
                     <select
-                      key={`select-asignado-${ticketSeleccionado?.id || "modal"}`}
-                      defaultValue={
-                        ticketSeleccionado?.usuario_asignado_id
-                          ? String(ticketSeleccionado.usuario_asignado_id)
-                          : ""
-                      }
-                      disabled={esTicketCerrado}
-                      onChange={(e) => {
-                        setNuevoAsignadoId(e.target.value);
-                      }}
+                      value={nuevoAsignadoId}
+                      disabled={esTicketBloqueado}
+                      onChange={(e) => setNuevoAsignadoId(e.target.value)}
                       style={{
                         ...filtroStyle,
                         width: "100%",
-                        opacity: esTicketCerrado ? 0.7 : 1,
-                        cursor: esTicketCerrado ? "not-allowed" : "pointer",
+                        opacity: esTicketBloqueado ? 0.7 : 1,
+                        cursor: esTicketBloqueado ? "not-allowed" : "pointer",
                       }}
                     >
                       <option value="">Sin asignar</option>
-                      {listaUsuarios.map((u) => (
+                      {usuariosModalFiltrados.map((u) => (
                         <option key={u.id} value={String(u.id)}>
                           {u.str_nombre} {u.str_apellido}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        display: "block",
+                        marginBottom: 4,
+                      }}
+                    >
+                      Prioridad
+                    </label>
+                    <select
+                      value={nuevoPrioridadId}
+                      disabled={esTicketBloqueado}
+                      onChange={(e) => setNuevoPrioridadId(e.target.value)}
+                      style={{
+                        ...filtroStyle,
+                        width: "100%",
+                        opacity: esTicketBloqueado ? 0.7 : 1,
+                        cursor: esTicketBloqueado ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      {prioridades.map((p) => (
+                        <option key={p.id} value={String(p.id)}>
+                          {p.str_nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        display: "block",
+                        marginBottom: 4,
+                      }}
+                    >
+                      Estatus
+                    </label>
+                    <select
+                      value={nuevoEstatusId}
+                      disabled={esTicketBloqueado}
+                      onChange={(e) => setNuevoEstatusId(e.target.value)}
+                      style={{
+                        ...filtroStyle,
+                        width: "100%",
+                        opacity: esTicketBloqueado ? 0.7 : 1,
+                        cursor: esTicketBloqueado ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      {estatusModalDisponibles.map((est) => (
+                        <option key={est.id} value={String(est.id)}>
+                          {est.str_nombre}
                         </option>
                       ))}
                     </select>
@@ -1138,19 +1462,19 @@ export default function CasosTickets() {
                   <textarea
                     rows={3}
                     value={respuestaTexto}
-                    disabled={esTicketCerrado}
+                    disabled={esTicketBloqueado}
                     onChange={(e) => setRespuestaTexto(e.target.value)}
                     placeholder={
-                      esTicketCerrado
-                        ? "Este ticket está cerrado y no admite respuestas."
+                      esTicketBloqueado
+                        ? "Este ticket se encuentra cerrado, cancelado o vencido y no admite modificaciones ni respuestas."
                         : "Escriba una respuesta o avance para este ticket..."
                     }
                     style={{
                       ...filtroStyle,
                       width: "100%",
                       resize: "vertical",
-                      opacity: esTicketCerrado ? 0.7 : 1,
-                      cursor: esTicketCerrado ? "not-allowed" : "text",
+                      opacity: esTicketBloqueado ? 0.7 : 1,
+                      cursor: esTicketBloqueado ? "not-allowed" : "text",
                     }}
                   />
                 </div>
@@ -1167,9 +1491,9 @@ export default function CasosTickets() {
                     className="btn btn-ghost"
                     onClick={() => setTicketSeleccionado(null)}
                   >
-                    {esTicketCerrado ? "Cerrar" : "Cancelar"}
+                    {esTicketBloqueado ? "Cerrar" : "Cancelar"}
                   </button>
-                  {!esTicketCerrado && (
+                  {!esTicketBloqueado && (
                     <button type="submit" className="btn btn-primary">
                       <DynamicIcon name="FiSave" /> Guardar Cambios
                     </button>
