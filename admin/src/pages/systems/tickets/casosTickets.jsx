@@ -130,9 +130,11 @@ export default function CasosTickets() {
     );
   }, [modalDepartamentoId, listaUsuarios]);
 
-  // Lista completa de estatus disponibles en el modal
+  // Lista de estatus disponibles en el modal (excluyendo "Vencido")
   const estatusModalDisponibles = useMemo(() => {
-    return listaEstatus;
+    return listaEstatus.filter(
+      (est) => !(est.str_nombre || "").toLowerCase().includes("vencido"),
+    );
   }, [listaEstatus]);
 
   const esFiltroInterno = useMemo(() => {
@@ -1141,7 +1143,12 @@ export default function CasosTickets() {
                 }}
               >
                 <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    flexWrap: "wrap",
+                  }}
                 >
                   <h3 style={{ margin: 0 }}>
                     Ticket: {ticketSeleccionado.str_ticket}
@@ -1159,37 +1166,49 @@ export default function CasosTickets() {
                   >
                     <DynamicIcon name="FiCopy" style={{ fontSize: 14 }} />
                   </button>
-                  {esTicketBloqueado &&
-                    (() => {
-                      const estName = (
-                        ticketSeleccionado.estatus_nombre || ""
-                      ).toLowerCase();
-                      const esCanceladoModal = estName.includes("cancelado");
-                      const esRojo = estName.includes("vencido");
-                      return (
-                        <span
-                          style={{
-                            padding: "2px 8px",
-                            borderRadius: 10,
-                            fontSize: 11,
-                            fontWeight: 600,
-                            background: esCanceladoModal
-                              ? "rgba(14, 165, 233, 0.1)"
-                              : esRojo
-                                ? "rgba(239, 68, 68, 0.1)"
-                                : "rgba(16, 185, 129, 0.1)",
-                            color: esCanceladoModal
-                              ? "#0ea5e9"
-                              : esRojo
-                                ? "#ef4444"
-                                : "#10b981",
-                          }}
-                        >
-                          {ticketSeleccionado.estatus_nombre || "Bloqueado"}{" "}
-                          (Solo lectura)
-                        </span>
-                      );
-                    })()}
+
+                  {/* Estatus actual y su descripción en la parte superior */}
+                  {(() => {
+                    const estatusObj = listaEstatus.find(
+                      (est) =>
+                        Number(est.id) ===
+                        Number(ticketSeleccionado.estatus_id),
+                    );
+                    const nombreEstatus =
+                      estatusObj?.str_nombre ||
+                      ticketSeleccionado.estatus_nombre ||
+                      "En Proceso";
+                    const descEstatus = estatusObj?.str_descripcion;
+
+                    const estName = nombreEstatus.toLowerCase();
+                    const esCanceladoModal = estName.includes("cancelado");
+                    const esRojo = estName.includes("vencido");
+
+                    return (
+                      <span
+                        style={{
+                          padding: "4px 10px",
+                          borderRadius: 10,
+                          fontSize: 11,
+                          fontWeight: 600,
+                          background: esCanceladoModal
+                            ? "rgba(14, 165, 233, 0.1)"
+                            : esRojo
+                              ? "rgba(239, 68, 68, 0.1)"
+                              : "rgba(16, 185, 129, 0.1)",
+                          color: esCanceladoModal
+                            ? "#0ea5e9"
+                            : esRojo
+                              ? "#ef4444"
+                              : "#10b981",
+                        }}
+                      >
+                        <b>{nombreEstatus}</b>
+                        {descEstatus ? ` - ${descEstatus}` : ""}
+                        {esTicketBloqueado ? " (Solo lectura)" : ""}
+                      </span>
+                    );
+                  })()}
                 </div>
                 <button
                   className="btn-icon"
@@ -1437,7 +1456,6 @@ export default function CasosTickets() {
                 const tieneMultimedia =
                   imagenes.length > 0 || videos.length > 0 || audios.length > 0;
 
-                // Obtenemos la URL base del backend desde axiosTickets.defaults.baseURL o la URL actual
                 const backendUrl = import.meta.env.VITE_URL_API_LOCAL_VER;
 
                 return (
@@ -1839,7 +1857,10 @@ export default function CasosTickets() {
                     >
                       {estatusModalDisponibles.map((est) => (
                         <option key={est.id} value={String(est.id)}>
-                          {est.str_nombre}
+                          {est.str_nombre}{" "}
+                          {est.str_descripcion
+                            ? `- ${est.str_descripcion}`
+                            : ""}
                         </option>
                       ))}
                     </select>
