@@ -111,6 +111,39 @@ router.get("/datos-maestros", async (req, res) => {
   }
 });
 
+// Endpoint para consultar si un cliente ya existe por su cédula
+router.get("/cliente/:cedula", async (req, res) => {
+  const { cedula } = req.params;
+  try {
+    const query = `
+      SELECT id, str_cedula, str_nombre, str_apellido, str_telefono, str_email 
+      FROM tickets.tbl_clientes 
+      WHERE str_cedula = $1 
+      LIMIT 1;
+    `;
+    const resultado = await pool.query(query, [cedula]);
+
+    if (resultado.rows.length > 0) {
+      res.status(200).json({
+        success: true,
+        existe: true,
+        cliente: resultado.rows[0],
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        existe: false,
+      });
+    }
+  } catch (err) {
+    console.error("Error al buscar el cliente:", err.message);
+    res.status(500).json({
+      success: false,
+      error: "Error interno al buscar el cliente.",
+    });
+  }
+});
+
 // Endpoint para crear el ticket y subir archivos multimedia asociados
 router.post("/crear", upload.any(), async (req, res) => {
   const client = await pool.connect();
@@ -129,11 +162,68 @@ router.post("/crear", upload.any(), async (req, res) => {
       str_asunto,
       str_descripcion,
       usuario_asignado_id,
+      // Variables del cliente externo (sin condicion_cliente_id)
       str_cedula_cliente,
+      str_nombre_cliente,
+      str_apellido_cliente,
       str_correo_cliente,
+      str_telefono_cliente,
     } = req.body;
 
     const usuarioIdSesion = req.user?.id;
+
+    // --- LÓGICA PARA GESTIONAR LA TABLA tbl_clientes ---
+    let clienteFinalId = cliente_id ? Number(cliente_id) : null;
+    const correoMinuscula = str_correo_cliente
+      ? str_correo_cliente.trim().toLowerCase()
+      : null;
+    const nombreMinuscula = str_nombre_cliente
+      ? str_nombre_cliente.trim().toLowerCase()
+      : null;
+    const apellidoMinuscula = str_apellido_cliente
+      ? str_apellido_cliente.trim().toLowerCase()
+      : null;
+
+    if (!clienteFinalId && str_cedula_cliente) {
+      // 1. Verificar si el cliente ya existe por su cédula
+      const queryClienteCheck = `SELECT id FROM tickets.tbl_clientes WHERE str_cedula = $1 LIMIT 1;`;
+      const clienteRes = await client.query(queryClienteCheck, [
+        str_cedula_cliente,
+      ]);
+
+      if (clienteRes.rows.length > 0) {
+        clienteFinalId = clienteRes.rows[0].id;
+        // Actualizar datos si hubo cambios (nombre, apellido y correo en minúsculas)
+        const queryUpdateCliente = `
+          UPDATE tickets.tbl_clientes 
+          SET str_nombre = $1, str_apellido = $2, str_email = $3, str_telefono = $4, updated_at = CURRENT_TIMESTAMP
+          WHERE id = $5;
+        `;
+        await client.query(queryUpdateCliente, [
+          nombreMinuscula,
+          apellidoMinuscula,
+          correoMinuscula,
+          str_telefono_cliente || null,
+          clienteFinalId,
+        ]);
+      } else {
+        // 2. Si no existe, crearlo en tbl_clientes guardando nombre, apellido y correo en minúsculas
+        const queryInsertCliente = `
+          INSERT INTO tickets.tbl_clientes (str_cedula, str_nombre, str_apellido, str_email, str_telefono, created_at, updated_at)
+          VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+          RETURNING id;
+        `;
+        const nuevoClienteRes = await client.query(queryInsertCliente, [
+          str_cedula_cliente,
+          nombreMinuscula,
+          apellidoMinuscula,
+          correoMinuscula,
+          str_telefono_cliente || null,
+        ]);
+        clienteFinalId = nuevoClienteRes.rows[0].id;
+      }
+    }
+    // ----------------------------------------------------
 
     // Obtener año y mes actual para el correlativo
     const now = new Date();
@@ -168,14 +258,13 @@ router.post("/crear", upload.any(), async (req, res) => {
     const rutasVideos = [];
     const rutasAudios = [];
 
-    // Contadores independientes para el sufijo numérico
     let contadorImagen = 1;
     let contadorVideo = 1;
     let contadorAudio = 1;
 
     archivos.forEach((file) => {
       const tipoMime = file.mimetype;
-      const extension = path.extname(file.originalname); // Obtiene la extensión (.jpg, .png, etc.)
+      const extension = path.extname(file.originalname);
 
       let nuevoNombreArchivo = "";
 
@@ -193,10 +282,9 @@ router.post("/crear", upload.any(), async (req, res) => {
         contadorImagen++;
       }
 
-      const rutaAntigua = file.path; // Ruta temporal donde multer lo guardó
+      const rutaAntigua = file.path;
       const rutaNueva = path.join("/var/www/uploads", nuevoNombreArchivo);
 
-      // Renombrar y mover físicamente el archivo en el servidor
       try {
         fs.renameSync(rutaAntigua, rutaNueva);
       } catch (renameErr) {
@@ -230,14 +318,12 @@ router.post("/crear", upload.any(), async (req, res) => {
           departamento_id, categoria_id, prioridad_id, 
           canal_id, str_asunto, str_descripcion, int_sla, 
           str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id, 
-          str_cedula_cliente, str_correo_cliente,
           dmt_fecha_vencimiento_sla, created_at, updated_at
         ) VALUES (
           $1, $2::integer, $3::integer, $4::integer, $5::integer, 
           $6::integer, $7::integer, $8::integer, $9::integer, 
           $10::varchar, $11::text, $12::integer, 
           $13::text, $14::text, $15::text, $16::integer, 
-          $17::varchar, $18::varchar,
           CURRENT_TIMESTAMP + ($12::integer * INTERVAL '1 hour'), 
           CURRENT_TIMESTAMP, 
           CURRENT_TIMESTAMP
@@ -248,7 +334,7 @@ router.post("/crear", upload.any(), async (req, res) => {
     const values = [
       str_ticket,
       tipo_ticket_id ? Number(tipo_ticket_id) : null,
-      cliente_id ? Number(cliente_id) : null,
+      clienteFinalId,
       usuarioIdSesion ? Number(usuarioIdSesion) : null,
       cierre_agente_id ? Number(cierre_agente_id) : null,
       departamento_id ? Number(departamento_id) : null,
@@ -262,8 +348,6 @@ router.post("/crear", upload.any(), async (req, res) => {
       str_ruta_video,
       str_ruta_audio,
       usuario_asignado_id ? Number(usuario_asignado_id) : null,
-      str_cedula_cliente || null,
-      str_correo_cliente || null,
     ];
 
     const nuevoTicket = await client.query(queryInsert, values);

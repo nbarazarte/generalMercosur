@@ -47,12 +47,11 @@ export default function CasosTickets() {
   const [nuevoPrioridadId, setNuevoPrioridadId] = useState("");
   const [modalDepartamentoId, setModalDepartamentoId] = useState("");
   const [respuestaTexto, setRespuestaTexto] = useState("");
-  const [tabActiva, setTabActiva] = useState("descripcion"); // Pestaña activa en el modal
-  const [bitacoraList, setBitacoraList] = useState([]); // Historial de bitácora
-  const [errorModal, setErrorModal] = useState(""); // Mensaje de error dentro del modal
+  const [tabActiva, setTabActiva] = useState("descripcion");
+  const [bitacoraList, setBitacoraList] = useState([]);
+  const [errorModal, setErrorModal] = useState("");
   const [toast, setToast] = useState(null);
 
-  // Estilo unificado para todos los controles e inputs
   const filtroStyle = {
     padding: "8px 12px",
     borderRadius: 6,
@@ -68,7 +67,6 @@ export default function CasosTickets() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  // Función para copiar al portapapeles
   const copiarTextoClipboard = (e, texto, etiqueta = "Texto") => {
     e.stopPropagation();
     copy(texto);
@@ -111,7 +109,6 @@ export default function CasosTickets() {
     }
   };
 
-  // Filtrado de usuarios para la barra de búsqueda principal
   useEffect(() => {
     if (fDepartamento) {
       const filtrados = listaUsuarios.filter(
@@ -124,7 +121,6 @@ export default function CasosTickets() {
     setFAgente("");
   }, [fDepartamento, listaUsuarios]);
 
-  // Filtrado dinámico de usuarios para el modal
   const usuariosModalFiltrados = useMemo(() => {
     if (!modalDepartamentoId) return listaUsuarios;
     return listaUsuarios.filter(
@@ -132,7 +128,6 @@ export default function CasosTickets() {
     );
   }, [modalDepartamentoId, listaUsuarios]);
 
-  // Lista de estatus disponibles en el modal (excluyendo "Vencido")
   const estatusModalDisponibles = useMemo(() => {
     return listaEstatus.filter(
       (est) => !(est.str_nombre || "").toLowerCase().includes("vencido"),
@@ -185,7 +180,6 @@ export default function CasosTickets() {
     setFMinuto("");
   };
 
-  // 1. Exporta TODOS los datos que coinciden con los filtros aplicados con las columnas corregidas
   const exportarExcel = () => {
     if (ticketsFiltrados.length === 0) {
       showToast(
@@ -199,7 +193,9 @@ export default function CasosTickets() {
       "Ticket",
       "Tipo",
       "Canal",
-      "Cliente / Solicitante",
+      "Creado por (Agente)",
+      "Cliente / Afectado",
+      "Teléfono",
       "Asunto",
       "Departamento",
       "Prioridad",
@@ -213,11 +209,13 @@ export default function CasosTickets() {
     ];
 
     const filas = ticketsFiltrados.map((t) => {
-      const solicitante = t.cliente_nombre
-        ? `${t.cliente_nombre} ${t.cliente_apellido || ""}`
-        : `${t.creador_nombre || ""} ${t.creador_apellido || ""}`;
+      const creador =
+        `${t.creador_nombre || ""} ${t.creador_apellido || ""}`.trim();
+      const cliente = t.cliente_nombre
+        ? `${t.cliente_nombre} ${t.cliente_apellido || ""}`.trim()
+        : "N/A";
       const asignado = t.asignado_nombre
-        ? `${t.asignado_nombre} ${t.asignado_apellido || ""}`
+        ? `${t.asignado_nombre} ${t.asignado_apellido || ""}`.trim()
         : "Sin asignar";
 
       const formatearFechaPlana = (fechaStr) => {
@@ -237,11 +235,13 @@ export default function CasosTickets() {
         `"${t.str_ticket || ""}"`,
         `"${t.tipo_ticket || ""}"`,
         `"${t.canal_nombre || ""}"`,
-        `"${solicitante.trim().replace(/"/g, '""')}"`,
+        `"${creador.replace(/"/g, '""')}"`,
+        `"${cliente.replace(/"/g, '""')}"`,
+        `"${t.cliente_telefono || ""}"`,
         `"${(t.str_asunto || "").replace(/"/g, '""')}"`,
         `"${t.departamento_nombre || ""}"`,
         `"${t.prioridad_nombre || ""}"`,
-        `"${asignado.trim().replace(/"/g, '""')}"`,
+        `"${asignado.replace(/"/g, '""')}"`,
         `"${formatearFechaPlana(t.created_at)}"`,
         `"${formatearFechaPlana(t.dmt_fecha_vencimiento_sla)}"`,
         `"${formatearFechaPlana(t.dmt_fecha_cierre)}"`,
@@ -407,7 +407,7 @@ export default function CasosTickets() {
       if (fBuscar) {
         const q = fBuscar.toLowerCase().trim();
         const texto =
-          `${t.str_ticket} ${t.cliente_nombre || ""} ${t.cliente_cedula || ""} ${t.str_cedula_cliente || ""} ${t.str_correo_cliente || ""} ${t.creador_nombre || ""} ${t.str_asunto} ${t.str_descripcion}`.toLowerCase();
+          `${t.str_ticket} ${t.creador_nombre || ""} ${t.creador_apellido || ""} ${t.cliente_nombre || ""} ${t.cliente_apellido || ""} ${t.cliente_cedula || ""} ${t.str_asunto} ${t.str_descripcion}`.toLowerCase();
         if (!texto.includes(q)) return false;
       }
       return true;
@@ -690,7 +690,7 @@ export default function CasosTickets() {
               />
               <input
                 type="text"
-                placeholder="Buscar por N° Ticket, cédula, correo, solicitante o asunto"
+                placeholder="Buscar por N° Ticket, creador, cédula, nombre o asunto"
                 value={fBuscar}
                 onChange={(e) => setFBuscar(e.target.value)}
                 style={{
@@ -710,7 +710,6 @@ export default function CasosTickets() {
                 Limpiar Filtros
               </button>
 
-              {/* 2. Botón de Exportación con icono oficial de Excel (RiFileExcelLine) */}
               <button
                 className="btn-icon"
                 onClick={exportarExcel}
@@ -741,7 +740,8 @@ export default function CasosTickets() {
                   <th>TICKET</th>
                   <th>TIPO</th>
                   <th>CANAL</th>
-                  <th>CLIENTE / SOLICITANTE</th>
+                  <th>CREADO POR</th>
+                  <th>CLIENTE / AFECTADO</th>
                   <th>ASUNTO</th>
                   <th>DEPARTAMENTO</th>
                   <th>PRIORIDAD</th>
@@ -758,7 +758,7 @@ export default function CasosTickets() {
                 {loading ? (
                   <tr>
                     <td
-                      colSpan="14"
+                      colSpan="15"
                       style={{ textAlign: "center", padding: "30px" }}
                     >
                       Cargando tickets...
@@ -767,7 +767,7 @@ export default function CasosTickets() {
                 ) : ticketsPaginados.length === 0 ? (
                   <tr>
                     <td
-                      colSpan="14"
+                      colSpan="15"
                       style={{
                         textAlign: "center",
                         padding: "40px",
@@ -905,21 +905,13 @@ export default function CasosTickets() {
                       return resultado || "—";
                     };
 
-                    const solicitanteNombre = t.cliente_nombre
-                      ? t.cliente_nombre
-                      : t.creador_nombre;
-                    const solicitanteApellido = t.cliente_apellido
-                      ? t.cliente_apellido
-                      : t.creador_apellido;
-                    const nombreClienteCorto = obtenerPrimerNombreApellido(
-                      solicitanteNombre,
-                      solicitanteApellido,
-                    );
-
-                    const nombreCreadorCorto = obtenerPrimerNombreApellido(
-                      t.creador_nombre,
-                      t.creador_apellido,
-                    );
+                    const primerNombreCreador =
+                      (t.creador_nombre || "").trim().split(" ")[0] || "";
+                    const primerApellidoCreador =
+                      (t.creador_apellido || "").trim().split(" ")[0] || "";
+                    const nombreCreadorCorto =
+                      `${primerNombreCreador} ${primerApellidoCreador}`.trim() ||
+                      "—";
 
                     const nombreAsignadoCorto = obtenerPrimerNombreApellido(
                       t.asignado_nombre,
@@ -977,71 +969,69 @@ export default function CasosTickets() {
                           </span>
                         </td>
                         <td>
-                          <span
-                            className="tag"
-                            style={{
-                              fontSize: 11,
-                            }}
-                          >
+                          <span className="tag" style={{ fontSize: 11 }}>
                             {t.canal_nombre || "—"}
                           </span>
                         </td>
+
+                        {/* COLUMNA CREADO POR (Primer nombre, primer apellido y correo) */}
+                        <td>
+                          <div>
+                            <b style={{ color: "var(--merco-text)" }}>
+                              {nombreCreadorCorto}
+                            </b>
+                            <small
+                              style={{
+                                display: "block",
+                                color: "var(--merco-muted)",
+                                fontSize: "11px",
+                              }}
+                            >
+                              {t.creador_correo || "—"}
+                            </small>
+                          </div>
+                        </td>
+
+                        {/* COLUMNA CLIENTE / AFECTADO */}
                         <td>
                           {esExterno ? (
                             <div>
-                              <div>
-                                <span
-                                  style={{
-                                    fontSize: "11px",
-                                    color: "var(--merco-muted)",
-                                  }}
-                                >
-                                  Cliente:
-                                </span>{" "}
-                                <b
-                                  style={{
-                                    color: "var(--merco-accent, #f95700)",
-                                  }}
-                                >
-                                  {t.str_cedula_cliente || "—"}
-                                </b>
-                                <small
-                                  style={{
-                                    display: "block",
-                                    color: "var(--merco-muted)",
-                                    fontSize: "11px",
-                                  }}
-                                >
-                                  {t.str_correo_cliente || "—"}
-                                </small>
-                              </div>
-                              <div
+                              <b
                                 style={{
-                                  marginTop: "4px",
-                                  paddingTop: "4px",
-                                  borderTop: "1px dashed var(--merco-border)",
-                                  fontSize: "11px",
-                                  color: "var(--merco-muted)",
+                                  color: "var(--merco-accent, #f95700)",
                                 }}
                               >
-                                <span>
-                                  Solicitante: <b>{nombreCreadorCorto}</b>
-                                </span>
-                              </div>
+                                {t.cliente_nombre && t.cliente_apellido
+                                  ? `${t.cliente_nombre} ${t.cliente_apellido}`
+                                  : "Cliente Externo"}
+                              </b>
+                              <small
+                                style={{
+                                  display: "block",
+                                  color: "var(--merco-muted)",
+                                  fontSize: "11px",
+                                }}
+                              >
+                                Cédula: {t.cliente_cedula || "—"} | Tel:{" "}
+                                {t.cliente_telefono || "—"}
+                              </small>
+                              <small
+                                style={{
+                                  display: "block",
+                                  color: "var(--merco-muted)",
+                                  fontSize: "11px",
+                                }}
+                              >
+                                {t.cliente_correo || "—"}
+                              </small>
                             </div>
                           ) : (
-                            <div
-                              style={{
-                                marginTop: "4px",
-                                paddingTop: "4px",
-                                fontSize: "11px",
-                                color: "var(--merco-muted)",
-                              }}
-                            >
-                              <b>{nombreClienteCorto}</b>
-                            </div>
+                            <span style={{ color: "var(--merco-muted)" }}>
+                              N/A (Ticket Interno)
+                            </span>
                           )}
                         </td>
+
                         <td style={{ maxWidth: 180 }}>
                           <div
                             style={{
@@ -1300,7 +1290,6 @@ export default function CasosTickets() {
                     <DynamicIcon name="FiCopy" style={{ fontSize: 14 }} />
                   </button>
 
-                  {/* Estatus actual y su descripción en la parte superior */}
                   {(() => {
                     const estatusObj = listaEstatus.find(
                       (est) =>
@@ -1369,14 +1358,15 @@ export default function CasosTickets() {
                 }}
               >
                 {(() => {
-                  const nombreCompletoSolicitante = `${
+                  const nombreCreadorModal = `${
                     ticketSeleccionado.creador_nombre || ""
                   } ${ticketSeleccionado.creador_apellido || ""}`.trim();
-                  const correoSolicitante =
+                  const correoCreadorModal =
                     ticketSeleccionado.creador_correo || "";
+
                   return (
                     <>
-                      {nombreCompletoSolicitante && (
+                      {nombreCreadorModal && (
                         <div
                           style={{
                             display: "flex",
@@ -1385,18 +1375,18 @@ export default function CasosTickets() {
                           }}
                         >
                           <div>
-                            <b>Solicitante:</b> {nombreCompletoSolicitante}
+                            <b>Creado por:</b> {nombreCreadorModal}
                           </div>
                           <button
                             className="btn-icon"
                             onClick={(e) =>
                               copiarTextoClipboard(
                                 e,
-                                nombreCompletoSolicitante,
-                                "Solicitante",
+                                nombreCreadorModal,
+                                "Creador del ticket",
                               )
                             }
-                            title="Copiar solicitante"
+                            title="Copiar nombre del creador"
                             style={{ padding: "4px" }}
                           >
                             <DynamicIcon
@@ -1406,7 +1396,8 @@ export default function CasosTickets() {
                           </button>
                         </div>
                       )}
-                      {correoSolicitante && (
+
+                      {correoCreadorModal && (
                         <div
                           style={{
                             display: "flex",
@@ -1415,18 +1406,18 @@ export default function CasosTickets() {
                           }}
                         >
                           <div>
-                            <b>Correo del Solicitante:</b> {correoSolicitante}
+                            <b>Correo:</b> {correoCreadorModal}
                           </div>
                           <button
                             className="btn-icon"
                             onClick={(e) =>
                               copiarTextoClipboard(
                                 e,
-                                correoSolicitante,
-                                "Correo del solicitante",
+                                correoCreadorModal,
+                                "Correo del creador",
                               )
                             }
-                            title="Copiar correo del solicitante"
+                            title="Copiar correo del creador"
                             style={{ padding: "4px" }}
                           >
                             <DynamicIcon
@@ -1479,24 +1470,37 @@ export default function CasosTickets() {
                         <b style={{ color: "var(--merco-accent, #f95700)" }}>
                           Cédula del Cliente:
                         </b>{" "}
-                        {ticketSeleccionado.str_cedula_cliente || "—"}
+                        {ticketSeleccionado.cliente_cedula || "—"}
                       </div>
-                      {ticketSeleccionado.str_cedula_cliente && (
-                        <button
-                          className="btn-icon"
-                          onClick={(e) =>
-                            copiarTextoClipboard(
-                              e,
-                              ticketSeleccionado.str_cedula_cliente,
-                              "Cédula",
-                            )
-                          }
-                          title="Copiar cédula"
-                          style={{ padding: "4px" }}
-                        >
-                          <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
-                        </button>
-                      )}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}
+                    >
+                      <div>
+                        <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                          Nombre y Apellido Cliente:
+                        </b>{" "}
+                        {ticketSeleccionado.cliente_nombre || "—"}{" "}
+                        {ticketSeleccionado.cliente_apellido || ""}
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                      }}
+                    >
+                      <div>
+                        <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                          Teléfono del Cliente:
+                        </b>{" "}
+                        {ticketSeleccionado.cliente_telefono || "—"}
+                      </div>
                     </div>
                     <div
                       style={{
@@ -1509,24 +1513,8 @@ export default function CasosTickets() {
                         <b style={{ color: "var(--merco-accent, #f95700)" }}>
                           Correo del Cliente:
                         </b>{" "}
-                        {ticketSeleccionado.str_correo_cliente || "—"}
+                        {ticketSeleccionado.cliente_correo || "—"}
                       </div>
-                      {ticketSeleccionado.str_correo_cliente && (
-                        <button
-                          className="btn-icon"
-                          onClick={(e) =>
-                            copiarTextoClipboard(
-                              e,
-                              ticketSeleccionado.str_correo_cliente,
-                              "Correo",
-                            )
-                          }
-                          title="Copiar correo"
-                          style={{ padding: "4px" }}
-                        >
-                          <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
-                        </button>
-                      )}
                     </div>
                   </>
                 ) : null}
@@ -1883,7 +1871,7 @@ export default function CasosTickets() {
                     marginBottom: 8,
                   }}
                 >
-                  Historial del ticket / Respuestas ({bitacoraList.length}):
+                  Bitácora del ticket / Respuestas ({bitacoraList.length}):
                 </label>
                 <div
                   style={{
@@ -2081,8 +2069,7 @@ export default function CasosTickets() {
                         marginBottom: 4,
                       }}
                     >
-                      Responder / Agregar Nota{" "}
-                      <span style={{ color: "#ef4444" }}>*</span>
+                      Responder / Agregar Nota
                     </label>
                     <textarea
                       rows={3}

@@ -21,10 +21,17 @@ export default function NuevoTicket() {
   const [departamentoId, setDepartamentoId] = useState("");
   const [usuarioId, setUsuarioId] = useState("");
 
-  // Estados para cédula y correo del cliente externo
+  // Estados para los datos del cliente externo
   const [strCedulaCliente, setStrCedulaCliente] = useState("");
+  const [strNombreCliente, setStrNombreCliente] = useState("");
+  const [strApellidoCliente, setStrApellidoCliente] = useState("");
+  const [strTelefonoCliente, setStrTelefonoCliente] = useState("");
   const [strCorreoCliente, setStrCorreoCliente] = useState("");
   const [correoInvalido, setCorreoInvalido] = useState(false);
+
+  // Estados para control de cliente existente
+  const [clienteId, setClienteId] = useState(null);
+  const [clienteBloqueado, setClienteBloqueado] = useState(false);
 
   const correoInputRef = useRef(null);
 
@@ -241,8 +248,16 @@ export default function NuevoTicket() {
     setPrioridadId("");
     setDepartamentoId("");
     setUsuarioId("");
+
     setStrCedulaCliente("");
+    setStrNombreCliente("");
+    setStrApellidoCliente("");
+    setStrTelefonoCliente("");
     setStrCorreoCliente("");
+
+    setClienteId(null);
+    setClienteBloqueado(false);
+
     setCorreoInvalido(false);
     setArchivosAdjuntos([]);
     setStrDescripcion("");
@@ -387,13 +402,11 @@ export default function NuevoTicket() {
     return esInterno ? listaCategoriasInternas : listaCategoriasExternas;
   };
 
-  // Expresión regular que exige usuario, @, servidor, punto y extensión válida (ej. .com, .com.ve, .net)
   const validarCorreo = (correo) => {
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return regex.test(correo.trim());
   };
 
-  // Validación ejecutada al perder el foco en el campo de correo
   const handleCorreoBlur = () => {
     if (!esTipoExterno()) return;
 
@@ -414,6 +427,52 @@ export default function NuevoTicket() {
     }
   };
 
+  const handleCedulaBlur = async () => {
+    const cedula = strCedulaCliente.trim();
+
+    if (!cedula || cedula.length < 6) {
+      setClienteId(null);
+      setClienteBloqueado(false);
+      setStrNombreCliente("");
+      setStrApellidoCliente("");
+      setStrTelefonoCliente("");
+      setStrCorreoCliente("");
+      return;
+    }
+
+    try {
+      const response = await axiosTickets.get(`/cliente/${cedula}`);
+      if (response.data.success && response.data.existe) {
+        const cli = response.data.cliente;
+        setClienteId(cli.id);
+        setStrNombreCliente(cli.str_nombre || "");
+        setStrApellidoCliente(cli.str_apellido || "");
+        setStrTelefonoCliente(cli.str_telefono || "");
+        setStrCorreoCliente(cli.str_email || "");
+        setClienteBloqueado(true);
+        showToast(
+          "¡Cliente encontrado! Sus datos se han cargado en modo solo lectura.",
+          "success",
+        );
+      } else {
+        setClienteId(null);
+        setClienteBloqueado(false);
+        setStrNombreCliente("");
+        setStrApellidoCliente("");
+        setStrTelefonoCliente("");
+        setStrCorreoCliente("");
+      }
+    } catch (error) {
+      console.error("Error al verificar el cliente:", error);
+      setClienteId(null);
+      setClienteBloqueado(false);
+      setStrNombreCliente("");
+      setStrApellidoCliente("");
+      setStrTelefonoCliente("");
+      setStrCorreoCliente("");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -422,54 +481,7 @@ export default function NuevoTicket() {
       return;
     }
 
-    if (esTipoExterno() && !strCedulaCliente.trim()) {
-      showToast(
-        "Por favor ingrese la cédula del cliente para tickets externos.",
-        "error",
-      );
-      return;
-    }
-
-    if (esTipoExterno()) {
-      if (!strCorreoCliente.trim()) {
-        showToast(
-          "Por favor ingrese el correo del cliente para tickets externos.",
-          "error",
-        );
-        if (correoInputRef.current) correoInputRef.current.focus();
-        return;
-      }
-
-      if (!validarCorreo(strCorreoCliente)) {
-        showToast(
-          "El correo electrónico debe incluir un dominio válido completo (ej. cliente@correo.com).",
-          "error",
-        );
-        setCorreoInvalido(true);
-        if (correoInputRef.current) correoInputRef.current.focus();
-        return;
-      }
-    }
-
-    if (esTipoExterno() && !canalId) {
-      showToast(
-        "Por favor seleccione un Canal de Recepción para tickets externos.",
-        "error",
-      );
-      return;
-    }
-
-    if (!categoriaId) {
-      showToast("Por favor seleccione una Categoría.", "error");
-      return;
-    }
-
-    const confirmado = window.confirm(
-      `¿${nombre}, confirmas que realizaste las acciones descritas y estás de acuerdo con la redacción final para crear este ticket?`,
-    );
-
-    if (!confirmado) return;
-
+    // Validación de Descripción Obligatoria
     const descripcionContent = editor ? editor.document : [];
     const extraerTextoDeDescripcion = (descripcionArray) => {
       if (!Array.isArray(descripcionArray)) return "";
@@ -483,6 +495,56 @@ export default function NuevoTicket() {
 
     const textoPlano = extraerTextoDeDescripcion(descripcionContent);
 
+    if (!textoPlano.trim()) {
+      showToast("Por favor ingrese la descripción del ticket.", "error");
+      return;
+    }
+
+    if (esTipoExterno()) {
+      if (!strCedulaCliente.trim()) {
+        showToast("Por favor ingrese la cédula del cliente.", "error");
+        return;
+      }
+      if (!strNombreCliente.trim()) {
+        showToast("Por favor ingrese el nombre del cliente.", "error");
+        return;
+      }
+      if (!strApellidoCliente.trim()) {
+        showToast("Por favor ingrese el apellido del cliente.", "error");
+        return;
+      }
+      if (!strTelefonoCliente.trim()) {
+        showToast("Por favor ingrese el teléfono del cliente.", "error");
+        return;
+      }
+      if (!strCorreoCliente.trim()) {
+        showToast("Por favor ingrese el correo del cliente.", "error");
+        if (correoInputRef.current) correoInputRef.current.focus();
+        return;
+      }
+      if (!validarCorreo(strCorreoCliente)) {
+        showToast("El correo electrónico no tiene un formato válido.", "error");
+        setCorreoInvalido(true);
+        if (correoInputRef.current) correoInputRef.current.focus();
+        return;
+      }
+      if (!canalId) {
+        showToast("Por favor seleccione un Canal de Recepción.", "error");
+        return;
+      }
+    }
+
+    if (!categoriaId) {
+      showToast("Por favor seleccione una Categoría.", "error");
+      return;
+    }
+
+    const confirmado = window.confirm(
+      `¿${nombre}, confirmas que realizaste las acciones descritas y estás de acuerdo con la redacción final para crear este ticket?`,
+    );
+
+    if (!confirmado) return;
+
     const formData = new FormData();
     formData.append("tipo_ticket_id", Number(tipoTicketId));
     formData.append("str_asunto", strAsunto);
@@ -490,7 +552,11 @@ export default function NuevoTicket() {
 
     if (esTipoExterno()) {
       if (canalId) formData.append("canal_id", Number(canalId));
+      if (clienteId) formData.append("cliente_id", Number(clienteId));
       formData.append("str_cedula_cliente", strCedulaCliente.trim());
+      formData.append("str_nombre_cliente", strNombreCliente.trim());
+      formData.append("str_apellido_cliente", strApellidoCliente.trim());
+      formData.append("str_telefono_cliente", strTelefonoCliente.trim());
       formData.append("str_correo_cliente", strCorreoCliente.trim());
     }
 
@@ -609,7 +675,7 @@ export default function NuevoTicket() {
                   padding: "14px",
                 }}
               >
-                {/* Remitente y Departamento */}
+                {/* Tipo de Ticket y Remitente */}
                 <div
                   style={{
                     display: "grid",
@@ -617,6 +683,24 @@ export default function NuevoTicket() {
                     gap: "10px",
                   }}
                 >
+                  {/* Tipo de Ticket (Siempre como select) */}
+                  <div className="field">
+                    <label style={labelStyle}>Tipo de Ticket</label>
+                    <select
+                      value={tipoTicketId}
+                      onChange={(e) => handleTipoTicketChange(e.target.value)}
+                      required
+                      style={inputStyle}
+                    >
+                      <option value="">Seleccione tipo de ticket...</option>
+                      {listaTipoTicket.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.str_nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div className="field">
                     <label style={labelStyle}>De (Remitente)</label>
                     <input
@@ -628,7 +712,16 @@ export default function NuevoTicket() {
                       style={inputStyle}
                     />
                   </div>
+                </div>
 
+                {/* Departamento y Asignado */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                    gap: "10px",
+                  }}
+                >
                   <div className="field">
                     <label style={labelStyle}>Para (Departamento)</label>
                     <select
@@ -645,27 +738,29 @@ export default function NuevoTicket() {
                       ))}
                     </select>
                   </div>
-                </div>
 
-                <div className="field">
-                  <label style={labelStyle}>Empleado Asignado (Opcional)</label>
-                  <select
-                    value={usuarioId}
-                    onChange={(e) => setUsuarioId(e.target.value)}
-                    disabled={!departamentoId}
-                    style={inputStyle}
-                  >
-                    <option value="">
-                      {departamentoId
-                        ? "Sin asignación directa"
-                        : "Seleccione departamento primero..."}
-                    </option>
-                    {empleadosFiltrados.map((emp) => (
-                      <option key={emp.id} value={emp.id}>
-                        {emp.str_nombre} {emp.str_apellido} ({emp.str_email})
+                  <div className="field">
+                    <label style={labelStyle}>
+                      Empleado Asignado (Opcional)
+                    </label>
+                    <select
+                      value={usuarioId}
+                      onChange={(e) => setUsuarioId(e.target.value)}
+                      disabled={!departamentoId}
+                      style={inputStyle}
+                    >
+                      <option value="">
+                        {departamentoId
+                          ? "Sin asignación directa"
+                          : "Seleccione departamento primero..."}
                       </option>
-                    ))}
-                  </select>
+                      {empleadosFiltrados.map((emp) => (
+                        <option key={emp.id} value={emp.id}>
+                          {emp.str_nombre} {emp.str_apellido} ({emp.str_email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 {/* Asunto */}
@@ -681,73 +776,6 @@ export default function NuevoTicket() {
                   />
                 </div>
 
-                {/* Tipo de Ticket */}
-                <div className="field">
-                  <label style={labelStyle}>Tipo de Ticket</label>
-                  <div
-                    className="desktop-selector"
-                    style={{ flexWrap: "wrap", gap: "4px" }}
-                  >
-                    {listaTipoTicket.map((t) => {
-                      const isSelected = Number(tipoTicketId) === t.id;
-                      return (
-                        <label
-                          key={t.id}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "5px",
-                            fontSize: "11px",
-                            cursor: "pointer",
-                            padding: "3px 8px",
-                            borderRadius: "4px",
-                            color: "var(--merco-text)",
-                            backgroundColor: isSelected
-                              ? isDarkMode
-                                ? "rgba(249, 87, 0, 0.25)"
-                                : "rgba(249, 87, 0, 0.12)"
-                              : isDarkMode
-                                ? "rgba(255, 255, 255, 0.03)"
-                                : "var(--merco-bg-card, #fff)",
-                            border: `1px solid ${isSelected ? "var(--merco-accent, #f95700)" : "var(--merco-border, #ccc)"}`,
-                            fontWeight: isSelected ? "600" : "400",
-                          }}
-                        >
-                          <input
-                            type="radio"
-                            name="tipo_ticket_id_desk"
-                            value={t.id}
-                            checked={isSelected}
-                            onChange={() => handleTipoTicketChange(t.id)}
-                            required
-                            style={{
-                              margin: 0,
-                              width: "11px",
-                              height: "11px",
-                            }}
-                          />
-                          {t.str_nombre}
-                        </label>
-                      );
-                    })}
-                  </div>
-                  <div className="mobile-selector">
-                    <select
-                      value={tipoTicketId}
-                      onChange={(e) => handleTipoTicketChange(e.target.value)}
-                      required
-                      style={inputStyle}
-                    >
-                      <option value="">Seleccione tipo de ticket...</option>
-                      {listaTipoTicket.map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {t.str_nombre}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
                 <hr
                   style={{
                     border: "none",
@@ -758,8 +786,20 @@ export default function NuevoTicket() {
 
                 {/* DATOS DEL CLIENTE EXTERNO */}
                 {esTipoExterno() && (
-                  <div>
-                    <div className="flex flex-row gap-2.5">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "10px",
+                      }}
+                    >
                       <div className="field">
                         <label style={labelStyle}>Cédula del Cliente</label>
                         <input
@@ -772,54 +812,128 @@ export default function NuevoTicket() {
                               .replace(/\D/g, "")
                               .slice(0, 8);
                             setStrCedulaCliente(valorLimpio);
+                            if (clienteBloqueado) {
+                              setClienteBloqueado(false);
+                              setClienteId(null);
+                            }
                           }}
+                          onBlur={handleCedulaBlur}
                           placeholder="Ej. 12345678"
                           required={esTipoExterno()}
                           style={inputStyle}
                         />
                       </div>
 
-                      <div className="field" style={{ flex: 1 }}>
-                        <label style={labelStyle}>Correo del Cliente</label>
+                      <div className="field">
+                        <label style={labelStyle}>Teléfono</label>
                         <input
-                          ref={correoInputRef}
                           type="text"
-                          value={strCorreoCliente}
+                          inputMode="numeric"
+                          maxLength={11}
+                          value={strTelefonoCliente}
                           onChange={(e) => {
-                            setStrCorreoCliente(e.target.value);
-                            if (
-                              correoInvalido &&
-                              validarCorreo(e.target.value)
-                            ) {
-                              setCorreoInvalido(false);
-                            }
+                            const valorLimpio = e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 11);
+                            setStrTelefonoCliente(valorLimpio);
                           }}
-                          onBlur={handleCorreoBlur}
-                          placeholder="cliente@correo.com"
+                          readOnly={clienteBloqueado}
+                          placeholder="04142102040"
                           required={esTipoExterno()}
                           style={{
                             ...inputStyle,
-                            border: correoInvalido
-                              ? "1px solid #ef4444"
-                              : inputStyle.border,
-                            boxShadow: correoInvalido
-                              ? "0 0 0 1px #ef4444"
-                              : "none",
+                            backgroundColor: clienteBloqueado
+                              ? "var(--merco-bg-subtle, rgba(0,0,0,0.04))"
+                              : inputStyle.background,
                           }}
                         />
-                        {correoInvalido && (
-                          <span
-                            style={{
-                              color: "#ef4444",
-                              fontSize: "11px",
-                              marginTop: "3px",
-                              display: "block",
-                            }}
-                          >
-                            Correo no válido (ej. usuario@dominio.com)
-                          </span>
-                        )}
                       </div>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "10px",
+                      }}
+                    >
+                      <div className="field">
+                        <label style={labelStyle}>Nombre del Cliente</label>
+                        <input
+                          type="text"
+                          value={strNombreCliente}
+                          onChange={(e) => setStrNombreCliente(e.target.value)}
+                          readOnly={clienteBloqueado}
+                          placeholder="Nombre"
+                          required={esTipoExterno()}
+                          style={{
+                            ...inputStyle,
+                            backgroundColor: clienteBloqueado
+                              ? "var(--merco-bg-subtle, rgba(0,0,0,0.04))"
+                              : inputStyle.background,
+                          }}
+                        />
+                      </div>
+
+                      <div className="field">
+                        <label style={labelStyle}>Apellido del Cliente</label>
+                        <input
+                          type="text"
+                          value={strApellidoCliente}
+                          onChange={(e) =>
+                            setStrApellidoCliente(e.target.value)
+                          }
+                          readOnly={clienteBloqueado}
+                          placeholder="Apellido"
+                          required={esTipoExterno()}
+                          style={{
+                            ...inputStyle,
+                            backgroundColor: clienteBloqueado
+                              ? "var(--merco-bg-subtle, rgba(0,0,0,0.04))"
+                              : inputStyle.background,
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="field">
+                      <label style={labelStyle}>Correo del Cliente</label>
+                      <input
+                        ref={correoInputRef}
+                        type="text"
+                        value={strCorreoCliente}
+                        onChange={(e) => {
+                          setStrCorreoCliente(e.target.value);
+                          if (correoInvalido && validarCorreo(e.target.value)) {
+                            setCorreoInvalido(false);
+                          }
+                        }}
+                        onBlur={handleCorreoBlur}
+                        readOnly={clienteBloqueado}
+                        placeholder="cliente@correo.com"
+                        required={esTipoExterno()}
+                        style={{
+                          ...inputStyle,
+                          backgroundColor: clienteBloqueado
+                            ? "var(--merco-bg-subtle, rgba(0,0,0,0.04))"
+                            : inputStyle.background,
+                          border: correoInvalido
+                            ? "1px solid #ef4444"
+                            : inputStyle.border,
+                        }}
+                      />
+                      {correoInvalido && (
+                        <span
+                          style={{
+                            color: "#ef4444",
+                            fontSize: "11px",
+                            marginTop: "3px",
+                            display: "block",
+                          }}
+                        >
+                          Correo no válido (ej. usuario@dominio.com)
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1081,7 +1195,7 @@ export default function NuevoTicket() {
                       border: "1px solid var(--merco-border, #ccc)",
                       borderRadius: 6,
                       padding: "2px",
-                      minHeight: "320px",
+                      minHeight: "auto",
                     }}
                   >
                     {isGeneratingAI && (
