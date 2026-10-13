@@ -277,9 +277,13 @@ export default function CasosTickets() {
     e.preventDefault();
     if (!ticketSeleccionado) return;
 
-    if (!respuestaTexto || respuestaTexto.trim() === "") {
+    const estatusCambiado =
+      Number(nuevoEstatusId) !== Number(ticketSeleccionado.estatus_id);
+
+    // Validar si cambió el estatus y la respuesta está vacía
+    if (estatusCambiado && (!respuestaTexto || respuestaTexto.trim() === "")) {
       setErrorModal(
-        "Debe llenar el campo de respuesta para guardar los cambios.",
+        "Debe ingresar una respuesta o avance en la bitácora al cambiar el estatus del ticket.",
       );
       return;
     }
@@ -322,7 +326,11 @@ export default function CasosTickets() {
       }
     } catch (error) {
       console.error("Error al actualizar ticket:", error);
-      showToast("Error al guardar los cambios del ticket.", "error");
+      const mensajeError =
+        error.response?.data?.error ||
+        "Error al guardar los cambios del ticket.";
+      setErrorModal(mensajeError);
+      showToast(mensajeError, "error");
     }
   };
 
@@ -840,7 +848,7 @@ export default function CasosTickets() {
                         background: "rgba(245, 158, 11, 0.1)",
                         color: "#f59e0b",
                       };
-                    } else if (estatusLower.includes("pendiente de terceros")) {
+                    } else if (estatusLower.includes("en espera")) {
                       estiloEstatus = {
                         background: "rgba(168, 85, 247, 0.1)",
                         color: "#a855f7",
@@ -1306,6 +1314,7 @@ export default function CasosTickets() {
                     const esCanceladoModal = estName.includes("cancelado");
                     const esRojo = estName.includes("vencido");
                     const esEnProceso = estName.includes("en proceso");
+                    const esEnEspera = estName.includes("en espera"); // <--- Agregado aquí
 
                     return (
                       <span
@@ -1314,20 +1323,24 @@ export default function CasosTickets() {
                           borderRadius: 10,
                           fontSize: 11,
                           fontWeight: 600,
-                          background: esCanceladoModal
-                            ? "rgba(14, 165, 233, 0.1)"
-                            : esRojo
-                              ? "rgba(239, 68, 68, 0.1)"
-                              : esEnProceso
-                                ? "rgba(59, 130, 246, 0.1)"
-                                : "rgba(16, 185, 129, 0.1)",
-                          color: esCanceladoModal
-                            ? "#0ea5e9"
-                            : esRojo
-                              ? "#ef4444"
-                              : esEnProceso
-                                ? "#3b82f6"
-                                : "#10b981",
+                          background: esEnEspera
+                            ? "rgba(236, 72, 153, 0.1)" // Fondo rosado
+                            : esCanceladoModal
+                              ? "rgba(14, 165, 233, 0.1)"
+                              : esRojo
+                                ? "rgba(239, 68, 68, 0.1)"
+                                : esEnProceso
+                                  ? "rgba(59, 130, 246, 0.1)"
+                                  : "rgba(16, 185, 129, 0.1)",
+                          color: esEnEspera
+                            ? "#ec4899" // Texto rosado
+                            : esCanceladoModal
+                              ? "#0ea5e9"
+                              : esRojo
+                                ? "#ef4444"
+                                : esEnProceso
+                                  ? "#3b82f6"
+                                  : "#10b981",
                         }}
                       >
                         <b>{nombreEstatus}</b>
@@ -2078,7 +2091,12 @@ export default function CasosTickets() {
                         setRespuestaTexto(e.target.value);
                         if (errorModal) setErrorModal("");
                       }}
-                      placeholder="Escriba obligatoriamente una respuesta o avance para registrar en la bitácora..."
+                      placeholder={
+                        Number(nuevoEstatusId) !==
+                        Number(ticketSeleccionado?.estatus_id)
+                          ? "Escriba obligatoriamente la respuesta o motivo del cambio de estatus..."
+                          : "Escriba una nota opcional para la bitácora (opcional si no cambia estatus)..."
+                      }
                       style={{
                         ...filtroStyle,
                         width: "100%",

@@ -536,7 +536,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     // 1. Obtener datos actuales del ticket
     const ticketActualRes = await client.query(
-      `SELECT categoria_id, prioridad_id FROM tickets.tbl_tickets WHERE id = $1`,
+      `SELECT categoria_id, prioridad_id, estatus_id, dmt_fecha_vencimiento_sla, updated_at FROM tickets.tbl_tickets WHERE id = $1`,
       [Number(id)],
     );
 
@@ -547,13 +547,75 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         .json({ success: false, error: "Ticket no encontrado." });
     }
 
-    const categoriaId = ticketActualRes.rows[0].categoria_id;
-    const prioridadAUtilizar =
-      nuevaPrioridad !== null
-        ? nuevaPrioridad
-        : ticketActualRes.rows[0].prioridad_id;
+    const ticketActual = ticketActualRes.rows[0];
+    const categoriaId = ticketActual.categoria_id;
+    const estatusActual = Number(ticketActual.estatus_id);
 
-    // 2. Consultar el SLA configurado usando la categoría y la prioridad[cite: 11]
+    // Validación: Si el estatus cambió, exigir comentario en la bitácora
+    const cambioEstatus =
+      nuevoEstatus !== null && nuevoEstatus !== estatusActual;
+    if (
+      cambioEstatus &&
+      (!str_descripcion_respuesta || str_descripcion_respuesta.trim() === "")
+    ) {
+      await client.query("ROLLBACK");
+      return res.status(400).json({
+        success: false,
+        error:
+          "Debe ingresar un comentario o respuesta en la bitácora al cambiar el estatus del ticket.",
+      });
+    }
+
+    // 2. Verificar dinámicamente si el estatus ACTUAL y el NUEVO son de PAUSA o CIERRE
+    let esEstatusActualPausa = false;
+    let esEstatusNuevoPausa = false;
+    let esEstatusCierre = false;
+
+    // Consultar nombre del estatus actual
+    const estActualInfoRes = await client.query(
+      `SELECT str_nombre FROM public.cat_datos_maestros WHERE id = $1`,
+      [estatusActual],
+    );
+    if (estActualInfoRes.rows.length > 0) {
+      const nombreActual = estActualInfoRes.rows[0].str_nombre.toLowerCase();
+      if (
+        nombreActual.includes("espera") ||
+        nombreActual.includes("pendiente") ||
+        nombreActual.includes("pausa")
+      ) {
+        esEstatusActualPausa = true;
+      }
+    }
+
+    // Consultar nombre del nuevo estatus
+    if (nuevoEstatus !== null) {
+      const estNuevoInfoRes = await client.query(
+        `SELECT str_nombre FROM public.cat_datos_maestros WHERE id = $1`,
+        [nuevoEstatus],
+      );
+      if (estNuevoInfoRes.rows.length > 0) {
+        const nombreNuevo = estNuevoInfoRes.rows[0].str_nombre.toLowerCase();
+        if (
+          nombreNuevo.includes("espera") ||
+          nombreNuevo.includes("pendiente") ||
+          nombreNuevo.includes("pausa")
+        ) {
+          esEstatusNuevoPausa = true;
+        }
+        if (
+          nombreNuevo.includes("cerrado") ||
+          nombreNuevo.includes("cancelado") ||
+          nuevoEstatus === 22
+        ) {
+          esEstatusCierre = true;
+        }
+      }
+    }
+
+    const prioridadAUtilizar =
+      nuevaPrioridad !== null ? nuevaPrioridad : ticketActual.prioridad_id;
+
+    // 3. Consultar el SLA configurado
     const slaQuery = `
       SELECT tiempo_maximo 
       FROM tickets.sla_configuracion 
@@ -565,7 +627,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     ]);
     const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
 
-    // 3. Si se ingresó texto en la respuesta, registrarlo en la tabla de bitácora
+    // 4. Registrar respuesta en la bitácora si existe
     if (str_descripcion_respuesta && str_descripcion_respuesta.trim() !== "") {
       await client.query(
         `INSERT INTO tickets.tbl_tickets_bitacora (ticket_id, usuario_id, str_comentario, created_at) 
@@ -578,41 +640,90 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       );
     }
 
-    // 4. Actualizar el ticket
-    let queryUpdate = `
-      UPDATE tickets.tbl_tickets 
-      SET 
-        estatus_id = COALESCE($1, estatus_id),
-        usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
-        departamento_id = COALESCE($3, departamento_id),
-        prioridad_id = COALESCE($4, prioridad_id),
-        int_sla = $5::integer,
-        created_at = CASE 
-          WHEN $1::integer IS NOT NULL AND $1::integer <> 22 THEN CURRENT_TIMESTAMP 
-          ELSE created_at 
-        END,
-        dmt_fecha_vencimiento_sla = CASE 
-          WHEN $1::integer IS NOT NULL AND $1::integer <> 22 THEN CURRENT_TIMESTAMP + ($5::integer * INTERVAL '1 hour')
-          ELSE dmt_fecha_vencimiento_sla 
-        END,
-        dmt_fecha_cierre = CASE 
-          WHEN $1::integer = 22 AND dmt_fecha_cierre IS NULL THEN CURRENT_TIMESTAMP 
-          WHEN $1::integer IS NOT NULL AND $1::integer <> 22 THEN NULL 
-          ELSE dmt_fecha_cierre 
-        END,
-        updated_at = CURRENT_TIMESTAMP
-      WHERE id = $6
-      RETURNING *;
-    `;
+    // 5. Determinar la lógica de la fecha de vencimiento del SLA:
+    // - Si se mantiene o entra en pausa/cierre: se congela.
+    // - Si SALE de pausa (estaba en pausa y ahora pasa a proceso/otro activo): se extiende la fecha sumándole el tiempo exacto que duró la pausa.
+    // - Si es un ticket nuevo o cambio común sin pausa previa: aplica el cálculo normal.
 
-    const updateRes = await client.query(queryUpdate, [
-      nuevoEstatus,
-      nuevoAsignado,
-      nuevoDepartamento,
-      nuevaPrioridad,
-      Number(horasSla),
-      Number(id),
-    ]);
+    let queryUpdate = "";
+    let updateParams = [];
+
+    if (esEstatusNuevoPausa || esEstatusCierre) {
+      // Congelar SLA
+      queryUpdate = `
+        UPDATE tickets.tbl_tickets 
+        SET 
+          estatus_id = COALESCE($1, estatus_id),
+          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
+          departamento_id = COALESCE($3, departamento_id),
+          prioridad_id = COALESCE($4, prioridad_id),
+          int_sla = $5::integer,
+          dmt_fecha_cierre = CASE 
+            WHEN $6::boolean AND dmt_fecha_cierre IS NULL THEN CURRENT_TIMESTAMP 
+            ELSE dmt_fecha_cierre 
+          END,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = $7
+        RETURNING *;
+      `;
+      updateParams = [
+        nuevoEstatus,
+        nuevoAsignado,
+        nuevoDepartamento,
+        nuevaPrioridad,
+        Number(horasSla),
+        esEstatusCierre,
+        Number(id),
+      ];
+    } else if (esEstatusActualPausa && !esEstatusNuevoPausa) {
+      // SALIÓ DE PAUSA: Extender el vencimiento sumando el tiempo transcurrido durante la pausa
+      queryUpdate = `
+        UPDATE tickets.tbl_tickets 
+        SET 
+          estatus_id = COALESCE($1, estatus_id),
+          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
+          departamento_id = COALESCE($3, departamento_id),
+          prioridad_id = COALESCE($4, prioridad_id),
+          int_sla = $5::integer,
+          dmt_fecha_vencimiento_sla = dmt_fecha_vencimiento_sla + (CURRENT_TIMESTAMP - updated_at),
+          dmt_fecha_cierre = NULL,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = $6
+        RETURNING *;
+      `;
+      updateParams = [
+        nuevoEstatus,
+        nuevoAsignado,
+        nuevoDepartamento,
+        nuevaPrioridad,
+        Number(horasSla),
+        Number(id),
+      ];
+    } else {
+      // Flujo estándar para otros cambios
+      queryUpdate = `
+        UPDATE tickets.tbl_tickets 
+        SET 
+          estatus_id = COALESCE($1, estatus_id),
+          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
+          departamento_id = COALESCE($3, departamento_id),
+          prioridad_id = COALESCE($4, prioridad_id),
+          int_sla = $5::integer,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = $6
+        RETURNING *;
+      `;
+      updateParams = [
+        nuevoEstatus,
+        nuevoAsignado,
+        nuevoDepartamento,
+        nuevaPrioridad,
+        Number(horasSla),
+        Number(id),
+      ];
+    }
+
+    const updateRes = await client.query(queryUpdate, updateParams);
 
     await client.query("COMMIT");
     res.status(200).json({
