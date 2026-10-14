@@ -204,6 +204,7 @@ export default function CasosTickets() {
       "Vencimiento",
       "Cierre",
       "SLA",
+      "Minutos Pausa",
       "Estado",
       "Duración",
     ];
@@ -246,6 +247,7 @@ export default function CasosTickets() {
         `"${formatearFechaPlana(t.dmt_fecha_vencimiento_sla)}"`,
         `"${formatearFechaPlana(t.dmt_fecha_cierre)}"`,
         `"${t.int_sla ? t.int_sla + " hrs" : ""}"`,
+        `"${t.int_minutos_pausa || 0}"`,
         `"${t.estatus_nombre || "En Proceso"}"`,
         `"${t.tiempo_resolucion || "En curso"}"`,
       ];
@@ -280,7 +282,6 @@ export default function CasosTickets() {
     const estatusCambiado =
       Number(nuevoEstatusId) !== Number(ticketSeleccionado.estatus_id);
 
-    // Validar si cambió el estatus y la respuesta está vacía
     if (estatusCambiado && (!respuestaTexto || respuestaTexto.trim() === "")) {
       setErrorModal(
         "Debe ingresar una respuesta o avance en la bitácora al cambiar el estatus del ticket.",
@@ -928,6 +929,22 @@ export default function CasosTickets() {
 
                     const esCancelado = estatusLower.includes("cancelado");
 
+                    // Validaciones de estatus en pausa y cálculo de minutos actuales o históricos
+                    const estaEnPausaActual =
+                      estatusLower.includes("espera") ||
+                      estatusLower.includes("pendiente") ||
+                      estatusLower.includes("pausa");
+
+                    let minutosPausaActual = 0;
+                    if (estaEnPausaActual && t.updated_at) {
+                      const msPausa = new Date() - new Date(t.updated_at);
+                      minutosPausaActual = Math.floor(msPausa / (1000 * 60));
+                    }
+
+                    const totalMinutosPausa =
+                      Number(t.int_minutos_pausa || 0) + minutosPausaActual;
+                    const tieneHistorialPausa = totalMinutosPausa > 0;
+
                     return (
                       <tr
                         key={t.id}
@@ -981,8 +998,6 @@ export default function CasosTickets() {
                             {t.canal_nombre || "—"}
                           </span>
                         </td>
-
-                        {/* COLUMNA CREADO POR (Primer nombre, primer apellido y correo) */}
                         <td>
                           <div>
                             <b style={{ color: "var(--merco-text)" }}>
@@ -999,8 +1014,6 @@ export default function CasosTickets() {
                             </small>
                           </div>
                         </td>
-
-                        {/* COLUMNA CLIENTE / AFECTADO */}
                         <td>
                           {esExterno ? (
                             <div>
@@ -1023,15 +1036,6 @@ export default function CasosTickets() {
                                 Cédula: {t.cliente_cedula || "—"} | Tel:{" "}
                                 {t.cliente_telefono || "—"}
                               </small>
-                              <small
-                                style={{
-                                  display: "block",
-                                  color: "var(--merco-muted)",
-                                  fontSize: "11px",
-                                }}
-                              >
-                                {t.cliente_correo || "—"}
-                              </small>
                             </div>
                           ) : (
                             <span style={{ color: "var(--merco-muted)" }}>
@@ -1039,7 +1043,6 @@ export default function CasosTickets() {
                             </span>
                           )}
                         </td>
-
                         <td style={{ maxWidth: 180 }}>
                           <div
                             style={{
@@ -1053,7 +1056,6 @@ export default function CasosTickets() {
                             {t.str_asunto}
                           </div>
                         </td>
-
                         <td>{t.departamento_nombre || "—"}</td>
                         <td>
                           <span
@@ -1082,19 +1084,85 @@ export default function CasosTickets() {
                         <td style={{ fontSize: 11 }}>
                           {formatearFechaHora(t.dmt_fecha_cierre)}
                         </td>
-                        <td style={{ whiteSpace: "nowrap" }}>
-                          <span
-                            className="tag"
+
+                        {/* CELDA SLA CON BADGE FLOTANTE (PESO DE FUENTE NO NEGRITA: fontWeight: 500) */}
+                        <td
+                          style={{ whiteSpace: "nowrap", textAlign: "center" }}
+                        >
+                          <div
                             style={{
-                              fontSize: 11,
-                              background: "rgba(245, 158, 11, 0.1)",
-                              color: "#f59e0b",
-                              fontWeight: 600,
+                              position: "relative",
+                              display: "inline-block",
                             }}
                           >
-                            {t.int_sla ? `${t.int_sla} hrs` : "—"}
-                          </span>
+                            <span
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                padding: "4px 12px",
+                                borderRadius: "8px",
+                                fontSize: "11px",
+                                fontWeight: 700,
+                                background: "rgba(245, 158, 11, 0.18)",
+                                color: "#f59e0b",
+                              }}
+                            >
+                              {t.int_sla ? `${t.int_sla} hrs` : "—"}
+                            </span>
+
+                            {/* Badge Flotante - Pausa Activa */}
+                            {estaEnPausaActual && (
+                              <span
+                                title={`Ticket actualmente en espera (${totalMinutosPausa} minutos añadidos)`}
+                                style={{
+                                  position: "absolute",
+                                  top: "-6px",
+                                  right: "-8px",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "2px",
+                                  padding: "1px 5px",
+                                  borderRadius: "10px",
+                                  fontSize: "9px",
+                                  fontWeight: "normal", // <--- Quitada la negrita (antes 700)
+                                  background: "#a855f7",
+                                  color: "#ffffff",
+                                  boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                                  lineHeight: 1,
+                                }}
+                              >
+                                +{totalMinutosPausa}m
+                              </span>
+                            )}
+
+                            {/* Badge Flotante - Historial de Pausa */}
+                            {!estaEnPausaActual && tieneHistorialPausa && (
+                              <span
+                                title={`Este ticket añadió ${Math.round(t.int_minutos_pausa)} minutos al SLA por estar en espera`}
+                                style={{
+                                  position: "absolute",
+                                  top: "-6px",
+                                  right: "-8px",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "2px",
+                                  padding: "1px 5px",
+                                  borderRadius: "10px",
+                                  fontSize: "9px",
+                                  fontWeight: "normal", // <--- Quitada la negrita (antes 700)
+                                  background: "#f59e0b",
+                                  color: "#18181b",
+                                  boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                                  lineHeight: 1,
+                                }}
+                              >
+                                +{Math.round(t.int_minutos_pausa)}m
+                              </span>
+                            )}
+                          </div>
                         </td>
+
                         <td style={{ whiteSpace: "nowrap" }}>
                           <span
                             style={{
@@ -1314,7 +1382,7 @@ export default function CasosTickets() {
                     const esCanceladoModal = estName.includes("cancelado");
                     const esRojo = estName.includes("vencido");
                     const esEnProceso = estName.includes("en proceso");
-                    const esEnEspera = estName.includes("en espera"); // <--- Agregado aquí
+                    const esEnEspera = estName.includes("en espera");
 
                     return (
                       <span
@@ -1324,7 +1392,7 @@ export default function CasosTickets() {
                           fontSize: 11,
                           fontWeight: 600,
                           background: esEnEspera
-                            ? "rgba(236, 72, 153, 0.1)" // Fondo rosado
+                            ? "rgba(236, 72, 153, 0.1)"
                             : esCanceladoModal
                               ? "rgba(14, 165, 233, 0.1)"
                               : esRojo
@@ -1333,7 +1401,7 @@ export default function CasosTickets() {
                                   ? "rgba(59, 130, 246, 0.1)"
                                   : "rgba(16, 185, 129, 0.1)",
                           color: esEnEspera
-                            ? "#ec4899" // Texto rosado
+                            ? "#ec4899"
                             : esCanceladoModal
                               ? "#0ea5e9"
                               : esRojo
@@ -2095,7 +2163,7 @@ export default function CasosTickets() {
                         Number(nuevoEstatusId) !==
                         Number(ticketSeleccionado?.estatus_id)
                           ? "Escriba obligatoriamente la respuesta o motivo del cambio de estatus..."
-                          : "Escriba una nota opcional para la bitácora (opcional si no cambia estatus)..."
+                          : "Escriba una nota opcional para la bitácora..."
                       }
                       style={{
                         ...filtroStyle,
