@@ -21,6 +21,7 @@
     "multer": "^2.0.1",
     "nodemailer": "^9.0.3",
     "pg": "^8.13.1",
+    "socket.io": "^4.8.4",
     "uuid": "^11.0.5",
     "xlsx": "https://cdn.sheetjs.com/xlsx-latest/xlsx-latest.tgz"
   }

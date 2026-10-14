@@ -144,7 +144,7 @@ router.get("/cliente/:cedula", async (req, res) => {
   }
 });
 
-// Endpoint para crear el ticket y subir archivos multimedia asociados
+// Endpoint para crear el ticket y subir archivos multimedia asociados (con Socket.io)
 router.post("/crear", upload.any(), async (req, res) => {
   const client = await pool.connect();
 
@@ -322,6 +322,10 @@ router.post("/crear", upload.any(), async (req, res) => {
         RETURNING *;
       `;
 
+    const valoresAsignado = usuario_asignado_id
+      ? Number(usuario_asignado_id)
+      : null;
+
     const values = [
       str_ticket,
       tipo_ticket_id ? Number(tipo_ticket_id) : null,
@@ -338,16 +342,44 @@ router.post("/crear", upload.any(), async (req, res) => {
       str_ruta_imagen,
       str_ruta_video,
       str_ruta_audio,
-      usuario_asignado_id ? Number(usuario_asignado_id) : null,
+      valoresAsignado,
     ];
 
-    const nuevoTicket = await client.query(queryInsert, values);
+    const nuevoTicketRes = await client.query(queryInsert, values);
+    const ticketCreado = nuevoTicketRes.rows[0];
+
+    // 🚀 INTEGRACIÓN SOCKET.IO: Si se creó con un usuario asignado, registrar alerta y transmitir
+    let nuevaAlerta = null;
+    if (valoresAsignado) {
+      const mensajeAlerta = `Se te ha asignado el nuevo ticket: [${str_ticket}] ${str_asunto || "Sin asunto"}`;
+      const queryAlerta = `
+        INSERT INTO tickets.tbl_alertas (caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido)
+        VALUES ($1, $2, $3, $4, FALSE)
+        RETURNING *;
+      `;
+      const alertaRes = await client.query(queryAlerta, [
+        ticketCreado.id,
+        valoresAsignado,
+        "ASIGNACION",
+        mensajeAlerta,
+      ]);
+      nuevaAlerta = alertaRes.rows[0];
+    }
+
     await client.query("COMMIT");
+
+    // Emitir por WebSocket fuera de la transacción para mayor fluidez
+    if (valoresAsignado && nuevaAlerta) {
+      const io = req.app.get("io");
+      if (io) {
+        io.to(`user_${valoresAsignado}`).emit("nueva_alerta", nuevaAlerta);
+      }
+    }
 
     res.status(201).json({
       success: true,
       message: "Ticket creado y archivos multimedia renombrados exitosamente.",
-      ticket: nuevoTicket.rows[0],
+      ticket: ticketCreado,
     });
   } catch (err) {
     await client.query("ROLLBACK");
@@ -481,7 +513,7 @@ router.get("/bitacora/:ticket_id", async (req, res) => {
   }
 });
 
-// Endpoint para actualizar el ticket (incluyendo acumulación precisa de int_minutos_pausa)
+// Endpoint para actualizar el ticket (con control de pausas, bitácora y alertas por Socket.io)
 router.put("/actualizar/:id", upload.any(), async (req, res) => {
   const { id } = req.params;
   const {
@@ -523,7 +555,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     }
 
     const ticketActualRes = await client.query(
-      `SELECT categoria_id, prioridad_id, estatus_id, dmt_fecha_vencimiento_sla, updated_at FROM tickets.tbl_tickets WHERE id = $1`,
+      `SELECT categoria_id, prioridad_id, estatus_id, usuario_asignado_id, str_ticket, str_asunto, dmt_fecha_vencimiento_sla, updated_at FROM tickets.tbl_tickets WHERE id = $1`,
       [Number(id)],
     );
 
@@ -537,6 +569,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     const ticketActual = ticketActualRes.rows[0];
     const categoriaId = ticketActual.categoria_id;
     const estatusActual = Number(ticketActual.estatus_id);
+    const asignadoAnterior = ticketActual.usuario_asignado_id;
 
     const cambioEstatus =
       nuevoEstatus !== null && nuevoEstatus !== estatusActual;
@@ -625,7 +658,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     let updateParams = [];
 
     if (esEstatusCierre) {
-      // CASO 3 (Prioridad Alta): Cierre de ticket (incluso si venía de estar en pausa)
       queryUpdate = `
         UPDATE tickets.tbl_tickets 
         SET 
@@ -657,7 +689,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         Number(id),
       ];
     } else if (esEstatusNuevoPausa && !esEstatusActualPausa) {
-      // CASO 1: El ticket entra en pausa por primera vez
       queryUpdate = `
         UPDATE tickets.tbl_tickets 
         SET 
@@ -680,7 +711,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         Number(id),
       ];
     } else if (esEstatusActualPausa && !esEstatusNuevoPausa) {
-      // CASO 2: El ticket sale de pausa hacia un estado activo (no cerrado)
       queryUpdate = `
         UPDATE tickets.tbl_tickets 
         SET 
@@ -705,7 +735,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         Number(id),
       ];
     } else {
-      // CASO GENERAL: Actualización estándar sin cambios de pausa ni de cierre
       queryUpdate = `
         UPDATE tickets.tbl_tickets 
         SET 
@@ -729,13 +758,50 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     }
 
     const updateRes = await client.query(queryUpdate, updateParams);
+    const ticketActualizado = updateRes.rows[0];
+
+    // 🚀 INTEGRACIÓN SOCKET.IO: Validar si cambió el responsable asignado para emitir alerta
+    let nuevaAlertaActualizacion = null;
+    const nuevoResponsableId = ticketActualizado.usuario_asignado_id;
+
+    if (nuevoResponsableId && nuevoResponsableId !== asignadoAnterior) {
+      const mensajeAlerta = `Se te ha reasignado el ticket: [${ticketActual.str_ticket}] ${ticketActual.str_asunto || "Sin asunto"}`;
+      const queryAlerta = `
+        INSERT INTO tickets.tbl_alertas (caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido)
+        VALUES ($1, $2, $3, $4, FALSE)
+        RETURNING *;
+      `;
+      const alertaRes = await client.query(queryAlerta, [
+        ticketActualizado.id,
+        nuevoResponsableId,
+        "ASIGNACION",
+        mensajeAlerta,
+      ]);
+      nuevaAlertaActualizacion = alertaRes.rows[0];
+    }
+
     await client.query("COMMIT");
+
+    // Emitir por WebSockets tras confirmar la transacción
+    if (
+      nuevoResponsableId &&
+      nuevoResponsableId !== asignadoAnterior &&
+      nuevaAlertaActualizacion
+    ) {
+      const io = req.app.get("io");
+      if (io) {
+        io.to(`user_${nuevoResponsableId}`).emit(
+          "nueva_alerta",
+          nuevaAlertaActualizacion,
+        );
+      }
+    }
 
     res.status(200).json({
       success: true,
       message:
         "Ticket actualizado y respuesta guardada en la bitácora exitosamente.",
-      ticket: updateRes.rows[0],
+      ticket: ticketActualizado,
     });
   } catch (err) {
     await client.query("ROLLBACK");

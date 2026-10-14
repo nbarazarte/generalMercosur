@@ -17,6 +17,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateAccessToken, logout } from "../../store/authSlice";
 import axiosSeguridad from "../utils/axiosSeguridad";
 
+// 🔌 Importamos nuestro hook personalizado desde src/useSocket.js
+import { useSocket } from "../../useSocket";
+
 export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     const savedState = localStorage.getItem("sidebarOpen");
@@ -26,6 +29,10 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Estados para notificaciones en tiempo real con Socket.io
+  const [alertas, setAlertas] = useState([]);
+  const [mostrarAlertas, setMostrarAlertas] = useState(false);
 
   // Guardar en localStorage cada vez que cambie sidebarOpen
   useEffect(() => {
@@ -38,6 +45,41 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const apellido = usuario?.apellido;
   const sistemas = useSelector((state) => state.auth?.user.sistemasOpciones);
   const refreshToken = useSelector((state) => state.auth?.refreshToken);
+
+  // 🔌 Definimos la URL del backend dinámicamente para el hook
+  const backendUrl = window.location.origin.includes("localhost")
+    ? "http://localhost:3000"
+    : undefined;
+
+  // 🔌 Usamos nuestro hook personalizado
+  const { socket, isConnected } = useSocket(backendUrl);
+
+  // 🔌 Efecto para manejar los eventos de Socket.io usando el hook
+  useEffect(() => {
+    if (!socket || !userId) return;
+
+    const handleConnect = () => {
+      console.log("🟢 Conectado al servidor de WebSockets");
+      socket.emit("join_user_room", userId);
+    };
+
+    if (socket.connected) {
+      handleConnect();
+    }
+
+    socket.on("connect", handleConnect);
+
+    // Escuchar las alertas enviadas desde el backend
+    socket.on("nueva_alerta", (nuevaAlerta) => {
+      console.log("🔔 Nueva alerta recibida:", nuevaAlerta);
+      setAlertas((prev) => [nuevaAlerta, ...prev]);
+    });
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.off("nueva_alerta");
+    };
+  }, [socket, userId]);
 
   const [theme, setTheme] = useState(
     () => localStorage.getItem("theme") || "light",
@@ -391,11 +433,13 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
           style={{
             display: "flex",
             alignItems: "center",
+            justifyContent: "space-between",
             gap: "12px",
             width: "100%",
             boxSizing: "border-box",
             paddingTop: "10px",
             paddingBottom: "8px",
+            paddingRight: "20px",
           }}
         >
           <div
@@ -445,6 +489,67 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* 🔔 BOTÓN DE NOTIFICACIONES EN LA TOPBAR */}
+          <div className="relative">
+            <button
+              onClick={() => setMostrarAlertas(!mostrarAlertas)}
+              className="relative p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition flex items-center justify-center"
+              title="Notificaciones"
+            >
+              <DynamicIcon
+                name="FiBell"
+                fallback="FiBell"
+                className="text-xl"
+              />
+              {alertas.length > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow">
+                  {alertas.length}
+                </span>
+              )}
+            </button>
+
+            {/* Desplegable de Alertas */}
+            {mostrarAlertas && (
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl p-4 z-50 max-h-96 overflow-y-auto">
+                <div className="flex justify-between items-center mb-3 border-b pb-2 border-slate-100 dark:border-slate-800">
+                  <h3 className="font-bold text-sm text-slate-700 dark:text-slate-200">
+                    Notificaciones en tiempo real
+                  </h3>
+                  <button
+                    onClick={() => setAlertas([])}
+                    className="text-xs text-blue-600 hover:underline"
+                  >
+                    Limpiar
+                  </button>
+                </div>
+
+                {alertas.length === 0 ? (
+                  <p className="text-sm text-slate-400 text-center py-4">
+                    No hay notificaciones nuevas
+                  </p>
+                ) : (
+                  <ul className="space-y-2">
+                    {alertas.map((alerta, index) => (
+                      <li
+                        key={alerta.id || index}
+                        className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg text-sm border border-slate-100 dark:border-slate-800"
+                      >
+                        <p className="text-slate-800 dark:text-slate-100 font-medium">
+                          {alerta.str_mensaje}
+                        </p>
+                        <span className="text-[10px] text-slate-400 mt-1 block">
+                          {new Date(
+                            alerta.created_at || Date.now(),
+                          ).toLocaleTimeString()}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         </header>
 
