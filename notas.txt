@@ -227,3 +227,7 @@ SELECT * FROM cron.job_run_details ORDER BY start_time DESC LIMIT 10;
 
 --Eliminar o desprogramar el trabajo si necesitas modificarlo:
 SELECT cron.unschedule('actualizar-tickets-vencidos-job');
+
+
+-- Inicializar las tablas de tickets
+TRUNCATE TABLE tickets.tbl_tickets RESTART IDENTITY CASCADE;

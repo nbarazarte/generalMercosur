@@ -624,56 +624,8 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     let queryUpdate = "";
     let updateParams = [];
 
-    if (esEstatusNuevoPausa && !esEstatusActualPausa) {
-      // CASO 1: El ticket entra en pausa por primera vez
-      queryUpdate = `
-        UPDATE tickets.tbl_tickets 
-        SET 
-          estatus_id = COALESCE($1, estatus_id),
-          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
-          departamento_id = COALESCE($3, departamento_id),
-          prioridad_id = COALESCE($4, prioridad_id),
-          int_sla = $5::integer,
-          dmt_fecha_inicio_pausa = CURRENT_TIMESTAMP,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = $6
-        RETURNING *;
-      `;
-      updateParams = [
-        nuevoEstatus,
-        nuevoAsignado,
-        nuevoDepartamento,
-        nuevaPrioridad,
-        Number(horasSla),
-        Number(id),
-      ];
-    } else if (esEstatusActualPausa && !esEstatusNuevoPausa) {
-      // CASO 2: El ticket sale de pausa (acumulamos minutos y SLA, limpiando fecha de inicio)
-      queryUpdate = `
-        UPDATE tickets.tbl_tickets 
-        SET 
-          estatus_id = COALESCE($1, estatus_id),
-          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
-          departamento_id = COALESCE($3, departamento_id),
-          prioridad_id = COALESCE($4, prioridad_id),
-          int_sla = $5::integer,
-          dmt_fecha_vencimiento_sla = dmt_fecha_vencimiento_sla + (CURRENT_TIMESTAMP - COALESCE(dmt_fecha_inicio_pausa, updated_at)),
-          int_minutos_pausa = COALESCE(int_minutos_pausa, 0) + ROUND(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - COALESCE(dmt_fecha_inicio_pausa, updated_at))) / 60::numeric, 2),
-          dmt_fecha_inicio_pausa = NULL,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = $6
-        RETURNING *;
-      `;
-      updateParams = [
-        nuevoEstatus,
-        nuevoAsignado,
-        nuevoDepartamento,
-        nuevaPrioridad,
-        Number(horasSla),
-        Number(id),
-      ];
-    } else if (esEstatusCierre) {
-      // CASO 3: Cierre de ticket (si se cierra estando directamente en pausa o con tiempo pausado acumulado pendiente)
+    if (esEstatusCierre) {
+      // CASO 3 (Prioridad Alta): Cierre de ticket (incluso si venía de estar en pausa)
       queryUpdate = `
         UPDATE tickets.tbl_tickets 
         SET 
@@ -702,6 +654,76 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         nuevaPrioridad,
         Number(horasSla),
         esEstatusCierre,
+        Number(id),
+      ];
+    } else if (esEstatusNuevoPausa && !esEstatusActualPausa) {
+      // CASO 1: El ticket entra en pausa por primera vez
+      queryUpdate = `
+        UPDATE tickets.tbl_tickets 
+        SET 
+          estatus_id = COALESCE($1, estatus_id),
+          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
+          departamento_id = COALESCE($3, departamento_id),
+          prioridad_id = COALESCE($4, prioridad_id),
+          int_sla = $5::integer,
+          dmt_fecha_inicio_pausa = CURRENT_TIMESTAMP,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = $6
+        RETURNING *;
+      `;
+      updateParams = [
+        nuevoEstatus,
+        nuevoAsignado,
+        nuevoDepartamento,
+        nuevaPrioridad,
+        Number(horasSla),
+        Number(id),
+      ];
+    } else if (esEstatusActualPausa && !esEstatusNuevoPausa) {
+      // CASO 2: El ticket sale de pausa hacia un estado activo (no cerrado)
+      queryUpdate = `
+        UPDATE tickets.tbl_tickets 
+        SET 
+          estatus_id = COALESCE($1, estatus_id),
+          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
+          departamento_id = COALESCE($3, departamento_id),
+          prioridad_id = COALESCE($4, prioridad_id),
+          int_sla = $5::integer,
+          dmt_fecha_vencimiento_sla = dmt_fecha_vencimiento_sla + (CURRENT_TIMESTAMP - COALESCE(dmt_fecha_inicio_pausa, updated_at)),
+          int_minutos_pausa = COALESCE(int_minutos_pausa, 0) + ROUND(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - COALESCE(dmt_fecha_inicio_pausa, updated_at))) / 60::numeric, 2),
+          dmt_fecha_inicio_pausa = NULL,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = $6
+        RETURNING *;
+      `;
+      updateParams = [
+        nuevoEstatus,
+        nuevoAsignado,
+        nuevoDepartamento,
+        nuevaPrioridad,
+        Number(horasSla),
+        Number(id),
+      ];
+    } else {
+      // CASO GENERAL: Actualización estándar sin cambios de pausa ni de cierre
+      queryUpdate = `
+        UPDATE tickets.tbl_tickets 
+        SET 
+          estatus_id = COALESCE($1, estatus_id),
+          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
+          departamento_id = COALESCE($3, departamento_id),
+          prioridad_id = COALESCE($4, prioridad_id),
+          int_sla = $5::integer,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = $6
+        RETURNING *;
+      `;
+      updateParams = [
+        nuevoEstatus,
+        nuevoAsignado,
+        nuevoDepartamento,
+        nuevaPrioridad,
+        Number(horasSla),
         Number(id),
       ];
     }

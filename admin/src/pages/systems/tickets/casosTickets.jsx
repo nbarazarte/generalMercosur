@@ -849,7 +849,7 @@ export default function CasosTickets() {
                         background: "rgba(245, 158, 11, 0.1)",
                         color: "#f59e0b",
                       };
-                    } else if (estatusLower.includes("en espera")) {
+                    } else if (estatusLower.includes("en espera proveedor")) {
                       estiloEstatus = {
                         background: "rgba(168, 85, 247, 0.1)",
                         color: "#a855f7",
