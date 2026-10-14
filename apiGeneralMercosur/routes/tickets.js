@@ -171,6 +171,43 @@ router.post("/crear", upload.any(), async (req, res) => {
 
     const usuarioIdSesion = req.user?.id;
 
+    // Lógica de asignación: Si es externo y el departamento es Tecnología, asignar aleatoriamente excluyendo ids 1 y 94
+    let valoresAsignado = usuario_asignado_id
+      ? Number(usuario_asignado_id)
+      : null;
+
+    if (tipo_ticket_id) {
+      const tipoTicketRes = await client.query(
+        `SELECT str_nombre FROM public.cat_datos_maestros WHERE id = $1`,
+        [Number(tipo_ticket_id)],
+      );
+      const esExterno =
+        tipoTicketRes.rows.length > 0 &&
+        (tipoTicketRes.rows[0].str_nombre.toLowerCase().includes("externo") ||
+          tipoTicketRes.rows[0].str_nombre.toLowerCase().includes("app"));
+
+      if (esExterno && departamento_id) {
+        const deptoRes = await client.query(
+          `SELECT str_nombre FROM public.cat_departamentos WHERE id = $1`,
+          [Number(departamento_id)],
+        );
+        const esTecnologia =
+          deptoRes.rows.length > 0 &&
+          (deptoRes.rows[0].str_nombre.toLowerCase().includes("tecnología") ||
+            deptoRes.rows[0].str_nombre.toLowerCase().includes("tecnologia"));
+
+        if (esTecnologia && !valoresAsignado) {
+          const randomUserRes = await client.query(
+            `SELECT id FROM public.tbl_usuarios WHERE departamento_id = $1 AND bol_activo = true AND id NOT IN (1, 94) ORDER BY RANDOM() LIMIT 1;`,
+            [Number(departamento_id)],
+          );
+          if (randomUserRes.rows.length > 0) {
+            valoresAsignado = randomUserRes.rows[0].id;
+          }
+        }
+      }
+    }
+
     let clienteFinalId = cliente_id ? Number(cliente_id) : null;
     const correoMinuscula = str_correo_cliente
       ? str_correo_cliente.trim().toLowerCase()
@@ -315,16 +352,12 @@ router.post("/crear", upload.any(), async (req, res) => {
           $6::integer, $7::integer, $8::integer, $9::integer, 
           $10::varchar, $11::text, $12::integer, 
           $13::text, $14::text, $15::text, $16::integer, 
-          CURRENT_TIMESTAMP + ($12::integer * INTERVAL '1 hour'), 
+          COALESCE(CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) + ($12::integer * INTERVAL '1 hour'), 
           CURRENT_TIMESTAMP, 
           CURRENT_TIMESTAMP
         )
         RETURNING *;
       `;
-
-    const valoresAsignado = usuario_asignado_id
-      ? Number(usuario_asignado_id)
-      : null;
 
     const values = [
       str_ticket,

@@ -134,9 +134,43 @@ export default function NuevoTicket() {
     fetchData();
   }, []);
 
+  // Funciones verificadoras del tipo de ticket
+  const esTipoInterno = () => {
+    const seleccionado = listaTipoTicket.find(
+      (t) => Number(t.id) === Number(tipoTicketId),
+    );
+    return seleccionado
+      ? seleccionado.str_nombre.toLowerCase().includes("interno")
+      : false;
+  };
+
+  const esTipoExterno = () => {
+    const seleccionado = listaTipoTicket.find(
+      (t) => Number(t.id) === Number(tipoTicketId),
+    );
+    return seleccionado
+      ? seleccionado.str_nombre.toLowerCase().includes("externo") ||
+          seleccionado.str_nombre.toLowerCase().includes("app")
+      : false;
+  };
+
+  // Efecto para asignar el departamento de Tecnología por defecto cuando es Externo
+  useEffect(() => {
+    if (esTipoExterno() && listaDepartamentos.length > 0) {
+      const deptoTecnologia = listaDepartamentos.find(
+        (dep) =>
+          dep.str_nombre.toLowerCase().includes("tecnología") ||
+          dep.str_nombre.toLowerCase().includes("tecnologia"),
+      );
+      if (deptoTecnologia) {
+        setDepartamentoId(String(deptoTecnologia.id));
+      }
+    }
+  }, [tipoTicketId, listaDepartamentos]);
+
   // Filtrar empleados por departamento
   useEffect(() => {
-    if (departamentoId) {
+    if (departamentoId && !esTipoExterno()) {
       const filtrados = listaUsuarios.filter(
         (u) => Number(u.departamento_id) === Number(departamentoId),
       );
@@ -145,7 +179,7 @@ export default function NuevoTicket() {
       setEmpleadosFiltrados([]);
     }
     setUsuarioId("");
-  }, [departamentoId, listaUsuarios]);
+  }, [departamentoId, listaUsuarios, tipoTicketId]);
 
   const handleTipoTicketChange = (idSeleccionado) => {
     setTipoTicketId(idSeleccionado);
@@ -157,9 +191,9 @@ export default function NuevoTicket() {
     );
     if (
       seleccionadoObj &&
-      seleccionadoObj.str_nombre.toLowerCase().includes("interno")
+      seleccionadoObj.str_nombre.toLowerCase().includes("externo")
     ) {
-      setCanalId("");
+      setUsuarioId("");
     }
   };
 
@@ -327,14 +361,7 @@ export default function NuevoTicket() {
                           Texto del usuario:
                           "${strDescripcion}"`;
 
-    const tipoObj = listaTipoTicket.find(
-      (t) => Number(t.id) === Number(tipoTicketId),
-    );
-    const esInterno = tipoObj
-      ? tipoObj.str_nombre.toLowerCase().includes("interno")
-      : false;
-
-    const promptSeleccionado = esInterno ? promptInterno : promptExterno;
+    const promptSeleccionado = esTipoInterno() ? promptInterno : promptExterno;
 
     try {
       const response = await axios.post(urlIA, {
@@ -382,24 +409,13 @@ export default function NuevoTicket() {
     }
   };
 
-  const esTipoExterno = () => {
-    const seleccionado = listaTipoTicket.find(
-      (t) => Number(t.id) === Number(tipoTicketId),
-    );
-    return seleccionado
-      ? seleccionado.str_nombre.toLowerCase().includes("externo") ||
-          seleccionado.str_nombre.toLowerCase().includes("app")
-      : false;
-  };
-
   const obtenerCategoriasActuales = () => {
     const seleccionado = listaTipoTicket.find(
       (t) => Number(t.id) === Number(tipoTicketId),
     );
     if (!seleccionado) return listaCategoriasExternas;
 
-    const esInterno = seleccionado.str_nombre.toLowerCase().includes("interno");
-    return esInterno ? listaCategoriasInternas : listaCategoriasExternas;
+    return esTipoInterno() ? listaCategoriasInternas : listaCategoriasExternas;
   };
 
   const validarCorreo = (correo) => {
@@ -481,7 +497,6 @@ export default function NuevoTicket() {
       return;
     }
 
-    // Validación de Descripción Obligatoria
     const descripcionContent = editor ? editor.document : [];
     const extraerTextoDeDescripcion = (descripcionArray) => {
       if (!Array.isArray(descripcionArray)) return "";
@@ -564,7 +579,7 @@ export default function NuevoTicket() {
     formData.append("prioridad_id", Number(prioridadId));
     formData.append("departamento_id", Number(departamentoId));
 
-    if (usuarioId) {
+    if (usuarioId && !esTipoExterno()) {
       formData.append("usuario_asignado_id", Number(usuarioId));
     }
 
@@ -683,7 +698,6 @@ export default function NuevoTicket() {
                     gap: "10px",
                   }}
                 >
-                  {/* Tipo de Ticket (Siempre como select) */}
                   <div className="field">
                     <label style={labelStyle}>Tipo de Ticket</label>
                     <select
@@ -727,8 +741,14 @@ export default function NuevoTicket() {
                     <select
                       value={departamentoId}
                       onChange={(e) => setDepartamentoId(e.target.value)}
+                      disabled={esTipoExterno()}
                       required
-                      style={inputStyle}
+                      style={{
+                        ...inputStyle,
+                        backgroundColor: esTipoExterno()
+                          ? "var(--merco-bg-subtle, rgba(0,0,0,0.04))"
+                          : inputStyle.background,
+                      }}
                     >
                       <option value="">Seleccione...</option>
                       {listaDepartamentos.map((dep) => (
@@ -746,11 +766,18 @@ export default function NuevoTicket() {
                     <select
                       value={usuarioId}
                       onChange={(e) => setUsuarioId(e.target.value)}
-                      disabled={!departamentoId}
-                      style={inputStyle}
+                      disabled={!departamentoId || esTipoExterno()}
+                      style={{
+                        ...inputStyle,
+                        backgroundColor: esTipoExterno()
+                          ? "var(--merco-bg-subtle, rgba(0,0,0,0.04))"
+                          : inputStyle.background,
+                      }}
                     >
                       <option value="">
-                        {departamentoId
+                        {esTipoExterno()
+                          ? "Deshabilitado para externos"
+                          : departamentoId
                           ? "Sin asignación directa"
                           : "Seleccione departamento primero..."}
                       </option>
