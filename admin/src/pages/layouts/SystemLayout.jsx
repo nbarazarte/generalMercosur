@@ -17,13 +17,15 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateAccessToken, logout } from "../../store/authSlice";
 import axiosSeguridad from "../utils/axiosSeguridad";
 
-// 🔌 Importamos nuestro hook personalizado desde src/useSocket.js
+// Importamos nuestro hook personalizado desde src/useSocket.js
 import { useSocket } from "../../useSocket";
+
+// Importas tu archivo local
+import notificationSound from "../../assets/sounds/501212__andrewharn__simple-synth-jingle.mp3";
 
 export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     const savedState = localStorage.getItem("sidebarOpen");
-    // Si existe en localStorage, lo convertimos a booleano, si no, por defecto será true
     return savedState !== null ? JSON.parse(savedState) : true;
   });
   const location = useLocation();
@@ -34,7 +36,6 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const [alertas, setAlertas] = useState([]);
   const [mostrarAlertas, setMostrarAlertas] = useState(false);
 
-  // Guardar en localStorage cada vez que cambie sidebarOpen
   useEffect(() => {
     localStorage.setItem("sidebarOpen", JSON.stringify(sidebarOpen));
   }, [sidebarOpen]);
@@ -46,20 +47,13 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const sistemas = useSelector((state) => state.auth?.user.sistemasOpciones);
   const refreshToken = useSelector((state) => state.auth?.refreshToken);
 
-  // 🔌 Definimos la URL del backend dinámicamente para el hook
-  const backendUrl = window.location.origin.includes("localhost")
-    ? "http://localhost:3000"
-    : undefined;
-
-  // 🔌 Usamos nuestro hook personalizado
+  const backendUrl = import.meta.env.VITE_URL_API_LOCAL_VER;
   const { socket, isConnected } = useSocket(backendUrl);
 
-  // 🔌 Efecto para manejar los eventos de Socket.io usando el hook
   useEffect(() => {
     if (!socket || !userId) return;
 
     const handleConnect = () => {
-      console.log("🟢 Conectado al servidor de WebSockets");
       socket.emit("join_user_room", userId);
     };
 
@@ -69,10 +63,26 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
 
     socket.on("connect", handleConnect);
 
-    // Escuchar las alertas enviadas desde el backend
     socket.on("nueva_alerta", (nuevaAlerta) => {
-      console.log("🔔 Nueva alerta recibida:", nuevaAlerta);
-      setAlertas((prev) => [nuevaAlerta, ...prev]);
+      const alertaConId = {
+        ...nuevaAlerta,
+        uniqueId: nuevaAlerta.id || Date.now() + Math.random(),
+      };
+
+      console.log(alertaConId);
+
+      setAlertas((prev) => [alertaConId, ...prev]);
+
+      // 🔊 Instanciamos y reproducimos el audio de manera limpia en cada evento para evitar bloqueos
+      try {
+        const sound = new Audio(notificationSound);
+        sound.currentTime = 0;
+        sound.play().catch((err) => {
+          console.log("No se pudo reproducir el sonido automáticamente:", err);
+        });
+      } catch (e) {
+        console.error("Error al reproducir audio:", e);
+      }
     });
 
     return () => {
@@ -85,14 +95,12 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
     () => localStorage.getItem("theme") || "light",
   );
 
-  // Sincronizar el estado del tema si cambia en el DOM o localStorage
   useEffect(() => {
     const handleStorageChange = () => {
       const currentTheme = localStorage.getItem("theme") || "light";
       setTheme(currentTheme);
     };
 
-    // Escuchar cambios de clase en el elemento raíz
     const observer = new MutationObserver(() => {
       const isDark = document.documentElement.classList.contains("dark");
       setTheme(isDark ? "dark" : "light");
@@ -110,7 +118,6 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
     };
   }, []);
 
-  // --- ESTADOS Y REFERENCIAS PARA EL CONTROL DE SESIÓN ---
   const [showWarning, setShowWarning] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
 
@@ -174,25 +181,19 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
     };
 
     initSessionCheck();
-
     return () => clearSessionTimers();
   }, [location.pathname]);
 
   const handleExtendSession = async () => {
     try {
       if (!refreshToken) {
-        throw new Error(
-          "No hay Refresh Token disponible en el estado de Redux.",
-        );
+        throw new Error("No hay Refresh Token disponible.");
       }
-
       const response = await axiosSeguridad.post("/refresh-token", {
         refreshToken,
       });
-
       const nuevoToken = response.data.token || response.data.accessToken;
       dispatch(updateAccessToken(nuevoToken));
-
       startSessionTimer();
     } catch (err) {
       console.error("Error al extender la sesión:", err);
@@ -207,10 +208,7 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
         await axiosSeguridad.post("/logout", { userId });
       }
     } catch (err) {
-      console.error(
-        "No se pudo notificar el cierre de sesión al servidor:",
-        err,
-      );
+      console.error("No se pudo notificar el cierre de sesión:", err);
     } finally {
       dispatch(logout());
       navigate("/login");
@@ -265,7 +263,6 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
 
   return (
     <div className={`ma-shell ${!sidebarOpen ? "sidebar-collapsed" : ""}`}>
-      {/* Overlay opcional para dispositivos móviles cuando el menú se superpone */}
       <div
         className={`ma-side-overlay ${sidebarOpen ? "open" : ""}`}
         onClick={() => setSidebarOpen(false)}
@@ -451,7 +448,6 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
               minWidth: 0,
             }}
           >
-            {/* Botón para Ocultar / Mostrar Menú */}
             <button
               className="ma-burger-btn"
               onClick={toggleSidebar}
@@ -491,62 +487,242 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
             </div>
           </div>
 
-          {/* 🔔 BOTÓN DE NOTIFICACIONES EN LA TOPBAR */}
+          {/* 🔔 BOTÓN DE NOTIFICACIONES */}
           <div className="relative">
             <button
               onClick={() => setMostrarAlertas(!mostrarAlertas)}
-              className="relative p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition flex items-center justify-center"
+              className="relative p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/80 active:scale-95 transition-all duration-200 flex items-center justify-center text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-800 shadow-xs"
               title="Notificaciones"
             >
               <DynamicIcon
                 name="FiBell"
                 fallback="FiBell"
-                className="text-xl"
+                className="text-lg"
               />
               {alertas.length > 0 && (
-                <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow">
+                <span className="absolute -top-1.5 -right-1.5 bg-gradient-to-tr from-orange-600 via-orange-500 to-amber-400 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md shadow-orange-500/40 ring-2 ring-white dark:ring-slate-900 animate-pulse">
                   {alertas.length}
                 </span>
               )}
             </button>
 
-            {/* Desplegable de Alertas */}
+            {/* Panel desplegable protegido por reglas exclusivas de CSS */}
             {mostrarAlertas && (
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl p-4 z-50 max-h-96 overflow-y-auto">
-                <div className="flex justify-between items-center mb-3 border-b pb-2 border-slate-100 dark:border-slate-800">
-                  <h3 className="font-bold text-sm text-slate-700 dark:text-slate-200">
-                    Notificaciones en tiempo real
-                  </h3>
-                  <button
-                    onClick={() => setAlertas([])}
-                    className="text-xs text-blue-600 hover:underline"
+              <div className="ma-alert-dropdown">
+                {/* Cabecera del Panel */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingBottom: "12px",
+                    marginBottom: "12px",
+                    borderBottom:
+                      theme === "dark"
+                        ? "1px solid #334155"
+                        : "1px solid #e2e8f0",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
                   >
-                    Limpiar
-                  </button>
+                    <div
+                      style={{
+                        padding: "8px",
+                        borderRadius: "12px",
+                        backgroundColor: "rgba(249, 115, 22, 0.15)",
+                        color: "#f97316",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <DynamicIcon name="FiBell" style={{ fontSize: "16px" }} />
+                    </div>
+                    <div>
+                      <h3
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                          textTransform: "uppercase",
+                          margin: 0,
+                        }}
+                      >
+                        Notificaciones
+                      </h3>
+                      <p
+                        style={{
+                          fontSize: "11px",
+                          color: "#64748b",
+                          margin: 0,
+                        }}
+                      >
+                        Eventos y avisos recientes
+                      </p>
+                    </div>
+                  </div>
+
+                  {alertas.length > 0 && (
+                    <button
+                      onClick={() => setAlertas([])}
+                      style={{
+                        padding: "6px 12px",
+                        fontSize: "11px",
+                        fontWeight: "600",
+                        color: "#64748b",
+                        backgroundColor: "transparent",
+                        border: "none",
+                        cursor: "pointer",
+                        borderRadius: "8px",
+                      }}
+                      title="Borrar todo"
+                    >
+                      Limpiar
+                    </button>
+                  )}
                 </div>
 
+                {/* Lista de Alertas */}
                 {alertas.length === 0 ? (
-                  <p className="text-sm text-slate-400 text-center py-4">
-                    No hay notificaciones nuevas
-                  </p>
+                  <div style={{ padding: "30px 10px", textAlign: "center" }}>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: "#64748b",
+                        fontWeight: "500",
+                        margin: 0,
+                      }}
+                    >
+                      No hay notificaciones pendientes.
+                    </p>
+                  </div>
                 ) : (
-                  <ul className="space-y-2">
-                    {alertas.map((alerta, index) => (
-                      <li
-                        key={alerta.id || index}
-                        className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg text-sm border border-slate-100 dark:border-slate-800"
-                      >
-                        <p className="text-slate-800 dark:text-slate-100 font-medium">
-                          {alerta.str_mensaje}
-                        </p>
-                        <span className="text-[10px] text-slate-400 mt-1 block">
-                          {new Date(
-                            alerta.created_at || Date.now(),
-                          ).toLocaleTimeString()}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="ma-alert-list">
+                    {alertas.map((alerta) => {
+                      const ticketId =
+                        alerta.caso_id || alerta.ticket_id || alerta.id;
+
+                      return (
+                        <div
+                          key={alerta.uniqueId}
+                          className="ma-alert-card"
+                          onClick={() => {
+                            if (ticketId) {
+                              navigate(
+                                `/tickets/casos-tickets?abrirTicket=${ticketId}`,
+                              );
+                              setMostrarAlertas(false);
+                            }
+                          }}
+                          style={{
+                            cursor: ticketId ? "pointer" : "default",
+                            position: "relative",
+                          }}
+                          title={
+                            ticketId ? "Hacer clic para abrir este ticket" : ""
+                          }
+                        >
+                          {/* Icono de Alerta */}
+                          <div
+                            style={{
+                              flexShrink: 0,
+                              width: "36px",
+                              height: "36px",
+                              borderRadius: "10px",
+                              background:
+                                "linear-gradient(135deg, #f97316, #c2410c)",
+                              color: "#ffffff",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <DynamicIcon
+                              name="FiZap"
+                              fallback="FiInfo"
+                              style={{ fontSize: "14px" }}
+                            />
+                          </div>
+
+                          {/* Contenido de la Alerta */}
+                          <div
+                            style={{
+                              flex: 1,
+                              minWidth: 0,
+                              paddingRight: "16px",
+                            }}
+                          >
+                            <p
+                              style={{
+                                fontSize: "12px",
+                                fontWeight: "500",
+                                lineHeight: 1.5,
+                                margin: 0,
+                                wordBreak: "break-word",
+                              }}
+                            >
+                              {alerta.str_mensaje}
+                            </p>
+
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                marginTop: "8px",
+                                paddingTop: "8px",
+                                borderTop:
+                                  theme === "dark"
+                                    ? "1px solid rgba(255,255,255,0.06)"
+                                    : "1px solid #e2e8f0",
+                              }}
+                            >
+                              <span
+                                style={{ fontSize: "10px", color: "#64748b" }}
+                              >
+                                {new Date(
+                                  alerta.created_at || Date.now(),
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Botón para descartar alerta individual */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setAlertas((prev) =>
+                                prev.filter(
+                                  (a) => a.uniqueId !== alerta.uniqueId,
+                                ),
+                              );
+                            }}
+                            style={{
+                              position: "absolute",
+                              top: "12px",
+                              right: "12px",
+                              background: "transparent",
+                              border: "none",
+                              color: "#94a3b8",
+                              cursor: "pointer",
+                              fontSize: "12px",
+                              padding: "4px",
+                            }}
+                            title="Descartar"
+                          >
+                            <DynamicIcon name="FiX" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
                 )}
               </div>
             )}
@@ -558,7 +734,6 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
           className="ma-content relative overflow-hidden"
           style={{ flex: "1 0 auto", position: "relative" }}
         >
-          {/* Contenedor del fondo animado */}
           <div
             style={{
               width: "100%",
@@ -591,7 +766,6 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
             )}
           </div>
 
-          {/* Contenido con z-index superior */}
           <div className="relative z-10 w-full h-full">
             {children ? children : <Outlet />}
           </div>

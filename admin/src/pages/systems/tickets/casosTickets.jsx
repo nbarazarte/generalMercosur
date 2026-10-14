@@ -3,11 +3,12 @@ import ReactDOM from "react-dom";
 import copy from "copy-to-clipboard";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axiosTickets from "../../utils/axiosTickets";
 
 export default function CasosTickets() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -100,6 +101,7 @@ export default function CasosTickets() {
 
       if (resTickets.data.success) {
         setTickets(resTickets.data.tickets || []);
+        return resTickets.data.tickets || [];
       }
     } catch (error) {
       console.error("Error al cargar datos:", error);
@@ -107,7 +109,37 @@ export default function CasosTickets() {
     } finally {
       setLoading(false);
     }
+    return [];
   };
+
+  // Efecto que refresca la lista y abre el modal automáticamente al recibir el 'abrirTicket'
+  useEffect(() => {
+    const ticketIdParam = searchParams.get("abrirTicket");
+    if (!ticketIdParam) return;
+
+    const idBuscado = Number(ticketIdParam);
+
+    // Limpiamos la URL inmediatamente para evitar reejecuciones indeseadas
+    searchParams.delete("abrirTicket");
+    setSearchParams(searchParams, { replace: true });
+
+    // 1. Refrescamos primero la tabla para traer la información más reciente
+    fetchCatalogosYTickets().then((listaActualizada) => {
+      // 2. Buscamos el ticket en la lista recién obtenida del servidor
+      const ticketEncontrado = listaActualizada.find(
+        (t) => Number(t.id) === idBuscado,
+      );
+
+      if (ticketEncontrado) {
+        abrirDetalle(ticketEncontrado);
+      } else {
+        showToast(
+          "No se encontró el ticket o no tienes permisos para verlo.",
+          "error",
+        );
+      }
+    });
+  }, [searchParams]);
 
   useEffect(() => {
     if (fDepartamento) {
@@ -1085,7 +1117,7 @@ export default function CasosTickets() {
                           {formatearFechaHora(t.dmt_fecha_cierre)}
                         </td>
 
-                        {/* CELDA SLA CON BADGE FLOTANTE (PESO DE FUENTE NO NEGRITA: fontWeight: 500) */}
+                        {/* CELDA SLA CON BADGE FLOTANTE */}
                         <td
                           style={{ whiteSpace: "nowrap", textAlign: "center" }}
                         >
@@ -1125,7 +1157,7 @@ export default function CasosTickets() {
                                   padding: "1px 5px",
                                   borderRadius: "10px",
                                   fontSize: "9px",
-                                  fontWeight: "normal", // <--- Quitada la negrita (antes 700)
+                                  fontWeight: "normal",
                                   background: "#a855f7",
                                   color: "#ffffff",
                                   boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
@@ -1150,7 +1182,7 @@ export default function CasosTickets() {
                                   padding: "1px 5px",
                                   borderRadius: "10px",
                                   fontSize: "9px",
-                                  fontWeight: "normal", // <--- Quitada la negrita (antes 700)
+                                  fontWeight: "normal",
                                   background: "#f59e0b",
                                   color: "#18181b",
                                   boxShadow: "0 2px 4px rgba(0,0,0,0.3)",

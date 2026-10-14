@@ -2834,3 +2834,66 @@ html.dark .ma-side {
   background-color: #27272a !important; /* Gris oscuro acorde a tu interfaz */
   color: #ffffff !important;
 }
+
+/* ===== REGLAS EXCLUSIVAS PARA ALERTAS / NOTIFICACIONES ===== */
+.ma-alert-dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 14px;
+  width: 380px;
+  max-width: 90vw;
+  background-color: var(--merco-surface, #ffffff);
+  color: var(--merco-text, #0f172a);
+  border: 1px solid var(--merco-border, #cbd5e1);
+  border-radius: 20px;
+  box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  z-index: 50;
+  max-height: 480px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+html.dark .ma-alert-dropdown,
+:root.dark .ma-alert-dropdown {
+  background-color: #0f172a;
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ma-alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px;
+}
+
+.ma-alert-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background-color: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.ma-alert-card:hover {
+  border-color: rgba(249, 115, 22, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+html.dark .ma-alert-card,
+:root.dark .ma-alert-card {
+  background-color: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+html.dark .ma-alert-card:hover,
+:root.dark .ma-alert-card:hover {
+  background-color: rgba(30, 41, 59, 0.9);
+  border-color: rgba(249, 115, 22, 0.4);
+}
