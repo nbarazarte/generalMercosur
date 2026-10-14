@@ -669,6 +669,35 @@ export default function NuevoTicket() {
       >
         <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
           <form onSubmit={handleSubmit} style={{ padding: "16px" }}>
+            {/* Banner Informativo Dinámico */}
+            <div
+              style={{
+                marginBottom: "16px",
+                padding: "10px 14px",
+                borderRadius: "6px",
+                background: isDarkMode
+                  ? "rgba(249, 87, 0, 0.15)"
+                  : "rgba(249, 87, 0, 0.08)",
+                border: "1px solid var(--merco-accent, #f95700)",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                color: "var(--merco-text)",
+                fontSize: "13px",
+                fontWeight: "500",
+              }}
+            >
+              <DynamicIcon
+                name={esTipoInterno() ? "FiInfo" : "FiExternalLink"}
+                style={{ color: "var(--merco-accent, #f95700)", fontSize: "16px" }}
+              />
+              <span>
+                {esTipoInterno()
+                  ? "Para crear Tickets internos de Mercosur"
+                  : "Para crear tickets referentes a la APP de Mercosur y sus clientes"}
+              </span>
+            </div>
+
             <div
               className="ticket-grid-container"
               style={{
@@ -728,67 +757,56 @@ export default function NuevoTicket() {
                   </div>
                 </div>
 
-                {/* Departamento y Asignado */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                    gap: "10px",
-                  }}
-                >
-                  <div className="field">
-                    <label style={labelStyle}>Para (Departamento)</label>
-                    <select
-                      value={departamentoId}
-                      onChange={(e) => setDepartamentoId(e.target.value)}
-                      disabled={esTipoExterno()}
-                      required
-                      style={{
-                        ...inputStyle,
-                        backgroundColor: esTipoExterno()
-                          ? "var(--merco-bg-subtle, rgba(0,0,0,0.04))"
-                          : inputStyle.background,
-                      }}
-                    >
-                      <option value="">Seleccione...</option>
-                      {listaDepartamentos.map((dep) => (
-                        <option key={dep.id} value={dep.id}>
-                          {dep.str_nombre}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                {/* Departamento y Asignado (Ocultos para tickets externos) */}
+                {!esTipoExterno() && (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                      gap: "10px",
+                    }}
+                  >
+                    <div className="field">
+                      <label style={labelStyle}>Para (Departamento)</label>
+                      <select
+                        value={departamentoId}
+                        onChange={(e) => setDepartamentoId(e.target.value)}
+                        required={!esTipoExterno()}
+                        style={inputStyle}
+                      >
+                        <option value="">Seleccione...</option>
+                        {listaDepartamentos.map((dep) => (
+                          <option key={dep.id} value={dep.id}>
+                            {dep.str_nombre}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                  <div className="field">
-                    <label style={labelStyle}>
-                      Empleado Asignado (Opcional)
-                    </label>
-                    <select
-                      value={usuarioId}
-                      onChange={(e) => setUsuarioId(e.target.value)}
-                      disabled={!departamentoId || esTipoExterno()}
-                      style={{
-                        ...inputStyle,
-                        backgroundColor: esTipoExterno()
-                          ? "var(--merco-bg-subtle, rgba(0,0,0,0.04))"
-                          : inputStyle.background,
-                      }}
-                    >
-                      <option value="">
-                        {esTipoExterno()
-                          ? "Deshabilitado para externos"
-                          : departamentoId
-                          ? "Sin asignación directa"
-                          : "Seleccione departamento primero..."}
-                      </option>
-                      {empleadosFiltrados.map((emp) => (
-                        <option key={emp.id} value={emp.id}>
-                          {emp.str_nombre} {emp.str_apellido} ({emp.str_email})
+                    <div className="field">
+                      <label style={labelStyle}>
+                        Empleado Asignado (Opcional)
+                      </label>
+                      <select
+                        value={usuarioId}
+                        onChange={(e) => setUsuarioId(e.target.value)}
+                        disabled={!departamentoId}
+                        style={inputStyle}
+                      >
+                        <option value="">
+                          {departamentoId
+                            ? "Sin asignación directa"
+                            : "Seleccione departamento primero..."}
                         </option>
-                      ))}
-                    </select>
+                        {empleadosFiltrados.map((emp) => (
+                          <option key={emp.id} value={emp.id}>
+                            {emp.str_nombre} {emp.str_apellido} ({emp.str_email})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Asunto */}
                 <div className="field">
