@@ -17,9 +17,6 @@ import SessionWarningModal from "../../components/SessionWarningModal";
 import notificationSound from "../../assets/sounds/501212__andrewharn__simple-synth-jingle.mp3";
 
 export default function SystemLayout({ children, identificacion, opcionMenu }) {
-  // =================================================================
-  // 1. HOOKS DE ENRUTAMIENTO, TEMA, AUDIO Y SESIÓN
-  // =================================================================
   const location = useLocation();
   const theme = useThemeObserver();
   const { desbloquearAudio, reproducirSonidoAlerta } =
@@ -27,21 +24,13 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const { showWarning, timeLeft, handleExtendSession, handleForceLogout } =
     useSessionManager(location.pathname);
 
-  // =================================================================
-  // 2. ESTADOS LOCALES (useState)
-  // =================================================================
-  // Estado para controlar si el sidebar está abierto o colapsado (recuperado de localStorage)
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     const savedState = localStorage.getItem("sidebarOpen");
     return savedState !== null ? JSON.parse(savedState) : true;
   });
 
-  // Estado para almacenar las alertas y notificaciones en tiempo real
   const [alertas, setAlertas] = useState([]);
 
-  // =================================================================
-  // 3. SELECTORES DE REDUX Y CONEXIÓN WEBSOCKET (Socket.io)
-  // =================================================================
   const userId = useSelector((state) => state.auth?.user?.id);
   const usuario = useSelector((state) => state.auth?.user);
   const nombre = usuario?.nombre;
@@ -51,23 +40,16 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const backendUrl = import.meta.env.VITE_URL_API_LOCAL_VER;
   const { socket } = useSocket(backendUrl);
 
-  // =================================================================
-  // 4. EFECTOS (useEffect)
-  // =================================================================
-
-  // Efecto: Sincroniza y persiste el estado del sidebar en el almacenamiento local
   useEffect(() => {
     localStorage.setItem("sidebarOpen", JSON.stringify(sidebarOpen));
   }, [sidebarOpen]);
 
-  // Efecto: Cierra automáticamente el sidebar en pantallas pequeñas al cambiar de ruta
   useEffect(() => {
     if (window.innerWidth < 1024) {
       setSidebarOpen(false);
     }
   }, [location.pathname]);
 
-  // Efecto: Gestiona la conexión del Socket.io, salas de usuario y eventos de nuevas alertas
   useEffect(() => {
     if (!socket || !userId) return;
 
@@ -83,10 +65,8 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
     socket.off("nueva_alerta");
 
     socket.on("nueva_alerta", (nuevaAlerta) => {
-      // Validar que la alerta pertenezca estrictamente al usuario actual
       if (Number(nuevaAlerta.usuario_id) !== Number(userId)) return;
 
-      // Ignorar alertas con antigüedad mayor a 3 segundos
       const fechaAlerta = new Date(
         nuevaAlerta.created_at || Date.now(),
       ).getTime();
@@ -107,11 +87,6 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
     };
   }, [socket, userId]);
 
-  // =================================================================
-  // 5. FUNCIONES AUXILIARES Y LÓGICA DE NEGOCIO
-  // =================================================================
-
-  // Función para extraer y formatear los permisos y opciones del sistema actual
   const getInfoSistema = (listaSistemas, nombreSistema) => {
     const sistemaEncontrado = listaSistemas?.find(
       (s) => s.sistema === nombreSistema,
@@ -139,7 +114,6 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
     identificacion,
   );
 
-  // Genera las iniciales del usuario a partir de su nombre y apellido
   const iniciales = (n) =>
     n
       ?.split(" ")
@@ -148,16 +122,19 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
       .join("")
       .toUpperCase() || "US";
 
-  // Alterna el estado de apertura/cierre del menú lateral
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
-  // =================================================================
-  // 6. RENDERIZADO DEL COMPONENTE (JSX)
-  // =================================================================
   return (
     <div
       className={`ma-shell ${!sidebarOpen ? "sidebar-collapsed" : ""}`}
       onClick={desbloquearAudio}
+      style={{
+        display: "flex",
+        height: "100vh",
+        maxHeight: "100vh",
+        overflow: "hidden",
+        position: "relative",
+      }}
     >
       {/* Overlay oscuro para dispositivos móviles cuando el menú está abierto */}
       <div
@@ -183,10 +160,16 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
         rol={rol}
       />
 
-      {/* Contenedor principal de la interfaz */}
+      {/* Contenedor principal de la interfaz con scroll vertical propio */}
       <div
         className="ma-main"
-        style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          height: "100vh",
+          overflowY: "auto", // El scroll ocurre aquí y nunca afecta al sidebar
+        }}
       >
         {/* Cabecera superior (Topbar modular) */}
         <SystemHeader
@@ -202,7 +185,7 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
 
         {/* Contenido dinámico principal de las vistas */}
         <main
-          className="ma-content relative overflow-hidden"
+          className="ma-content relative"
           style={{ flex: "1 0 auto", position: "relative" }}
         >
           {/* Fondo animado condicional para el modo oscuro */}
@@ -214,6 +197,7 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
               top: 0,
               left: 0,
               zIndex: 0,
+              pointerEvents: "none",
             }}
           >
             {theme === "dark" && (

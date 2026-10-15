@@ -100,6 +100,12 @@ export default function CasosTickets() {
     );
   };
 
+  const handlePorPaginaChange = (e) => {
+    const nuevoValor = Number(e.target.value);
+    setPorPagina(nuevoValor);
+    setPaginaActual(1);
+  };
+
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Casos Tickets">
       {toast && (
@@ -351,12 +357,34 @@ export default function CasosTickets() {
               color: "var(--merco-muted)",
             }}
           >
-            <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <span>
                 Mostrando <b>{registroInicio}</b> a <b>{registroFin}</b> de{" "}
                 <b>{ticketsFiltrados.length}</b> registros
               </span>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <label htmlFor="porPaginaSelect">Mostrar:</label>
+                <select
+                  id="porPaginaSelect"
+                  value={porPagina}
+                  onChange={handlePorPaginaChange}
+                  style={{
+                    ...filtroStyle,
+                    padding: "4px 8px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+                <span>registros</span>
+              </div>
             </div>
+
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <button
                 className="btn btn-ghost"
