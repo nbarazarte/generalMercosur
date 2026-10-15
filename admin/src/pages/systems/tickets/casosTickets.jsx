@@ -220,6 +220,95 @@ export default function CasosTickets() {
                       tipoLower.includes("externo") ||
                       tipoLower.includes("app");
 
+                    // Colores dinámicos del estatus
+                    const estatusLower = (t.estatus_nombre || "").toLowerCase();
+                    let estiloEstatus = {
+                      background: "rgba(59, 130, 246, 0.1)",
+                      color: "#3b82f6",
+                    };
+
+                    if (estatusLower.includes("en proceso")) {
+                      estiloEstatus = {
+                        background: "rgba(59, 130, 246, 0.1)",
+                        color: "#3b82f6",
+                      };
+                    } else if (estatusLower.includes("pendiente de usuario")) {
+                      estiloEstatus = {
+                        background: "rgba(245, 158, 11, 0.1)",
+                        color: "#f59e0b",
+                      };
+                    } else if (estatusLower.includes("en espera proveedor")) {
+                      estiloEstatus = {
+                        background: "rgba(168, 85, 247, 0.1)",
+                        color: "#a855f7",
+                      };
+                    } else if (estatusLower.includes("en aprobación")) {
+                      estiloEstatus = {
+                        background: "rgba(236, 72, 153, 0.1)",
+                        color: "#ec4899",
+                      };
+                    } else if (
+                      estatusLower.includes("resuelto") ||
+                      estatusLower.includes("cerrado")
+                    ) {
+                      estiloEstatus = {
+                        background: "rgba(16, 185, 129, 0.1)",
+                        color: "#10b981",
+                      };
+                    } else if (
+                      estatusLower.includes("vencido") ||
+                      estatusLower.includes("crítico") ||
+                      estatusLower.includes("urgente")
+                    ) {
+                      estiloEstatus = {
+                        background: "rgba(239, 68, 68, 0.1)",
+                        color: "#ef4444",
+                      };
+                    } else if (estatusLower.includes("cancelado")) {
+                      estiloEstatus = {
+                        background: "rgba(14, 165, 233, 0.1)",
+                        color: "#0ea5e9",
+                      };
+                    }
+
+                    // Lógica de SLA con pausas
+                    const estaEnPausaActual =
+                      estatusLower.includes("espera") ||
+                      estatusLower.includes("pendiente") ||
+                      estatusLower.includes("pausa");
+
+                    let minutosPausaActual = 0;
+                    if (estaEnPausaActual && t.updated_at) {
+                      const msPausa = new Date() - new Date(t.updated_at);
+                      minutosPausaActual = Math.floor(msPausa / (1000 * 60));
+                    }
+
+                    const totalMinutosPausa =
+                      Number(t.int_minutos_pausa || 0) + minutosPausaActual;
+                    const tieneHistorialPausa = totalMinutosPausa > 0;
+
+                    const tiempoResolucionStr = (
+                      t.tiempo_resolucion || ""
+                    ).toLowerCase();
+                    let excedeSLA =
+                      tiempoResolucionStr.includes("fuera") ||
+                      tiempoResolucionStr.includes("vencido") ||
+                      estatusLower.includes("vencido");
+
+                    if (!excedeSLA && t.int_sla && t.created_at) {
+                      const fechaInicio = new Date(t.created_at);
+                      const fechaFin = t.dmt_fecha_cierre
+                        ? new Date(t.dmt_fecha_cierre)
+                        : new Date();
+                      const diferenciaHoras =
+                        (fechaFin - fechaInicio) / (1000 * 60 * 60);
+                      if (diferenciaHoras > Number(t.int_sla)) {
+                        excedeSLA = true;
+                      }
+                    }
+
+                    const esCancelado = estatusLower.includes("cancelado");
+
                     return (
                       <tr
                         key={t.id}
@@ -326,12 +415,108 @@ export default function CasosTickets() {
                         <td style={{ fontSize: 11 }}>
                           {formatearFechaHora(t.dmt_fecha_cierre)}
                         </td>
-                        <td style={{ textAlign: "center" }}>
-                          {t.int_sla ? `${t.int_sla} hrs` : "—"}
+                        <td
+                          style={{ textAlign: "center", whiteSpace: "nowrap" }}
+                        >
+                          <div
+                            style={{
+                              position: "relative",
+                              display: "inline-block",
+                            }}
+                          >
+                            <span
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                padding: "4px 12px",
+                                borderRadius: "8px",
+                                fontSize: "11px",
+                                fontWeight: 700,
+                                background: "rgba(245, 158, 11, 0.18)",
+                                color: "#f59e0b",
+                              }}
+                            >
+                              {t.int_sla ? `${t.int_sla} hrs` : "—"}
+                            </span>
+
+                            {estaEnPausaActual && (
+                              <span
+                                title={`Ticket en espera (${totalMinutosPausa} minutos añadidos)`}
+                                style={{
+                                  position: "absolute",
+                                  top: "-6px",
+                                  right: "-8px",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  padding: "1px 5px",
+                                  borderRadius: "10px",
+                                  fontSize: "9px",
+                                  background: "#a855f7",
+                                  color: "#ffffff",
+                                  lineHeight: 1,
+                                }}
+                              >
+                                +{totalMinutosPausa}m
+                              </span>
+                            )}
+
+                            {!estaEnPausaActual && tieneHistorialPausa && (
+                              <span
+                                title={`Se añadieron ${Math.round(t.int_minutos_pausa)} minutos por pausa`}
+                                style={{
+                                  position: "absolute",
+                                  top: "-6px",
+                                  right: "-8px",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  padding: "1px 5px",
+                                  borderRadius: "10px",
+                                  fontSize: "9px",
+                                  background: "#f59e0b",
+                                  color: "#18181b",
+                                  lineHeight: 1,
+                                }}
+                              >
+                                +{Math.round(t.int_minutos_pausa)}m
+                              </span>
+                            )}
+                          </div>
                         </td>
-                        <td>{t.estatus_nombre || "En Proceso"}</td>
                         <td>
-                          <span className="tag" style={{ fontSize: 11 }}>
+                          <span
+                            className="tag"
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 600,
+                              ...estiloEstatus,
+                            }}
+                          >
+                            {t.estatus_nombre || "En Proceso"}
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className="tag"
+                            style={{
+                              fontSize: 11,
+                              background: esCancelado
+                                ? "rgba(14, 165, 233, 0.1)"
+                                : excedeSLA
+                                  ? "rgba(239, 68, 68, 0.1)"
+                                  : t.dmt_fecha_cierre
+                                    ? "rgba(16, 185, 129, 0.1)"
+                                    : "rgba(59, 130, 246, 0.1)",
+                              color: esCancelado
+                                ? "#0ea5e9"
+                                : excedeSLA
+                                  ? "#ef4444"
+                                  : t.dmt_fecha_cierre
+                                    ? "#10b981"
+                                    : "#3b82f6",
+                              fontWeight: 600,
+                            }}
+                          >
                             {t.tiempo_resolucion || "En curso"}
                           </span>
                         </td>

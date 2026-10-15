@@ -107,6 +107,61 @@ export function TicketDetalleModal({
             >
               <DynamicIcon name="FiCopy" style={{ fontSize: 14 }} />
             </button>
+
+            {(() => {
+              const estatusObj = listaEstatus.find(
+                (est) =>
+                  Number(est.id) === Number(ticketSeleccionado.estatus_id),
+              );
+              const nombreEstatus =
+                estatusObj?.str_nombre ||
+                ticketSeleccionado.estatus_nombre ||
+                "En Proceso";
+              const descEstatus = estatusObj?.str_descripcion;
+
+              const estName = nombreEstatus.toLowerCase();
+              const esCanceladoModal = estName.includes("cancelado");
+              const esRojo =
+                estName.includes("vencido") ||
+                estName.includes("crítico") ||
+                estName.includes("urgente");
+              const esEnProceso = estName.includes("en proceso");
+              const esEnEspera =
+                estName.includes("espera") || estName.includes("pendiente");
+
+              return (
+                <span
+                  style={{
+                    padding: "4px 10px",
+                    borderRadius: 10,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    background: esEnEspera
+                      ? "rgba(168, 85, 247, 0.1)"
+                      : esCanceladoModal
+                        ? "rgba(14, 165, 233, 0.1)"
+                        : esRojo
+                          ? "rgba(239, 68, 68, 0.1)"
+                          : esEnProceso
+                            ? "rgba(59, 130, 246, 0.1)"
+                            : "rgba(16, 185, 129, 0.1)",
+                    color: esEnEspera
+                      ? "#a855f7"
+                      : esCanceladoModal
+                        ? "#0ea5e9"
+                        : esRojo
+                          ? "#ef4444"
+                          : esEnProceso
+                            ? "#3b82f6"
+                            : "#10b981",
+                  }}
+                >
+                  <b>{nombreEstatus}</b>
+                  {descEstatus ? ` - ${descEstatus}` : ""}
+                  {esTicketBloqueado ? " (Solo lectura)" : ""}
+                </span>
+              );
+            })()}
           </div>
           <button
             className="btn-icon"
@@ -164,7 +219,7 @@ export function TicketDetalleModal({
           </div>
         </div>
 
-        {/* DESCRIPCIÓN Y MULTIMEDIA */}
+        {/* DESCRIPCIÓN Y MULTIMEDIA CON PESTAÑAS */}
         <div style={{ marginBottom: 16 }}>
           <label
             style={{
@@ -176,6 +231,128 @@ export function TicketDetalleModal({
           >
             Descripción y Archivos Adjuntos:
           </label>
+
+          {tieneMultimedia && (
+            <div
+              style={{
+                display: "flex",
+                gap: "4px",
+                borderBottom: "1px solid var(--merco-border)",
+                marginBottom: "8px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setTabActiva("descripcion")}
+                style={{
+                  padding: "8px 16px",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  background:
+                    tabActiva === "descripcion"
+                      ? "var(--merco-surface)"
+                      : "transparent",
+                  color:
+                    tabActiva === "descripcion"
+                      ? "var(--merco-accent, #f95700)"
+                      : "inherit",
+                  border: "none",
+                  borderBottom:
+                    tabActiva === "descripcion"
+                      ? "2px solid var(--merco-accent, #f95700)"
+                      : "2px solid transparent",
+                  cursor: "pointer",
+                }}
+              >
+                Descripción
+              </button>
+
+              {imagenes.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setTabActiva("imagenes")}
+                  style={{
+                    padding: "8px 16px",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    background:
+                      tabActiva === "imagenes"
+                        ? "var(--merco-surface)"
+                        : "transparent",
+                    color:
+                      tabActiva === "imagenes"
+                        ? "var(--merco-accent, #f95700)"
+                        : "inherit",
+                    border: "none",
+                    borderBottom:
+                      tabActiva === "imagenes"
+                        ? "2px solid var(--merco-accent, #f95700)"
+                        : "2px solid transparent",
+                    cursor: "pointer",
+                  }}
+                >
+                  Imágenes ({imagenes.length})
+                </button>
+              )}
+
+              {videos.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setTabActiva("videos")}
+                  style={{
+                    padding: "8px 16px",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    background:
+                      tabActiva === "videos"
+                        ? "var(--merco-surface)"
+                        : "transparent",
+                    color:
+                      tabActiva === "videos"
+                        ? "var(--merco-accent, #f95700)"
+                        : "inherit",
+                    border: "none",
+                    borderBottom:
+                      tabActiva === "videos"
+                        ? "2px solid var(--merco-accent, #f95700)"
+                        : "2px solid transparent",
+                    cursor: "pointer",
+                  }}
+                >
+                  Videos ({videos.length})
+                </button>
+              )}
+
+              {audios.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setTabActiva("audios")}
+                  style={{
+                    padding: "8px 16px",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    background:
+                      tabActiva === "audios"
+                        ? "var(--merco-surface)"
+                        : "transparent",
+                    color:
+                      tabActiva === "audios"
+                        ? "var(--merco-accent, #f95700)"
+                        : "inherit",
+                    border: "none",
+                    borderBottom:
+                      tabActiva === "audios"
+                        ? "2px solid var(--merco-accent, #f95700)"
+                        : "2px solid transparent",
+                    cursor: "pointer",
+                  }}
+                >
+                  Audios ({audios.length})
+                </button>
+              )}
+            </div>
+          )}
+
           <div
             style={{
               padding: 10,
@@ -186,12 +363,112 @@ export function TicketDetalleModal({
               minHeight: "80px",
             }}
           >
-            <div
-              className="ticket-html-content"
-              dangerouslySetInnerHTML={{
-                __html: ticketSeleccionado.str_descripcion,
-              }}
-            />
+            {(!tieneMultimedia || tabActiva === "descripcion") && (
+              <div
+                className="ticket-html-content"
+                dangerouslySetInnerHTML={{
+                  __html: ticketSeleccionado.str_descripcion,
+                }}
+              />
+            )}
+
+            {tabActiva === "imagenes" && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                {imagenes.map((img, idx) => {
+                  const nombreArchivo = img.trim().split("/").pop();
+                  const urlArchivo = `${backendUrl}/uploads/${nombreArchivo}`;
+                  return (
+                    <div key={idx} style={{ textAlign: "center" }}>
+                      <a
+                        href={urlArchivo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={urlArchivo}
+                          alt={`Evidencia ${idx + 1}`}
+                          style={{
+                            maxWidth: "150px",
+                            maxHeight: "150px",
+                            objectFit: "cover",
+                            borderRadius: 4,
+                            border: "1px solid var(--merco-border)",
+                          }}
+                        />
+                      </a>
+                      <div
+                        style={{
+                          fontSize: "10px",
+                          color: "var(--merco-muted)",
+                          marginTop: "4px",
+                        }}
+                      >
+                        {nombreArchivo}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {tabActiva === "videos" && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
+                {videos.map((vid, idx) => {
+                  const nombreArchivo = vid.trim().split("/").pop();
+                  const urlArchivo = `${backendUrl}/uploads/${nombreArchivo}`;
+                  return (
+                    <div key={idx}>
+                      <video
+                        controls
+                        style={{
+                          maxWidth: "280px",
+                          maxHeight: "180px",
+                          borderRadius: 4,
+                        }}
+                      >
+                        <source src={urlArchivo} />
+                        Tu navegador no soporta la reproducción de video.
+                      </video>
+                      <div
+                        style={{
+                          fontSize: "10px",
+                          color: "var(--merco-muted)",
+                          marginTop: "4px",
+                        }}
+                      >
+                        {nombreArchivo}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {tabActiva === "audios" && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                }}
+              >
+                {audios.map((aud, idx) => {
+                  const nombreArchivo = aud.trim().split("/").pop();
+                  const urlArchivo = `${backendUrl}/uploads/${nombreArchivo}`;
+                  return (
+                    <div key={idx}>
+                      <div style={{ fontSize: "11px", marginBottom: "4px" }}>
+                        {nombreArchivo}
+                      </div>
+                      <audio controls style={{ width: "100%" }}>
+                        <source src={urlArchivo} />
+                        Tu navegador no soporta la reproducción de audio.
+                      </audio>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
