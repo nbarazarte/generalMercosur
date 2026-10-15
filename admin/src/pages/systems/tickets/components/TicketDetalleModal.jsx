@@ -184,13 +184,73 @@ export function TicketDetalleModal({
             borderRadius: 6,
           }}
         >
-          <div>
-            <b>Creado por:</b>{" "}
-            {`${ticketSeleccionado.creador_nombre || ""} ${ticketSeleccionado.creador_apellido || ""}`.trim()}
-          </div>
-          <div>
-            <b>Correo:</b> {ticketSeleccionado.creador_correo || "—"}
-          </div>
+          {(() => {
+            const nombreCreadorModal = `${
+              ticketSeleccionado.creador_nombre || ""
+            } ${ticketSeleccionado.creador_apellido || ""}`.trim();
+            const correoCreadorModal = ticketSeleccionado.creador_correo || "";
+
+            return (
+              <>
+                {nombreCreadorModal && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <div>
+                      <b>Creado por:</b> {nombreCreadorModal}
+                    </div>
+                    <button
+                      className="btn-icon"
+                      onClick={(e) =>
+                        copiarTextoClipboard(
+                          e,
+                          nombreCreadorModal,
+                          "Creador del ticket",
+                        )
+                      }
+                      title="Copiar nombre del creador"
+                      style={{ padding: "4px" }}
+                    >
+                      <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
+                    </button>
+                  </div>
+                )}
+
+                {correoCreadorModal && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <div>
+                      <b>Correo:</b> {correoCreadorModal}
+                    </div>
+                    <button
+                      className="btn-icon"
+                      onClick={(e) =>
+                        copiarTextoClipboard(
+                          e,
+                          correoCreadorModal,
+                          "Correo del creador",
+                        )
+                      }
+                      title="Copiar correo del creador"
+                      style={{ padding: "4px" }}
+                    >
+                      <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
+                    </button>
+                  </div>
+                )}
+              </>
+            );
+          })()}
+
           <div>
             <b>Asunto:</b> {ticketSeleccionado.str_asunto}
           </div>
@@ -200,11 +260,83 @@ export function TicketDetalleModal({
           <div>
             <b>Categoría:</b> {ticketSeleccionado.categoria_nombre}
           </div>
+
+          {(ticketSeleccionado.tipo_ticket?.toLowerCase().includes("externo") ||
+            ticketSeleccionado.tipo_ticket?.toLowerCase().includes("app")) && (
+            <div>
+              <b>Canal:</b> {ticketSeleccionado.canal_nombre || "N/A"}
+            </div>
+          )}
+
+          {ticketSeleccionado.tipo_ticket?.toLowerCase().includes("externo") ||
+          ticketSeleccionado.tipo_ticket?.toLowerCase().includes("app") ? (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <div>
+                  <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                    Cédula del Cliente:
+                  </b>{" "}
+                  {ticketSeleccionado.cliente_cedula || "—"}
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <div>
+                  <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                    Nombre y Apellido Cliente:
+                  </b>{" "}
+                  {ticketSeleccionado.cliente_nombre || "—"}{" "}
+                  {ticketSeleccionado.cliente_apellido || ""}
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <div>
+                  <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                    Teléfono del Cliente:
+                  </b>{" "}
+                  {ticketSeleccionado.cliente_telefono || "—"}
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <div>
+                  <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                    Correo del Cliente:
+                  </b>{" "}
+                  {ticketSeleccionado.cliente_correo || "—"}
+                </div>
+              </div>
+            </>
+          ) : null}
+
           <div>
-            <b>Prioridad:</b> {ticketSeleccionado.prioridad_nombre}
+            <b>Prioridad Actual:</b> {ticketSeleccionado.prioridad_nombre}
           </div>
+
           <div>
-            <b>Fecha Creación:</b>{" "}
+            <b>Fecha de Creación:</b>{" "}
             {ticketSeleccionado.created_at
               ? new Date(ticketSeleccionado.created_at).toLocaleString("es-VE")
               : "—"}
@@ -217,9 +349,36 @@ export function TicketDetalleModal({
                 ).toLocaleString("es-VE")
               : "—"}
           </div>
+          <div>
+            <b>SLA:</b>{" "}
+            <span style={{ color: "#f59e0b", fontWeight: 600 }}>
+              {ticketSeleccionado.int_sla
+                ? `${ticketSeleccionado.int_sla} horas`
+                : "—"}
+            </span>
+          </div>
+          <div>
+            <b>Fecha de Cierre:</b>{" "}
+            {ticketSeleccionado.dmt_fecha_cierre
+              ? new Date(ticketSeleccionado.dmt_fecha_cierre).toLocaleString(
+                  "es-VE",
+                )
+              : "—"}
+          </div>
+          <div>
+            <b>Duración:</b>{" "}
+            <span
+              style={{
+                color: "var(--merco-accent, #3b82f6)",
+                fontWeight: 600,
+              }}
+            >
+              {ticketSeleccionado.tiempo_resolucion || "En curso"}
+            </span>
+          </div>
         </div>
 
-        {/* DESCRIPCIÓN Y MULTIMEDIA CON PESTAÑAS */}
+        {/* SECCIÓN DE DESCRIPCIÓN CON PESTAÑAS MULTIMEDIA */}
         <div style={{ marginBottom: 16 }}>
           <label
             style={{
@@ -472,7 +631,7 @@ export function TicketDetalleModal({
           </div>
         </div>
 
-        {/* BITÁCORA */}
+        {/* SECCIÓN DE HISTORIAL DE BITÁCORA */}
         <div
           style={{
             marginBottom: 16,
@@ -651,7 +810,8 @@ export function TicketDetalleModal({
                 >
                   {estatusModalDisponibles.map((est) => (
                     <option key={est.id} value={String(est.id)}>
-                      {est.str_nombre}
+                      {est.str_nombre}{" "}
+                      {est.str_descripcion ? `- ${est.str_descripcion}` : ""}
                     </option>
                   ))}
                 </select>
@@ -676,7 +836,12 @@ export function TicketDetalleModal({
                   setRespuestaTexto(e.target.value);
                   if (errorModal) setErrorModal("");
                 }}
-                placeholder="Escriba una respuesta o nota..."
+                placeholder={
+                  Number(nuevoEstatusId) !==
+                  Number(ticketSeleccionado?.estatus_id)
+                    ? "Escriba obligatoriamente la respuesta o motivo del cambio de estatus..."
+                    : "Escriba una nota opcional para la bitácora..."
+                }
                 style={{
                   ...filtroStyle,
                   width: "100%",
