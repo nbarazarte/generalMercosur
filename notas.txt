@@ -231,3 +231,6 @@ SELECT cron.unschedule('actualizar-tickets-vencidos-job');
 
 -- Inicializar las tablas de tickets
 TRUNCATE TABLE tickets.tbl_tickets RESTART IDENTITY CASCADE;
+TRUNCATE TABLE tickets.tbl_alertas RESTART IDENTITY CASCADE;
+TRUNCATE TABLE tickets.tbl_secuencias_tickets RESTART IDENTITY CASCADE;
+TRUNCATE TABLE tickets.tbl_clientes RESTART IDENTITY CASCADE;

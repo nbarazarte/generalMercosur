@@ -277,8 +277,7 @@ export default function NuevoTicket() {
                   }}
                 >
                   <label style={{ ...labelStyle, margin: 0 }}>
-                    Descripción del Ticket{" "}
-                    <span style={{ color: "#ef4444" }}>*</span>
+                    Descripción del Ticket
                   </label>
 
                   <button
