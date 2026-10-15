@@ -34528,6 +34528,10 @@
 │   │   └── icons.svg
 │   ├── README.md
 │   ├── src
+│   │   ├── api
+│   │   │   ├── axiosAdmin.js
+│   │   │   ├── axiosSeguridad.js
+│   │   │   └── axiosTickets.js
 │   │   ├── App.css
 │   │   ├── App.jsx
 │   │   ├── assets
@@ -34574,30 +34578,26 @@
 │   │   │   ├── layouts
 │   │   │   │   ├── HomeLayout.jsx
 │   │   │   │   └── SystemLayout.jsx
-│   │   │   ├── systems
-│   │   │   │   ├── admin
-│   │   │   │   │   ├── dashboard.jsx
-│   │   │   │   │   ├── permisos.jsx
-│   │   │   │   │   └── sistemas.jsx
-│   │   │   │   ├── home
-│   │   │   │   │   └── home.jsx
-│   │   │   │   ├── kcs
-│   │   │   │   │   └── dashboard.jsx
-│   │   │   │   ├── rrhh
-│   │   │   │   │   ├── dashboardRrhh.jsx
-│   │   │   │   │   ├── empleados.jsx
-│   │   │   │   │   └── miFicha.jsx
-│   │   │   │   └── tickets
-│   │   │   │       ├── casosTickets.jsx
-│   │   │   │       ├── clientes.jsx
-│   │   │   │       ├── dashboardTickets.jsx
-│   │   │   │       ├── nuevoTicket.jsx
-│   │   │   │       ├── reportesDesempeño.jsx
-│   │   │   │       └── seguimiento.jsx
-│   │   │   └── utils
-│   │   │       ├── axiosAdmin.js
-│   │   │       ├── axiosSeguridad.js
-│   │   │       └── axiosTickets.js
+│   │   │   └── systems
+│   │   │       ├── admin
+│   │   │       │   ├── dashboard.jsx
+│   │   │       │   ├── permisos.jsx
+│   │   │       │   └── sistemas.jsx
+│   │   │       ├── home
+│   │   │       │   └── home.jsx
+│   │   │       ├── kcs
+│   │   │       │   └── dashboard.jsx
+│   │   │       ├── rrhh
+│   │   │       │   ├── dashboardRrhh.jsx
+│   │   │       │   ├── empleados.jsx
+│   │   │       │   └── miFicha.jsx
+│   │   │       └── tickets
+│   │   │           ├── casosTickets.jsx
+│   │   │           ├── clientes.jsx
+│   │   │           ├── dashboardTickets.jsx
+│   │   │           ├── nuevoTicket.jsx
+│   │   │           ├── reportesDesempeño.jsx
+│   │   │           └── seguimiento.jsx
 │   │   ├── store
 │   │   │   ├── authSlice.js
 │   │   │   └── store.js
