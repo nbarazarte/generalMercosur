@@ -1,159 +1,38 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import Chart from "chart.js/auto";
+import React from "react";
 import SystemLayout from "../../layouts/SystemLayout";
-import { DynamicIcon, IconPicker } from "../../../components/IconCatalog";
-import { useSelector } from "react-redux";
-import axiosAdmin from "../../../api/axiosAdmin";
+import { DynamicIcon } from "../../../components/IconCatalog";
+import { useDashboard } from "../admin/hooks/useDashboard";
+import { useIsDarkMode } from "../admin/hooks/useIsDarkMode";
+import {
+  initials,
+  KPICard,
+  UltimosAccesosCard,
+  ChartBarSistemas,
+  ChartDoughnutRoles,
+  ChartDoughnutDepartamentos,
+  ModalOpcionRapida,
+} from "../admin/components/DashboardComponents";
 
-/* ====== HELPER FUNCTIONS ====== */
-function initials(n) {
-  return n
-    ? n
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
-    : "—";
-}
-
-function useIsDarkMode() {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const checkDark = () => {
-      setIsDark(
-        document.documentElement.classList.contains("dark") ||
-          document.body.classList.contains("dark") ||
-          document.documentElement.getAttribute("data-theme") === "dark",
-      );
-    };
-
-    checkDark();
-    const observer = new MutationObserver(checkDark);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "data-theme"],
-    });
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return isDark;
-}
-
-/* ============================ DASHBOARD COMPONENT ============================ */
 export default function DashboardSistemasUsuarios() {
   const isDark = useIsDarkMode();
-
-  const [sistemas, setSistemas] = useState([]);
-  const [usuarios, setUsuarios] = useState([]);
-  const [kpis, setKpis] = useState({
-    total_sistemas: 0,
-    total_opciones: 0,
-    total_usuarios: 0,
-    total_usuarios_activos: 0,
-    total_usuarios_inactivos: 0,
-    total_roles: 0,
-  });
-  const [modal, setModal] = useState(null);
-  const [toast, setToast] = useState(null);
-  const [flag, setFlag] = useState(false);
-
-  // Estados para búsqueda y paginación de la Matriz de Accesos Rápidos
-  const [accessSearch, setAccessSearch] = useState("");
-  const [accessPage, setAccessPage] = useState(1);
-  const itemsPerPage = 5;
-
-  const showToast = (message, type = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3500);
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [resSistemas, resUsuarios, resKpis] = await Promise.all([
-          axiosAdmin.get("/fetchSistemas"),
-          axiosAdmin.get("/fetchUsuarios"),
-          axiosAdmin
-            .get("/dashboard/kpis")
-            .catch(() => ({ data: { data: {} } })),
-        ]);
-
-        const dataArray = Array.isArray(resSistemas.data)
-          ? resSistemas.data
-          : Array.isArray(resSistemas.data?.data)
-            ? resSistemas.data.data
-            : resSistemas.data?.sistemas || [];
-
-        setSistemas(dataArray);
-        setUsuarios(resUsuarios.data || []);
-        if (resKpis.data?.data) {
-          setKpis(resKpis.data.data);
-        } else if (resKpis.data) {
-          setKpis(resKpis.data);
-        }
-      } catch (err) {
-        console.error("Error al cargar datos del dashboard:", err);
-        showToast("Error al obtener los datos del sistema.", "error");
-      }
-    };
-
-    fetchData();
-  }, [flag]);
-
-  const totalOpciones = useMemo(
-    () => sistemas.reduce((acc, sys) => acc + (sys.opciones?.length || 0), 0),
-    [sistemas],
-  );
-
-  const totalUsuariosPendientes = useMemo(
-    () => usuarios.filter((u) => u.estado === "pending").length,
-    [usuarios],
-  );
-
-  // Filtrado y Paginación de Usuarios para la Matriz de Accesos
-  const filteredAccessUsuarios = useMemo(() => {
-    if (!accessSearch.trim()) return usuarios;
-    const query = accessSearch.toLowerCase();
-    return usuarios.filter(
-      (u) =>
-        (u.nombre && u.nombre.toLowerCase().includes(query)) ||
-        (u.email && u.email.toLowerCase().includes(query)),
-    );
-  }, [usuarios, accessSearch]);
-
-  const totalAccessPages =
-    Math.ceil(filteredAccessUsuarios.length / itemsPerPage) || 1;
-
-  const paginatedAccessUsuarios = useMemo(() => {
-    const start = (accessPage - 1) * itemsPerPage;
-    return filteredAccessUsuarios.slice(start, start + itemsPerPage);
-  }, [filteredAccessUsuarios, accessPage]);
-
-  const guardarOpcionSistema = async (sistemaId, opcionData) => {
-    try {
-      const response = await axiosAdmin.post("/guardarOpcion", {
-        sistemaId,
-        ...opcionData,
-      });
-      showToast(
-        response.data?.message || "Ruta guardada correctamente.",
-        "success",
-      );
-      setFlag(!flag);
-      setModal(null);
-    } catch (err) {
-      console.error("Error al guardar opción:", err);
-      const msg = err.response?.data?.error || err.message;
-      showToast(`Error al guardar opción: ${msg}`, "error");
-    }
-  };
+  const {
+    sistemas,
+    usuarios,
+    kpis,
+    modal,
+    setModal,
+    toast,
+    accessSearch,
+    setAccessSearch,
+    accessPage,
+    setAccessPage,
+    totalOpciones,
+    totalUsuariosPendientes,
+    filteredAccessUsuarios,
+    totalAccessPages,
+    paginatedAccessUsuarios,
+    guardarOpcionSistema,
+  } = useDashboard();
 
   return (
     <SystemLayout
@@ -189,23 +68,7 @@ export default function DashboardSistemasUsuarios() {
           padding: "10px 0",
         }}
       >
-        {/* ENCABEZADO */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
-          {/* <div>
-            <h2 style={{ fontSize: 20, color: "var(--merco-text)", margin: 0 }}>
-              Dashboard
-            </h2>
-          </div> */}
-        </div>
-
-        {/* 1. TARJETAS DE MÉTRICAS GENERALES (KPIs) */}
+        {/* TARJETAS DE MÉTRICAS GENERALES (KPIs) */}
         <div className="ma-stats">
           <KPICard
             icon="FiGrid"
@@ -253,7 +116,7 @@ export default function DashboardSistemasUsuarios() {
           />
         </div>
 
-        {/* 2. FILA 1 DE GRÁFICOS */}
+        {/* FILA 1 DE GRÁFICOS */}
         <div className="dashboard-grid-1col">
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
@@ -265,7 +128,7 @@ export default function DashboardSistemasUsuarios() {
                 }}
               >
                 Usuarios asignados por sistema
-              </span>{" "}
+              </span>
             </div>
             <ChartBarSistemas isDark={isDark} />
           </div>
@@ -310,7 +173,7 @@ export default function DashboardSistemasUsuarios() {
           </div>
         </div>
 
-        {/* 3. FILA 2: MATRIZ DE ACCESOS RÁPIDOS Y ÚLTIMOS ACCESOS */}
+        {/* FILA 2: MATRIZ DE ACCESOS RÁPIDOS Y ÚLTIMOS ACCESOS */}
         <div className="dashboard-grid-2col">
           <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
             <div
@@ -452,7 +315,6 @@ export default function DashboardSistemasUsuarios() {
                                 : "Inactivo"}
                           </span>
                         </td>
-
                         <td style={{ padding: "10px 16px" }}>
                           <div
                             style={{
@@ -560,11 +422,11 @@ export default function DashboardSistemasUsuarios() {
             )}
           </div>
 
-          <UltimosAccesosCard isDark={isDark} />
+          <UltimosAccesosCard />
         </div>
 
-        {/* 4. CATÁLOGO DE SISTEMAS Y RUTAS */}
-        <div style={{ marginBottom: 20 }}>
+        {/* CATÁLOGO DE SISTEMAS Y RUTAS */}
+        <div style={{ marginBottom: 20, marginTop: 20 }}>
           <div
             style={{
               display: "flex",
@@ -688,11 +550,7 @@ export default function DashboardSistemasUsuarios() {
                   </div>
 
                   <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 4,
-                    }}
+                    style={{ display: "flex", flexDirection: "column", gap: 4 }}
                   >
                     {sys.opciones && sys.opciones.length > 0 ? (
                       sys.opciones.map((opc) => (
@@ -771,548 +629,5 @@ export default function DashboardSistemasUsuarios() {
         />
       )}
     </SystemLayout>
-  );
-}
-
-/* ====== COMPONENTE TARJETA KPI ====== */
-function KPICard({ icon, val, label, trend, trendColor, iconColor }) {
-  return (
-    <div className="ma-stat">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 6,
-        }}
-      >
-        <span
-          style={{
-            fontSize: 20,
-            color: iconColor || "var(--merco-muted)",
-            display: "inline-flex",
-            alignItems: "center",
-          }}
-        >
-          <DynamicIcon name={icon} fallback="FiActivity" />
-        </span>
-      </div>
-      <div className="val">{val}</div>
-      <div className="lbl" style={{ marginTop: 2 }}>
-        {label}
-      </div>
-      {trend && (
-        <div
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: trendColor || "var(--merco-muted)",
-            marginTop: 6,
-          }}
-        >
-          {trend}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ====== COMPONENTE DE ÚLTIMOS ACCESOS ====== */
-function UltimosAccesosCard({ isDark }) {
-  const [accesos, setAccesos] = useState([]);
-
-  useEffect(() => {
-    // Corregido: se usa axiosAdmin en lugar de axios
-    axiosAdmin
-      .get("/dashboard/ultimos-accesos")
-      .then((res) => {
-        const data = res.data?.data || res.data || [];
-        setAccesos(data);
-      })
-      .catch((err) => console.error("Error al obtener últimos accesos:", err));
-  }, []);
-
-  return (
-    <div className="ma-card" style={{ padding: 18 }}>
-      <div
-        style={{
-          marginBottom: 16,
-          borderBottom: "1px solid var(--merco-border)",
-          paddingBottom: 10,
-        }}
-      >
-        <span
-          style={{
-            fontWeight: "bold",
-            fontSize: 15,
-            color: "var(--merco-text)",
-          }}
-        >
-          Últimos Accesos de Usuarios
-        </span>{" "}
-        <small style={{ color: "var(--merco-muted)" }}>
-          Auditoría (Base de Datos)
-        </small>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 12,
-          maxHeight: 240,
-          overflowY: "auto",
-        }}
-      >
-        {accesos.length > 0 ? (
-          accesos.map((item) => (
-            <div
-              key={item.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                paddingBottom: 10,
-                borderBottom: "1px solid var(--merco-border)",
-              }}
-            >
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 8,
-                  border: "1px solid rgba(31, 157, 99, 0.4)",
-                  background: "rgba(31, 157, 99, 0.12)",
-                  color: "#1F9D63",
-                  display: "grid",
-                  placeItems: "center",
-                  fontSize: 16,
-                  flexShrink: 0,
-                }}
-              >
-                <DynamicIcon name="FiUserCheck" fallback="FiUser" />
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <b
-                  style={{
-                    fontSize: 13,
-                    color: "var(--merco-text)",
-                    display: "block",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {item.usuario}
-                </b>
-                <small
-                  style={{
-                    color: "var(--merco-muted)",
-                    display: "block",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {item.email} · {item.detalle}
-                </small>
-              </div>
-              <div style={{ textAlign: "right", flexShrink: 0 }}>
-                <small style={{ color: "var(--merco-muted)" }}>
-                  {item.tiempo}
-                </small>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div
-            style={{
-              color: "var(--merco-muted)",
-              fontSize: 13,
-              textAlign: "center",
-              padding: "20px 0",
-            }}
-          >
-            No hay registros de accesos recientes en la base de datos.
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ====== GRÁFICO: BAR CHART (USUARIOS POR SISTEMA) ====== */
-/* function ChartBarSistemas({ isDark }) {
-  const canvasRef = useRef(null);
-  const [chartData, setChartData] = useState([]);
-
-  useEffect(() => {
-    // Corregido: se usa axiosAdmin en lugar de axios
-    axiosAdmin
-      .get("/usuarios-por-sistema")
-      .then((res) => {
-        const data = res.data?.data || res.data || [];
-        setChartData(data);
-      })
-      .catch((err) =>
-        console.error("Error al obtener usuarios por sistema:", err),
-      );
-  }, []);
-
-  useEffect(() => {
-    if (!canvasRef.current || chartData.length === 0) return;
-    const ctx = canvasRef.current.getContext("2d");
-    const textColor = isDark ? "#94A3B8" : "#64748B";
-    const gridColor = isDark
-      ? "rgba(255, 255, 255, 0.08)"
-      : "rgba(0, 0, 0, 0.05)";
-
-    const labels = chartData.map((s) => s.nombre);
-    const data = chartData.map((s) => s.total_usuarios);
-    const colors = chartData.map((s) => s.color || "#2f6fed");
-
-    const chart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Usuarios con Acceso",
-            data: data,
-            backgroundColor: colors,
-            borderRadius: 4,
-          },
-        ],
-      },
-      options: {
-        indexAxis: "y",
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            ticks: { color: textColor, precision: 0 },
-            grid: { color: gridColor },
-          },
-          y: { ticks: { color: textColor }, grid: { display: false } },
-        },
-        plugins: { legend: { display: false } },
-      },
-    });
-
-    return () => chart.destroy();
-  }, [isDark, chartData]);
-
-  return (
-    <div style={{ position: "relative", width: "100%", height: 210 }}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
-} */
-
-/* ====== GRÁFICO: BAR CHART (USUARIOS POR SISTEMA) ====== */
-function ChartBarSistemas({ isDark }) {
-  const canvasRef = useRef(null);
-  const chartInstanceRef = useRef(null); // Referencia para guardar la instancia del gráfico
-  const [chartData, setChartData] = useState([]);
-
-  // 1. Carga de datos inicial
-  useEffect(() => {
-    axiosAdmin
-      .get("/usuarios-por-sistema")
-      .then((res) => {
-        const data = res.data?.data || res.data || [];
-        setChartData(data);
-      })
-      .catch((err) =>
-        console.error("Error al obtener usuarios por sistema:", err),
-      );
-  }, []);
-
-  // 2. Inicialización única del gráfico
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-
-    chartInstanceRef.current = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: "Usuarios con Acceso",
-            data: [],
-            backgroundColor: [],
-            borderRadius: 4,
-          },
-        ],
-      },
-      options: {
-        indexAxis: "y",
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: {
-          duration: 300, // Animación más sutil y rápida para evitar saltos bruscos
-        },
-        scales: {
-          x: {
-            ticks: { precision: 0 },
-            grid: {},
-          },
-          y: { ticks: {}, grid: { display: false } },
-        },
-        plugins: { legend: { display: false } },
-      },
-    });
-
-    return () => {
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.destroy();
-        chartInstanceRef.current = null;
-      }
-    };
-  }, []);
-
-  // 3. Actualización dinámica cuando cambian los datos o el tema (sin destruir el gráfico)
-  useEffect(() => {
-    const chart = chartInstanceRef.current;
-    if (!chart) return;
-
-    const textColor = isDark ? "#94A3B8" : "#64748B";
-    const gridColor = isDark
-      ? "rgba(255, 255, 255, 0.08)"
-      : "rgba(0, 0, 0, 0.05)";
-
-    // Actualizar datos
-    chart.data.labels = chartData.map((s) => s.nombre);
-    chart.data.datasets[0].data = chartData.map((s) => s.total_usuarios);
-    chart.data.datasets[0].backgroundColor = chartData.map(
-      (s) => s.color || "#2f6fed",
-    );
-
-    // Actualizar colores de los ejes según el tema oscuro/claro
-    chart.options.scales.x.ticks.color = textColor;
-    chart.options.scales.x.grid.color = gridColor;
-    chart.options.scales.y.ticks.color = textColor;
-
-    // Refrescar gráfico de manera fluida
-    chart.update();
-  }, [isDark, chartData]);
-
-  return (
-    <div style={{ position: "relative", width: "100%", height: 210 }}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
-}
-
-/* ====== GRÁFICO: DOUGHNUT ROLES ====== */
-function ChartDoughnutRoles({ usuarios, isDark }) {
-  const canvasRef = useRef(null);
-
-  const roleData = useMemo(() => {
-    const conteo = {};
-    usuarios.forEach((u) => {
-      if (u.accesos) {
-        const rolesUnicosDelUsuario = new Set(
-          Object.values(u.accesos).filter((r) => r && r.trim() !== ""),
-        );
-
-        rolesUnicosDelUsuario.forEach((rolNombre) => {
-          conteo[rolNombre] = (conteo[rolNombre] || 0) + 1;
-        });
-      }
-    });
-
-    return Object.keys(conteo).map((nombre) => ({
-      nombre,
-      total_asignaciones: conteo[nombre],
-    }));
-  }, [usuarios]);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-    const textColor = isDark ? "#94A3B8" : "#64748B";
-
-    const labels = roleData.map((r) => r.nombre);
-    const data = roleData.map((r) => r.total_asignaciones);
-
-    const chart = new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels: labels.length ? labels : ["Sin asignación"],
-        datasets: [
-          {
-            data: data.length ? data : [1],
-            backgroundColor: [
-              "#0b2545",
-              "#2f6fed",
-              "#123a63",
-              "#1f9d63",
-              "#0f7a4c",
-              "#d8992a",
-              "#8155d8",
-              "#69748c",
-            ],
-            borderColor: isDark ? "#08192f" : "#FFFFFF",
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: { color: textColor, boxWidth: 12 },
-          },
-        },
-      },
-    });
-
-    return () => chart.destroy();
-  }, [isDark, roleData]);
-
-  return (
-    <div style={{ position: "relative", width: "100%", height: 210 }}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
-}
-
-/* ====== GRÁFICO: DOUGHNUT DEPARTAMENTOS ====== */
-function ChartDoughnutDepartamentos({ usuarios, isDark }) {
-  const canvasRef = useRef(null);
-
-  const deptoData = useMemo(() => {
-    const conteo = {};
-    if (Array.isArray(usuarios)) {
-      usuarios.forEach((u) => {
-        const depto =
-          u.departamento || u.departamento_nombre || "Sin departamento";
-        conteo[depto] = (conteo[depto] || 0) + 1;
-      });
-    }
-
-    return Object.keys(conteo).map((nombre) => ({
-      nombre,
-      total: conteo[nombre],
-    }));
-  }, [usuarios]);
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-    const textColor = isDark ? "#94A3B8" : "#64748B";
-
-    const labels = deptoData.map((d) => d.nombre);
-    const data = deptoData.map((d) => d.total);
-
-    const chart = new Chart(ctx, {
-      type: "doughnut",
-      data: {
-        labels: labels.length ? labels : ["Sin datos"],
-        datasets: [
-          {
-            data: data.length ? data : [1],
-            backgroundColor: [
-              "#2f6fed",
-              "#1f9d63",
-              "#d8992a",
-              "#ee176d",
-              "#8155d8",
-              "#0b2545",
-              "#123a63",
-              "#0f7a4c",
-            ],
-            borderColor: isDark ? "#08192f" : "#FFFFFF",
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "bottom",
-            labels: { color: textColor, boxWidth: 12 },
-          },
-        },
-      },
-    });
-
-    return () => chart.destroy();
-  }, [isDark, deptoData]);
-
-  return (
-    <div style={{ position: "relative", width: "100%", height: 210 }}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
-}
-
-/* ====== MODAL RÁPIDO PARA CREAR OPCIÓN / RUTA ====== */
-function ModalOpcionRapida({ sistema, onSave, onClose }) {
-  const [opcion, setOpcion] = useState("");
-  const [ruta, setRuta] = useState("");
-  const [ic, setIc] = useState("FiGrid");
-
-  return (
-    <div className="ma-overlay" onClick={onClose}>
-      <div className="ma-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="ma-modal-head">
-          <h3>Nueva Ruta para {sistema?.nombre}</h3>
-          <button className="btn-icon" onClick={onClose}>
-            ✕
-          </button>
-        </div>
-        <div className="ma-modal-body">
-          <div className="field">
-            <label>Nombre de la Opción</label>
-            <input
-              value={opcion}
-              onChange={(e) => setOpcion(e.target.value)}
-              placeholder="ej. Reporte de Accesos"
-            />
-          </div>
-          <div className="field">
-            <label>Ruta (URL)</label>
-            <input
-              value={ruta}
-              onChange={(e) => setRuta(e.target.value)}
-              placeholder="ej. /admin/reportes-accesos"
-            />
-          </div>
-          <div className="field">
-            <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              Seleccionar Ícono:
-              <span style={{ fontSize: 18, display: "inline-flex" }}>
-                <DynamicIcon name={ic} />
-              </span>
-            </label>
-            <IconPicker value={ic} onChange={setIc} />
-          </div>
-        </div>
-        <div className="ma-modal-foot">
-          <button className="btn btn-ghost" onClick={onClose}>
-            Cancelar
-          </button>
-          <button
-            className="btn btn-primary"
-            disabled={!opcion || !ruta}
-            onClick={() =>
-              onSave({
-                opcion,
-                ruta_opcion: ruta,
-                ic,
-              })
-            }
-          >
-            Guardar Ruta
-          </button>
-        </div>
-      </div>
-    </div>
   );
 }
