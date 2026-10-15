@@ -6,7 +6,7 @@ const Logo = ({ theme, size }) => {
     <img
       src={theme === "light" ? logoImgDark : logoImg}
       alt="Mercosur Casa de Bolsa"
-      className={`w-${size} h-auto`}
+      className={`${size === "home" ? "w-32" : "w-16"} h-auto`}
     />
   );
 };

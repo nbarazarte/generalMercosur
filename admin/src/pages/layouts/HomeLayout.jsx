@@ -152,7 +152,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
           {/* Contenedor del contenido principal */}
           <div className="relative z-10 form-wrapper w-full">
             <div className="flex items-center justify-center mb-4">
-              <Logo theme={currentTheme} size={32} />
+              <Logo theme={currentTheme} size={"home"} />
             </div>
             <Outlet context={{ theme: currentTheme }} />
           </div>

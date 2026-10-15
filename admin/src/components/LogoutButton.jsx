@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { logout } from "../store/authSlice";
 import { persistor } from "../store/store";
-import axiosSeguridad from "../pages/utils/axiosSeguridad";
+import axiosSeguridad from "../api/axiosSeguridad";
 import { DynamicIcon } from "./IconCatalog";
 
 const LogoutButton = () => {

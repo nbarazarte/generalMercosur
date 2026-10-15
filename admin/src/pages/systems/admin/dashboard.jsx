@@ -3,17 +3,17 @@ import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon, IconPicker } from "../../../components/IconCatalog";
 import { useSelector } from "react-redux";
-import axiosAdmin from "../../utils/axiosAdmin";
+import axiosAdmin from "../../../api/axiosAdmin";
 
 /* ====== HELPER FUNCTIONS ====== */
 function initials(n) {
   return n
     ? n
-      .split(" ")
-      .map((w) => w[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase()
+        .split(" ")
+        .map((w) => w[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
     : "—";
 }
 
@@ -24,8 +24,8 @@ function useIsDarkMode() {
     const checkDark = () => {
       setIsDark(
         document.documentElement.classList.contains("dark") ||
-        document.body.classList.contains("dark") ||
-        document.documentElement.getAttribute("data-theme") === "dark",
+          document.body.classList.contains("dark") ||
+          document.documentElement.getAttribute("data-theme") === "dark",
       );
     };
 

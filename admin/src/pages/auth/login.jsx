@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axiosSeguridad from "../utils/axiosSeguridad";
+import axiosSeguridad from "../../api/axiosSeguridad";
 import getDeviceInfo from "../../helper/getDeviceInfo";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";

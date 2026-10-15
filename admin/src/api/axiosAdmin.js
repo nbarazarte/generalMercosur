@@ -1,8 +1,8 @@
 // src/utils/axiosAdmin.js
 import axios from "axios";
-import { store } from "../../store/store";
-import { updateAccessToken, logout } from "../../store/authSlice";
-import { persistor } from "../../store/store";
+import { store } from "../store/store";
+import { updateAccessToken, logout } from "../store/authSlice";
+import { persistor } from "../store/store";
 
 const API_URL = import.meta.env.VITE_URL_API_ADMIN;
 const SEGURIDAD_URL = import.meta.env.VITE_URL_API_LOCAL_SEGURIDAD;

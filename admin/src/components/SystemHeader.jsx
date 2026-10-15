@@ -48,7 +48,7 @@ export default function SystemHeader({
         <div style={{ minWidth: 0 }}>
           {sistemaNombre && (
             <div className="flex flex-row items-center justify-center gap-2.5">
-              <Logo theme={theme} size={16} />
+              <Logo theme={theme} size={"header"} />
               <div className="flex flex-col">
                 <h2
                   style={{

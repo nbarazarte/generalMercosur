@@ -5,8 +5,8 @@ import { DynamicIcon, IconPicker } from "../../../components/IconCatalog";
 import { useSelector, useDispatch } from "react-redux";
 
 // Instancias de Axios personalizadas según tu estructura de carpetas
-import axiosAdmin from "../../utils/axiosAdmin";
-import axiosSeguridad from "../../utils/axiosSeguridad";
+import axiosAdmin from "../../../api/axiosAdmin";
+import axiosSeguridad from "../../../api/axiosSeguridad";
 
 import { setSistemasOpciones } from "../../../store/authSlice";
 
@@ -142,7 +142,7 @@ export default function Sistemas() {
         (typeof error.response?.data === "string"
           ? error.response.data
           : error.response?.data?.error || error.response?.data?.message) ||
-          (isNetworkError && error.message !== "Falta el token de sesión.")
+        (isNetworkError && error.message !== "Falta el token de sesión.")
           ? "No hay conexión con el servidor."
           : error.message;
 
@@ -205,8 +205,8 @@ export default function Sistemas() {
 
           const nuevasOpciones = existe
             ? opcionesActuales.map((o) =>
-              o.id === opcionData.id ? { ...o, ...opcionData } : o,
-            )
+                o.id === opcionData.id ? { ...o, ...opcionData } : o,
+              )
             : [...opcionesActuales, opcionData];
 
           return { ...sys, opciones: nuevasOpciones };

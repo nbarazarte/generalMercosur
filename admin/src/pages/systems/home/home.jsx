@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import axiosSeguridad from "../../utils/axiosSeguridad";
+import axiosSeguridad from "../../../api/axiosSeguridad";
 
 import TextType from "../../../components/TextType";
 

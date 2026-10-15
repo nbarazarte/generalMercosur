@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import axiosSeguridad from "../utils/axiosSeguridad";
+import axiosSeguridad from "../../api/axiosSeguridad";
 
 // Contenido estático para el Aside de Restablecer Contraseña
 export const ResetPasswordAside = (

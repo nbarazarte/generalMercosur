@@ -4,7 +4,7 @@ import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../../components/IconCatalog";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import axiosTickets from "../../utils/axiosTickets";
+import axiosTickets from "../../../api/axiosTickets";
 
 // Importaciones de BlockNote
 import { useCreateBlockNote } from "@blocknote/react";

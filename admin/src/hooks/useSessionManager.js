@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { updateAccessToken, logout } from "../store/authSlice";
-import axiosSeguridad from "../../src/pages/utils/axiosSeguridad";
+import axiosSeguridad from "../api/axiosSeguridad";
 
 export function useSessionManager(locationPathname) {
   const dispatch = useDispatch();
