@@ -7,7 +7,7 @@ import Home, { HomeAside } from "./pages/systems/home/home";
 import ResetearContrasena, {
   ResetPasswordAside,
 } from "./pages/auth/resetearContrasena";
-import FloatingLines from "./pages/layouts/FloatingLines";
+import FloatingLines from "./components/FloatingLines";
 import { DynamicIcon } from "./components/IconCatalog";
 
 // Rutas de los sistemas:

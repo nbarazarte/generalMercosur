@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import FloatingLines from "../layouts/FloatingLines";
+import FloatingLines from "../../components/FloatingLines";
 
 import { useSelector } from "react-redux";
 import { useSocket } from "../../useSocket";

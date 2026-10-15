@@ -1,268 +1,69 @@
-import { useState, useEffect, useRef } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-// import Aurora from "../layouts/Aurora";
-import FloatingLines from "../layouts/FloatingLines";
+import { useState, useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import FloatingLines from "../../components/FloatingLines";
 
-// Componentes
+// Componentes y Hooks modularizados
 import Logo from "../../components/Logo";
-import LogoMobile from "../components/LogoMobile";
-import ThemeToggle from "../components/ThemeToggleHome";
+import ThemeToggle from "../../components/ThemeToggleHome";
+
 import LogoutButton from "../../components/LogoutButton";
-import { updateAccessToken, logout } from "../../store/authSlice";
-import axiosSeguridad from "../utils/axiosSeguridad";
-import { DynamicIcon } from "../../components/IconCatalog";
+import SessionWarningModal from "../../components/SessionWarningModal";
+import { useSessionManager } from "../../hooks/useSessionManager";
+import { useThemeObserver } from "../../hooks/useThemeObserver";
 
 const HomeLayout = ({ asideContent, showLogout = false }) => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  // 1. Obtén el id del usuario desde el estado de Redux
-  const userId = useSelector((state) => state.auth?.user?.id);
+  // ==========================================
+  // 1. HOOKS DE TEMA Y GESTIÓN DE SESIÓN
+  // ==========================================
+  const theme = useThemeObserver();
+  const { showWarning, timeLeft, handleExtendSession, handleForceLogout } =
+    useSessionManager(location.pathname);
 
-  const refreshToken = useSelector((state) => state.auth?.refreshToken);
-
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("theme") || "light",
-  );
-
-  // Estado para controlar la apertura del menú hamburguesa en móviles
+  // ==========================================
+  // 2. ESTADOS LOCALES (useState)
+  // ==========================================
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(theme);
 
-  // --- ESTADOS Y REFERENCIAS PARA EL CONTROL DE SESIÓN ---
-  const [showWarning, setShowWarning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60); // 60 segundos de cuenta regresiva en el modal
-
-  const warningTimerRef = useRef(null);
-  const intervalTimerRef = useRef(null);
-
-  const clearSessionTimers = () => {
-    if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
-    if (intervalTimerRef.current) clearInterval(intervalTimerRef.current);
-  };
-
-  const startSessionTimer = () => {
-    clearSessionTimers();
-    setShowWarning(false);
-
-    // Token dura 1 hora. Avisamos 1 minuto antes (faltando 60s).
-    const tokenLifetimeMs = 60 * 60 * 1000; // 1 hora total
-    const warningTimeMs = tokenLifetimeMs - 60 * 1000; // Avisar faltando 1 minuto
-
-    warningTimerRef.current = setTimeout(() => {
-      setShowWarning(true);
-      startCountdown();
-    }, warningTimeMs);
-  };
-
-  const startCountdown = () => {
-    let seconds = 60; // 60 segundos de cuenta regresiva en el modal
-    setTimeLeft(seconds);
-
-    if (intervalTimerRef.current) clearInterval(intervalTimerRef.current);
-
-    intervalTimerRef.current = setInterval(() => {
-      seconds -= 1;
-      setTimeLeft(seconds);
-      if (seconds <= 0) {
-        clearInterval(intervalTimerRef.current);
-        handleForceLogout();
-      }
-    }, 1000);
-  };
-
-  // --- INICIO DE TEMPORIZADORES CONDICIONALES Y VALIDACIÓN AL MONTAR ---
-  useEffect(() => {
-    // Si estamos en la página de login, no ejecutamos ningún temporizador
-    if (
-      location.pathname === "/login" ||
-      location.pathname === "/" ||
-      location.pathname.startsWith("/resetear-contrasena")
-    ) {
-      clearSessionTimers();
-      setShowWarning(false);
-      return;
-    }
-
-    const initSessionCheck = async () => {
-      if (refreshToken) {
-        try {
-          // Intentamos refrescar el token de inmediato al recargar o entrar
-          const response = await axiosSeguridad.post("/refresh-token", {
-            refreshToken,
-          });
-          const nuevoToken = response.data.token || response.data.accessToken;
-          dispatch(updateAccessToken(nuevoToken));
-
-          // Iniciamos el temporizador normal con un token limpio
-          startSessionTimer();
-        } catch (err) {
-          console.error(
-            "El Refresh Token ha expirado al recargar la página:",
-            err,
-          );
-          handleForceLogout();
-        }
-      } else {
-        handleForceLogout();
-      }
-    };
-
-    initSessionCheck();
-
-    return () => clearSessionTimers();
-  }, [location.pathname]);
-
-  const handleExtendSession = async () => {
-    try {
-      if (!refreshToken) {
-        throw new Error(
-          "No hay Refresh Token disponible en el estado de Redux.",
-        );
-      }
-
-      // Llamada al endpoint para renovar el token
-      const response = await axiosSeguridad.post("/refresh-token", {
-        refreshToken,
-      });
-
-      const nuevoToken = response.data.token || response.data.accessToken;
-      dispatch(updateAccessToken(nuevoToken));
-
-      // Reiniciamos el ciclo de los timers limpios
-      startSessionTimer();
-    } catch (err) {
-      console.error("Error al extender la sesión:", err);
-      handleForceLogout();
-    }
-  };
-
-  // 2. Actualiza la función handleForceLogout
-  const handleForceLogout = async () => {
-    clearSessionTimers();
-    try {
-      if (userId) {
-        // Llama a tu endpoint del backend para borrar los tokens de la BD
-        await axiosSeguridad.post("/logout", { userId });
-      }
-    } catch (err) {
-      console.error(
-        "No se pudo notificar el cierre de sesión al servidor:",
-        err,
-      );
-    } finally {
-      // Siempre limpiamos Redux y redirigimos al login, pase lo que pase en la red
-      dispatch(logout());
-      navigate("/login");
-    }
-  };
-
+  // ==========================================
+  // 3. EFECTOS (useEffect)
+  // ==========================================
+  // Sincroniza el cambio de tema en el documento HTML
   useEffect(() => {
     document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(theme);
-    document.documentElement.style.colorScheme = theme;
-    localStorage.setItem("theme", theme);
+    document.documentElement.classList.add(currentTheme);
+    document.documentElement.style.colorScheme = currentTheme;
+    localStorage.setItem("theme", currentTheme);
+  }, [currentTheme]);
+
+  // Actualiza el tema local si cambia externamente
+  useEffect(() => {
+    setCurrentTheme(theme);
   }, [theme]);
 
+  // ==========================================
+  // 4. FUNCIONES AUXILIARES
+  // ==========================================
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    setCurrentTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
+  // ==========================================
+  // 5. RENDERIZADO (JSX)
+  // ==========================================
   return (
     <>
-      {/* ----------------- MODAL DE ADVERTENCIA DE SESIÓN ----------------- */}
-      {showWarning && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 99999,
-          }}
-        >
-          <div
-            style={{
-              background: "var(--merco-bg, #ffffff)",
-              color: "var(--merco-text, #333)",
-              padding: "24px",
-              borderRadius: "12px",
-              boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
-              maxWidth: "400px",
-              width: "90%",
-              textAlign: "center",
-              border: "1px solid var(--merco-border, #e2e8f0)",
-            }}
-          >
-            <h3
-              style={{
-                margin: "0 0 12px 0",
-                fontSize: "1.2rem",
-                color: "var(--merco-warning, #d8992a)",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
-            >
-              <DynamicIcon name="FiAlertTriangle" />
-              <span>Tu sesión está por expirar</span>
-            </h3>
-            <p
-              style={{
-                margin: "0 0 20px 0",
-                fontSize: "0.95rem",
-                lineHeight: 1.5,
-              }}
-            >
-              Por motivos de seguridad, tu sesión caducará en{" "}
-              <b>{timeLeft} segundos</b> por inactividad. ¿Deseas mantenerla
-              activa?
-            </p>
-            <div
-              style={{ display: "flex", justifyContent: "center", gap: "12px" }}
-            >
-              <button
-                onClick={handleExtendSession}
-                className="btn btn-primary"
-                style={{
-                  padding: "8px 16px",
-                  background: "#10b981",
-                  border: "none",
-                  color: "#fff",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                Sí, extender sesión
-              </button>
-              <button
-                onClick={handleForceLogout}
-                className="btn btn-ghost"
-                style={{
-                  padding: "8px 16px",
-                  background: "#ef4444",
-                  border: "none",
-                  color: "#fff",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                }}
-              >
-                Cerrar sesión
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modal flotante modularizado para la advertencia de sesión */}
+      <SessionWarningModal
+        showWarning={showWarning}
+        timeLeft={timeLeft}
+        onExtend={handleExtendSession}
+        onLogout={handleForceLogout}
+      />
 
-      {/* BOTÓN HAMBURGUESA - MÓVIL (IZQUIERDA) */}
+      {/* Botón hamburguesa para dispositivos móviles */}
       <button
         className="mobile-menu-toggle"
         onClick={() => setIsMobileMenuOpen(true)}
@@ -284,6 +85,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
       </button>
 
       <div className="page-grid">
+        {/* Fondo oscuro traslúcido para el menú móvil */}
         {isMobileMenuOpen && (
           <div
             className="mobile-backdrop"
@@ -291,6 +93,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
           />
         )}
 
+        {/* Panel lateral (Aside) */}
         <aside
           className={`aside-panel ${isMobileMenuOpen ? "mobile-open" : ""}`}
         >
@@ -299,9 +102,9 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
 
           {asideContent}
 
-          <div className="flex flex-col  gap-4 mt-auto mb-6">
+          <div className="flex flex-col gap-4 mt-auto mb-6">
             <div className="flex flex-row gap-2.5 items-center justify-between">
-              <ThemeToggle theme={theme} onToggle={toggleTheme} />
+              <ThemeToggle theme={currentTheme} onToggle={toggleTheme} />
               {showLogout && <LogoutButton />}
             </div>
 
@@ -313,7 +116,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
           </div>
         </aside>
 
-        {/* Panel derecho (main) con FloatingLines */}
+        {/* Panel derecho (Main) con animación de fondo */}
         <main className="main-panel relative overflow-hidden">
           <div
             style={{
@@ -325,7 +128,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
               zIndex: 0,
             }}
           >
-            {theme === "dark" && (
+            {currentTheme === "dark" && (
               <FloatingLines
                 enabledWaves={["top", "middle", "bottom"]}
                 lineCount={8}
@@ -346,12 +149,12 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
             )}
           </div>
 
-          {/* Contenido del main con z-index superior para flotar encima de la animación */}
+          {/* Contenedor del contenido principal */}
           <div className="relative z-10 form-wrapper w-full">
             <div className="flex items-center justify-center mb-4">
-              <LogoMobile theme={theme} />
+              <Logo theme={currentTheme} size={32} />
             </div>
-            <Outlet context={{ theme }} />
+            <Outlet context={{ theme: currentTheme }} />
           </div>
         </main>
       </div>
