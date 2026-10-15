@@ -5,13 +5,13 @@ import { useSelector, useDispatch } from "react-redux";
 import FloatingLines from "../layouts/FloatingLines";
 
 // Componentes
-import Logo from "../components/Logo";
+import Logo from "../../components/Logo";
 import LogoMobile from "../components/LogoMobile";
 import ThemeToggle from "../components/ThemeToggleHome";
-import LogoutButton from "../components/LogoutButton";
+import LogoutButton from "../../components/LogoutButton";
 import { updateAccessToken, logout } from "../../store/authSlice";
 import axiosSeguridad from "../utils/axiosSeguridad";
-import { DynamicIcon } from "../../../src/pages/components/IconCatalog";
+import { DynamicIcon } from "../../components/IconCatalog";
 
 const HomeLayout = ({ asideContent, showLogout = false }) => {
   const location = useLocation();

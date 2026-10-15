@@ -401,10 +401,10 @@ router.post("/crear", upload.any(), async (req, res) => {
 
     await client.query("COMMIT");
 
-    // Emitir por WebSocket fuera de la transacción para mayor fluidez
+    // 🛡️ Emitir por WebSocket solo si el usuario asignado es DISTINTO al usuario que está creando el ticket
     if (valoresAsignado && nuevaAlerta) {
       const io = req.app.get("io");
-      if (io) {
+      if (io && Number(valoresAsignado) !== Number(usuarioIdSesion)) {
         io.to(`user_${valoresAsignado}`).emit("nueva_alerta", nuevaAlerta);
       }
     }
@@ -815,14 +815,14 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     await client.query("COMMIT");
 
-    // Emitir por WebSockets tras confirmar la transacción
+    // 🛡️ Emitir por WebSockets solo si el nuevo responsable es DISTINTO al usuario que está editando
     if (
       nuevoResponsableId &&
       nuevoResponsableId !== asignadoAnterior &&
       nuevaAlertaActualizacion
     ) {
       const io = req.app.get("io");
-      if (io) {
+      if (io && Number(nuevoResponsableId) !== Number(usuarioIdSesion)) {
         io.to(`user_${nuevoResponsableId}`).emit(
           "nueva_alerta",
           nuevaAlertaActualizacion,

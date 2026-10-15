@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
-import { DynamicIcon } from "../../components/IconCatalog";
+import { DynamicIcon } from "../../../components/IconCatalog";
 
 /* ====== DATOS DEL CINTILLO BURSÁTIL BVC (TICKER) ====== */
 const TICKER_BVC = [

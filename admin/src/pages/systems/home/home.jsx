@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axiosSeguridad from "../../utils/axiosSeguridad";
 import TextType from "../../components/TextType";
-import { DynamicIcon } from "../../components/IconCatalog";
+import { DynamicIcon } from "../../../components/IconCatalog";
 import { setSistemasOpciones } from "../../../store/authSlice";
 
 export const HomeAside = () => {

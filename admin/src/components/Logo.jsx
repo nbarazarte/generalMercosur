@@ -1,5 +1,5 @@
-import logoImg from "../../assets/images/Logo - negativo naranja.png";
-import logoImgDark from "../../assets/images/Logo - original.png";
+import logoImg from "../assets/images/Logo - negativo naranja.png";
+import logoImgDark from "../assets/images/Logo - original.png";
 
 const Logo = ({ theme }) => {
   return (

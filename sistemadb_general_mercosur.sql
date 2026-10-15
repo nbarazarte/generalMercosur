@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict uT7JyhoOQaPytIP68ho9O3Ad5HzddQxwSRcInaXGBGCOInbHeTxfUMHvzzdiuX1
+\restrict emf8byh5MzDvVJlAdWfs0MKnNOaIIWTOev7iyuKHB8ze6G5EP5ESCQRfs8me0C2
 
--- Dumped from database version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
+-- Dumped from database version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 
--- Started on 2026-10-14 14:02:29 -04
+-- Started on 2026-10-14 18:33:47 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 2 (class 3079 OID 182623)
+-- TOC entry 2 (class 3079 OID 66689)
 -- Name: pg_cron; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -30,7 +30,7 @@ CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 3883 (class 0 OID 0)
+-- TOC entry 3866 (class 0 OID 0)
 -- Dependencies: 2
 -- Name: EXTENSION pg_cron; Type: COMMENT; Schema: -; Owner: 
 --
@@ -39,7 +39,7 @@ COMMENT ON EXTENSION pg_cron IS 'Job scheduler for PostgreSQL';
 
 
 --
--- TOC entry 8 (class 2615 OID 182680)
+-- TOC entry 8 (class 2615 OID 66737)
 -- Name: kcs; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -49,7 +49,7 @@ CREATE SCHEMA kcs;
 ALTER SCHEMA kcs OWNER TO postgres;
 
 --
--- TOC entry 3884 (class 0 OID 0)
+-- TOC entry 3867 (class 0 OID 0)
 -- Dependencies: 8
 -- Name: SCHEMA kcs; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -58,7 +58,7 @@ COMMENT ON SCHEMA kcs IS 'Esquema del sistema de la base de datos de conocimient
 
 
 --
--- TOC entry 9 (class 2615 OID 182681)
+-- TOC entry 9 (class 2615 OID 66738)
 -- Name: rrhh; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -68,7 +68,7 @@ CREATE SCHEMA rrhh;
 ALTER SCHEMA rrhh OWNER TO postgres;
 
 --
--- TOC entry 3885 (class 0 OID 0)
+-- TOC entry 3868 (class 0 OID 0)
 -- Dependencies: 9
 -- Name: SCHEMA rrhh; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -77,7 +77,7 @@ COMMENT ON SCHEMA rrhh IS 'Esquema que almacena las tablas del sistema de RRHH';
 
 
 --
--- TOC entry 10 (class 2615 OID 182682)
+-- TOC entry 10 (class 2615 OID 66739)
 -- Name: tickets; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -87,7 +87,7 @@ CREATE SCHEMA tickets;
 ALTER SCHEMA tickets OWNER TO postgres;
 
 --
--- TOC entry 3886 (class 0 OID 0)
+-- TOC entry 3869 (class 0 OID 0)
 -- Dependencies: 10
 -- Name: SCHEMA tickets; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -96,7 +96,7 @@ COMMENT ON SCHEMA tickets IS 'Esquema del Sistema de Tickets para ATC.';
 
 
 --
--- TOC entry 303 (class 1255 OID 182683)
+-- TOC entry 301 (class 1255 OID 66740)
 -- Name: crear_datos_tablas_public(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -165,7 +165,7 @@ $_$;
 ALTER FUNCTION public.crear_datos_tablas_public() OWNER TO postgres;
 
 --
--- TOC entry 304 (class 1255 OID 182684)
+-- TOC entry 302 (class 1255 OID 66741)
 -- Name: limpiar_tablas_public(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -195,7 +195,7 @@ $$;
 ALTER FUNCTION public.limpiar_tablas_public() OWNER TO postgres;
 
 --
--- TOC entry 305 (class 1255 OID 182685)
+-- TOC entry 303 (class 1255 OID 66742)
 -- Name: fn_verificar_y_actualizar_tickets_vencidos(); Type: FUNCTION; Schema: tickets; Owner: postgres
 --
 
@@ -218,8 +218,8 @@ $$;
 ALTER FUNCTION tickets.fn_verificar_y_actualizar_tickets_vencidos() OWNER TO postgres;
 
 --
--- TOC entry 3887 (class 0 OID 0)
--- Dependencies: 305
+-- TOC entry 3870 (class 0 OID 0)
+-- Dependencies: 303
 -- Name: FUNCTION fn_verificar_y_actualizar_tickets_vencidos(); Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
@@ -241,7 +241,7 @@ SELECT cron.unschedule(''actualizar-tickets-vencidos-job'');';
 
 
 --
--- TOC entry 228 (class 1259 OID 182686)
+-- TOC entry 226 (class 1259 OID 66743)
 -- Name: tbl_kcs_articulos_id_seq; Type: SEQUENCE; Schema: kcs; Owner: postgres
 --
 
@@ -261,7 +261,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 229 (class 1259 OID 182687)
+-- TOC entry 227 (class 1259 OID 66744)
 -- Name: cat_datos_maestros; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -279,8 +279,8 @@ CREATE TABLE public.cat_datos_maestros (
 ALTER TABLE public.cat_datos_maestros OWNER TO postgres;
 
 --
--- TOC entry 3888 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 3871 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: TABLE cat_datos_maestros; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -288,7 +288,7 @@ COMMENT ON TABLE public.cat_datos_maestros IS 'Esta tabla es el catalogo general
 
 
 --
--- TOC entry 230 (class 1259 OID 182702)
+-- TOC entry 228 (class 1259 OID 66752)
 -- Name: cat_datos_maestros_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -304,8 +304,8 @@ CREATE SEQUENCE public.cat_datos_maestros_id_seq
 ALTER SEQUENCE public.cat_datos_maestros_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3889 (class 0 OID 0)
--- Dependencies: 230
+-- TOC entry 3872 (class 0 OID 0)
+-- Dependencies: 228
 -- Name: cat_datos_maestros_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -313,7 +313,7 @@ ALTER SEQUENCE public.cat_datos_maestros_id_seq OWNED BY public.cat_datos_maestr
 
 
 --
--- TOC entry 231 (class 1259 OID 182703)
+-- TOC entry 229 (class 1259 OID 66753)
 -- Name: cat_departamentos; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -329,8 +329,8 @@ CREATE TABLE public.cat_departamentos (
 ALTER TABLE public.cat_departamentos OWNER TO postgres;
 
 --
--- TOC entry 3890 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 3873 (class 0 OID 0)
+-- Dependencies: 229
 -- Name: TABLE cat_departamentos; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -338,7 +338,7 @@ COMMENT ON TABLE public.cat_departamentos IS 'Esta tabla contiene el listado de 
 
 
 --
--- TOC entry 232 (class 1259 OID 182712)
+-- TOC entry 230 (class 1259 OID 66758)
 -- Name: cat_departamentos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -354,8 +354,8 @@ CREATE SEQUENCE public.cat_departamentos_id_seq
 ALTER SEQUENCE public.cat_departamentos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3891 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 3874 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: cat_departamentos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -363,7 +363,7 @@ ALTER SEQUENCE public.cat_departamentos_id_seq OWNED BY public.cat_departamentos
 
 
 --
--- TOC entry 233 (class 1259 OID 182713)
+-- TOC entry 231 (class 1259 OID 66759)
 -- Name: cat_opciones; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -381,8 +381,8 @@ CREATE TABLE public.cat_opciones (
 ALTER TABLE public.cat_opciones OWNER TO postgres;
 
 --
--- TOC entry 3892 (class 0 OID 0)
--- Dependencies: 233
+-- TOC entry 3875 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: TABLE cat_opciones; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -390,7 +390,7 @@ COMMENT ON TABLE public.cat_opciones IS 'Esta tabla contiene las opciones de los
 
 
 --
--- TOC entry 234 (class 1259 OID 182724)
+-- TOC entry 232 (class 1259 OID 66766)
 -- Name: cat_roles; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -406,8 +406,8 @@ CREATE TABLE public.cat_roles (
 ALTER TABLE public.cat_roles OWNER TO postgres;
 
 --
--- TOC entry 3893 (class 0 OID 0)
--- Dependencies: 234
+-- TOC entry 3876 (class 0 OID 0)
+-- Dependencies: 232
 -- Name: TABLE cat_roles; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -415,7 +415,7 @@ COMMENT ON TABLE public.cat_roles IS 'Esta tabla contiene el listado de roles qu
 
 
 --
--- TOC entry 235 (class 1259 OID 182733)
+-- TOC entry 233 (class 1259 OID 66771)
 -- Name: cat_sistemas; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -435,8 +435,8 @@ CREATE TABLE public.cat_sistemas (
 ALTER TABLE public.cat_sistemas OWNER TO postgres;
 
 --
--- TOC entry 3894 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 3877 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: TABLE cat_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -444,7 +444,7 @@ COMMENT ON TABLE public.cat_sistemas IS 'Contiene los nombres de los Sistemas In
 
 
 --
--- TOC entry 236 (class 1259 OID 182747)
+-- TOC entry 234 (class 1259 OID 66779)
 -- Name: tbl_auth_tokens; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -463,8 +463,8 @@ CREATE TABLE public.tbl_auth_tokens (
 ALTER TABLE public.tbl_auth_tokens OWNER TO postgres;
 
 --
--- TOC entry 3895 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 3878 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: TABLE tbl_auth_tokens; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -472,7 +472,7 @@ COMMENT ON TABLE public.tbl_auth_tokens IS 'Esta tabla contiene los tokens de se
 
 
 --
--- TOC entry 237 (class 1259 OID 182760)
+-- TOC entry 235 (class 1259 OID 66786)
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -488,8 +488,8 @@ CREATE SEQUENCE public.tbl_auth_tokens_id_seq
 ALTER SEQUENCE public.tbl_auth_tokens_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3896 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 3879 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -497,7 +497,7 @@ ALTER SEQUENCE public.tbl_auth_tokens_id_seq OWNED BY public.tbl_auth_tokens.id;
 
 
 --
--- TOC entry 238 (class 1259 OID 182761)
+-- TOC entry 236 (class 1259 OID 66787)
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -513,8 +513,8 @@ CREATE SEQUENCE public.tbl_opciones_id_seq
 ALTER SEQUENCE public.tbl_opciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3897 (class 0 OID 0)
--- Dependencies: 238
+-- TOC entry 3880 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -522,7 +522,7 @@ ALTER SEQUENCE public.tbl_opciones_id_seq OWNED BY public.cat_opciones.id;
 
 
 --
--- TOC entry 239 (class 1259 OID 182762)
+-- TOC entry 237 (class 1259 OID 66788)
 -- Name: tbl_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -538,8 +538,8 @@ CREATE SEQUENCE public.tbl_roles_id_seq
 ALTER SEQUENCE public.tbl_roles_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3898 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 3881 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: tbl_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -547,7 +547,7 @@ ALTER SEQUENCE public.tbl_roles_id_seq OWNED BY public.cat_roles.id;
 
 
 --
--- TOC entry 240 (class 1259 OID 182763)
+-- TOC entry 238 (class 1259 OID 66789)
 -- Name: tbl_roles_sistemas; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -564,8 +564,8 @@ CREATE TABLE public.tbl_roles_sistemas (
 ALTER TABLE public.tbl_roles_sistemas OWNER TO postgres;
 
 --
--- TOC entry 3899 (class 0 OID 0)
--- Dependencies: 240
+-- TOC entry 3882 (class 0 OID 0)
+-- Dependencies: 238
 -- Name: TABLE tbl_roles_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -573,7 +573,7 @@ COMMENT ON TABLE public.tbl_roles_sistemas IS 'Esta tabla contiene el catalogo d
 
 
 --
--- TOC entry 241 (class 1259 OID 182775)
+-- TOC entry 239 (class 1259 OID 66795)
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -589,8 +589,8 @@ CREATE SEQUENCE public.tbl_roles_opciones_id_seq
 ALTER SEQUENCE public.tbl_roles_opciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3900 (class 0 OID 0)
--- Dependencies: 241
+-- TOC entry 3883 (class 0 OID 0)
+-- Dependencies: 239
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -598,7 +598,7 @@ ALTER SEQUENCE public.tbl_roles_opciones_id_seq OWNED BY public.tbl_roles_sistem
 
 
 --
--- TOC entry 242 (class 1259 OID 182776)
+-- TOC entry 240 (class 1259 OID 66796)
 -- Name: tbl_roles_sistemas_opciones; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -612,8 +612,8 @@ CREATE TABLE public.tbl_roles_sistemas_opciones (
 ALTER TABLE public.tbl_roles_sistemas_opciones OWNER TO postgres;
 
 --
--- TOC entry 3901 (class 0 OID 0)
--- Dependencies: 242
+-- TOC entry 3884 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: TABLE tbl_roles_sistemas_opciones; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -621,7 +621,7 @@ COMMENT ON TABLE public.tbl_roles_sistemas_opciones IS 'Esta tabla contiene las 
 
 
 --
--- TOC entry 243 (class 1259 OID 182782)
+-- TOC entry 241 (class 1259 OID 66799)
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -637,8 +637,8 @@ CREATE SEQUENCE public.tbl_roles_sistemas_opciones_id_seq
 ALTER SEQUENCE public.tbl_roles_sistemas_opciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3902 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 3885 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -646,7 +646,7 @@ ALTER SEQUENCE public.tbl_roles_sistemas_opciones_id_seq OWNED BY public.tbl_rol
 
 
 --
--- TOC entry 244 (class 1259 OID 182783)
+-- TOC entry 242 (class 1259 OID 66800)
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -662,8 +662,8 @@ CREATE SEQUENCE public.tbl_sistemas_id_seq
 ALTER SEQUENCE public.tbl_sistemas_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3903 (class 0 OID 0)
--- Dependencies: 244
+-- TOC entry 3886 (class 0 OID 0)
+-- Dependencies: 242
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -671,7 +671,7 @@ ALTER SEQUENCE public.tbl_sistemas_id_seq OWNED BY public.cat_sistemas.id;
 
 
 --
--- TOC entry 245 (class 1259 OID 182784)
+-- TOC entry 243 (class 1259 OID 66801)
 -- Name: tbl_usuarios; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -698,8 +698,8 @@ CREATE TABLE public.tbl_usuarios (
 ALTER TABLE public.tbl_usuarios OWNER TO postgres;
 
 --
--- TOC entry 3904 (class 0 OID 0)
--- Dependencies: 245
+-- TOC entry 3887 (class 0 OID 0)
+-- Dependencies: 243
 -- Name: TABLE tbl_usuarios; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -707,7 +707,7 @@ COMMENT ON TABLE public.tbl_usuarios IS 'Esta tabla contiene el listado global d
 
 
 --
--- TOC entry 246 (class 1259 OID 182802)
+-- TOC entry 244 (class 1259 OID 66809)
 -- Name: tbl_usuarios_opciones_excepciones; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -724,8 +724,8 @@ CREATE TABLE public.tbl_usuarios_opciones_excepciones (
 ALTER TABLE public.tbl_usuarios_opciones_excepciones OWNER TO postgres;
 
 --
--- TOC entry 3905 (class 0 OID 0)
--- Dependencies: 246
+-- TOC entry 3888 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: TABLE tbl_usuarios_opciones_excepciones; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -733,7 +733,7 @@ COMMENT ON TABLE public.tbl_usuarios_opciones_excepciones IS 'Esta tabla es para
 
 
 --
--- TOC entry 247 (class 1259 OID 182814)
+-- TOC entry 245 (class 1259 OID 66815)
 -- Name: tbl_usuarios_opciones_excepciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -749,8 +749,8 @@ CREATE SEQUENCE public.tbl_usuarios_opciones_excepciones_id_seq
 ALTER SEQUENCE public.tbl_usuarios_opciones_excepciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3906 (class 0 OID 0)
--- Dependencies: 247
+-- TOC entry 3889 (class 0 OID 0)
+-- Dependencies: 245
 -- Name: tbl_usuarios_opciones_excepciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -758,7 +758,7 @@ ALTER SEQUENCE public.tbl_usuarios_opciones_excepciones_id_seq OWNED BY public.t
 
 
 --
--- TOC entry 248 (class 1259 OID 182815)
+-- TOC entry 246 (class 1259 OID 66816)
 -- Name: tbl_usuarios_roles_sistemas; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -775,8 +775,8 @@ CREATE TABLE public.tbl_usuarios_roles_sistemas (
 ALTER TABLE public.tbl_usuarios_roles_sistemas OWNER TO postgres;
 
 --
--- TOC entry 3907 (class 0 OID 0)
--- Dependencies: 248
+-- TOC entry 3890 (class 0 OID 0)
+-- Dependencies: 246
 -- Name: TABLE tbl_usuarios_roles_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -784,7 +784,7 @@ COMMENT ON TABLE public.tbl_usuarios_roles_sistemas IS 'Esta tabla contiene el r
 
 
 --
--- TOC entry 249 (class 1259 OID 182827)
+-- TOC entry 247 (class 1259 OID 66822)
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -800,8 +800,8 @@ CREATE SEQUENCE public.tbl_usuarios_roles_sistemas_id_seq
 ALTER SEQUENCE public.tbl_usuarios_roles_sistemas_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3908 (class 0 OID 0)
--- Dependencies: 249
+-- TOC entry 3891 (class 0 OID 0)
+-- Dependencies: 247
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -809,7 +809,7 @@ ALTER SEQUENCE public.tbl_usuarios_roles_sistemas_id_seq OWNED BY public.tbl_usu
 
 
 --
--- TOC entry 250 (class 1259 OID 182828)
+-- TOC entry 248 (class 1259 OID 66823)
 -- Name: usuarios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -825,8 +825,8 @@ CREATE SEQUENCE public.usuarios_id_seq
 ALTER SEQUENCE public.usuarios_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3909 (class 0 OID 0)
--- Dependencies: 250
+-- TOC entry 3892 (class 0 OID 0)
+-- Dependencies: 248
 -- Name: usuarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -834,7 +834,7 @@ ALTER SEQUENCE public.usuarios_id_seq OWNED BY public.tbl_usuarios.id;
 
 
 --
--- TOC entry 251 (class 1259 OID 182829)
+-- TOC entry 249 (class 1259 OID 66824)
 -- Name: tbl_alertas; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -853,7 +853,7 @@ CREATE TABLE tickets.tbl_alertas (
 ALTER TABLE tickets.tbl_alertas OWNER TO postgres;
 
 --
--- TOC entry 252 (class 1259 OID 182843)
+-- TOC entry 250 (class 1259 OID 66831)
 -- Name: view_dashboard_alertas_seguridad; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -885,7 +885,7 @@ UNION ALL
 ALTER VIEW public.view_dashboard_alertas_seguridad OWNER TO postgres;
 
 --
--- TOC entry 253 (class 1259 OID 182848)
+-- TOC entry 251 (class 1259 OID 66836)
 -- Name: view_dashboard_distribucion_roles; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -904,7 +904,7 @@ CREATE VIEW public.view_dashboard_distribucion_roles AS
 ALTER VIEW public.view_dashboard_distribucion_roles OWNER TO postgres;
 
 --
--- TOC entry 254 (class 1259 OID 182853)
+-- TOC entry 252 (class 1259 OID 66841)
 -- Name: view_dashboard_kpis; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -930,7 +930,7 @@ CREATE VIEW public.view_dashboard_kpis AS
 ALTER VIEW public.view_dashboard_kpis OWNER TO postgres;
 
 --
--- TOC entry 255 (class 1259 OID 182858)
+-- TOC entry 253 (class 1259 OID 66846)
 -- Name: view_dashboard_ultimos_accesos; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -950,7 +950,7 @@ CREATE VIEW public.view_dashboard_ultimos_accesos AS
 ALTER VIEW public.view_dashboard_ultimos_accesos OWNER TO postgres;
 
 --
--- TOC entry 256 (class 1259 OID 182863)
+-- TOC entry 254 (class 1259 OID 66850)
 -- Name: view_dashboard_usuarios_por_sistema; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -971,7 +971,7 @@ CREATE VIEW public.view_dashboard_usuarios_por_sistema AS
 ALTER VIEW public.view_dashboard_usuarios_por_sistema OWNER TO postgres;
 
 --
--- TOC entry 257 (class 1259 OID 182868)
+-- TOC entry 255 (class 1259 OID 66855)
 -- Name: view_matriz_roles_opciones; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -991,7 +991,7 @@ SELECT
 ALTER VIEW public.view_matriz_roles_opciones OWNER TO postgres;
 
 --
--- TOC entry 258 (class 1259 OID 182872)
+-- TOC entry 256 (class 1259 OID 66859)
 -- Name: view_sistemas_opciones; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1020,7 +1020,7 @@ CREATE VIEW public.view_sistemas_opciones AS
 ALTER VIEW public.view_sistemas_opciones OWNER TO postgres;
 
 --
--- TOC entry 259 (class 1259 OID 182877)
+-- TOC entry 257 (class 1259 OID 66864)
 -- Name: view_usuarios_opciones_sistemas; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1059,8 +1059,8 @@ CREATE VIEW public.view_usuarios_opciones_sistemas AS
 ALTER VIEW public.view_usuarios_opciones_sistemas OWNER TO postgres;
 
 --
--- TOC entry 3910 (class 0 OID 0)
--- Dependencies: 259
+-- TOC entry 3893 (class 0 OID 0)
+-- Dependencies: 257
 -- Name: VIEW view_usuarios_opciones_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -1068,7 +1068,7 @@ COMMENT ON VIEW public.view_usuarios_opciones_sistemas IS 'Muestra que opciones 
 
 
 --
--- TOC entry 260 (class 1259 OID 182882)
+-- TOC entry 258 (class 1259 OID 66869)
 -- Name: view_usuarios_permisos_detallados; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1094,7 +1094,7 @@ CREATE VIEW public.view_usuarios_permisos_detallados AS
 ALTER VIEW public.view_usuarios_permisos_detallados OWNER TO postgres;
 
 --
--- TOC entry 261 (class 1259 OID 182887)
+-- TOC entry 259 (class 1259 OID 66874)
 -- Name: view_usuarios_roles_sistemas; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1124,7 +1124,7 @@ CREATE VIEW public.view_usuarios_roles_sistemas AS
 ALTER VIEW public.view_usuarios_roles_sistemas OWNER TO postgres;
 
 --
--- TOC entry 262 (class 1259 OID 182892)
+-- TOC entry 260 (class 1259 OID 66879)
 -- Name: tbl_amonestaciones; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1142,7 +1142,7 @@ CREATE TABLE rrhh.tbl_amonestaciones (
 ALTER TABLE rrhh.tbl_amonestaciones OWNER TO postgres;
 
 --
--- TOC entry 263 (class 1259 OID 182902)
+-- TOC entry 261 (class 1259 OID 66886)
 -- Name: tbl_amonestaciones_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1158,8 +1158,8 @@ CREATE SEQUENCE rrhh.tbl_amonestaciones_id_seq
 ALTER SEQUENCE rrhh.tbl_amonestaciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3911 (class 0 OID 0)
--- Dependencies: 263
+-- TOC entry 3894 (class 0 OID 0)
+-- Dependencies: 261
 -- Name: tbl_amonestaciones_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1167,7 +1167,7 @@ ALTER SEQUENCE rrhh.tbl_amonestaciones_id_seq OWNED BY rrhh.tbl_amonestaciones.i
 
 
 --
--- TOC entry 264 (class 1259 OID 182903)
+-- TOC entry 262 (class 1259 OID 66887)
 -- Name: tbl_carga_familiar; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1185,7 +1185,7 @@ CREATE TABLE rrhh.tbl_carga_familiar (
 ALTER TABLE rrhh.tbl_carga_familiar OWNER TO postgres;
 
 --
--- TOC entry 265 (class 1259 OID 182914)
+-- TOC entry 263 (class 1259 OID 66892)
 -- Name: tbl_carga_familiar_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1201,8 +1201,8 @@ CREATE SEQUENCE rrhh.tbl_carga_familiar_id_seq
 ALTER SEQUENCE rrhh.tbl_carga_familiar_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3912 (class 0 OID 0)
--- Dependencies: 265
+-- TOC entry 3895 (class 0 OID 0)
+-- Dependencies: 263
 -- Name: tbl_carga_familiar_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1210,7 +1210,7 @@ ALTER SEQUENCE rrhh.tbl_carga_familiar_id_seq OWNED BY rrhh.tbl_carga_familiar.i
 
 
 --
--- TOC entry 266 (class 1259 OID 182915)
+-- TOC entry 264 (class 1259 OID 66893)
 -- Name: tbl_expediente; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1238,7 +1238,7 @@ CREATE TABLE rrhh.tbl_expediente (
 ALTER TABLE rrhh.tbl_expediente OWNER TO postgres;
 
 --
--- TOC entry 267 (class 1259 OID 182923)
+-- TOC entry 265 (class 1259 OID 66898)
 -- Name: tbl_expediente_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1254,8 +1254,8 @@ CREATE SEQUENCE rrhh.tbl_expediente_id_seq
 ALTER SEQUENCE rrhh.tbl_expediente_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3913 (class 0 OID 0)
--- Dependencies: 267
+-- TOC entry 3896 (class 0 OID 0)
+-- Dependencies: 265
 -- Name: tbl_expediente_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1263,7 +1263,7 @@ ALTER SEQUENCE rrhh.tbl_expediente_id_seq OWNED BY rrhh.tbl_expediente.id;
 
 
 --
--- TOC entry 268 (class 1259 OID 182924)
+-- TOC entry 266 (class 1259 OID 66899)
 -- Name: tbl_permisos; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1281,7 +1281,7 @@ CREATE TABLE rrhh.tbl_permisos (
 ALTER TABLE rrhh.tbl_permisos OWNER TO postgres;
 
 --
--- TOC entry 269 (class 1259 OID 182934)
+-- TOC entry 267 (class 1259 OID 66906)
 -- Name: tbl_permisos_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1297,8 +1297,8 @@ CREATE SEQUENCE rrhh.tbl_permisos_id_seq
 ALTER SEQUENCE rrhh.tbl_permisos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3914 (class 0 OID 0)
--- Dependencies: 269
+-- TOC entry 3897 (class 0 OID 0)
+-- Dependencies: 267
 -- Name: tbl_permisos_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1306,7 +1306,7 @@ ALTER SEQUENCE rrhh.tbl_permisos_id_seq OWNED BY rrhh.tbl_permisos.id;
 
 
 --
--- TOC entry 270 (class 1259 OID 182935)
+-- TOC entry 268 (class 1259 OID 66907)
 -- Name: tbl_reposos; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1324,7 +1324,7 @@ CREATE TABLE rrhh.tbl_reposos (
 ALTER TABLE rrhh.tbl_reposos OWNER TO postgres;
 
 --
--- TOC entry 271 (class 1259 OID 182945)
+-- TOC entry 269 (class 1259 OID 66914)
 -- Name: tbl_reposos_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1340,8 +1340,8 @@ CREATE SEQUENCE rrhh.tbl_reposos_id_seq
 ALTER SEQUENCE rrhh.tbl_reposos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3915 (class 0 OID 0)
--- Dependencies: 271
+-- TOC entry 3898 (class 0 OID 0)
+-- Dependencies: 269
 -- Name: tbl_reposos_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1349,7 +1349,7 @@ ALTER SEQUENCE rrhh.tbl_reposos_id_seq OWNED BY rrhh.tbl_reposos.id;
 
 
 --
--- TOC entry 272 (class 1259 OID 182946)
+-- TOC entry 270 (class 1259 OID 66915)
 -- Name: tbl_vacaciones; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1370,7 +1370,7 @@ CREATE TABLE rrhh.tbl_vacaciones (
 ALTER TABLE rrhh.tbl_vacaciones OWNER TO postgres;
 
 --
--- TOC entry 273 (class 1259 OID 182954)
+-- TOC entry 271 (class 1259 OID 66920)
 -- Name: tbl_vacaciones_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1386,8 +1386,8 @@ CREATE SEQUENCE rrhh.tbl_vacaciones_id_seq
 ALTER SEQUENCE rrhh.tbl_vacaciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3916 (class 0 OID 0)
--- Dependencies: 273
+-- TOC entry 3899 (class 0 OID 0)
+-- Dependencies: 271
 -- Name: tbl_vacaciones_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1395,7 +1395,7 @@ ALTER SEQUENCE rrhh.tbl_vacaciones_id_seq OWNED BY rrhh.tbl_vacaciones.id;
 
 
 --
--- TOC entry 274 (class 1259 OID 182955)
+-- TOC entry 272 (class 1259 OID 66921)
 -- Name: sla_configuracion; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1411,7 +1411,7 @@ CREATE TABLE tickets.sla_configuracion (
 ALTER TABLE tickets.sla_configuracion OWNER TO postgres;
 
 --
--- TOC entry 275 (class 1259 OID 182964)
+-- TOC entry 273 (class 1259 OID 66925)
 -- Name: sla_configuracion_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1426,8 +1426,8 @@ CREATE SEQUENCE tickets.sla_configuracion_id_seq
 ALTER SEQUENCE tickets.sla_configuracion_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3917 (class 0 OID 0)
--- Dependencies: 275
+-- TOC entry 3900 (class 0 OID 0)
+-- Dependencies: 273
 -- Name: sla_configuracion_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1435,7 +1435,7 @@ ALTER SEQUENCE tickets.sla_configuracion_id_seq OWNED BY tickets.sla_configuraci
 
 
 --
--- TOC entry 276 (class 1259 OID 182965)
+-- TOC entry 274 (class 1259 OID 66926)
 -- Name: tbl_alertas_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1451,8 +1451,8 @@ CREATE SEQUENCE tickets.tbl_alertas_id_seq
 ALTER SEQUENCE tickets.tbl_alertas_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3918 (class 0 OID 0)
--- Dependencies: 276
+-- TOC entry 3901 (class 0 OID 0)
+-- Dependencies: 274
 -- Name: tbl_alertas_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1460,7 +1460,7 @@ ALTER SEQUENCE tickets.tbl_alertas_id_seq OWNED BY tickets.tbl_alertas.id;
 
 
 --
--- TOC entry 277 (class 1259 OID 182966)
+-- TOC entry 275 (class 1259 OID 66927)
 -- Name: tbl_clientes; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1482,8 +1482,8 @@ CREATE TABLE tickets.tbl_clientes (
 ALTER TABLE tickets.tbl_clientes OWNER TO postgres;
 
 --
--- TOC entry 3919 (class 0 OID 0)
--- Dependencies: 277
+-- TOC entry 3902 (class 0 OID 0)
+-- Dependencies: 275
 -- Name: TABLE tbl_clientes; Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
@@ -1491,8 +1491,8 @@ COMMENT ON TABLE tickets.tbl_clientes IS 'Tabla transaccional que guarda la info
 
 
 --
--- TOC entry 3920 (class 0 OID 0)
--- Dependencies: 277
+-- TOC entry 3903 (class 0 OID 0)
+-- Dependencies: 275
 -- Name: COLUMN tbl_clientes.condicion_cliente_id; Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
@@ -1500,7 +1500,7 @@ COMMENT ON COLUMN tickets.tbl_clientes.condicion_cliente_id IS 'Determina si es 
 
 
 --
--- TOC entry 278 (class 1259 OID 182980)
+-- TOC entry 276 (class 1259 OID 66934)
 -- Name: tbl_clientes_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1516,8 +1516,8 @@ CREATE SEQUENCE tickets.tbl_clientes_id_seq
 ALTER SEQUENCE tickets.tbl_clientes_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3921 (class 0 OID 0)
--- Dependencies: 278
+-- TOC entry 3904 (class 0 OID 0)
+-- Dependencies: 276
 -- Name: tbl_clientes_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1525,7 +1525,7 @@ ALTER SEQUENCE tickets.tbl_clientes_id_seq OWNED BY tickets.tbl_clientes.id;
 
 
 --
--- TOC entry 279 (class 1259 OID 182981)
+-- TOC entry 277 (class 1259 OID 66935)
 -- Name: tbl_secuencias_tickets; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1539,7 +1539,7 @@ CREATE TABLE tickets.tbl_secuencias_tickets (
 ALTER TABLE tickets.tbl_secuencias_tickets OWNER TO postgres;
 
 --
--- TOC entry 280 (class 1259 OID 182988)
+-- TOC entry 278 (class 1259 OID 66939)
 -- Name: tbl_tickets; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1575,8 +1575,8 @@ CREATE TABLE tickets.tbl_tickets (
 ALTER TABLE tickets.tbl_tickets OWNER TO postgres;
 
 --
--- TOC entry 3922 (class 0 OID 0)
--- Dependencies: 280
+-- TOC entry 3905 (class 0 OID 0)
+-- Dependencies: 278
 -- Name: TABLE tbl_tickets; Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
@@ -1584,7 +1584,7 @@ COMMENT ON TABLE tickets.tbl_tickets IS 'Tabla transaccional principal que manej
 
 
 --
--- TOC entry 281 (class 1259 OID 183009)
+-- TOC entry 279 (class 1259 OID 66949)
 -- Name: tbl_tickets_bitacora; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1600,8 +1600,8 @@ CREATE TABLE tickets.tbl_tickets_bitacora (
 ALTER TABLE tickets.tbl_tickets_bitacora OWNER TO postgres;
 
 --
--- TOC entry 3923 (class 0 OID 0)
--- Dependencies: 281
+-- TOC entry 3906 (class 0 OID 0)
+-- Dependencies: 279
 -- Name: TABLE tbl_tickets_bitacora; Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
@@ -1609,7 +1609,7 @@ COMMENT ON TABLE tickets.tbl_tickets_bitacora IS 'Almacena el historial de respu
 
 
 --
--- TOC entry 282 (class 1259 OID 183019)
+-- TOC entry 280 (class 1259 OID 66955)
 -- Name: tbl_tickets_bitacora_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1625,8 +1625,8 @@ CREATE SEQUENCE tickets.tbl_tickets_bitacora_id_seq
 ALTER SEQUENCE tickets.tbl_tickets_bitacora_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3924 (class 0 OID 0)
--- Dependencies: 282
+-- TOC entry 3907 (class 0 OID 0)
+-- Dependencies: 280
 -- Name: tbl_tickets_bitacora_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1634,7 +1634,7 @@ ALTER SEQUENCE tickets.tbl_tickets_bitacora_id_seq OWNED BY tickets.tbl_tickets_
 
 
 --
--- TOC entry 283 (class 1259 OID 183020)
+-- TOC entry 281 (class 1259 OID 66956)
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1650,8 +1650,8 @@ CREATE SEQUENCE tickets.tbl_tickets_id_seq
 ALTER SEQUENCE tickets.tbl_tickets_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3925 (class 0 OID 0)
--- Dependencies: 283
+-- TOC entry 3908 (class 0 OID 0)
+-- Dependencies: 281
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1659,7 +1659,7 @@ ALTER SEQUENCE tickets.tbl_tickets_id_seq OWNED BY tickets.tbl_tickets.id;
 
 
 --
--- TOC entry 284 (class 1259 OID 183021)
+-- TOC entry 282 (class 1259 OID 66957)
 -- Name: view_listar_tickets; Type: VIEW; Schema: tickets; Owner: postgres
 --
 
@@ -1725,8 +1725,8 @@ CREATE VIEW tickets.view_listar_tickets AS
 ALTER VIEW tickets.view_listar_tickets OWNER TO postgres;
 
 --
--- TOC entry 3926 (class 0 OID 0)
--- Dependencies: 284
+-- TOC entry 3909 (class 0 OID 0)
+-- Dependencies: 282
 -- Name: VIEW view_listar_tickets; Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
@@ -1734,7 +1734,7 @@ COMMENT ON VIEW tickets.view_listar_tickets IS 'Muestra los tickets del sistema'
 
 
 --
--- TOC entry 3499 (class 2604 OID 183026)
+-- TOC entry 3484 (class 2604 OID 67171)
 -- Name: cat_datos_maestros id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1742,7 +1742,7 @@ ALTER TABLE ONLY public.cat_datos_maestros ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3503 (class 2604 OID 183027)
+-- TOC entry 3488 (class 2604 OID 67172)
 -- Name: cat_departamentos id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1750,7 +1750,7 @@ ALTER TABLE ONLY public.cat_departamentos ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3506 (class 2604 OID 183028)
+-- TOC entry 3491 (class 2604 OID 67173)
 -- Name: cat_opciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1758,7 +1758,7 @@ ALTER TABLE ONLY public.cat_opciones ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3509 (class 2604 OID 183029)
+-- TOC entry 3494 (class 2604 OID 67174)
 -- Name: cat_roles id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1766,7 +1766,7 @@ ALTER TABLE ONLY public.cat_roles ALTER COLUMN id SET DEFAULT nextval('public.tb
 
 
 --
--- TOC entry 3512 (class 2604 OID 183030)
+-- TOC entry 3497 (class 2604 OID 67175)
 -- Name: cat_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1774,7 +1774,7 @@ ALTER TABLE ONLY public.cat_sistemas ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3516 (class 2604 OID 183031)
+-- TOC entry 3501 (class 2604 OID 67176)
 -- Name: tbl_auth_tokens id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1782,7 +1782,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3519 (class 2604 OID 183032)
+-- TOC entry 3504 (class 2604 OID 67177)
 -- Name: tbl_roles_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1790,7 +1790,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3523 (class 2604 OID 183033)
+-- TOC entry 3508 (class 2604 OID 67178)
 -- Name: tbl_roles_sistemas_opciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1798,7 +1798,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones ALTER COLUMN id SET DEFAULT 
 
 
 --
--- TOC entry 3524 (class 2604 OID 183034)
+-- TOC entry 3509 (class 2604 OID 67179)
 -- Name: tbl_usuarios id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1806,7 +1806,7 @@ ALTER TABLE ONLY public.tbl_usuarios ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3528 (class 2604 OID 183035)
+-- TOC entry 3513 (class 2604 OID 67180)
 -- Name: tbl_usuarios_opciones_excepciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1814,7 +1814,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones ALTER COLUMN id SET DE
 
 
 --
--- TOC entry 3532 (class 2604 OID 183036)
+-- TOC entry 3517 (class 2604 OID 67181)
 -- Name: tbl_usuarios_roles_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -1822,7 +1822,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas ALTER COLUMN id SET DEFAULT 
 
 
 --
--- TOC entry 3539 (class 2604 OID 183037)
+-- TOC entry 3524 (class 2604 OID 67182)
 -- Name: tbl_amonestaciones id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1830,7 +1830,7 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones ALTER COLUMN id SET DEFAULT nextval('rr
 
 
 --
--- TOC entry 3542 (class 2604 OID 183038)
+-- TOC entry 3527 (class 2604 OID 67183)
 -- Name: tbl_carga_familiar id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1838,7 +1838,7 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar ALTER COLUMN id SET DEFAULT nextval('rr
 
 
 --
--- TOC entry 3545 (class 2604 OID 183039)
+-- TOC entry 3530 (class 2604 OID 67184)
 -- Name: tbl_expediente id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1846,7 +1846,7 @@ ALTER TABLE ONLY rrhh.tbl_expediente ALTER COLUMN id SET DEFAULT nextval('rrhh.t
 
 
 --
--- TOC entry 3548 (class 2604 OID 183040)
+-- TOC entry 3533 (class 2604 OID 67185)
 -- Name: tbl_permisos id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1854,7 +1854,7 @@ ALTER TABLE ONLY rrhh.tbl_permisos ALTER COLUMN id SET DEFAULT nextval('rrhh.tbl
 
 
 --
--- TOC entry 3551 (class 2604 OID 183041)
+-- TOC entry 3536 (class 2604 OID 67186)
 -- Name: tbl_reposos id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1862,7 +1862,7 @@ ALTER TABLE ONLY rrhh.tbl_reposos ALTER COLUMN id SET DEFAULT nextval('rrhh.tbl_
 
 
 --
--- TOC entry 3554 (class 2604 OID 183042)
+-- TOC entry 3539 (class 2604 OID 67187)
 -- Name: tbl_vacaciones id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -1870,7 +1870,7 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones ALTER COLUMN id SET DEFAULT nextval('rrhh.t
 
 
 --
--- TOC entry 3557 (class 2604 OID 183043)
+-- TOC entry 3542 (class 2604 OID 67188)
 -- Name: sla_configuracion id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1878,7 +1878,7 @@ ALTER TABLE ONLY tickets.sla_configuracion ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3536 (class 2604 OID 183044)
+-- TOC entry 3521 (class 2604 OID 67189)
 -- Name: tbl_alertas id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1886,7 +1886,7 @@ ALTER TABLE ONLY tickets.tbl_alertas ALTER COLUMN id SET DEFAULT nextval('ticket
 
 
 --
--- TOC entry 3559 (class 2604 OID 183045)
+-- TOC entry 3544 (class 2604 OID 67190)
 -- Name: tbl_clientes id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1894,7 +1894,7 @@ ALTER TABLE ONLY tickets.tbl_clientes ALTER COLUMN id SET DEFAULT nextval('ticke
 
 
 --
--- TOC entry 3563 (class 2604 OID 183046)
+-- TOC entry 3548 (class 2604 OID 67191)
 -- Name: tbl_tickets id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1902,7 +1902,7 @@ ALTER TABLE ONLY tickets.tbl_tickets ALTER COLUMN id SET DEFAULT nextval('ticket
 
 
 --
--- TOC entry 3569 (class 2604 OID 183047)
+-- TOC entry 3554 (class 2604 OID 67192)
 -- Name: tbl_tickets_bitacora id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -1910,8 +1910,8 @@ ALTER TABLE ONLY tickets.tbl_tickets_bitacora ALTER COLUMN id SET DEFAULT nextva
 
 
 --
--- TOC entry 3488 (class 0 OID 182626)
--- Dependencies: 225
+-- TOC entry 3473 (class 0 OID 66692)
+-- Dependencies: 223
 -- Data for Name: job; Type: TABLE DATA; Schema: cron; Owner: postgres
 --
 
@@ -1921,8 +1921,8 @@ COPY cron.job (jobid, schedule, command, nodename, nodeport, database, username,
 
 
 --
--- TOC entry 3490 (class 0 OID 182653)
--- Dependencies: 227
+-- TOC entry 3475 (class 0 OID 66711)
+-- Dependencies: 225
 -- Data for Name: job_run_details; Type: TABLE DATA; Schema: cron; Owner: postgres
 --
 
@@ -3390,12 +3390,57 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 1	1462	227841	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 14:01:00.01071-04	2026-10-14 14:01:00.013297-04
 1	1458	225986	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 13:57:00.010718-04	2026-10-14 13:57:00.01395-04
 1	1463	228288	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 14:02:00.008789-04	2026-10-14 14:02:00.010511-04
+1	1486	41834	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:36:00.009994-04	2026-10-14 17:36:00.011163-04
+1	1489	44336	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:39:00.009059-04	2026-10-14 17:39:00.010643-04
+1	1464	21411	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:14:00.014144-04	2026-10-14 17:14:00.015634-04
+1	1472	30828	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:22:00.007844-04	2026-10-14 17:22:00.008987-04
+1	1478	35852	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:28:00.011279-04	2026-10-14 17:28:00.012817-04
+1	1465	22867	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:15:00.009614-04	2026-10-14 17:15:00.011009-04
+1	1483	39337	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:33:00.080739-04	2026-10-14 17:33:00.081978-04
+1	1473	31966	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:23:00.009565-04	2026-10-14 17:23:00.010695-04
+1	1466	24325	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:16:00.009372-04	2026-10-14 17:16:00.010554-04
+1	1467	25656	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:17:00.010554-04	2026-10-14 17:17:00.012298-04
+1	1479	36426	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:29:00.008611-04	2026-10-14 17:29:00.010171-04
+1	1474	32987	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:24:00.00785-04	2026-10-14 17:24:00.008957-04
+1	1468	26689	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:18:00.00709-04	2026-10-14 17:18:00.008376-04
+1	1493	47867	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:43:00.00885-04	2026-10-14 17:43:00.010384-04
+1	1487	42504	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:37:00.008431-04	2026-10-14 17:37:00.009577-04
+1	1469	27898	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:19:00.015819-04	2026-10-14 17:19:00.019926-04
+1	1475	33712	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:25:00.008085-04	2026-10-14 17:25:00.009342-04
+1	1484	40272	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:34:00.058365-04	2026-10-14 17:34:00.059501-04
+1	1470	28927	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:20:00.060388-04	2026-10-14 17:20:00.061987-04
+1	1480	37051	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:30:00.008269-04	2026-10-14 17:30:00.009551-04
+1	1476	34396	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:26:00.065872-04	2026-10-14 17:26:00.067467-04
+1	1471	29885	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:21:00.008667-04	2026-10-14 17:21:00.009851-04
+1	1477	35131	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:27:00.011957-04	2026-10-14 17:27:00.013581-04
+1	1481	38099	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:31:00.061473-04	2026-10-14 17:31:00.062706-04
+1	1497	51236	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:47:00.010978-04	2026-10-14 17:47:00.012138-04
+1	1485	40992	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:35:00.008079-04	2026-10-14 17:35:00.00958-04
+1	1482	38724	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:32:00.009725-04	2026-10-14 17:32:00.010977-04
+1	1490	45301	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:40:00.008711-04	2026-10-14 17:40:00.01034-04
+1	1488	43401	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:38:00.007605-04	2026-10-14 17:38:00.009548-04
+1	1492	47132	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:42:00.010455-04	2026-10-14 17:42:00.012226-04
+1	1498	51906	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:48:00.008768-04	2026-10-14 17:48:00.010293-04
+1	1491	45916	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:41:00.007212-04	2026-10-14 17:41:00.008401-04
+1	1495	49560	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:45:00.008392-04	2026-10-14 17:45:00.009561-04
+1	1494	48489	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:44:00.009608-04	2026-10-14 17:44:00.011229-04
+1	1496	50288	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 17:46:00.009653-04	2026-10-14 17:46:00.010796-04
+1	1502	90074	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 18:27:00.00839-04	2026-10-14 18:27:00.009532-04
+1	1499	87098	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 18:24:00.072154-04	2026-10-14 18:24:00.073473-04
+1	1500	87948	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 18:25:00.007936-04	2026-10-14 18:25:00.009534-04
+1	1503	91366	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 18:28:00.008508-04	2026-10-14 18:28:00.009741-04
+1	1501	89009	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 18:26:00.008759-04	2026-10-14 18:26:00.009966-04
+1	1504	92494	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 18:29:00.009465-04	2026-10-14 18:29:00.010705-04
+1	1505	93277	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 18:30:00.008927-04	2026-10-14 18:30:00.010172-04
+1	1506	94240	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 18:31:00.009235-04	2026-10-14 18:31:00.010441-04
+1	1507	95279	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 18:32:00.009006-04	2026-10-14 18:32:00.010485-04
+1	1508	95932	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-14 18:33:00.010312-04	2026-10-14 18:33:00.011521-04
 \.
 
 
 --
--- TOC entry 3833 (class 0 OID 182687)
--- Dependencies: 229
+-- TOC entry 3816 (class 0 OID 66744)
+-- Dependencies: 227
 -- Data for Name: cat_datos_maestros; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -3441,8 +3486,8 @@ COPY public.cat_datos_maestros (id, str_tipo, str_nombre, str_descripcion, bol_a
 
 
 --
--- TOC entry 3835 (class 0 OID 182703)
--- Dependencies: 231
+-- TOC entry 3818 (class 0 OID 66753)
+-- Dependencies: 229
 -- Data for Name: cat_departamentos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -3461,8 +3506,8 @@ COPY public.cat_departamentos (id, str_nombre, str_descripcion, created_at, upda
 
 
 --
--- TOC entry 3837 (class 0 OID 182713)
--- Dependencies: 233
+-- TOC entry 3820 (class 0 OID 66759)
+-- Dependencies: 231
 -- Data for Name: cat_opciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -3489,8 +3534,8 @@ COPY public.cat_opciones (id, str_nombre, bol_eliminado, fecha_creacion, str_rut
 
 
 --
--- TOC entry 3838 (class 0 OID 182724)
--- Dependencies: 234
+-- TOC entry 3821 (class 0 OID 66766)
+-- Dependencies: 232
 -- Data for Name: cat_roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -3503,8 +3548,8 @@ COPY public.cat_roles (id, str_nombre, str_descripcion, created_at, updated_at) 
 
 
 --
--- TOC entry 3839 (class 0 OID 182733)
--- Dependencies: 235
+-- TOC entry 3822 (class 0 OID 66771)
+-- Dependencies: 233
 -- Data for Name: cat_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -3520,22 +3565,22 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 
 
 --
--- TOC entry 3840 (class 0 OID 182747)
--- Dependencies: 236
+-- TOC entry 3823 (class 0 OID 66779)
+-- Dependencies: 234
 -- Data for Name: tbl_auth_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, str_device_id, str_device_name) FROM stdin;
 441	57	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NTcsInVzZXJuYW1lIjoiY2Fjb3N0YSIsImlhdCI6MTc5MjAwMDM3NSwiZXhwIjoxNzkyMDAzOTc1fQ.8SVF7yBK4LKiKXVMpLJhham-3i6ztj-4b08kOoZEF2Q	2026-10-14 13:50:15.664115-04	2026-10-14 14:52:55.048329-04	f	37063edc-3af5-46ea-99ed-a302c032a71a	Chrome en Windows PC
 439	3	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJtbWlsbGFuIiwiaWF0IjoxNzkxOTk5NjMwLCJleHAiOjE3OTIwMDMyMzB9.p-LpUJashoxmrv7eXoBxQu2da6-ELSCOClN60JSuIrM	2026-10-14 13:39:30.036866-04	2026-10-14 14:40:30.088229-04	f	4ac0dd12-546c-4409-b290-389d23b22a72	Chrome en Windows PC
-440	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MjAwMDM2NCwiZXhwIjoxNzkyMDAzOTY0fQ.ji5JZbth9xSUGPCydIR5CcBZg5j6BQJuSrRPu0sC4xE	2026-10-14 13:39:47.539346-04	2026-10-14 14:52:44.619537-04	f	48f0e914-8831-41eb-9777-35c8cdeda261	Chrome en Windows PC
-442	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkyMDAwNzczLCJleHAiOjE3OTIwMDQzNzN9.7OQ2tDTwHRnH_dVyRdv116D4rL04J70Hw3K8_FWqNuY	2026-10-14 13:52:48.22026-04	2026-10-14 14:59:33.792034-04	f	090ed490-97c8-4f53-9c15-e84213360dd9	Chrome en Linux PC
+443	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5MjAxNjcyMCwiZXhwIjoxNzkyMDIwMzIwfQ.4qBXjoY66UarWSO4uhGejZjZel23Qn4gNFRpbukoXPU	2026-10-14 18:24:26.993332-04	2026-10-14 19:25:20.106539-04	f	3fe998c4-a4ea-4823-a31f-fe0c6c8bdbc8	Chrome en Linux PC
+444	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkyMDE3MTA5LCJleHAiOjE3OTIwMjA3MDl9.G9-t686XYoUOGtH2adFO4H0s4dZlVGy68RnXOlrlVUU	2026-10-14 17:15:13.663942-04	2026-10-14 19:31:49.188926-04	f	0cbcc181-9f48-4e84-8d5b-2614def63ed1	Firefox en Linux PC
 \.
 
 
 --
--- TOC entry 3844 (class 0 OID 182763)
--- Dependencies: 240
+-- TOC entry 3827 (class 0 OID 66789)
+-- Dependencies: 238
 -- Data for Name: tbl_roles_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -3554,8 +3599,8 @@ COPY public.tbl_roles_sistemas (id, rol_id, sistema_id, created_at, updated_at, 
 
 
 --
--- TOC entry 3846 (class 0 OID 182776)
--- Dependencies: 242
+-- TOC entry 3829 (class 0 OID 66796)
+-- Dependencies: 240
 -- Data for Name: tbl_roles_sistemas_opciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -3587,8 +3632,8 @@ COPY public.tbl_roles_sistemas_opciones (id, rol_sistema_id, opcion_id) FROM std
 
 
 --
--- TOC entry 3849 (class 0 OID 182784)
--- Dependencies: 245
+-- TOC entry 3832 (class 0 OID 66801)
+-- Dependencies: 243
 -- Data for Name: tbl_usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -3641,14 +3686,14 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 64	5	32560280	Yarbelis Carolina	Cervantes Herrera	ycervantes@mercosur.com.ve	$2a$10$J7CUsv2bsMGkjSrM3hS/puqHuIv/D7UJ1UeCENPvOMFfBctHZgdXm	t	2026-10-01 16:41:00.998101-04	2026-10-09 21:11:34.545712-04	\N	\N	ycervantes	\N	\N	2026-10-14 09:04:52.102633
 2	1	27474427	Yineska	Jaramillo	yjaramillo@mercosur.com.ve	$2a$10$/OxSASWaPZv6sRZCBxG3Yee0bvIn9pGMnGMcsX3ffVmtL1i4USOu.	t	2026-10-01 11:51:44.544172-04	2026-10-10 21:15:44.108154-04	\N	\N	yjaramillo	\N	\N	2026-10-14 13:32:56.077838
 3	1	28099437	Miguel	Millan	mmillan@mercosur.com.ve	$2a$10$4q8sCyu39ac7DotW79lnxOTqci5VfOjxdg77eMgZB9Wwl6744wV1S	t	2026-10-01 13:14:55.835451-04	2026-10-14 13:33:59.501217-04	\N	\N	mmillan	\N	\N	2026-10-14 13:39:30.039973
-1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$sQJ1WZfXydLA91xjFb59AeyIMxmQ7xa66uPnYq8FtBjQIFUM3zbZK	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-10-14 13:39:47.542342
-4	1	16379712	Neel Ezequiel	Barazarte Aché	nbarazarte@mercosur.com.ve	$2a$10$XmwnY2gfUArfm7Gtl2B5R.Dxl9JNK2SECdsZaconwOTK6x7Da5ayK	t	2026-10-01 14:51:25.418478-04	2026-10-09 21:12:50.402422-04	\N	\N	nbarazarte	\N	\N	2026-10-14 13:52:48.222615
+4	1	16379712	Neel Ezequiel	Barazarte Aché	nbarazarte@mercosur.com.ve	$2a$10$XmwnY2gfUArfm7Gtl2B5R.Dxl9JNK2SECdsZaconwOTK6x7Da5ayK	t	2026-10-01 14:51:25.418478-04	2026-10-09 21:12:50.402422-04	\N	\N	nbarazarte	\N	\N	2026-10-14 17:15:13.666566
+1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$sQJ1WZfXydLA91xjFb59AeyIMxmQ7xa66uPnYq8FtBjQIFUM3zbZK	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-10-14 18:24:26.995652
 \.
 
 
 --
--- TOC entry 3850 (class 0 OID 182802)
--- Dependencies: 246
+-- TOC entry 3833 (class 0 OID 66809)
+-- Dependencies: 244
 -- Data for Name: tbl_usuarios_opciones_excepciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -3657,8 +3702,8 @@ COPY public.tbl_usuarios_opciones_excepciones (id, usuario_id, opcion_id, bol_pe
 
 
 --
--- TOC entry 3852 (class 0 OID 182815)
--- Dependencies: 248
+-- TOC entry 3835 (class 0 OID 66816)
+-- Dependencies: 246
 -- Data for Name: tbl_usuarios_roles_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -3688,8 +3733,8 @@ COPY public.tbl_usuarios_roles_sistemas (id, usuario_id, rol_sistema_id, bol_act
 
 
 --
--- TOC entry 3856 (class 0 OID 182892)
--- Dependencies: 262
+-- TOC entry 3839 (class 0 OID 66879)
+-- Dependencies: 260
 -- Data for Name: tbl_amonestaciones; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -3698,8 +3743,8 @@ COPY rrhh.tbl_amonestaciones (id, usuario_id, motivo_id, str_motivo_descripcion,
 
 
 --
--- TOC entry 3858 (class 0 OID 182903)
--- Dependencies: 264
+-- TOC entry 3841 (class 0 OID 66887)
+-- Dependencies: 262
 -- Data for Name: tbl_carga_familiar; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -3708,8 +3753,8 @@ COPY rrhh.tbl_carga_familiar (id, usuario_id, parentesco_id, nombre_completo, fe
 
 
 --
--- TOC entry 3860 (class 0 OID 182915)
--- Dependencies: 266
+-- TOC entry 3843 (class 0 OID 66893)
+-- Dependencies: 264
 -- Data for Name: tbl_expediente; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -3718,8 +3763,8 @@ COPY rrhh.tbl_expediente (id, str_num_expediente, usuario_id, dmt_fecha_exp, bol
 
 
 --
--- TOC entry 3862 (class 0 OID 182924)
--- Dependencies: 268
+-- TOC entry 3845 (class 0 OID 66899)
+-- Dependencies: 266
 -- Data for Name: tbl_permisos; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -3728,8 +3773,8 @@ COPY rrhh.tbl_permisos (id, usuario_id, motivo_id, str_motivo_descripcion, dmt_f
 
 
 --
--- TOC entry 3864 (class 0 OID 182935)
--- Dependencies: 270
+-- TOC entry 3847 (class 0 OID 66907)
+-- Dependencies: 268
 -- Data for Name: tbl_reposos; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -3738,8 +3783,8 @@ COPY rrhh.tbl_reposos (id, usuario_id, motivo_id, str_motivo_descripcion, tim_fe
 
 
 --
--- TOC entry 3866 (class 0 OID 182946)
--- Dependencies: 272
+-- TOC entry 3849 (class 0 OID 66915)
+-- Dependencies: 270
 -- Data for Name: tbl_vacaciones; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -3748,8 +3793,8 @@ COPY rrhh.tbl_vacaciones (id, usuario_id, int_total_dias, dmt_fecha_desde, dmt_f
 
 
 --
--- TOC entry 3868 (class 0 OID 182955)
--- Dependencies: 274
+-- TOC entry 3851 (class 0 OID 66921)
+-- Dependencies: 272
 -- Data for Name: sla_configuracion; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
@@ -3803,22 +3848,19 @@ COPY tickets.sla_configuracion (id, categoria_id, prioridad_id, tiempo_maximo, a
 
 
 --
--- TOC entry 3855 (class 0 OID 182829)
--- Dependencies: 251
+-- TOC entry 3838 (class 0 OID 66824)
+-- Dependencies: 249
 -- Data for Name: tbl_alertas; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
 COPY tickets.tbl_alertas (id, caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido, fecha_generacion, fecha_lectura) FROM stdin;
-1	3	3	ASIGNACION	Se te ha asignado el nuevo ticket: [TCK2026-10-000001] prueba	f	2026-10-14 13:40:21.159912-04	\N
-2	3	57	ASIGNACION	Se te ha reasignado el ticket: [TCK2026-10-000001] prueba	f	2026-10-14 13:46:58.186269-04	\N
-3	4	57	ASIGNACION	Se te ha asignado el nuevo ticket: [TCK2026-10-000002] pato	f	2026-10-14 13:51:44.0733-04	\N
-4	5	4	ASIGNACION	Se te ha asignado el nuevo ticket: [TCK2026-10-000003] lsdjcjhflskjdhlcfdsklfvhcsdlkhbf	f	2026-10-14 13:53:34.156654-04	\N
+1	4	4	ASIGNACION	Se te ha asignado el nuevo ticket: [TCK2026-10-000004] Pruebas	f	2026-10-14 18:31:13.580854-04	\N
 \.
 
 
 --
--- TOC entry 3871 (class 0 OID 182966)
--- Dependencies: 277
+-- TOC entry 3854 (class 0 OID 66927)
+-- Dependencies: 275
 -- Data for Name: tbl_clientes; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
@@ -3828,45 +3870,44 @@ COPY tickets.tbl_clientes (id, str_cedula, str_nombre, str_apellido, str_telefon
 
 
 --
--- TOC entry 3873 (class 0 OID 182981)
--- Dependencies: 279
+-- TOC entry 3856 (class 0 OID 66935)
+-- Dependencies: 277
 -- Data for Name: tbl_secuencias_tickets; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
 COPY tickets.tbl_secuencias_tickets (int_anio, int_mes, int_ultimo_secuencial) FROM stdin;
-2026	10	3
+2026	10	5
 \.
 
 
 --
--- TOC entry 3874 (class 0 OID 182988)
--- Dependencies: 280
+-- TOC entry 3857 (class 0 OID 66939)
+-- Dependencies: 278
 -- Data for Name: tbl_tickets; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
 COPY tickets.tbl_tickets (id, str_ticket, cliente_id, creador_agente_id, cierre_agente_id, departamento_id, categoria_id, prioridad_id, estatus_id, canal_id, str_asunto, str_descripcion, int_sla, dmt_fecha_cierre, created_at, updated_at, str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id, tipo_ticket_id, dmt_fecha_vencimiento_sla, bool_cumplio_sla, int_minutos_pausa, dmt_fecha_inicio_pausa) FROM stdin;
-3	TCK2026-10-000001	\N	1	\N	1	29	16	22	\N	prueba	rgsgsf	8	2026-10-14 13:50:46.542173-04	2026-10-14 13:40:21.159912-04	2026-10-14 13:50:46.542173-04	\N	\N	\N	57	24	2026-10-15 13:40:21.159912-04	\N	3.81	\N
-4	TCK2026-10-000002	\N	1	\N	1	34	14	22	\N	pato	patooooooo	24	2026-10-14 13:52:23.302968-04	2026-10-14 13:51:44.0733-04	2026-10-14 13:52:23.302968-04	\N	\N	\N	57	24	2026-10-15 13:51:44.0733-04	\N	0.00	\N
-5	TCK2026-10-000003	\N	57	\N	1	29	14	17	\N	lsdjcjhflskjdhlcfdsklfvhcsdlkhbf	 tgb  kucf jnibk yj vbxdf	24	\N	2026-10-14 13:53:34.156654-04	2026-10-14 13:53:34.156654-04	\N	\N	\N	4	24	2026-10-15 13:53:34.156654-04	\N	0.00	\N
+1	TCK2026-10-000001	\N	1	\N	1	26	15	17	\N	Pruebas	<p>No abren los modulos de LA</p><table><colgroup><col><col><col></colgroup><tr><td colspan="1" rowspan="1"><p>q</p></td><td colspan="1" rowspan="1"><p>w</p></td><td colspan="1" rowspan="1"><p>e</p></td></tr><tr><td colspan="1" rowspan="1"><p>a</p></td><td colspan="1" rowspan="1"><p>b</p></td><td colspan="1" rowspan="1"><p>c</p></td></tr></table><img src="data:image/png;base64,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iK+//hqhoaHKonXSaDSYOXMmNmzYgOTkZEyePBl79uzBRx99BG9vb4tys2bNwubNm+Ho6IjIyEjMmDEDTk5O2L17N8LCwizWaw+2/qat+0BERER0LzQmk+nuawaIiIiI6IETPGMnAKB1ylpotVr71MARERER0f3DAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCqh0WgABjgiIiIi9WGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIiFdFoNNCYTCZBOaM+BEGA2WyGIAjVPhUVFQAAs9lcYxn5PGtl5NPE9Smn17S8teni3wBq3D6z2SxNV04jIiKihhEEAQ4ODtBoNNBqtdBoNAAg/S2frtVqodVW1jfJpyvnycsr1yH+LZZTThf/Vq63pvny6cr/tVbGHoJn7AQAeF1cV7nehgY4IiIiImpcygDHJlQiIiIilWGAIyIiIlIJsUmWAY6IiIhIZRjgiIiIiFSGAY6IiIhIZRjgiIiIiFSGAY6IiIhIRTQaDQMcERERkdowwBERERGpDAMcERERkUpwHDgiIiIilWKAIyIiIlIZBjgiIiIilWGAIyIiIlIRDiNCREREpEIMcEREREQqwadQiYiIiBqgoqJCOem+0ZhMJkE5kYiIiP78srOzkZOTg8LCQpSVlSlnUx10Oh30ej28vLzg5eWlnG1XwTN2AgB8Ln8NjUbDAEdERPQwys7Oxrlz5+Dt7Q1PT0+paY5s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" alt="image.png" data-name="image.png" data-url="data:image/png;base64,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iK+//hqhoaHKonXSaDSYOXMmNmzYgOTkZEyePBl79uzBRx99BG9vb4tys2bNwubNm+Ho6IjIyEjMmDEDTk5O2L17N8LCwizWaw+2/qat+0BERER0LzQmk+nuawaIiIiI6IETPGMnAKB1ylpotVr71MARERER0f3DAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCqh0WgABjgiIiIi9WGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIiFdFoNNCYTCZBOaM+BEGA2WyGIAjVPhUVFQAAs9lcYxn5PGtl5NPE9Smn17S8teni3wBq3D6z2SxNV04jIiKihhEEAQ4ODtBoNNBqtdBoNAAg/S2frtVqodVW1jfJpyvnycsr1yH+LZZTThf/Vq63pvny6cr/tVbGHoJn7AQAeF1cV7nehgY4IiIiImpcygDHJlQiIiIilWGAIyIiIlIJsUmWAY6IiIhIZRjgiIiIiFSGAY6IiIhIZRjgiIiIiFSGAY6IiIhIRTQaDQMcERERkdowwBERERGpDAMcERERkUpwHDgiIiIilWKAIyIiIlIZBjgiIiIilWGAIyIiIlIRDiNCREREpEIMcEREREQqwadQiYiIiBqgoqJCOem+0ZhMJkE5kYiIiP78srOzkZOTg8LCQpSVlSlnUx10Oh30ej28vLzg5eWlnG1XwTN2AgB8Ln8NjUbDAEdERPQwys7Oxrlz5+Dt7Q1PT0+paY5s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"><p>￼</p>	12	\N	2026-10-14 18:26:40.676824-04	2026-10-14 18:26:40.676824-04	/var/www/uploads/TCK2026-10-000001-1.png	\N	\N	\N	24	2026-10-15 06:26:40.676824-04	\N	0.00	\N
+2	TCK2026-10-000002	\N	1	\N	1	28	15	17	\N	Problemas con la Impresora	<p>No Puedo Imprimir</p><table><colgroup><col><col><col></colgroup><tr><td colspan="1" rowspan="1"><p>Nombre</p></td><td colspan="1" rowspan="1"><p>Apellido</p></td><td colspan="1" rowspan="1"><p>Telefono</p></td></tr><tr><td colspan="1" rowspan="1"><p>Neel</p></td><td colspan="1" rowspan="1"><p>Barazarte</p></td><td colspan="1" rowspan="1"><p>04142101096</p></td></tr><tr><td colspan="1" rowspan="1"><p>Ildemar</p></td><td colspan="1" rowspan="1"><p>Poveda</p></td><td colspan="1" rowspan="1"><p>04242708087</p></td></tr></table><img src="data:image/png;base64,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iK+//hqhoaHKonXSaDSYOXMmNmzYgOTkZEyePBl79uzBRx99BG9vb4tys2bNwubNm+Ho6IjIyEjMmDEDTk5O2L17N8LCwizWaw+2/qat+0BERER0LzQmk+nuawaIiIiI6IETPGMnAKB1ylpotVr71MARERER0f3DAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCqh0WgABjgiIiIi9WGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIiFdFoNNCYTCZBOaM+BEGA2WyGIAjVPhUVFQAAs9lcYxn5PGtl5NPE9Smn17S8teni3wBq3D6z2SxNV04jIiKihhEEAQ4ODtBoNNBqtdBoNAAg/S2frtVqodVW1jfJpyvnycsr1yH+LZZTThf/Vq63pvny6cr/tVbGHoJn7AQAeF1cV7nehgY4IiIiImpcygDHJlQiIiIilWGAIyIiIlIJsUmWAY6IiIhIZRjgiIiIiFSGAY6IiIhIZRjgiIiIiFSGAY6IiIhIRTQaDQMcERERkdowwBERERGpDAMcERERkUpwHDgiIiIilWKAIyIiIlIZBjgiIiIilWGAIyIiIlIRDiNCREREpEIMcEREREQqwadQiYiIiBqgoqJCOem+0ZhMJkE5kYiIiP78srOzkZOTg8LCQpSVlSlnUx10Oh30ej28vLzg5eWlnG1XwTN2AgB8Ln8NjUbDAEdERPQwys7Oxrlz5+Dt7Q1PT0+paY5s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" alt="image.png" data-name="image.png" data-url="data:image/png;base64,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iK+//hqhoaHKonXSaDSYOXMmNmzYgOTkZEyePBl79uzBRx99BG9vb4tys2bNwubNm+Ho6IjIyEjMmDEDTk5O2L17N8LCwizWaw+2/qat+0BERER0LzQmk+nuawaIiIiI6IETPGMnAKB1ylpotVr71MARERER0f3DAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCrDAEdERESkMgxwRERERCqh0WgABjgiIiIi9WGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIilWGAIyIiIlIZBjgiIiIiFdFoNNCYTCZBOaM+BEGA2WyGIAjVPhUVFQAAs9lcYxn5PGtl5NPE9Smn17S8teni3wBq3D6z2SxNV04jIiKihhEEAQ4ODtBoNNBqtdBoNAAg/S2frtVqodVW1jfJpyvnycsr1yH+LZZTThf/Vq63pvny6cr/tVbGHoJn7AQAeF1cV7nehgY4IiIiImpcygDHJlQiIiIilWGAIyIiIlIJsUmWAY6IiIhIZRjgiIiIiFSGAY6IiIhIZRjgiIiIiFSGAY6IiIhIRTQaDQMcERERkdowwBERERGpDAMcERERkUpwHDgiIiIilWKAIyIiIlIZBjgiIiIilWGAIyIiIlIRDiNCREREpEIMcEREREQqwadQiYiIiBqgoqJCOem+0ZhMJkE5kYiIiP78srOzkZOTg8LCQpSVlSlnUx10Oh30ej28vLzg5eWlnG1XwTN2AgB8Ln8NjUbDAEdERPQwys7Oxrlz5+Dt7Q1PT0+paY5s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"><p>￼</p>	16	\N	2026-10-14 18:29:33.485663-04	2026-10-14 18:29:33.485663-04	/var/www/uploads/TCK2026-10-000002-1.png	\N	\N	\N	24	2026-10-15 10:29:33.485663-04	\N	0.00	\N
+3	TCK2026-10-000003	\N	1	\N	1	29	16	17	\N	test	<p>hola</p>	8	\N	2026-10-14 18:30:08.404755-04	2026-10-14 18:30:08.404755-04	\N	\N	\N	\N	24	2026-10-15 02:30:08.404755-04	\N	0.00	\N
+4	TCK2026-10-000004	1	1	\N	1	9	16	17	2	Pruebas	<p>hola</p>	4	\N	2026-10-14 18:31:13.580854-04	2026-10-14 18:31:13.580854-04	\N	\N	\N	4	25	2026-10-14 22:31:13.580854-04	\N	0.00	\N
+5	TCK2026-10-000005	\N	1	\N	1	29	16	17	\N	otro Test	<p>hey</p>	8	\N	2026-10-14 18:31:46.309309-04	2026-10-14 18:31:46.309309-04	\N	\N	\N	\N	24	2026-10-15 02:31:46.309309-04	\N	0.00	\N
 \.
 
 
 --
--- TOC entry 3875 (class 0 OID 183009)
--- Dependencies: 281
+-- TOC entry 3858 (class 0 OID 66949)
+-- Dependencies: 279
 -- Data for Name: tbl_tickets_bitacora; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
 COPY tickets.tbl_tickets_bitacora (id, ticket_id, usuario_id, str_comentario, created_at) FROM stdin;
-1	3	3	Trabaja mano	2026-10-14 13:46:58.186269-04
-2	3	57	puto	2026-10-14 13:50:46.542173-04
-3	4	57	.i.	2026-10-14 13:52:23.302968-04
 \.
 
 
 --
--- TOC entry 3927 (class 0 OID 0)
--- Dependencies: 224
+-- TOC entry 3910 (class 0 OID 0)
+-- Dependencies: 222
 -- Name: jobid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
 
@@ -3874,17 +3915,17 @@ SELECT pg_catalog.setval('cron.jobid_seq', 1, true);
 
 
 --
--- TOC entry 3928 (class 0 OID 0)
--- Dependencies: 226
+-- TOC entry 3911 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: runid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
 
-SELECT pg_catalog.setval('cron.runid_seq', 1463, true);
+SELECT pg_catalog.setval('cron.runid_seq', 1508, true);
 
 
 --
--- TOC entry 3929 (class 0 OID 0)
--- Dependencies: 228
+-- TOC entry 3912 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: tbl_kcs_articulos_id_seq; Type: SEQUENCE SET; Schema: kcs; Owner: postgres
 --
 
@@ -3892,8 +3933,8 @@ SELECT pg_catalog.setval('kcs.tbl_kcs_articulos_id_seq', 6, true);
 
 
 --
--- TOC entry 3930 (class 0 OID 0)
--- Dependencies: 230
+-- TOC entry 3913 (class 0 OID 0)
+-- Dependencies: 228
 -- Name: cat_datos_maestros_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3901,8 +3942,8 @@ SELECT pg_catalog.setval('public.cat_datos_maestros_id_seq', 38, true);
 
 
 --
--- TOC entry 3931 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 3914 (class 0 OID 0)
+-- Dependencies: 230
 -- Name: cat_departamentos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3910,17 +3951,17 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 10, true);
 
 
 --
--- TOC entry 3932 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 3915 (class 0 OID 0)
+-- Dependencies: 235
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 442, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 443, true);
 
 
 --
--- TOC entry 3933 (class 0 OID 0)
--- Dependencies: 238
+-- TOC entry 3916 (class 0 OID 0)
+-- Dependencies: 236
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3928,8 +3969,8 @@ SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 46, true);
 
 
 --
--- TOC entry 3934 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 3917 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: tbl_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3937,8 +3978,8 @@ SELECT pg_catalog.setval('public.tbl_roles_id_seq', 19, true);
 
 
 --
--- TOC entry 3935 (class 0 OID 0)
--- Dependencies: 241
+-- TOC entry 3918 (class 0 OID 0)
+-- Dependencies: 239
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3946,8 +3987,8 @@ SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 45, true);
 
 
 --
--- TOC entry 3936 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 3919 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3955,8 +3996,8 @@ SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 70, true);
 
 
 --
--- TOC entry 3937 (class 0 OID 0)
--- Dependencies: 244
+-- TOC entry 3920 (class 0 OID 0)
+-- Dependencies: 242
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3964,8 +4005,8 @@ SELECT pg_catalog.setval('public.tbl_sistemas_id_seq', 34, true);
 
 
 --
--- TOC entry 3938 (class 0 OID 0)
--- Dependencies: 247
+-- TOC entry 3921 (class 0 OID 0)
+-- Dependencies: 245
 -- Name: tbl_usuarios_opciones_excepciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3973,8 +4014,8 @@ SELECT pg_catalog.setval('public.tbl_usuarios_opciones_excepciones_id_seq', 1, f
 
 
 --
--- TOC entry 3939 (class 0 OID 0)
--- Dependencies: 249
+-- TOC entry 3922 (class 0 OID 0)
+-- Dependencies: 247
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3982,8 +4023,8 @@ SELECT pg_catalog.setval('public.tbl_usuarios_roles_sistemas_id_seq', 71, true);
 
 
 --
--- TOC entry 3940 (class 0 OID 0)
--- Dependencies: 250
+-- TOC entry 3923 (class 0 OID 0)
+-- Dependencies: 248
 -- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -3991,8 +4032,8 @@ SELECT pg_catalog.setval('public.usuarios_id_seq', 104, true);
 
 
 --
--- TOC entry 3941 (class 0 OID 0)
--- Dependencies: 263
+-- TOC entry 3924 (class 0 OID 0)
+-- Dependencies: 261
 -- Name: tbl_amonestaciones_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -4000,8 +4041,8 @@ SELECT pg_catalog.setval('rrhh.tbl_amonestaciones_id_seq', 1, false);
 
 
 --
--- TOC entry 3942 (class 0 OID 0)
--- Dependencies: 265
+-- TOC entry 3925 (class 0 OID 0)
+-- Dependencies: 263
 -- Name: tbl_carga_familiar_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -4009,8 +4050,8 @@ SELECT pg_catalog.setval('rrhh.tbl_carga_familiar_id_seq', 1, false);
 
 
 --
--- TOC entry 3943 (class 0 OID 0)
--- Dependencies: 267
+-- TOC entry 3926 (class 0 OID 0)
+-- Dependencies: 265
 -- Name: tbl_expediente_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -4018,8 +4059,8 @@ SELECT pg_catalog.setval('rrhh.tbl_expediente_id_seq', 1, false);
 
 
 --
--- TOC entry 3944 (class 0 OID 0)
--- Dependencies: 269
+-- TOC entry 3927 (class 0 OID 0)
+-- Dependencies: 267
 -- Name: tbl_permisos_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -4027,8 +4068,8 @@ SELECT pg_catalog.setval('rrhh.tbl_permisos_id_seq', 1, false);
 
 
 --
--- TOC entry 3945 (class 0 OID 0)
--- Dependencies: 271
+-- TOC entry 3928 (class 0 OID 0)
+-- Dependencies: 269
 -- Name: tbl_reposos_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -4036,8 +4077,8 @@ SELECT pg_catalog.setval('rrhh.tbl_reposos_id_seq', 1, false);
 
 
 --
--- TOC entry 3946 (class 0 OID 0)
--- Dependencies: 273
+-- TOC entry 3929 (class 0 OID 0)
+-- Dependencies: 271
 -- Name: tbl_vacaciones_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -4045,8 +4086,8 @@ SELECT pg_catalog.setval('rrhh.tbl_vacaciones_id_seq', 1, false);
 
 
 --
--- TOC entry 3947 (class 0 OID 0)
--- Dependencies: 275
+-- TOC entry 3930 (class 0 OID 0)
+-- Dependencies: 273
 -- Name: sla_configuracion_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
@@ -4054,17 +4095,17 @@ SELECT pg_catalog.setval('tickets.sla_configuracion_id_seq', 46, true);
 
 
 --
--- TOC entry 3948 (class 0 OID 0)
--- Dependencies: 276
+-- TOC entry 3931 (class 0 OID 0)
+-- Dependencies: 274
 -- Name: tbl_alertas_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_alertas_id_seq', 4, true);
+SELECT pg_catalog.setval('tickets.tbl_alertas_id_seq', 1, true);
 
 
 --
--- TOC entry 3949 (class 0 OID 0)
--- Dependencies: 278
+-- TOC entry 3932 (class 0 OID 0)
+-- Dependencies: 276
 -- Name: tbl_clientes_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
@@ -4072,17 +4113,17 @@ SELECT pg_catalog.setval('tickets.tbl_clientes_id_seq', 1, true);
 
 
 --
--- TOC entry 3950 (class 0 OID 0)
--- Dependencies: 282
+-- TOC entry 3933 (class 0 OID 0)
+-- Dependencies: 280
 -- Name: tbl_tickets_bitacora_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_tickets_bitacora_id_seq', 3, true);
+SELECT pg_catalog.setval('tickets.tbl_tickets_bitacora_id_seq', 1, false);
 
 
 --
--- TOC entry 3951 (class 0 OID 0)
--- Dependencies: 283
+-- TOC entry 3934 (class 0 OID 0)
+-- Dependencies: 281
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
@@ -4090,7 +4131,7 @@ SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 5, true);
 
 
 --
--- TOC entry 3578 (class 2606 OID 183049)
+-- TOC entry 3563 (class 2606 OID 66985)
 -- Name: cat_datos_maestros cat_datos_maestros_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4099,7 +4140,7 @@ ALTER TABLE ONLY public.cat_datos_maestros
 
 
 --
--- TOC entry 3580 (class 2606 OID 183051)
+-- TOC entry 3565 (class 2606 OID 66987)
 -- Name: cat_departamentos cat_departamentos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4108,7 +4149,7 @@ ALTER TABLE ONLY public.cat_departamentos
 
 
 --
--- TOC entry 3582 (class 2606 OID 183053)
+-- TOC entry 3567 (class 2606 OID 66989)
 -- Name: cat_departamentos cat_departamentos_str_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4117,7 +4158,7 @@ ALTER TABLE ONLY public.cat_departamentos
 
 
 --
--- TOC entry 3598 (class 2606 OID 183055)
+-- TOC entry 3583 (class 2606 OID 66991)
 -- Name: tbl_roles_sistemas_opciones pk_roles_sistemas_opciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4126,7 +4167,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3592 (class 2606 OID 183057)
+-- TOC entry 3577 (class 2606 OID 66993)
 -- Name: tbl_auth_tokens tbl_auth_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4135,7 +4176,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 3584 (class 2606 OID 183059)
+-- TOC entry 3569 (class 2606 OID 66995)
 -- Name: cat_opciones tbl_opciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4144,7 +4185,7 @@ ALTER TABLE ONLY public.cat_opciones
 
 
 --
--- TOC entry 3586 (class 2606 OID 183061)
+-- TOC entry 3571 (class 2606 OID 66997)
 -- Name: cat_roles tbl_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4153,7 +4194,7 @@ ALTER TABLE ONLY public.cat_roles
 
 
 --
--- TOC entry 3596 (class 2606 OID 183063)
+-- TOC entry 3581 (class 2606 OID 66999)
 -- Name: tbl_roles_sistemas tbl_roles_sistemas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4162,7 +4203,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 3588 (class 2606 OID 183065)
+-- TOC entry 3573 (class 2606 OID 67001)
 -- Name: cat_roles tbl_roles_str_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4171,7 +4212,7 @@ ALTER TABLE ONLY public.cat_roles
 
 
 --
--- TOC entry 3590 (class 2606 OID 183067)
+-- TOC entry 3575 (class 2606 OID 67003)
 -- Name: cat_sistemas tbl_sistemas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4180,7 +4221,7 @@ ALTER TABLE ONLY public.cat_sistemas
 
 
 --
--- TOC entry 3608 (class 2606 OID 183069)
+-- TOC entry 3593 (class 2606 OID 67005)
 -- Name: tbl_usuarios_opciones_excepciones tbl_usuarios_opciones_excepciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4189,7 +4230,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3600 (class 2606 OID 183071)
+-- TOC entry 3585 (class 2606 OID 67007)
 -- Name: tbl_usuarios tbl_usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4198,7 +4239,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3610 (class 2606 OID 183073)
+-- TOC entry 3595 (class 2606 OID 67009)
 -- Name: tbl_usuarios_opciones_excepciones uk_usuario_opcion_excepcion; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4207,7 +4248,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3594 (class 2606 OID 183075)
+-- TOC entry 3579 (class 2606 OID 67011)
 -- Name: tbl_auth_tokens unique_user_device; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4216,7 +4257,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 3612 (class 2606 OID 183077)
+-- TOC entry 3597 (class 2606 OID 67013)
 -- Name: tbl_usuarios_roles_sistemas unique_usuario_rol_sistema; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4225,7 +4266,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3602 (class 2606 OID 183079)
+-- TOC entry 3587 (class 2606 OID 67015)
 -- Name: tbl_usuarios usuarios_str_cedula_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4234,7 +4275,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3604 (class 2606 OID 183081)
+-- TOC entry 3589 (class 2606 OID 67017)
 -- Name: tbl_usuarios usuarios_str_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4243,7 +4284,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3616 (class 2606 OID 183083)
+-- TOC entry 3601 (class 2606 OID 67019)
 -- Name: tbl_amonestaciones tbl_amonestaciones_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4252,7 +4293,7 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones
 
 
 --
--- TOC entry 3618 (class 2606 OID 183085)
+-- TOC entry 3603 (class 2606 OID 67021)
 -- Name: tbl_carga_familiar tbl_carga_familiar_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4261,7 +4302,7 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar
 
 
 --
--- TOC entry 3620 (class 2606 OID 183087)
+-- TOC entry 3605 (class 2606 OID 67023)
 -- Name: tbl_expediente tbl_expediente_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4270,7 +4311,7 @@ ALTER TABLE ONLY rrhh.tbl_expediente
 
 
 --
--- TOC entry 3622 (class 2606 OID 183089)
+-- TOC entry 3607 (class 2606 OID 67025)
 -- Name: tbl_permisos tbl_permisos_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4279,7 +4320,7 @@ ALTER TABLE ONLY rrhh.tbl_permisos
 
 
 --
--- TOC entry 3624 (class 2606 OID 183091)
+-- TOC entry 3609 (class 2606 OID 67027)
 -- Name: tbl_reposos tbl_reposos_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4288,7 +4329,7 @@ ALTER TABLE ONLY rrhh.tbl_reposos
 
 
 --
--- TOC entry 3626 (class 2606 OID 183093)
+-- TOC entry 3611 (class 2606 OID 67029)
 -- Name: tbl_vacaciones tbl_vacaciones_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4297,7 +4338,7 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones
 
 
 --
--- TOC entry 3629 (class 2606 OID 183095)
+-- TOC entry 3614 (class 2606 OID 67031)
 -- Name: sla_configuracion sla_configuracion_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4306,7 +4347,7 @@ ALTER TABLE ONLY tickets.sla_configuracion
 
 
 --
--- TOC entry 3614 (class 2606 OID 183097)
+-- TOC entry 3599 (class 2606 OID 67033)
 -- Name: tbl_alertas tbl_alertas_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4315,7 +4356,7 @@ ALTER TABLE ONLY tickets.tbl_alertas
 
 
 --
--- TOC entry 3631 (class 2606 OID 183099)
+-- TOC entry 3616 (class 2606 OID 67035)
 -- Name: tbl_clientes tbl_clientes_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4324,7 +4365,7 @@ ALTER TABLE ONLY tickets.tbl_clientes
 
 
 --
--- TOC entry 3633 (class 2606 OID 183101)
+-- TOC entry 3618 (class 2606 OID 67037)
 -- Name: tbl_clientes tbl_clientes_str_cedula_key; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4333,7 +4374,7 @@ ALTER TABLE ONLY tickets.tbl_clientes
 
 
 --
--- TOC entry 3635 (class 2606 OID 183103)
+-- TOC entry 3620 (class 2606 OID 67039)
 -- Name: tbl_clientes tbl_clientes_str_email_key; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4342,7 +4383,7 @@ ALTER TABLE ONLY tickets.tbl_clientes
 
 
 --
--- TOC entry 3637 (class 2606 OID 183105)
+-- TOC entry 3622 (class 2606 OID 67041)
 -- Name: tbl_secuencias_tickets tbl_secuencias_tickets_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4351,7 +4392,7 @@ ALTER TABLE ONLY tickets.tbl_secuencias_tickets
 
 
 --
--- TOC entry 3651 (class 2606 OID 183107)
+-- TOC entry 3636 (class 2606 OID 67043)
 -- Name: tbl_tickets_bitacora tbl_tickets_bitacora_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4360,7 +4401,7 @@ ALTER TABLE ONLY tickets.tbl_tickets_bitacora
 
 
 --
--- TOC entry 3646 (class 2606 OID 183109)
+-- TOC entry 3631 (class 2606 OID 67045)
 -- Name: tbl_tickets tbl_tickets_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4369,7 +4410,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3648 (class 2606 OID 183111)
+-- TOC entry 3633 (class 2606 OID 67047)
 -- Name: tbl_tickets tbl_tickets_str_ticket_key; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4378,7 +4419,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3605 (class 1259 OID 183112)
+-- TOC entry 3590 (class 1259 OID 67048)
 -- Name: idx_excepciones_opcion; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -4386,7 +4427,7 @@ CREATE INDEX idx_excepciones_opcion ON public.tbl_usuarios_opciones_excepciones 
 
 
 --
--- TOC entry 3606 (class 1259 OID 183113)
+-- TOC entry 3591 (class 1259 OID 67049)
 -- Name: idx_excepciones_usuario; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -4394,7 +4435,7 @@ CREATE INDEX idx_excepciones_usuario ON public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3627 (class 1259 OID 183114)
+-- TOC entry 3612 (class 1259 OID 67050)
 -- Name: idx_sla_config_cat_prio; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -4402,7 +4443,7 @@ CREATE INDEX idx_sla_config_cat_prio ON tickets.sla_configuracion USING btree (c
 
 
 --
--- TOC entry 3649 (class 1259 OID 183115)
+-- TOC entry 3634 (class 1259 OID 67051)
 -- Name: idx_tickets_bitacora_ticket_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -4410,7 +4451,7 @@ CREATE INDEX idx_tickets_bitacora_ticket_id ON tickets.tbl_tickets_bitacora USIN
 
 
 --
--- TOC entry 3638 (class 1259 OID 183116)
+-- TOC entry 3623 (class 1259 OID 67052)
 -- Name: idx_tickets_canal_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -4418,7 +4459,7 @@ CREATE INDEX idx_tickets_canal_id ON tickets.tbl_tickets USING btree (canal_id);
 
 
 --
--- TOC entry 3639 (class 1259 OID 183117)
+-- TOC entry 3624 (class 1259 OID 67053)
 -- Name: idx_tickets_created_at; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -4426,7 +4467,7 @@ CREATE INDEX idx_tickets_created_at ON tickets.tbl_tickets USING btree (created_
 
 
 --
--- TOC entry 3640 (class 1259 OID 183118)
+-- TOC entry 3625 (class 1259 OID 67054)
 -- Name: idx_tickets_departamento_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -4434,7 +4475,7 @@ CREATE INDEX idx_tickets_departamento_id ON tickets.tbl_tickets USING btree (dep
 
 
 --
--- TOC entry 3641 (class 1259 OID 183119)
+-- TOC entry 3626 (class 1259 OID 67055)
 -- Name: idx_tickets_estatus_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -4442,7 +4483,7 @@ CREATE INDEX idx_tickets_estatus_id ON tickets.tbl_tickets USING btree (estatus_
 
 
 --
--- TOC entry 3642 (class 1259 OID 183120)
+-- TOC entry 3627 (class 1259 OID 67056)
 -- Name: idx_tickets_prioridad_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -4450,7 +4491,7 @@ CREATE INDEX idx_tickets_prioridad_id ON tickets.tbl_tickets USING btree (priori
 
 
 --
--- TOC entry 3643 (class 1259 OID 183121)
+-- TOC entry 3628 (class 1259 OID 67057)
 -- Name: idx_tickets_tipo_ticket_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -4458,7 +4499,7 @@ CREATE INDEX idx_tickets_tipo_ticket_id ON tickets.tbl_tickets USING btree (tipo
 
 
 --
--- TOC entry 3644 (class 1259 OID 183122)
+-- TOC entry 3629 (class 1259 OID 67058)
 -- Name: idx_tickets_vencimiento_sla; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -4466,7 +4507,7 @@ CREATE INDEX idx_tickets_vencimiento_sla ON tickets.tbl_tickets USING btree (dmt
 
 
 --
--- TOC entry 3826 (class 2618 OID 182871)
+-- TOC entry 3809 (class 2618 OID 66858)
 -- Name: view_matriz_roles_opciones _RETURN; Type: RULE; Schema: public; Owner: postgres
 --
 
@@ -4490,7 +4531,7 @@ CREATE OR REPLACE VIEW public.view_matriz_roles_opciones AS
 
 
 --
--- TOC entry 3658 (class 2606 OID 183124)
+-- TOC entry 3643 (class 2606 OID 67060)
 -- Name: tbl_usuarios_opciones_excepciones fk_excepciones_opcion; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4499,7 +4540,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3659 (class 2606 OID 183129)
+-- TOC entry 3644 (class 2606 OID 67065)
 -- Name: tbl_usuarios_opciones_excepciones fk_excepciones_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4508,7 +4549,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3655 (class 2606 OID 183134)
+-- TOC entry 3640 (class 2606 OID 67070)
 -- Name: tbl_roles_sistemas_opciones fk_opciones; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4517,7 +4558,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3653 (class 2606 OID 183139)
+-- TOC entry 3638 (class 2606 OID 67075)
 -- Name: tbl_roles_sistemas fk_rol; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4526,8 +4567,8 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 3952 (class 0 OID 0)
--- Dependencies: 3653
+-- TOC entry 3935 (class 0 OID 0)
+-- Dependencies: 3638
 -- Name: CONSTRAINT fk_rol ON tbl_roles_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -4535,7 +4576,7 @@ COMMENT ON CONSTRAINT fk_rol ON public.tbl_roles_sistemas IS 'Relaciona la colum
 
 
 --
--- TOC entry 3656 (class 2606 OID 183144)
+-- TOC entry 3641 (class 2606 OID 67080)
 -- Name: tbl_roles_sistemas_opciones fk_roles_sistemas; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4544,7 +4585,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3654 (class 2606 OID 183149)
+-- TOC entry 3639 (class 2606 OID 67085)
 -- Name: tbl_roles_sistemas fk_sistema; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4553,7 +4594,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 3652 (class 2606 OID 183154)
+-- TOC entry 3637 (class 2606 OID 67090)
 -- Name: tbl_auth_tokens fk_tokens_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4562,8 +4603,8 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 3953 (class 0 OID 0)
--- Dependencies: 3652
+-- TOC entry 3936 (class 0 OID 0)
+-- Dependencies: 3637
 -- Name: CONSTRAINT fk_tokens_usuario ON tbl_auth_tokens; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -4571,7 +4612,7 @@ COMMENT ON CONSTRAINT fk_tokens_usuario ON public.tbl_auth_tokens IS 'Relaciona 
 
 
 --
--- TOC entry 3660 (class 2606 OID 183159)
+-- TOC entry 3645 (class 2606 OID 67095)
 -- Name: tbl_usuarios_roles_sistemas fk_urs_roles_sistemas; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4580,7 +4621,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3661 (class 2606 OID 183164)
+-- TOC entry 3646 (class 2606 OID 67100)
 -- Name: tbl_usuarios_roles_sistemas fk_urs_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4589,7 +4630,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3657 (class 2606 OID 183169)
+-- TOC entry 3642 (class 2606 OID 67105)
 -- Name: tbl_usuarios fk_usuario_departamento; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -4598,8 +4639,8 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3954 (class 0 OID 0)
--- Dependencies: 3657
+-- TOC entry 3937 (class 0 OID 0)
+-- Dependencies: 3642
 -- Name: CONSTRAINT fk_usuario_departamento ON tbl_usuarios; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -4607,7 +4648,7 @@ COMMENT ON CONSTRAINT fk_usuario_departamento ON public.tbl_usuarios IS 'Relacio
 
 
 --
--- TOC entry 3663 (class 2606 OID 183174)
+-- TOC entry 3648 (class 2606 OID 67110)
 -- Name: tbl_carga_familiar fk_CargaFamiliar; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4616,8 +4657,8 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar
 
 
 --
--- TOC entry 3955 (class 0 OID 0)
--- Dependencies: 3663
+-- TOC entry 3938 (class 0 OID 0)
+-- Dependencies: 3648
 -- Name: CONSTRAINT "fk_CargaFamiliar" ON tbl_carga_familiar; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -4625,7 +4666,7 @@ COMMENT ON CONSTRAINT "fk_CargaFamiliar" ON rrhh.tbl_carga_familiar IS 'Relació
 
 
 --
--- TOC entry 3662 (class 2606 OID 183179)
+-- TOC entry 3647 (class 2606 OID 67115)
 -- Name: tbl_amonestaciones fk_amonestaciones; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4634,8 +4675,8 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones
 
 
 --
--- TOC entry 3956 (class 0 OID 0)
--- Dependencies: 3662
+-- TOC entry 3939 (class 0 OID 0)
+-- Dependencies: 3647
 -- Name: CONSTRAINT fk_amonestaciones ON tbl_amonestaciones; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -4643,7 +4684,7 @@ COMMENT ON CONSTRAINT fk_amonestaciones ON rrhh.tbl_amonestaciones IS 'Relación
 
 
 --
--- TOC entry 3664 (class 2606 OID 183184)
+-- TOC entry 3649 (class 2606 OID 67120)
 -- Name: tbl_expediente fk_expediente_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4652,8 +4693,8 @@ ALTER TABLE ONLY rrhh.tbl_expediente
 
 
 --
--- TOC entry 3957 (class 0 OID 0)
--- Dependencies: 3664
+-- TOC entry 3940 (class 0 OID 0)
+-- Dependencies: 3649
 -- Name: CONSTRAINT fk_expediente_usuario ON tbl_expediente; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -4661,7 +4702,7 @@ COMMENT ON CONSTRAINT fk_expediente_usuario ON rrhh.tbl_expediente IS 'Relación
 
 
 --
--- TOC entry 3665 (class 2606 OID 183189)
+-- TOC entry 3650 (class 2606 OID 67125)
 -- Name: tbl_permisos fk_permisos_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4670,8 +4711,8 @@ ALTER TABLE ONLY rrhh.tbl_permisos
 
 
 --
--- TOC entry 3958 (class 0 OID 0)
--- Dependencies: 3665
+-- TOC entry 3941 (class 0 OID 0)
+-- Dependencies: 3650
 -- Name: CONSTRAINT fk_permisos_usuario ON tbl_permisos; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -4679,7 +4720,7 @@ COMMENT ON CONSTRAINT fk_permisos_usuario ON rrhh.tbl_permisos IS 'Relación ent
 
 
 --
--- TOC entry 3666 (class 2606 OID 183194)
+-- TOC entry 3651 (class 2606 OID 67130)
 -- Name: tbl_reposos fk_reposo_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4688,8 +4729,8 @@ ALTER TABLE ONLY rrhh.tbl_reposos
 
 
 --
--- TOC entry 3959 (class 0 OID 0)
--- Dependencies: 3666
+-- TOC entry 3942 (class 0 OID 0)
+-- Dependencies: 3651
 -- Name: CONSTRAINT fk_reposo_usuario ON tbl_reposos; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -4697,7 +4738,7 @@ COMMENT ON CONSTRAINT fk_reposo_usuario ON rrhh.tbl_reposos IS 'Relación entre 
 
 
 --
--- TOC entry 3667 (class 2606 OID 183199)
+-- TOC entry 3652 (class 2606 OID 67135)
 -- Name: tbl_vacaciones fk_vacaciones_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -4706,8 +4747,8 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones
 
 
 --
--- TOC entry 3960 (class 0 OID 0)
--- Dependencies: 3667
+-- TOC entry 3943 (class 0 OID 0)
+-- Dependencies: 3652
 -- Name: CONSTRAINT fk_vacaciones_usuario ON tbl_vacaciones; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -4715,7 +4756,7 @@ COMMENT ON CONSTRAINT fk_vacaciones_usuario ON rrhh.tbl_vacaciones IS 'Relación
 
 
 --
--- TOC entry 3668 (class 2606 OID 183204)
+-- TOC entry 3653 (class 2606 OID 67140)
 -- Name: sla_configuracion fk_sla_categoria; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4724,7 +4765,7 @@ ALTER TABLE ONLY tickets.sla_configuracion
 
 
 --
--- TOC entry 3669 (class 2606 OID 183209)
+-- TOC entry 3654 (class 2606 OID 67145)
 -- Name: sla_configuracion fk_sla_prioridad; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4733,7 +4774,7 @@ ALTER TABLE ONLY tickets.sla_configuracion
 
 
 --
--- TOC entry 3670 (class 2606 OID 183214)
+-- TOC entry 3655 (class 2606 OID 67150)
 -- Name: tbl_tickets fk_tickets_usuario_asignado; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4742,7 +4783,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3672 (class 2606 OID 183219)
+-- TOC entry 3657 (class 2606 OID 67155)
 -- Name: tbl_tickets_bitacora tbl_tickets_bitacora_ticket_id_fkey; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4751,7 +4792,7 @@ ALTER TABLE ONLY tickets.tbl_tickets_bitacora
 
 
 --
--- TOC entry 3673 (class 2606 OID 183224)
+-- TOC entry 3658 (class 2606 OID 67160)
 -- Name: tbl_tickets_bitacora tbl_tickets_bitacora_usuario_id_fkey; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4760,7 +4801,7 @@ ALTER TABLE ONLY tickets.tbl_tickets_bitacora
 
 
 --
--- TOC entry 3671 (class 2606 OID 183229)
+-- TOC entry 3656 (class 2606 OID 67165)
 -- Name: tbl_tickets tbl_tickets_tipo_ticket_id_fkey; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -4768,11 +4809,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT tbl_tickets_tipo_ticket_id_fkey FOREIGN KEY (tipo_ticket_id) REFERENCES public.cat_datos_maestros(id);
 
 
--- Completed on 2026-10-14 14:02:29 -04
+-- Completed on 2026-10-14 18:33:47 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict uT7JyhoOQaPytIP68ho9O3Ad5HzddQxwSRcInaXGBGCOInbHeTxfUMHvzzdiuX1
+\unrestrict emf8byh5MzDvVJlAdWfs0MKnNOaIIWTOev7iyuKHB8ze6G5EP5ESCQRfs8me0C2
 

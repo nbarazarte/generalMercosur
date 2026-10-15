@@ -1,11 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { logout } from "../../store/authSlice";
-import { persistor } from "../../store/store";
-import axiosSeguridad from "../utils/axiosSeguridad";
-
-import { DynamicIcon } from "../components/IconCatalog";
+import { logout } from "../store/authSlice";
+import { persistor } from "../store/store";
+import axiosSeguridad from "../pages/utils/axiosSeguridad";
+import { DynamicIcon } from "./IconCatalog";
 
 const LogoutButton = () => {
   const navigate = useNavigate();

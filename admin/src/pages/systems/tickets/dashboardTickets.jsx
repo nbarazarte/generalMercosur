@@ -3,7 +3,7 @@ import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
 
 /* IMPORTAMOS EL COMPONENTE DINÁMICO DE ÍCONOS */
-import { DynamicIcon } from "../../components/IconCatalog";
+import { DynamicIcon } from "../../../components/IconCatalog";
 
 /* ====== CONSTANTES ====== */
 const CASOS_RECIENTES = [
@@ -106,11 +106,11 @@ const RANKING_AGENTES = [
 function initials(n) {
   return n
     ? n
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
+      .split(" ")
+      .map((w) => w[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
     : "—";
 }
 
@@ -122,8 +122,8 @@ function useIsDarkMode() {
     const checkDark = () => {
       setIsDark(
         document.documentElement.classList.contains("dark") ||
-          document.body.classList.contains("dark") ||
-          document.documentElement.getAttribute("data-theme") === "dark",
+        document.body.classList.contains("dark") ||
+        document.documentElement.getAttribute("data-theme") === "dark",
       );
     };
 

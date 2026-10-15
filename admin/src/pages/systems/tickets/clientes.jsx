@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
-import { DynamicIcon } from "../../components/IconCatalog";
+import { DynamicIcon } from "../../../components/IconCatalog";
 
 /* ====== DATOS DE EJEMPLO DE CLIENTES Y CASOS ====== */
 const CLIENTES_INIT = [
@@ -78,22 +78,22 @@ const CASOS_INIT = [
 function initials(n) {
   return n
     ? n
-        .split(" ")
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase()
     : "—";
 }
 
 function fmtDate(d) {
   return d
     ? d.toLocaleDateString("es-VE", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
     : "—";
 }
 
@@ -336,14 +336,14 @@ export default function Clientes() {
               fUltimaAtencion ||
               fFechaDesde ||
               fFechaHasta) && (
-              <button
-                className="btn btn-ghost"
-                style={{ padding: "6px 12px", fontSize: 13 }}
-                onClick={limpiarFiltros}
-              >
-                ✕ Limpiar
-              </button>
-            )}
+                <button
+                  className="btn btn-ghost"
+                  style={{ padding: "6px 12px", fontSize: 13 }}
+                  onClick={limpiarFiltros}
+                >
+                  ✕ Limpiar
+                </button>
+              )}
           </div>
         </div>
 

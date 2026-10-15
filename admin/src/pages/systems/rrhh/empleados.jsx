@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
-import { DynamicIcon } from "../../components/IconCatalog";
+import { DynamicIcon } from "../../../components/IconCatalog";
 
 
 /* ====== CONSTANTES Y VALORES DE CONFIGURACIÓN ====== */
@@ -92,12 +92,12 @@ const EXPEDIENTES_INIT = [
 function initials(n) {
   return n
     ? n
-        .split(" ")
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase()
     : "—";
 }
 

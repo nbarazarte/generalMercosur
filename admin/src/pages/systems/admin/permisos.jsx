@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
-import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
+import { DynamicIcon, IconPicker } from "../../../components/IconCatalog";
 import { useSelector } from "react-redux";
 import axiosAdmin from "../../utils/axiosAdmin";
 
@@ -206,7 +206,7 @@ export default function Permisos() {
         const coincideDepartamento =
           !filtroDepartamento ||
           String(u.departamento_id || u.departamentoId) ===
-            String(filtroDepartamento);
+          String(filtroDepartamento);
 
         let coincideUltimoAcceso = true;
         if (filtroUltimoAcceso === "hoy") {
@@ -350,7 +350,7 @@ export default function Permisos() {
       setModal(null);
       showToast(
         response.data?.message ||
-          "Opciones del rol actualizadas correctamente.",
+        "Opciones del rol actualizadas correctamente.",
         "success",
       );
     } catch (err) {
@@ -797,23 +797,23 @@ function ToolbarFiltros({
           filtroUltimoAcceso ||
           fechaDesde ||
           fechaHasta) && (
-          <button
-            className="btn btn-ghost"
-            style={{ padding: "6px 12px", fontSize: 13 }}
-            onClick={() => {
-              setBusqueda("");
-              setFiltroSistema("");
-              setFiltroRol("");
-              setFiltroEstado("");
-              setFiltroDepartamento("");
-              setFiltroUltimoAcceso("");
-              setFechaDesde("");
-              setFechaHasta("");
-            }}
-          >
-            ✕ Limpiar
-          </button>
-        )}
+            <button
+              className="btn btn-ghost"
+              style={{ padding: "6px 12px", fontSize: 13 }}
+              onClick={() => {
+                setBusqueda("");
+                setFiltroSistema("");
+                setFiltroRol("");
+                setFiltroEstado("");
+                setFiltroDepartamento("");
+                setFiltroUltimoAcceso("");
+                setFechaDesde("");
+                setFechaHasta("");
+              }}
+            >
+              ✕ Limpiar
+            </button>
+          )}
       </div>
 
       {mostrarBotonNuevo && (
@@ -2018,13 +2018,13 @@ function ModalRol({
                           el.indeterminate =
                             opcionIdsSeleccionados.length > 0 &&
                             opcionIdsSeleccionados.length <
-                              opcionesDelSistema.length;
+                            opcionesDelSistema.length;
                         }
                       }}
                       checked={
                         opcionesDelSistema.length > 0 &&
                         opcionIdsSeleccionados.length ===
-                          opcionesDelSistema.length
+                        opcionesDelSistema.length
                       }
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -2169,8 +2169,8 @@ function ModalRol({
                           color: "var(--merco-text, #fff)",
                         }}
                         onMouseEnter={(e) =>
-                          (e.target.style.background =
-                            "rgba(47, 111, 237, 0.15)")
+                        (e.target.style.background =
+                          "rgba(47, 111, 237, 0.15)")
                         }
                         onMouseLeave={(e) =>
                           (e.target.style.background = "transparent")

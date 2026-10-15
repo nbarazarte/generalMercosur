@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { DynamicIcon } from "../components/IconCatalog";
+import { DynamicIcon } from "./IconCatalog";
 
 const ThemeToggle = () => {
   const [theme, setTheme] = useState(() => {

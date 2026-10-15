@@ -8,7 +8,7 @@ import ResetearContrasena, {
   ResetPasswordAside,
 } from "./pages/auth/resetearContrasena";
 import FloatingLines from "./pages/layouts/FloatingLines";
-import { DynamicIcon } from "../src/pages/components/IconCatalog";
+import { DynamicIcon } from "./components/IconCatalog";
 
 // Rutas de los sistemas:
 
@@ -133,16 +133,15 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
         <div className="loader-bg-glow glow-2"></div>
 
         <div
-          className={`loader-card relative z-10 ${
-            isDarkMode ? "system-card glass-card" : ""
-          }`}
+          className={`loader-card relative z-10 ${isDarkMode ? "system-card glass-card" : ""
+            }`}
           style={
             isDarkMode
               ? {
-                  backgroundColor: "rgba(10, 10, 11, 0.85)",
-                  backdropFilter: "blur(20px)",
-                  WebkitBackdropFilter: "blur(20px)",
-                }
+                backgroundColor: "rgba(10, 10, 11, 0.85)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+              }
               : undefined
           }
         >

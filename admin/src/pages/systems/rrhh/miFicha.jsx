@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
-import { DynamicIcon } from "../../components/IconCatalog";
+import { DynamicIcon } from "../../../components/IconCatalog";
 
 /* ====== PESTAÑAS CONFIGURADAS ====== */
 const TABS = [

@@ -2897,3 +2897,33 @@ html.dark .ma-alert-card:hover,
   background-color: rgba(30, 41, 59, 0.9);
   border-color: rgba(249, 115, 22, 0.4);
 }
+
+/* Estilos para renderizar tablas y contenido HTML de BlockNote en los tickets */
+.ticket-html-content {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--merco-text, inherit);
+}
+
+.ticket-html-content p {
+  margin-bottom: 8px;
+}
+
+.ticket-html-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  background-color: var(--merco-surface, #fff);
+}
+
+.ticket-html-content th,
+.ticket-html-content td {
+  border: 1px solid var(--merco-border, #cbd5e1);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.ticket-html-content th {
+  background-color: var(--merco-bg-subtle, rgba(0, 0, 0, 0.04));
+  font-weight: 600;
+}

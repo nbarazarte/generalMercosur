@@ -3,7 +3,7 @@ import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
 
 /* IMPORTAMOS EL COMPONENTE DINÁMICO E ICON PICKER DE ÍCONOS DE LA APLICACIÓN */
-import { DynamicIcon, IconPicker } from "../../components/IconCatalog";
+import { DynamicIcon, IconPicker } from "../../../components/IconCatalog";
 
 /* ====== DATOS INICIALES DE EXPEDIENTES DE RECURSOS HUMANOS ====== */
 const DATOS_INICIALES = [
@@ -142,11 +142,11 @@ const INITIAL_SECCIONES = [
 function initials(n) {
   return n
     ? n
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .slice(0, 2)
-        .toUpperCase()
+      .split(" ")
+      .map((w) => w[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
     : "—";
 }
 
@@ -157,8 +157,8 @@ function useIsDarkMode() {
     const checkDark = () => {
       setIsDark(
         document.documentElement.classList.contains("dark") ||
-          document.body.classList.contains("dark") ||
-          document.documentElement.getAttribute("data-theme") === "dark"
+        document.body.classList.contains("dark") ||
+        document.documentElement.getAttribute("data-theme") === "dark"
       );
     };
 
@@ -404,14 +404,14 @@ export default function DashboardRrhh() {
                               emp.estado_colaborador === "Activo"
                                 ? "rgba(31, 157, 99, 0.15)"
                                 : emp.estado_colaborador === "Inactivo"
-                                ? "rgba(209, 67, 91, 0.15)"
-                                : "rgba(216, 153, 42, 0.15)",
+                                  ? "rgba(209, 67, 91, 0.15)"
+                                  : "rgba(216, 153, 42, 0.15)",
                             color:
                               emp.estado_colaborador === "Activo"
                                 ? "#1f9d63"
                                 : emp.estado_colaborador === "Inactivo"
-                                ? "#d1435b"
-                                : "#d8992a",
+                                  ? "#d1435b"
+                                  : "#d8992a",
                           }}
                         >
                           ● {emp.estado_colaborador}
@@ -429,14 +429,14 @@ export default function DashboardRrhh() {
                               emp.estado === "completo"
                                 ? "rgba(31, 157, 99, 0.15)"
                                 : emp.estado === "incompleto"
-                                ? "rgba(216, 153, 42, 0.15)"
-                                : "rgba(209, 67, 91, 0.15)",
+                                  ? "rgba(216, 153, 42, 0.15)"
+                                  : "rgba(209, 67, 91, 0.15)",
                             color:
                               emp.estado === "completo"
                                 ? "#1f9d63"
                                 : emp.estado === "incompleto"
-                                ? "#d8992a"
-                                : "#d1435b",
+                                  ? "#d8992a"
+                                  : "#d1435b",
                           }}
                         >
                           {emp.estado}
@@ -490,20 +490,20 @@ export default function DashboardRrhh() {
                         item.tipo === "danger"
                           ? "1px solid rgba(209, 67, 91, 0.4)"
                           : item.tipo === "warning"
-                          ? "1px solid rgba(216, 153, 42, 0.4)"
-                          : "1px solid rgba(47, 111, 237, 0.4)",
+                            ? "1px solid rgba(216, 153, 42, 0.4)"
+                            : "1px solid rgba(47, 111, 237, 0.4)",
                       background:
                         item.tipo === "danger"
                           ? "rgba(209, 67, 91, 0.12)"
                           : item.tipo === "warning"
-                          ? "rgba(216, 153, 42, 0.12)"
-                          : "rgba(47, 111, 237, 0.12)",
+                            ? "rgba(216, 153, 42, 0.12)"
+                            : "rgba(47, 111, 237, 0.12)",
                       color:
                         item.tipo === "danger"
                           ? "#DC2626"
                           : item.tipo === "warning"
-                          ? "#D97706"
-                          : "#2F6FED",
+                            ? "#D97706"
+                            : "#2F6FED",
                       display: "grid",
                       placeItems: "center",
                       fontSize: 16,
@@ -515,8 +515,8 @@ export default function DashboardRrhh() {
                         item.tipo === "danger"
                           ? "FiAlertCircle"
                           : item.tipo === "warning"
-                          ? "FiAlertTriangle"
-                          : "FiInfo"
+                            ? "FiAlertTriangle"
+                            : "FiInfo"
                       }
                       fallback="FiFile"
                     />

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
-import { DynamicIcon } from "../../components/IconCatalog";
+import { DynamicIcon } from "../../../components/IconCatalog";
 
 /* ====== CONSTANTES ====== */
 const TIPOS = [
@@ -170,8 +170,8 @@ function useIsDarkMode() {
     const checkDark = () => {
       setIsDark(
         document.documentElement.classList.contains("dark") ||
-          document.body.classList.contains("dark") ||
-          document.documentElement.getAttribute("data-theme") === "dark",
+        document.body.classList.contains("dark") ||
+        document.documentElement.getAttribute("data-theme") === "dark",
       );
     };
 

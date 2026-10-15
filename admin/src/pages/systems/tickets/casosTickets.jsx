@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import ReactDOM from "react-dom";
 import copy from "copy-to-clipboard";
 import SystemLayout from "../../layouts/SystemLayout";
-import { DynamicIcon } from "../../components/IconCatalog";
+import { DynamicIcon } from "../../../components/IconCatalog";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axiosTickets from "../../utils/axiosTickets";
 
@@ -1471,9 +1471,8 @@ export default function CasosTickets() {
                 }}
               >
                 {(() => {
-                  const nombreCreadorModal = `${
-                    ticketSeleccionado.creador_nombre || ""
-                  } ${ticketSeleccionado.creador_apellido || ""}`.trim();
+                  const nombreCreadorModal = `${ticketSeleccionado.creador_nombre || ""
+                    } ${ticketSeleccionado.creador_apellido || ""}`.trim();
                   const correoCreadorModal =
                     ticketSeleccionado.creador_correo || "";
 
@@ -1560,17 +1559,17 @@ export default function CasosTickets() {
                   ticketSeleccionado.tipo_ticket
                     ?.toLowerCase()
                     .includes("app")) && (
-                  <div>
-                    <b>Canal:</b> {ticketSeleccionado.canal_nombre || "N/A"}
-                  </div>
-                )}
+                    <div>
+                      <b>Canal:</b> {ticketSeleccionado.canal_nombre || "N/A"}
+                    </div>
+                  )}
 
                 {ticketSeleccionado.tipo_ticket
                   ?.toLowerCase()
                   .includes("externo") ||
-                ticketSeleccionado.tipo_ticket
-                  ?.toLowerCase()
-                  .includes("app") ? (
+                  ticketSeleccionado.tipo_ticket
+                    ?.toLowerCase()
+                    .includes("app") ? (
                   <>
                     <div
                       style={{
@@ -1640,16 +1639,16 @@ export default function CasosTickets() {
                   <b>Fecha de Creación:</b>{" "}
                   {ticketSeleccionado.created_at
                     ? new Date(ticketSeleccionado.created_at).toLocaleString(
-                        "es-VE",
-                      )
+                      "es-VE",
+                    )
                     : "—"}
                 </div>
                 <div>
                   <b>F. Vencimiento:</b>{" "}
                   {ticketSeleccionado.dmt_fecha_vencimiento_sla
                     ? new Date(
-                        ticketSeleccionado.dmt_fecha_vencimiento_sla,
-                      ).toLocaleString("es-VE")
+                      ticketSeleccionado.dmt_fecha_vencimiento_sla,
+                    ).toLocaleString("es-VE")
                     : "—"}
                 </div>
                 <div>
@@ -1664,8 +1663,8 @@ export default function CasosTickets() {
                   <b>Fecha de Cierre:</b>{" "}
                   {ticketSeleccionado.dmt_fecha_cierre
                     ? new Date(
-                        ticketSeleccionado.dmt_fecha_cierre,
-                      ).toLocaleString("es-VE")
+                      ticketSeleccionado.dmt_fecha_cierre,
+                    ).toLocaleString("es-VE")
                     : "—"}
                 </div>
                 <div>
@@ -1842,9 +1841,12 @@ export default function CasosTickets() {
                       }}
                     >
                       {(!tieneMultimedia || tabActiva === "descripcion") && (
-                        <div style={{ whiteSpace: "pre-wrap" }}>
-                          {ticketSeleccionado.str_descripcion}
-                        </div>
+                        <div
+                          className="ticket-html-content"
+                          dangerouslySetInnerHTML={{
+                            __html: ticketSeleccionado.str_descripcion,
+                          }}
+                        />
                       )}
 
                       {tabActiva === "imagenes" && (
@@ -2193,7 +2195,7 @@ export default function CasosTickets() {
                       }}
                       placeholder={
                         Number(nuevoEstatusId) !==
-                        Number(ticketSeleccionado?.estatus_id)
+                          Number(ticketSeleccionado?.estatus_id)
                           ? "Escriba obligatoriamente la respuesta o motivo del cambio de estatus..."
                           : "Escriba una nota opcional para la bitácora..."
                       }

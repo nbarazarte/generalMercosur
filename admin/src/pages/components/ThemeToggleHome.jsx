@@ -1,5 +1,5 @@
 import React from "react";
-import { DynamicIcon } from "../components/IconCatalog";
+import { DynamicIcon } from "../../components/IconCatalog";
 
 const ThemeToggle = ({ theme, onToggle }) => {
   return (

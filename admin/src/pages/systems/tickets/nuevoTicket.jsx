@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import SystemLayout from "../../layouts/SystemLayout";
-import { DynamicIcon } from "../../components/IconCatalog";
+import { DynamicIcon } from "../../../components/IconCatalog";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import axiosTickets from "../../utils/axiosTickets";
@@ -150,7 +150,7 @@ export default function NuevoTicket() {
     );
     return seleccionado
       ? seleccionado.str_nombre.toLowerCase().includes("externo") ||
-          seleccionado.str_nombre.toLowerCase().includes("app")
+      seleccionado.str_nombre.toLowerCase().includes("app")
       : false;
   };
 
@@ -259,15 +259,21 @@ export default function NuevoTicket() {
     [],
   );
 
+  const obtenerContenidoHTML = async () => {
+    if (!editor) return "";
+    try {
+      const html = await editor.blocksToHTMLLossy(editor.document);
+      return html;
+    } catch (err) {
+      console.error("Error al convertir bloques a HTML:", err);
+      return "";
+    }
+  };
+
   const handleEditorChange = async () => {
     if (!editor) return;
-    const blocks = editor.document;
-    const textContent = blocks
-      .map((block) =>
-        block.content ? block.content.map((c) => c.text).join("") : "",
-      )
-      .join("\n");
-    setStrDescripcion(textContent);
+    const htmlContent = await obtenerContenidoHTML();
+    setStrDescripcion(htmlContent);
   };
 
   const handleLimpiarTodo = async () => {
@@ -497,20 +503,10 @@ export default function NuevoTicket() {
       return;
     }
 
-    const descripcionContent = editor ? editor.document : [];
-    const extraerTextoDeDescripcion = (descripcionArray) => {
-      if (!Array.isArray(descripcionArray)) return "";
-      return descripcionArray
-        .map((block) => {
-          if (!block.content || !Array.isArray(block.content)) return "";
-          return block.content.map((c) => c.text || "").join("");
-        })
-        .join("\n");
-    };
+    // Obtenemos el HTML completo incluyendo tablas y formato
+    const descripcionHTML = await obtenerContenidoHTML();
 
-    const textoPlano = extraerTextoDeDescripcion(descripcionContent);
-
-    if (!textoPlano.trim()) {
+    if (!descripcionHTML.trim() || descripcionHTML === "<p></p>") {
       showToast("Por favor ingrese la descripción del ticket.", "error");
       return;
     }
@@ -563,8 +559,10 @@ export default function NuevoTicket() {
     const formData = new FormData();
     formData.append("tipo_ticket_id", Number(tipoTicketId));
     formData.append("str_asunto", strAsunto);
-    formData.append("str_descripcion", textoPlano);
+    // Enviamos la descripción en formato HTML estructurado
+    formData.append("str_descripcion", descripcionHTML);
 
+    // Resto de campos del FormData...
     if (esTipoExterno()) {
       if (canalId) formData.append("canal_id", Number(canalId));
       if (clienteId) formData.append("cliente_id", Number(clienteId));
@@ -579,7 +577,7 @@ export default function NuevoTicket() {
     formData.append("prioridad_id", Number(prioridadId));
     formData.append("departamento_id", Number(departamentoId));
 
-    if (usuarioId && !esTipoExterno()) {
+    if (usuarioId) {
       formData.append("usuario_asignado_id", Number(usuarioId));
     }
 
@@ -604,7 +602,7 @@ export default function NuevoTicket() {
       console.error("Error al enviar el ticket:", error);
       showToast(
         error.response?.data?.error ||
-          "Ocurrió un error al procesar la solicitud del ticket.",
+        "Ocurrió un error al procesar la solicitud del ticket.",
         "error",
       );
     }
@@ -689,7 +687,10 @@ export default function NuevoTicket() {
             >
               <DynamicIcon
                 name={esTipoInterno() ? "FiInfo" : "FiExternalLink"}
-                style={{ color: "var(--merco-accent, #f95700)", fontSize: "16px" }}
+                style={{
+                  color: "var(--merco-accent, #f95700)",
+                  fontSize: "16px",
+                }}
               />
               <span>
                 {esTipoInterno()
@@ -762,7 +763,8 @@ export default function NuevoTicket() {
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                      gridTemplateColumns:
+                        "repeat(auto-fit, minmax(180px, 1fr))",
                       gap: "10px",
                     }}
                   >
@@ -800,7 +802,8 @@ export default function NuevoTicket() {
                         </option>
                         {empleadosFiltrados.map((emp) => (
                           <option key={emp.id} value={emp.id}>
-                            {emp.str_nombre} {emp.str_apellido} ({emp.str_email})
+                            {emp.str_nombre} {emp.str_apellido} ({emp.str_email}
+                            )
                           </option>
                         ))}
                       </select>

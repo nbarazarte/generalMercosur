@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 
 /* IMPORTAMOS EL COMPONENTE DINÁMICO DE ÍCONOS */
-import { DynamicIcon } from "../../components/IconCatalog";
+import { DynamicIcon } from "../../../components/IconCatalog";
 
 /* ====== CONSTANTES ====== */
 const SLA = { Alta: 4, Media: 24, Baja: 72 };
@@ -168,12 +168,12 @@ const CASOS_INIT = [
 function initials(n) {
   return n
     ? n
-        .split(" ")
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase()
     : "—";
 }
 
@@ -585,14 +585,14 @@ export default function Seguimiento() {
               fApertura ||
               fFechaDesde ||
               fFechaHasta) && (
-              <button
-                className="btn btn-ghost"
-                style={{ padding: "6px 12px", fontSize: 13 }}
-                onClick={limpiarFiltros}
-              >
-                ✕ Limpiar
-              </button>
-            )}
+                <button
+                  className="btn btn-ghost"
+                  style={{ padding: "6px 12px", fontSize: 13 }}
+                  onClick={limpiarFiltros}
+                >
+                  ✕ Limpiar
+                </button>
+              )}
           </div>
         </div>
 
