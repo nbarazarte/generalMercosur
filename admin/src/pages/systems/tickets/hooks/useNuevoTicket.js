@@ -143,16 +143,29 @@ export function useNuevoTicket() {
   }, [tipoTicketId, listaDepartamentos]);
 
   useEffect(() => {
-    if (departamentoId && !esTipoExterno()) {
-      const filtrados = listaUsuarios.filter(
-        (u) => Number(u.departamento_id) === Number(departamentoId),
+    if (departamentoId) {
+      const deptoSeleccionado = listaDepartamentos.find(
+        (dep) => Number(dep.id) === Number(departamentoId),
       );
-      setEmpleadosFiltrados(filtrados);
+      const esTecnologia =
+        deptoSeleccionado &&
+        (deptoSeleccionado.str_nombre.toLowerCase().includes("tecnología") ||
+          deptoSeleccionado.str_nombre.toLowerCase().includes("tecnologia"));
+
+      if (esTecnologia) {
+        setUsuarioId("");
+        setEmpleadosFiltrados([]);
+      } else {
+        const filtrados = listaUsuarios.filter(
+          (u) => Number(u.departamento_id) === Number(departamentoId),
+        );
+        setEmpleadosFiltrados(filtrados);
+      }
     } else {
       setEmpleadosFiltrados([]);
     }
     setUsuarioId("");
-  }, [departamentoId, listaUsuarios, tipoTicketId]);
+  }, [departamentoId, listaUsuarios, listaDepartamentos]);
 
   const handleTipoTicketChange = (idSeleccionado) => {
     setTipoTicketId(idSeleccionado);

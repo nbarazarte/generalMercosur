@@ -176,34 +176,24 @@ router.post("/crear", upload.any(), async (req, res) => {
       ? Number(usuario_asignado_id)
       : null;
 
-    if (tipo_ticket_id) {
-      const tipoTicketRes = await client.query(
-        `SELECT str_nombre FROM public.cat_datos_maestros WHERE id = $1`,
-        [Number(tipo_ticket_id)],
+    if (departamento_id) {
+      const deptoRes = await client.query(
+        `SELECT str_nombre FROM public.cat_departamentos WHERE id = $1`,
+        [Number(departamento_id)],
       );
-      const esExterno =
-        tipoTicketRes.rows.length > 0 &&
-        (tipoTicketRes.rows[0].str_nombre.toLowerCase().includes("externo") ||
-          tipoTicketRes.rows[0].str_nombre.toLowerCase().includes("app"));
+      const esTecnologia =
+        deptoRes.rows.length > 0 &&
+        (deptoRes.rows[0].str_nombre.toLowerCase().includes("tecnología") ||
+          deptoRes.rows[0].str_nombre.toLowerCase().includes("tecnologia"));
 
-      if (esExterno && departamento_id) {
-        const deptoRes = await client.query(
-          `SELECT str_nombre FROM public.cat_departamentos WHERE id = $1`,
+      if (esTecnologia) {
+        // Si es tecnología, forzamos la asignación aleatoria excluyendo ids 1 y 94
+        const randomUserRes = await client.query(
+          `SELECT id FROM public.tbl_usuarios WHERE departamento_id = $1 AND bol_activo = true AND id NOT IN (1, 94) ORDER BY RANDOM() LIMIT 1;`,
           [Number(departamento_id)],
         );
-        const esTecnologia =
-          deptoRes.rows.length > 0 &&
-          (deptoRes.rows[0].str_nombre.toLowerCase().includes("tecnología") ||
-            deptoRes.rows[0].str_nombre.toLowerCase().includes("tecnologia"));
-
-        if (esTecnologia && !valoresAsignado) {
-          const randomUserRes = await client.query(
-            `SELECT id FROM public.tbl_usuarios WHERE departamento_id = $1 AND bol_activo = true AND id NOT IN (1, 94) ORDER BY RANDOM() LIMIT 1;`,
-            [Number(departamento_id)],
-          );
-          if (randomUserRes.rows.length > 0) {
-            valoresAsignado = randomUserRes.rows[0].id;
-          }
+        if (randomUserRes.rows.length > 0) {
+          valoresAsignado = randomUserRes.rows[0].id;
         }
       }
     }

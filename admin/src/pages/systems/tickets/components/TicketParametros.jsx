@@ -7,7 +7,6 @@ export function TicketParametros({
   nombre,
   apellido,
   user,
-  esTipoExterno,
   departamentoId,
   setDepartamentoId,
   listaDepartamentos,
@@ -19,6 +18,20 @@ export function TicketParametros({
   inputStyle,
   labelStyle,
 }) {
+  const esDepartamentoTecnologia = () => {
+    if (!departamentoId) return false;
+    const deptoObj = listaDepartamentos.find(
+      (dep) => Number(dep.id) === Number(departamentoId),
+    );
+    if (!deptoObj) return false;
+    const nombreDepto = deptoObj.str_nombre.toLowerCase();
+    return (
+      nombreDepto.includes("tecnología") || nombreDepto.includes("tecnologia")
+    );
+  };
+
+  const esTecnologia = esDepartamentoTecnologia();
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
       {/* Fila 1: Tipo de Ticket, Remitente y Asunto */}
@@ -71,54 +84,64 @@ export function TicketParametros({
         </div>
       </div>
 
-      {/* Fila 2: Departamento y Empleado Asignado (Solo si es interno) */}
-      {!esTipoExterno() && (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-            gap: "10px",
-          }}
-        >
-          <div className="field">
-            <label style={labelStyle}>Para (Departamento)</label>
-            <select
-              value={departamentoId}
-              onChange={(e) => setDepartamentoId(e.target.value)}
-              required={!esTipoExterno()}
-              style={inputStyle}
-            >
-              <option value="">Seleccione...</option>
-              {listaDepartamentos.map((dep) => (
-                <option key={dep.id} value={dep.id}>
-                  {dep.str_nombre}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="field">
-            <label style={labelStyle}>Empleado Asignado (Opcional)</label>
-            <select
-              value={usuarioId}
-              onChange={(e) => setUsuarioId(e.target.value)}
-              disabled={!departamentoId}
-              style={inputStyle}
-            >
-              <option value="">
-                {departamentoId
-                  ? "Sin asignación directa"
-                  : "Seleccione departamento primero..."}
+      {/* Fila 2: Departamento (Obligatorio) y Empleado Asignado (Opcional/Deshabilitado en Tecnología) */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+          gap: "10px",
+        }}
+      >
+        <div className="field">
+          <label style={labelStyle}>Para (Departamento)</label>
+          <select
+            value={departamentoId}
+            onChange={(e) => {
+              setDepartamentoId(e.target.value);
+              setUsuarioId("");
+            }}
+            required
+            style={inputStyle}
+          >
+            <option value="">Seleccione departamento...</option>
+            {listaDepartamentos.map((dep) => (
+              <option key={dep.id} value={dep.id}>
+                {dep.str_nombre}
               </option>
-              {empleadosFiltrados.map((emp) => (
+            ))}
+          </select>
+        </div>
+
+        <div className="field">
+          <label style={labelStyle}>Empleado Asignado</label>
+          <select
+            value={usuarioId}
+            onChange={(e) => setUsuarioId(e.target.value)}
+            disabled={!departamentoId || esTecnologia}
+            style={{
+              ...inputStyle,
+              backgroundColor: esTecnologia
+                ? "var(--merco-bg-subtle, rgba(0,0,0,0.04))"
+                : inputStyle.background,
+              opacity: esTecnologia ? 0.7 : 1,
+            }}
+          >
+            <option value="">
+              {!departamentoId
+                ? "Seleccione departamento primero..."
+                : esTecnologia
+                  ? "Asignación automática por sistema (Tecnología)"
+                  : "Sin asignación directa (Opcional)"}
+            </option>
+            {!esTecnologia &&
+              empleadosFiltrados.map((emp) => (
                 <option key={emp.id} value={emp.id}>
                   {emp.str_nombre} {emp.str_apellido} ({emp.str_email})
                 </option>
               ))}
-            </select>
-          </div>
+          </select>
         </div>
-      )}
+      </div>
     </div>
   );
 }
