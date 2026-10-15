@@ -28,14 +28,6 @@ export function ClienteExternoFields({
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <hr
-        style={{
-          border: "none",
-          borderTop: "1px solid var(--merco-border, #ccc)",
-          margin: "2px 0",
-        }}
-      />
-
       {/* Fila 1: Cédula, Nombre y Apellido */}
       <div
         style={{
