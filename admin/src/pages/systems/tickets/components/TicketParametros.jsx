@@ -18,6 +18,7 @@ export function TicketParametros({
   setStrAsunto,
   inputStyle,
   labelStyle,
+  esTipoInterno,
 }) {
   const esDepartamentoTecnologia = () => {
     if (!departamentoId) return false;
@@ -32,6 +33,7 @@ export function TicketParametros({
   };
 
   const esTecnologia = esDepartamentoTecnologia();
+  const debeBloquearEmpleado = esTecnologia && !esTipoInterno();
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -85,7 +87,7 @@ export function TicketParametros({
         </div>
       </div>
 
-      {/* Fila 2: Departamento (Obligatorio) y Empleado Asignado (Opcional/Deshabilitado en Tecnología) */}
+      {/* Fila 2: Departamento (Obligatorio) y Empleado Asignado (Opcional) */}
       <div
         style={{
           display: "grid",
@@ -105,7 +107,6 @@ export function TicketParametros({
             style={inputStyle}
           >
             <option value="">Seleccione departamento...</option>
-            {/* Reemplazamos listaDepartamentos por departamentosActuales */}
             {departamentosActuales.map((dep) => (
               <option key={dep.id} value={dep.id}>
                 {dep.str_nombre}
@@ -119,23 +120,23 @@ export function TicketParametros({
           <select
             value={usuarioId}
             onChange={(e) => setUsuarioId(e.target.value)}
-            disabled={!departamentoId || esTecnologia}
+            disabled={!departamentoId || debeBloquearEmpleado}
             style={{
               ...inputStyle,
-              backgroundColor: esTecnologia
+              backgroundColor: debeBloquearEmpleado
                 ? "var(--merco-bg-subtle, rgba(0,0,0,0.04))"
                 : inputStyle.background,
-              opacity: esTecnologia ? 0.7 : 1,
+              opacity: debeBloquearEmpleado ? 0.7 : 1,
             }}
           >
             <option value="">
               {!departamentoId
                 ? "Seleccione departamento primero..."
-                : esTecnologia
+                : debeBloquearEmpleado
                   ? "Asignación automática por sistema (Tecnología)"
                   : "Sin asignación directa (Opcional)"}
             </option>
-            {!esTecnologia &&
+            {!debeBloquearEmpleado &&
               empleadosFiltrados.map((emp) => (
                 <option key={emp.id} value={emp.id}>
                   {emp.str_nombre} {emp.str_apellido} ({emp.str_email})

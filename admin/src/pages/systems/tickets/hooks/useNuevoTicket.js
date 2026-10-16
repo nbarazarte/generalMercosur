@@ -148,28 +148,15 @@ export function useNuevoTicket() {
 
   useEffect(() => {
     if (departamentoId) {
-      const deptoSeleccionado = listaDepartamentos.find(
-        (dep) => Number(dep.id) === Number(departamentoId),
+      const filtrados = listaUsuarios.filter(
+        (u) => Number(u.departamento_id) === Number(departamentoId),
       );
-      const esTecnologia =
-        deptoSeleccionado &&
-        (deptoSeleccionado.str_nombre.toLowerCase().includes("tecnología") ||
-          deptoSeleccionado.str_nombre.toLowerCase().includes("tecnologia"));
-
-      if (esTecnologia) {
-        setUsuarioId("");
-        setEmpleadosFiltrados([]);
-      } else {
-        const filtrados = listaUsuarios.filter(
-          (u) => Number(u.departamento_id) === Number(departamentoId),
-        );
-        setEmpleadosFiltrados(filtrados);
-      }
+      setEmpleadosFiltrados(filtrados);
     } else {
       setEmpleadosFiltrados([]);
     }
     setUsuarioId("");
-  }, [departamentoId, listaUsuarios, listaDepartamentos]);
+  }, [departamentoId, listaUsuarios]);
 
   const handleTipoTicketChange = (idSeleccionado) => {
     setTipoTicketId(idSeleccionado);
@@ -489,7 +476,6 @@ export function useNuevoTicket() {
     return "FiFile";
   };
 
-  // Propiedad computada para obtener los departamentos según el tipo de ticket
   const departamentosActuales = (() => {
     if (esTipoExterno()) {
       return listaDepartamentos.filter((dep) => {

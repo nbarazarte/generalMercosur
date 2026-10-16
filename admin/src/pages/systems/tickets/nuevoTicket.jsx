@@ -3,13 +3,12 @@ import SystemLayout from "../../../pages/layouts/SystemLayout";
 import { DynamicIcon } from "../../../components/IconCatalog";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useNuevoTicket } from "./hooks/useNuevoTicket";
-import { useCopiaPortapapeles } from "./hooks/useCopiaPortapapeles"; // <--- Importas tu nuevo hook
+import { useCopiaPortapapeles } from "./hooks/useCopiaPortapapeles";
 import { TicketParametros } from "./components/TicketParametros";
 import { ClienteExternoFields } from "./components/ClienteExternoFields";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 
-// Componente auxiliar optimizado con el hook
 function CopiableCodigoPartes({ partes, codigo }) {
   const { copiado, copiar } = useCopiaPortapapeles(codigo);
 
@@ -279,7 +278,7 @@ export default function NuevoTicket() {
                 departamentoId={departamentoId}
                 setDepartamentoId={setDepartamentoId}
                 listaDepartamentos={listaDepartamentos}
-                departamentosActuales={departamentosActuales} // <--- Pasarlo aquí
+                departamentosActuales={departamentosActuales}
                 usuarioId={usuarioId}
                 setUsuarioId={setUsuarioId}
                 empleadosFiltrados={empleadosFiltrados}
