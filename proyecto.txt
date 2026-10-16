@@ -34580,7 +34580,22 @@
 │   │   │   │   └── SystemLayout.jsx
 │   │   │   └── systems
 │   │   │       ├── admin
+│   │   │       │   ├── components
+│   │   │       │   │   ├── DashboardComponents.jsx
+│   │   │       │   │   ├── modales
+│   │   │       │   │   │   ├── ModalAsignarRol.jsx
+│   │   │       │   │   │   ├── ModalRol.jsx
+│   │   │       │   │   │   ├── ModalUsuario.jsx
+│   │   │       │   │   │   └── SistemasModal.jsx
+│   │   │       │   │   ├── TabRoles.jsx
+│   │   │       │   │   ├── TabUsuarios.jsx
+│   │   │       │   │   └── ToolbarFiltros.jsx
 │   │   │       │   ├── dashboard.jsx
+│   │   │       │   ├── hooks
+│   │   │       │   │   ├── useDashboard.js
+│   │   │       │   │   ├── useIsDarkMode.js
+│   │   │       │   │   ├── usePermisos.js
+│   │   │       │   │   └── useSistemas.js
 │   │   │       │   ├── permisos.jsx
 │   │   │       │   └── sistemas.jsx
 │   │   │       ├── home
@@ -34594,7 +34609,16 @@
 │   │   │       └── tickets
 │   │   │           ├── casosTickets.jsx
 │   │   │           ├── clientes.jsx
+│   │   │           ├── components
+│   │   │           │   ├── ClienteExternoFields.jsx
+│   │   │           │   ├── TicketDetalleModal.jsx
+│   │   │           │   ├── TicketParametros.jsx
+│   │   │           │   └── TicketsFiltros.jsx
 │   │   │           ├── dashboardTickets.jsx
+│   │   │           ├── hooks
+│   │   │           │   ├── useCasosTickets.js
+│   │   │           │   ├── useCopiaPortapapeles.js
+│   │   │           │   └── useNuevoTicket.js
 │   │   │           ├── nuevoTicket.jsx
 │   │   │           ├── reportesDesempeño.jsx
 │   │   │           └── seguimiento.jsx
@@ -39319,4 +39343,4 @@
 ├── sistemadb_general_mercosur.sql
 └── sistema-tickets.html
 
-5158 directories, 34162 files
+5163 directories, 34181 files

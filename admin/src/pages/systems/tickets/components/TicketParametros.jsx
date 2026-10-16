@@ -10,6 +10,7 @@ export function TicketParametros({
   departamentoId,
   setDepartamentoId,
   listaDepartamentos,
+  departamentosActuales,
   usuarioId,
   setUsuarioId,
   empleadosFiltrados,
@@ -104,7 +105,8 @@ export function TicketParametros({
             style={inputStyle}
           >
             <option value="">Seleccione departamento...</option>
-            {listaDepartamentos.map((dep) => (
+            {/* Reemplazamos listaDepartamentos por departamentosActuales */}
+            {departamentosActuales.map((dep) => (
               <option key={dep.id} value={dep.id}>
                 {dep.str_nombre}
               </option>

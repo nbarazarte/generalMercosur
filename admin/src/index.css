@@ -2842,23 +2842,25 @@ html.dark .ma-side {
   margin-top: 14px;
   width: 380px;
   max-width: 90vw;
-  background-color: var(--merco-surface, #ffffff);
-  color: var(--merco-text, #0f172a);
-  border: 1px solid var(--merco-border, #cbd5e1);
-  border-radius: 20px;
-  box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.25);
+  background-color: var(--merco-surface);
+  color: var(--merco-text);
+  border: 1px solid var(--merco-border);
+  border-radius: var(--ma-radius, 14px);
+  box-shadow: var(--ma-shadow, 0 10px 30px rgba(0, 0, 0, 0.25));
   padding: 16px;
   z-index: 50;
   max-height: 480px;
   overflow-y: auto;
   box-sizing: border-box;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 html.dark .ma-alert-dropdown,
 :root.dark .ma-alert-dropdown {
-  background-color: #0f172a;
-  color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--merco-surface);
+  color: var(--merco-text);
+  border: 1px solid var(--merco-border);
 }
 
 .ma-alert-list {
@@ -2874,28 +2876,28 @@ html.dark .ma-alert-dropdown,
   align-items: flex-start;
   gap: 14px;
   padding: 16px;
-  background-color: #f8fafc;
-  border-radius: 14px;
-  border: 1px solid #e2e8f0;
+  background-color: var(--merco-bg-subtle, rgba(0, 0, 0, 0.04));
+  border-radius: var(--ma-radius-sm, 9px);
+  border: 1px solid var(--merco-border);
   box-sizing: border-box;
   transition: all 0.2s ease;
 }
 
 .ma-alert-card:hover {
-  border-color: rgba(249, 115, 22, 0.4);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: var(--merco-accent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 html.dark .ma-alert-card,
 :root.dark .ma-alert-card {
-  background-color: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--merco-border);
 }
 
 html.dark .ma-alert-card:hover,
 :root.dark .ma-alert-card:hover {
-  background-color: rgba(30, 41, 59, 0.9);
-  border-color: rgba(249, 115, 22, 0.4);
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: var(--merco-accent);
 }
 
 /* Estilos para renderizar tablas y contenido HTML de BlockNote en los tickets */

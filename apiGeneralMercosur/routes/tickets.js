@@ -374,7 +374,7 @@ router.post("/crear", upload.any(), async (req, res) => {
     // 🚀 INTEGRACIÓN SOCKET.IO: Si se creó con un usuario asignado, registrar alerta y transmitir
     let nuevaAlerta = null;
     if (valoresAsignado) {
-      const mensajeAlerta = `Se te ha asignado el nuevo ticket: [${str_ticket}] ${str_asunto || "Sin asunto"}`;
+      const mensajeAlerta = `Se te ha asignado el ticket: [${str_ticket}] ${str_asunto || "Sin asunto"}`;
       const queryAlerta = `
         INSERT INTO tickets.tbl_alertas (caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido)
         VALUES ($1, $2, $3, $4, FALSE)

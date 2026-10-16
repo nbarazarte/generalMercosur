@@ -10,7 +10,7 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
     <div className="relative">
       <button
         onClick={() => setMostrarAlertas(!mostrarAlertas)}
-        className="relative p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/80 active:scale-95 transition-all duration-200 flex items-center justify-center text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-800 shadow-xs"
+        className="relative p-2.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/80 active:scale-95 transition-all duration-200 flex items-center justify-center text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-800 shadow-xs cursor-pointer"
         title="Notificaciones"
       >
         <DynamicIcon name="FiBell" fallback="FiBell" className="text-lg" />
@@ -30,8 +30,7 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
               justifyContent: "space-between",
               paddingBottom: "12px",
               marginBottom: "12px",
-              borderBottom:
-                theme === "dark" ? "1px solid #334155" : "1px solid #e2e8f0",
+              borderBottom: "1px solid var(--merco-border, #e2e8f0)",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -39,8 +38,8 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
                 style={{
                   padding: "8px",
                   borderRadius: "12px",
-                  backgroundColor: "rgba(249, 115, 22, 0.15)",
-                  color: "#f97316",
+                  backgroundColor: "rgba(249, 87, 0, 0.15)",
+                  color: "var(--merco-accent, #f95700)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -55,11 +54,18 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
                     fontWeight: "bold",
                     textTransform: "uppercase",
                     margin: 0,
+                    color: "var(--merco-text)",
                   }}
                 >
                   Notificaciones
                 </h3>
-                <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
+                <p
+                  style={{
+                    fontSize: "11px",
+                    color: "var(--merco-muted)",
+                    margin: 0,
+                  }}
+                >
                   Eventos y avisos recientes
                 </p>
               </div>
@@ -72,7 +78,7 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
                   padding: "6px 12px",
                   fontSize: "11px",
                   fontWeight: "600",
-                  color: "#64748b",
+                  color: "var(--merco-muted)",
                   backgroundColor: "transparent",
                   border: "none",
                   cursor: "pointer",
@@ -90,7 +96,7 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
               <p
                 style={{
                   fontSize: "12px",
-                  color: "#64748b",
+                  color: "var(--merco-muted)",
                   fontWeight: "500",
                   margin: 0,
                 }}
@@ -128,7 +134,8 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
                         width: "36px",
                         height: "36px",
                         borderRadius: "10px",
-                        background: "linear-gradient(135deg, #f97316, #c2410c)",
+                        background:
+                          "linear-gradient(135deg, var(--merco-accent, #f97316), var(--merco-accent-dark, #c2410c))",
                         color: "#ffffff",
                         display: "flex",
                         alignItems: "center",
@@ -136,9 +143,9 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
                       }}
                     >
                       <DynamicIcon
-                        name="FiZap"
+                        name="HiTicket"
                         fallback="FiInfo"
-                        style={{ fontSize: "14px" }}
+                        style={{ fontSize: "20px" }}
                       />
                     </div>
 
@@ -150,6 +157,7 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
                           lineHeight: 1.5,
                           margin: 0,
                           wordBreak: "break-word",
+                          color: "var(--merco-text)",
                         }}
                       >
                         {alerta.str_mensaje}
@@ -162,13 +170,15 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
                           gap: "8px",
                           marginTop: "8px",
                           paddingTop: "8px",
-                          borderTop:
-                            theme === "dark"
-                              ? "1px solid rgba(255,255,255,0.06)"
-                              : "1px solid #e2e8f0",
+                          borderTop: "1px solid var(--merco-border, #e2e8f0)",
                         }}
                       >
-                        <span style={{ fontSize: "10px", color: "#64748b" }}>
+                        <span
+                          style={{
+                            fontSize: "10px",
+                            color: "var(--merco-muted)",
+                          }}
+                        >
                           {new Date(
                             alerta.created_at || Date.now(),
                           ).toLocaleTimeString([], {
@@ -192,7 +202,7 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
                         right: "12px",
                         background: "transparent",
                         border: "none",
-                        color: "#94a3b8",
+                        color: "var(--merco-muted)",
                         cursor: "pointer",
                         fontSize: "12px",
                         padding: "4px",

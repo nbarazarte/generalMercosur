@@ -43,9 +43,13 @@ export function useNuevoTicket() {
   const nombre = user?.nombre || "Analista";
   const apellido = user?.apellido || "";
 
+  // Notificación permanente hasta cierre manual o recarga
   const showToast = (message, type = "success") => {
     setToast({ message, type });
-    setTimeout(() => setToast(null), 3500);
+  };
+
+  const handleCloseToast = () => {
+    setToast(null);
   };
 
   const [isDarkMode, setIsDarkMode] = useState(
@@ -254,7 +258,6 @@ export function useNuevoTicket() {
     }
   };
 
-  // Expresión regular estándar y robusta para correos electrónicos
   const validarCorreo = (correo) => {
     if (!correo) return false;
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim());
@@ -350,7 +353,6 @@ export function useNuevoTicket() {
         setStrTelefonoCliente(cli.str_telefono || "");
         setStrCorreoCliente(cli.str_email || "");
         setClienteBloqueado(true);
-        // Si el correo cargado es válido, limpiamos cualquier error previo
         if (validarCorreo(cli.str_email || "")) {
           setCorreoInvalido(false);
         }
@@ -457,7 +459,11 @@ export function useNuevoTicket() {
       });
 
       if (response.data.success) {
-        showToast("Ticket creado con éxito.", "success");
+        const codigoTicket = response.data.ticket?.str_ticket || "";
+        showToast(
+          `Ticket creado con éxito. Código: ${codigoTicket}`,
+          "success",
+        );
         await handleLimpiarTodo();
       }
     } catch (error) {
@@ -482,6 +488,22 @@ export function useNuevoTicket() {
     if (tipoMime.includes("pdf")) return "FiFileText";
     return "FiFile";
   };
+
+  // Propiedad computada para obtener los departamentos según el tipo de ticket
+  const departamentosActuales = (() => {
+    if (esTipoExterno()) {
+      return listaDepartamentos.filter((dep) => {
+        const nombre = dep.str_nombre.toLowerCase();
+        return (
+          nombre.includes("atención al cliente") ||
+          nombre.includes("atencion al cliente") ||
+          nombre.includes("tecnología") ||
+          nombre.includes("tecnologia")
+        );
+      });
+    }
+    return listaDepartamentos;
+  })();
 
   return {
     tipoTicketId,
@@ -523,6 +545,7 @@ export function useNuevoTicket() {
     setArchivosAdjuntos,
     isGeneratingAI,
     toast,
+    handleCloseToast,
     isDarkMode,
     nombre,
     apellido,
@@ -542,5 +565,6 @@ export function useNuevoTicket() {
     categoriasActuales: esTipoInterno()
       ? listaCategoriasInternas
       : listaCategoriasExternas,
+    departamentosActuales,
   };
 }

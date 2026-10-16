@@ -3,10 +3,61 @@ import SystemLayout from "../../../pages/layouts/SystemLayout";
 import { DynamicIcon } from "../../../components/IconCatalog";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useNuevoTicket } from "./hooks/useNuevoTicket";
+import { useCopiaPortapapeles } from "./hooks/useCopiaPortapapeles"; // <--- Importas tu nuevo hook
 import { TicketParametros } from "./components/TicketParametros";
 import { ClienteExternoFields } from "./components/ClienteExternoFields";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
+
+// Componente auxiliar optimizado con el hook
+function CopiableCodigoPartes({ partes, codigo }) {
+  const { copiado, copiar } = useCopiaPortapapeles(codigo);
+
+  return (
+    <>
+      <span>{partes[0]}</span>
+      <code
+        style={{
+          backgroundColor: "rgba(0, 0, 0, 0.25)",
+          padding: "2px 6px",
+          borderRadius: "4px",
+          fontFamily: "monospace",
+          fontWeight: "bold",
+        }}
+      >
+        {codigo}
+      </code>
+      <button
+        type="button"
+        onClick={copiar}
+        style={{
+          background: copiado
+            ? "rgba(255, 255, 255, 0.4)"
+            : "rgba(255, 255, 255, 0.25)",
+          border: "none",
+          color: "#ffffff",
+          padding: "3px 8px",
+          borderRadius: "4px",
+          cursor: "pointer",
+          fontSize: "12px",
+          fontWeight: "600",
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "4px",
+          transition: "background 0.2s ease",
+        }}
+        title="Copiar código al portapapeles"
+      >
+        <DynamicIcon
+          name={copiado ? "FiCheck" : "FiCopy"}
+          style={{ fontSize: "12px" }}
+        />
+        {copiado ? "¡Copiado!" : ""}
+      </button>
+      <span>{partes[1]}</span>
+    </>
+  );
+}
 
 export default function NuevoTicket() {
   const {
@@ -39,6 +90,7 @@ export default function NuevoTicket() {
     setClienteBloqueado,
     correoInputRef,
     listaDepartamentos,
+    departamentosActuales,
     empleadosFiltrados,
     listaCanales,
     listaPrioridades,
@@ -49,6 +101,7 @@ export default function NuevoTicket() {
     setArchivosAdjuntos,
     isGeneratingAI,
     toast,
+    handleCloseToast,
     isDarkMode,
     nombre,
     apellido,
@@ -97,10 +150,10 @@ export default function NuevoTicket() {
             zIndex: 9999,
             display: "flex",
             alignItems: "center",
-            gap: 10,
+            gap: 12,
             padding: "12px 20px",
             borderRadius: 8,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.35)",
             backgroundColor: toast.type === "success" ? "#10b981" : "#ef4444",
             color: "#ffffff",
             fontWeight: 500,
@@ -111,12 +164,55 @@ export default function NuevoTicket() {
             name={
               toast.type === "success" ? "FiCheckCircle" : "FiAlertTriangle"
             }
+            style={{ fontSize: "18px", flexShrink: 0 }}
           />
-          <span>{toast.message}</span>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              flexWrap: "wrap",
+            }}
+          >
+            {(() => {
+              const mensaje =
+                typeof toast.message === "string" ? toast.message : "";
+              const matchCodigo = mensaje.match(/(TCK\d{4}-\d{2}-\d{6})/);
+
+              if (matchCodigo) {
+                const codigo = matchCodigo[1];
+                const partes = mensaje.split(codigo);
+                return <CopiableCodigoPartes partes={partes} codigo={codigo} />;
+              }
+              return <span>{mensaje}</span>;
+            })()}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleCloseToast}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#ffffff",
+              cursor: "pointer",
+              fontSize: "16px",
+              padding: "2px 4px",
+              marginLeft: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: 0.8,
+            }}
+            title="Cerrar notificación"
+          >
+            <DynamicIcon name="FiX" />
+          </button>
         </div>
       )}
 
-      {/* Contenedor con ancho máximo y centrado */}
+      {/* Contenedor principal con el formulario */}
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, sans-serif)",
@@ -159,7 +255,7 @@ export default function NuevoTicket() {
               </span>
             </div>
 
-            {/* Formulario unificado en una sola columna vertical */}
+            {/* Formulario unificado */}
             <div
               style={{
                 display: "flex",
@@ -171,7 +267,6 @@ export default function NuevoTicket() {
                 padding: "16px",
               }}
             >
-              {/* 1. Parámetros del Ticket (Tipo, Remitente, Asunto, Departamento) */}
               <TicketParametros
                 tipoTicketId={tipoTicketId}
                 handleTipoTicketChange={handleTipoTicketChange}
@@ -184,6 +279,7 @@ export default function NuevoTicket() {
                 departamentoId={departamentoId}
                 setDepartamentoId={setDepartamentoId}
                 listaDepartamentos={listaDepartamentos}
+                departamentosActuales={departamentosActuales} // <--- Pasarlo aquí
                 usuarioId={usuarioId}
                 setUsuarioId={setUsuarioId}
                 empleadosFiltrados={empleadosFiltrados}
@@ -193,7 +289,6 @@ export default function NuevoTicket() {
                 labelStyle={labelStyle}
               />
 
-              {/* 2. Datos del Cliente (Sólo si es externo) */}
               {esTipoExterno() && (
                 <ClienteExternoFields
                   strCedulaCliente={strCedulaCliente}
@@ -223,7 +318,6 @@ export default function NuevoTicket() {
                 />
               )}
 
-              {/* 3. Categoría y Prioridad (En una fila) */}
               <div
                 style={{
                   display: "grid",
@@ -266,7 +360,6 @@ export default function NuevoTicket() {
                 </div>
               </div>
 
-              {/* 4. Descripción del Ticket con Editor BlockNote e IA */}
               <div style={{ marginTop: "6px" }}>
                 <div
                   style={{
@@ -344,7 +437,6 @@ export default function NuevoTicket() {
                   )}
                 </div>
 
-                {/* Archivos Adjuntos */}
                 {archivosAdjuntos.length > 0 && (
                   <div
                     style={{
@@ -408,7 +500,6 @@ export default function NuevoTicket() {
                 )}
               </div>
 
-              {/* 5. Botones de Acción */}
               <div
                 style={{
                   display: "flex",
