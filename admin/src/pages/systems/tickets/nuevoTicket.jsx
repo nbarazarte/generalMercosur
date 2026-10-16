@@ -2,60 +2,12 @@ import SystemLayout from "../../../pages/layouts/SystemLayout";
 import { DynamicIcon } from "../../../components/IconCatalog";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useNuevoTicket } from "./hooks/useNuevoTicket";
-import { useCopiaPortapapeles } from "./hooks/useCopiaPortapapeles";
 import { TicketParametros } from "./components/TicketParametros";
 import { ClienteExternoFields } from "./components/ClienteExternoFields";
+import  CopiableCodigoPartes  from "./components/CopiableCodigoPartes";
+
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
-
-function CopiableCodigoPartes({ partes, codigo }) {
-  const { copiado, copiar } = useCopiaPortapapeles(codigo);
-
-  return (
-    <>
-      <span>{partes[0]}</span>
-      <code
-        style={{
-          backgroundColor: "rgba(0, 0, 0, 0.25)",
-          padding: "2px 6px",
-          borderRadius: "4px",
-          fontFamily: "monospace",
-          fontWeight: "bold",
-        }}
-      >
-        {codigo}
-      </code>
-      <button
-        type="button"
-        onClick={copiar}
-        style={{
-          background: copiado
-            ? "rgba(255, 255, 255, 0.4)"
-            : "rgba(255, 255, 255, 0.25)",
-          border: "none",
-          color: "#ffffff",
-          padding: "3px 8px",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontSize: "12px",
-          fontWeight: "600",
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "4px",
-          transition: "background 0.2s ease",
-        }}
-        title="Copiar código al portapapeles"
-      >
-        <DynamicIcon
-          name={copiado ? "FiCheck" : "FiCopy"}
-          style={{ fontSize: "12px" }}
-        />
-        {copiado ? "¡Copiado!" : ""}
-      </button>
-      <span>{partes[1]}</span>
-    </>
-  );
-}
 
 export default function NuevoTicket() {
   const {

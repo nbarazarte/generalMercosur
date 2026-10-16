@@ -1,4 +1,3 @@
-import React from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 import { useCasosTickets } from "./hooks/useCasosTickets";
 import { TicketsFiltros } from "./components/TicketsFiltros";
