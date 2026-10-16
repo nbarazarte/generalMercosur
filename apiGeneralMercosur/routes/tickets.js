@@ -13,12 +13,99 @@ const fs = require("fs");
 router.use(verificarClienteFrontend);
 router.use(verificarSesion);
 
+// ==========================================
+// ENDPOINTS DEL DASHBOARD DE TICKETS
+// ==========================================
+
+// 1. Endpoint para obtener KPIs del dashboard
+router.get("/dashboard/kpis", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM tickets.view_dashboard_kpis",
+    );
+    res.status(200).json({
+      success: true,
+      kpis: result.rows,
+    });
+  } catch (err) {
+    console.error(
+      "Error al obtener KPIs del dashboard de tickets:",
+      err.message,
+    );
+    res.status(500).json({
+      success: false,
+      error: "Error interno al consultar los KPIs.",
+    });
+  }
+});
+
+// 2. Endpoint para obtener volumen de tickets por categoría
+router.get("/dashboard/tickets-por-categoria", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM tickets.view_dashboard_tickets_por_categoria",
+    );
+    res.status(200).json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (err) {
+    console.error("Error al obtener tickets por categoría:", err.message);
+    res.status(500).json({
+      success: false,
+      error: "Error interno al consultar el volumen por categoría.",
+    });
+  }
+});
+
+// 3. Endpoint para obtener la distribución por estatus (Maestro)
+router.get("/dashboard/distribucion-estados", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM tickets.view_dashboard_distribucion_estados",
+    );
+    res.status(200).json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (err) {
+    console.error("Error al obtener distribución de estatus:", err.message);
+    res.status(500).json({
+      success: false,
+      error: "Error interno al consultar la distribución de estados.",
+    });
+  }
+});
+
+// 4. Endpoint para obtener los últimos tickets registrados
+router.get("/dashboard/ultimos-tickets", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM tickets.view_dashboard_ultimos_tickets",
+    );
+    res.status(200).json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (err) {
+    console.error("Error al obtener últimos tickets:", err.message);
+    res.status(500).json({
+      success: false,
+      error: "Error interno al consultar los tickets recientes.",
+    });
+  }
+});
+
+// ==========================================
+// ENDPOINTS DE CATÁLOGOS Y GESTIÓN DE TICKETS
+// ==========================================
+
 // Endpoint para obtener el listado de departamentos desde public.cat_departamentos
 router.get("/departamentos", async (req, res) => {
   try {
     const query = `
-      SELECT id, str_nombre, str_descripcion 
-      FROM public.cat_departamentos 
+      SELECT id, str_nombre, str_descripcion
+      FROM public.cat_departamentos
       ORDER BY str_nombre ASC;
     `;
     const resultado = await pool.query(query);
@@ -40,14 +127,14 @@ router.get("/departamentos", async (req, res) => {
 router.get("/departamentos-usuarios", async (req, res) => {
   try {
     const queryDept = `
-      SELECT id, str_nombre, str_descripcion 
-      FROM public.cat_departamentos 
+      SELECT id, str_nombre, str_descripcion
+      FROM public.cat_departamentos
       ORDER BY str_nombre ASC;
     `;
     const queryUsers = `
-      SELECT id, departamento_id, str_nombre, str_apellido, str_email, bol_activo 
-      FROM public.tbl_usuarios 
-      WHERE bol_activo = true 
+      SELECT id, departamento_id, str_nombre, str_apellido, str_email, bol_activo
+      FROM public.tbl_usuarios
+      WHERE bol_activo = true
       ORDER BY str_nombre ASC;
     `;
 
@@ -74,9 +161,9 @@ router.get("/departamentos-usuarios", async (req, res) => {
 router.get("/datos-maestros", async (req, res) => {
   try {
     const query = `
-      SELECT id, str_tipo, str_nombre, str_descripcion, bol_activo 
-      FROM public.cat_datos_maestros 
-      WHERE bol_activo = true 
+      SELECT id, str_tipo, str_nombre, str_descripcion, bol_activo
+      FROM public.cat_datos_maestros
+      WHERE bol_activo = true
       ORDER BY str_tipo, id ASC;
     `;
     const resultado = await pool.query(query);
@@ -116,9 +203,9 @@ router.get("/cliente/:cedula", async (req, res) => {
   const { cedula } = req.params;
   try {
     const query = `
-      SELECT id, str_cedula, str_nombre, str_apellido, str_telefono, str_email 
-      FROM tickets.tbl_clientes 
-      WHERE str_cedula = $1 
+      SELECT id, str_cedula, str_nombre, str_apellido, str_telefono, str_email
+      FROM tickets.tbl_clientes
+      WHERE str_cedula = $1
       LIMIT 1;
     `;
     const resultado = await pool.query(query, [cedula]);
@@ -171,32 +258,9 @@ router.post("/crear", upload.any(), async (req, res) => {
 
     const usuarioIdSesion = req.user?.id;
 
-    // Lógica de asignación: Si es externo y el departamento es Tecnología, asignar aleatoriamente excluyendo ids 1 y 94
     let valoresAsignado = usuario_asignado_id
       ? Number(usuario_asignado_id)
       : null;
-
-    if (departamento_id) {
-      const deptoRes = await client.query(
-        `SELECT str_nombre FROM public.cat_departamentos WHERE id = $1`,
-        [Number(departamento_id)],
-      );
-      const esTecnologia =
-        deptoRes.rows.length > 0 &&
-        (deptoRes.rows[0].str_nombre.toLowerCase().includes("tecnología") ||
-          deptoRes.rows[0].str_nombre.toLowerCase().includes("tecnologia"));
-
-      /* if (esTecnologia) {
-        // Si es tecnología, forzamos la asignación aleatoria excluyendo ids 1 y 94
-        const randomUserRes = await client.query(
-          `SELECT id FROM public.tbl_usuarios WHERE departamento_id = $1 AND bol_activo = true AND id NOT IN (1, 94) ORDER BY RANDOM() LIMIT 1;`,
-          [Number(departamento_id)],
-        );
-        if (randomUserRes.rows.length > 0) {
-          valoresAsignado = randomUserRes.rows[0].id;
-        }
-      } */
-    }
 
     let clienteFinalId = cliente_id ? Number(cliente_id) : null;
     const correoMinuscula = str_correo_cliente
@@ -218,7 +282,7 @@ router.post("/crear", upload.any(), async (req, res) => {
       if (clienteRes.rows.length > 0) {
         clienteFinalId = clienteRes.rows[0].id;
         const queryUpdateCliente = `
-          UPDATE tickets.tbl_clientes 
+          UPDATE tickets.tbl_clientes
           SET str_nombre = $1, str_apellido = $2, str_email = $3, str_telefono = $4, updated_at = CURRENT_TIMESTAMP
           WHERE id = $5;
         `;
@@ -266,8 +330,8 @@ router.post("/crear", upload.any(), async (req, res) => {
     const str_ticket = `TCK${year}-${monthStr}-${String(nextNumber).padStart(6, "0")}`;
 
     const slaQuery = `
-        SELECT tiempo_maximo 
-        FROM tickets.sla_configuracion 
+        SELECT tiempo_maximo
+        FROM tickets.sla_configuracion
         WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;
       `;
     const slaRes = await client.query(slaQuery, [categoria_id, prioridad_id]);
@@ -332,18 +396,18 @@ router.post("/crear", upload.any(), async (req, res) => {
 
     const queryInsert = `
         INSERT INTO tickets.tbl_tickets (
-          str_ticket, tipo_ticket_id, cliente_id, creador_agente_id, cierre_agente_id, 
-          departamento_id, categoria_id, prioridad_id, 
-          canal_id, str_asunto, str_descripcion, int_sla, 
-          str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id, 
+          str_ticket, tipo_ticket_id, cliente_id, creador_agente_id, cierre_agente_id,
+          departamento_id, categoria_id, prioridad_id,
+          canal_id, str_asunto, str_descripcion, int_sla,
+          str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id,
           dmt_fecha_vencimiento_sla, created_at, updated_at
         ) VALUES (
-          $1, $2::integer, $3::integer, $4::integer, $5::integer, 
-          $6::integer, $7::integer, $8::integer, $9::integer, 
-          $10::varchar, $11::text, $12::integer, 
-          $13::text, $14::text, $15::text, $16::integer, 
-          COALESCE(CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) + ($12::integer * INTERVAL '1 hour'), 
-          CURRENT_TIMESTAMP, 
+          $1, $2::integer, $3::integer, $4::integer, $5::integer,
+          $6::integer, $7::integer, $8::integer, $9::integer,
+          $10::varchar, $11::text, $12::integer,
+          $13::text, $14::text, $15::text, $16::integer,
+          COALESCE(CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) + ($12::integer * INTERVAL '1 hour'),
+          CURRENT_TIMESTAMP,
           CURRENT_TIMESTAMP
         )
         RETURNING *;
@@ -371,7 +435,6 @@ router.post("/crear", upload.any(), async (req, res) => {
     const nuevoTicketRes = await client.query(queryInsert, values);
     const ticketCreado = nuevoTicketRes.rows[0];
 
-    // 🚀 INTEGRACIÓN SOCKET.IO: Si se creó con un usuario asignado, registrar alerta y transmitir
     let nuevaAlerta = null;
     if (valoresAsignado) {
       const mensajeAlerta = `Se te ha asignado el ticket: [${str_ticket}] ${str_asunto || "Sin asunto"}`;
@@ -391,7 +454,6 @@ router.post("/crear", upload.any(), async (req, res) => {
 
     await client.query("COMMIT");
 
-    // 🛡️ Emitir por WebSocket solo si el usuario asignado es DISTINTO al usuario que está creando el ticket
     if (valoresAsignado && nuevaAlerta) {
       const io = req.app.get("io");
       if (io && Number(valoresAsignado) !== Number(usuarioIdSesion)) {
@@ -509,7 +571,7 @@ router.get("/bitacora/:ticket_id", async (req, res) => {
   const { ticket_id } = req.params;
   try {
     const query = `
-      SELECT 
+      SELECT
         b.id,
         b.ticket_id,
         b.str_comentario,
@@ -655,8 +717,8 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       nuevaPrioridad !== null ? nuevaPrioridad : ticketActual.prioridad_id;
 
     const slaQuery = `
-      SELECT tiempo_maximo 
-      FROM tickets.sla_configuracion 
+      SELECT tiempo_maximo
+      FROM tickets.sla_configuracion
       WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;
     `;
     const slaRes = await client.query(slaQuery, [
@@ -667,7 +729,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     if (str_descripcion_respuesta && str_descripcion_respuesta.trim() !== "") {
       await client.query(
-        `INSERT INTO tickets.tbl_tickets_bitacora (ticket_id, usuario_id, str_comentario, created_at) 
+        `INSERT INTO tickets.tbl_tickets_bitacora (ticket_id, usuario_id, str_comentario, created_at)
          VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
         [
           Number(id),
@@ -682,21 +744,21 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     if (esEstatusCierre) {
       queryUpdate = `
-        UPDATE tickets.tbl_tickets 
-        SET 
+        UPDATE tickets.tbl_tickets
+        SET
           estatus_id = COALESCE($1, estatus_id),
           usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
           departamento_id = COALESCE($3, departamento_id),
           prioridad_id = COALESCE($4, prioridad_id),
           int_sla = $5::integer,
-          int_minutos_pausa = CASE 
+          int_minutos_pausa = CASE
             WHEN dmt_fecha_inicio_pausa IS NOT NULL THEN COALESCE(int_minutos_pausa, 0) + ROUND(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - dmt_fecha_inicio_pausa)) / 60::numeric, 2)
             ELSE COALESCE(int_minutos_pausa, 0)
           END,
           dmt_fecha_inicio_pausa = NULL,
-          dmt_fecha_cierre = CASE 
-            WHEN $6::boolean AND dmt_fecha_cierre IS NULL THEN CURRENT_TIMESTAMP 
-            ELSE dmt_fecha_cierre 
+          dmt_fecha_cierre = CASE
+            WHEN $6::boolean AND dmt_fecha_cierre IS NULL THEN CURRENT_TIMESTAMP
+            ELSE dmt_fecha_cierre
           END,
           updated_at = CURRENT_TIMESTAMP
         WHERE id = $7
@@ -713,8 +775,8 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       ];
     } else if (esEstatusNuevoPausa && !esEstatusActualPausa) {
       queryUpdate = `
-        UPDATE tickets.tbl_tickets 
-        SET 
+        UPDATE tickets.tbl_tickets
+        SET
           estatus_id = COALESCE($1, estatus_id),
           usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
           departamento_id = COALESCE($3, departamento_id),
@@ -735,8 +797,8 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       ];
     } else if (esEstatusActualPausa && !esEstatusNuevoPausa) {
       queryUpdate = `
-        UPDATE tickets.tbl_tickets 
-        SET 
+        UPDATE tickets.tbl_tickets
+        SET
           estatus_id = COALESCE($1, estatus_id),
           usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
           departamento_id = COALESCE($3, departamento_id),
@@ -759,8 +821,8 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       ];
     } else {
       queryUpdate = `
-        UPDATE tickets.tbl_tickets 
-        SET 
+        UPDATE tickets.tbl_tickets
+        SET
           estatus_id = COALESCE($1, estatus_id),
           usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
           departamento_id = COALESCE($3, departamento_id),
@@ -783,7 +845,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     const updateRes = await client.query(queryUpdate, updateParams);
     const ticketActualizado = updateRes.rows[0];
 
-    // 🚀 INTEGRACIÓN SOCKET.IO: Validar si cambió el responsable asignado para emitir alerta
     let nuevaAlertaActualizacion = null;
     const nuevoResponsableId = ticketActualizado.usuario_asignado_id;
 
@@ -805,7 +866,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     await client.query("COMMIT");
 
-    // 🛡️ Emitir por WebSockets solo si el nuevo responsable es DISTINTO al usuario que está editando
     if (
       nuevoResponsableId &&
       nuevoResponsableId !== asignadoAnterior &&
@@ -835,6 +895,25 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     });
   } finally {
     client.release();
+  }
+});
+
+// Endpoint para obtener los casos creados por analista (tickets externos)
+router.get("/dashboard/casos-por-analista", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM tickets.view_dashboard_casos_por_analista",
+    );
+    res.status(200).json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (err) {
+    console.error("Error al obtener casos por analista:", err.message);
+    res.status(500).json({
+      success: false,
+      error: "Error interno al consultar los casos por analista.",
+    });
   }
 });
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import HomeLayout from "./pages/layouts/HomeLayout";
@@ -25,7 +25,6 @@ import Empleados from "./pages/systems/rrhh/empleados";
 //tickets:
 import DashboardTickets from "./pages/systems/tickets/dashboardTickets";
 import CasosTickets from "./pages/systems/tickets/casosTickets";
-import Seguimiento from "./pages/systems/tickets/seguimiento";
 import Clientes from "./pages/systems/tickets/clientes";
 import ReportesDesempeño from "./pages/systems/tickets/reportesDesempeño";
 import NuevoTicket from "./pages/systems/tickets/nuevoTicket";
@@ -133,15 +132,16 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
         <div className="loader-bg-glow glow-2"></div>
 
         <div
-          className={`loader-card relative z-10 ${isDarkMode ? "system-card glass-card" : ""
-            }`}
+          className={`loader-card relative z-10 ${
+            isDarkMode ? "system-card glass-card" : ""
+          }`}
           style={
             isDarkMode
               ? {
-                backgroundColor: "rgba(10, 10, 11, 0.85)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-              }
+                  backgroundColor: "rgba(10, 10, 11, 0.85)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                }
               : undefined
           }
         >
@@ -214,7 +214,7 @@ const PublicOnlyRoute = () => {
 
 function App() {
   // 1. Estado inicial del tema leyendo localStorage al montar la app
-  const [theme, setTheme] = useState(() => {
+  const [theme] = useState(() => {
     return localStorage.getItem("theme") || "dark";
   });
 
@@ -331,7 +331,6 @@ function App() {
             <Route path="casos-tickets" element={<CasosTickets />} />
 
             {/* Subruta 2: Seguimiento */}
-            <Route path="seguimiento" element={<Seguimiento />} />
 
             {/* Subruta 3: Clientes */}
             <Route path="clientes" element={<Clientes />} />
