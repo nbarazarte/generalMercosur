@@ -186,7 +186,7 @@ router.post("/crear", upload.any(), async (req, res) => {
         (deptoRes.rows[0].str_nombre.toLowerCase().includes("tecnología") ||
           deptoRes.rows[0].str_nombre.toLowerCase().includes("tecnologia"));
 
-      if (esTecnologia) {
+      /* if (esTecnologia) {
         // Si es tecnología, forzamos la asignación aleatoria excluyendo ids 1 y 94
         const randomUserRes = await client.query(
           `SELECT id FROM public.tbl_usuarios WHERE departamento_id = $1 AND bol_activo = true AND id NOT IN (1, 94) ORDER BY RANDOM() LIMIT 1;`,
@@ -195,7 +195,7 @@ router.post("/crear", upload.any(), async (req, res) => {
         if (randomUserRes.rows.length > 0) {
           valoresAsignado = randomUserRes.rows[0].id;
         }
-      }
+      } */
     }
 
     let clienteFinalId = cliente_id ? Number(cliente_id) : null;

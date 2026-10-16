@@ -1,4 +1,3 @@
-import React from "react";
 import SystemLayout from "../../../pages/layouts/SystemLayout";
 import { DynamicIcon } from "../../../components/IconCatalog";
 import { BlockNoteView } from "@blocknote/mantine";
@@ -61,7 +60,6 @@ function CopiableCodigoPartes({ partes, codigo }) {
 export default function NuevoTicket() {
   const {
     tipoTicketId,
-    setTipoTicketId,
     categoriaId,
     setCategoriaId,
     prioridadId,
