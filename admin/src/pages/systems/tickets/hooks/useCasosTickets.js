@@ -452,6 +452,51 @@ export function useCasosTickets() {
     );
   };
 
+  // --- CONTEO PARA TODAS LAS TARJETAS DE ESTATUS Y SLA ---
+    const conteoKpi = useMemo(() => {
+      // Inicialización de contadores con tus estatus exactos
+      const contadores = {
+        "En Aprobación": 0,
+        "Vencido": 0,
+        "Resuelto": 0,
+        "En Proceso": 0,
+        "Cerrado": 0,
+        "Cancelado": 0,
+        "Pendiente de Usuario": 0,
+        "En Espera Proveedor": 0,
+        "porVencer": 0, // Métrica especial SLA (<2 horas)
+      };
+  
+      const ahora = new Date();
+  
+      tickets.forEach((t) => {
+        const estatusNombre = t.estatus_nombre;
+  
+        // Incrementa el contador correspondiente si coincide con alguno del catálogo
+        if (estatusNombre && contadores[estatusNombre] !== undefined) {
+          contadores[estatusNombre]++;
+        }
+  
+        // Conteo dinámico por fecha SLA para "Por Vencer (<2h)"
+        const estatusLower = (estatusNombre || "").toLowerCase();
+        const estaFinalizado =
+          estatusLower.includes("cerrado") ||
+          estatusLower.includes("resuelto") ||
+          estatusLower.includes("cancelado");
+  
+        if (!estaFinalizado && t.dmt_fecha_vencimiento_sla) {
+          const fechaVenc = new Date(t.dmt_fecha_vencimiento_sla);
+          const diferenciaMs = fechaVenc - ahora;
+          const diferenciaHoras = diferenciaMs / (1000 * 60 * 60);
+  
+          if (diferenciaHoras > 0 && diferenciaHoras <= 2) {
+            contadores["porVencer"]++;
+          }
+        }
+      });
+  
+      return contadores;
+    }, [tickets]);
   return {
     loading,
     ticketsFiltrados,
@@ -518,5 +563,6 @@ export function useCasosTickets() {
     abrirDetalle,
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
+    conteoKpi
   };
 }

@@ -1,5 +1,3 @@
-// src/helper/getDeviceInfo.js
-
 const getDeviceInfo = async () => {
   let deviceId = localStorage.getItem("cl_deviceId");
 

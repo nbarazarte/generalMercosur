@@ -3,6 +3,7 @@ import { useCasosTickets } from "./hooks/useCasosTickets";
 import { TicketsFiltros } from "./components/TicketsFiltros";
 import { TicketDetalleModal } from "./components/TicketDetalleModal";
 import { DynamicIcon } from "../../../components/IconCatalog";
+import formatearFechaHora from "../../../components/formatearFechaHora";
 
 export default function CasosTickets() {
   const {
@@ -70,7 +71,66 @@ export default function CasosTickets() {
     abrirDetalle,
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
+    conteoKpi,
   } = useCasosTickets();
+
+  // Configuración visual para cada tarjeta de estatus
+  const tarjetasEstatus = [
+    {
+      titulo: "En Proceso",
+      valor: conteoKpi["En Proceso"] || 0,
+      icono: "FiBell",
+      color: "#3B82F6", // Azul
+    },
+    {
+      titulo: "Pendiente de Usuario",
+      valor: conteoKpi["Pendiente de Usuario"] || 0,
+      icono: "FiUserCheck",
+      color: "#F59E0B", // Ámbar / Naranja
+    },
+    {
+      titulo: "En Espera Proveedor",
+      valor: conteoKpi["En Espera Proveedor"] || 0,
+      icono: "FiTruck",
+      color: "#A855F7", // Morado
+    },
+    {
+      titulo: "En Aprobación",
+      valor: conteoKpi["En Aprobación"] || 0,
+      icono: "FiFileText",
+      color: "#EC4899", // Rosa
+    },
+    {
+      titulo: "Por vencer (<2h)",
+      valor: conteoKpi["porVencer"] || 0,
+      icono: "FiClock",
+      color: "#D97706", // Naranja advertencia
+    },
+    {
+      titulo: "Vencidos",
+      valor: conteoKpi["Vencido"] || 0,
+      icono: "FiAlertTriangle",
+      color: "#DC2626", // Rojo
+    },
+    /* {
+        titulo: "Resueltos",
+        valor: conteoKpi["Resuelto"] || 0,
+        icono: "FiCheckCircle",
+        color: "#10B981", // Verde
+      }, */
+    {
+      titulo: "Cerrados",
+      valor: conteoKpi["Cerrado"] || 0,
+      icono: "FiArchive",
+      color: "#059669", // Verde Oscuro
+    },
+    {
+      titulo: "Cancelados",
+      valor: conteoKpi["Cancelado"] || 0,
+      icono: "FiXCircle",
+      color: "#0EA5E9", // Celeste / Gris
+    },
+  ];
 
   const filtroStyle = {
     padding: "8px 12px",
@@ -80,23 +140,6 @@ export default function CasosTickets() {
     background: "var(--merco-surface, #fff)",
     color: "inherit",
     outline: "none",
-  };
-
-  const formatearFechaHora = (fechaStr) => {
-    if (!fechaStr) return "—";
-    const fechaObj = new Date(fechaStr);
-    return (
-      <div>
-        <div>{fechaObj.toLocaleDateString("es-VE")}</div>
-        <div style={{ color: "var(--merco-muted)", fontSize: "10px" }}>
-          {fechaObj.toLocaleTimeString("es-VE", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })}
-        </div>
-      </div>
-    );
   };
 
   const handlePorPaginaChange = (e) => {
@@ -128,6 +171,44 @@ export default function CasosTickets() {
       <div
         style={{ fontFamily: "var(--font-sans, system-ui)", padding: "10px 0" }}
       >
+        {/* TARJETAS KPI DE TODOS LOS ESTATUS */}
+        <div
+          className="ma-stats"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            gap: "12px",
+            marginBottom: "16px",
+          }}
+        >
+          {tarjetasEstatus.map((item, index) => (
+            <div className="ma-stat" key={index}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 6,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: 18,
+                    color: item.color,
+                    display: "inline-flex",
+                  }}
+                >
+                  <DynamicIcon name={item.icono} fallback="FiFolder" />
+                </span>
+              </div>
+              <div className="val">{item.valor}</div>
+              <div className="lbl" style={{ marginTop: 2 }}>
+                {item.titulo}
+              </div>
+            </div>
+          ))}
+        </div>
+
         <TicketsFiltros
           fTipoTicket={fTipoTicket}
           setFTipoTicket={setFTipoTicket}
