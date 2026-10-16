@@ -142,7 +142,7 @@ export function useNuevoTicket() {
           dep.str_nombre.toLowerCase().includes("tecnología") ||
           dep.str_nombre.toLowerCase().includes("tecnologia"),
       );
-      if (deptoTecnologia) setDepartamentoId(String(deptoTecnologia.id));
+      //if (deptoTecnologia) setDepartamentoId(String(deptoTecnologia.id));
     }
   }, [tipoTicketId, listaDepartamentos]);
 
