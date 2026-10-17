@@ -14,85 +14,198 @@ router.use(verificarClienteFrontend);
 router.use(verificarSesion);
 
 // ==========================================
+// FUNCIÓN AUXILIAR DE FILTROS DINÁMICOS PARA DASHBOARD
+// ==========================================
+function construirFiltrosDashboard(req) {
+  const {
+    tipo_ticket_id,
+    estatus_id,
+    prioridad_id,
+    canal_id,
+    departamento_id,
+    categoria_id,
+    creacion_desde,
+    creacion_hasta,
+  } = req.query;
+
+  let whereClause = `WHERE 1=1`;
+  const params = [];
+  let paramIndex = 1;
+
+  if (tipo_ticket_id) {
+    whereClause += ` AND t.tipo_ticket_id = $${paramIndex++}`;
+    params.push(Number(tipo_ticket_id));
+  }
+  if (estatus_id) {
+    whereClause += ` AND t.estatus_id = $${paramIndex++}`;
+    params.push(Number(estatus_id));
+  }
+  if (prioridad_id) {
+    whereClause += ` AND t.prioridad_id = $${paramIndex++}`;
+    params.push(Number(prioridad_id));
+  }
+  if (canal_id) {
+    whereClause += ` AND t.canal_id = $${paramIndex++}`;
+    params.push(Number(canal_id));
+  }
+  if (departamento_id) {
+    whereClause += ` AND t.departamento_id = $${paramIndex++}`;
+    params.push(Number(departamento_id));
+  }
+  if (categoria_id) {
+    whereClause += ` AND t.categoria_id = $${paramIndex++}`;
+    params.push(Number(categoria_id));
+  }
+  if (creacion_desde) {
+    whereClause += ` AND t.created_at >= $${paramIndex++}::timestamp`;
+    params.push(creacion_desde);
+  }
+  if (creacion_hasta) {
+    whereClause += ` AND t.created_at <= ($${paramIndex++}::timestamp + INTERVAL '1 day' - INTERVAL '1 second')`;
+    params.push(creacion_hasta);
+  }
+
+  return { whereClause, params };
+}
+
+// ==========================================
 // ENDPOINTS DEL DASHBOARD DE TICKETS
 // ==========================================
 
-// 1. Endpoint para obtener KPIs del dashboard
 router.get("/dashboard/kpis", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM tickets.view_dashboard_kpis",
-    );
-    res.status(200).json({
-      success: true,
-      kpis: result.rows,
-    });
+    const { whereClause, params } = construirFiltrosDashboard(req);
+    const queryKpis = `
+      SELECT 
+        (SELECT count(*) FROM tickets.tbl_tickets t ${whereClause}) AS total_tickets,
+        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Proceso') AS en_proceso,
+        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Aprobación') AS en_aprobacion,
+        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Pendiente de Usuario') AS pendiente_usuario,
+        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Espera Proveedor') AS espera_proveedor,
+        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Vencido') AS vencido,
+        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Cancelado') AS cancelado,
+        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Cerrado') AS cerrado
+    `;
+    const result = await pool.query(queryKpis, params);
+    res.status(200).json({ success: true, kpis: result.rows });
   } catch (err) {
-    console.error(
-      "Error al obtener KPIs del dashboard de tickets:",
-      err.message,
-    );
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar los KPIs.",
-    });
+    console.error("Error al obtener KPIs del dashboard de tickets:", err.message);
+    res.status(500).json({ success: false, error: "Error interno al consultar los KPIs." });
   }
 });
 
-// 2. Endpoint para obtener volumen de tickets por categoría
 router.get("/dashboard/tickets-por-categoria", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM tickets.view_dashboard_tickets_por_categoria",
-    );
-    res.status(200).json({
-      success: true,
-      data: result.rows,
-    });
+    const { whereClause, params } = construirFiltrosDashboard(req);
+    const query = `
+      SELECT 
+        COALESCE(cat.str_nombre, 'Sin Categoría') AS nombre_categoria,
+        COUNT(t.id) AS total_tickets
+      FROM tickets.tbl_tickets t
+      LEFT JOIN public.cat_datos_maestros cat ON t.categoria_id = cat.id
+      ${whereClause}
+      GROUP BY cat.str_nombre
+      ORDER BY total_tickets DESC;
+    `;
+    const result = await pool.query(query, params);
+    res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener tickets por categoría:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar el volumen por categoría.",
-    });
+    res.status(500).json({ success: false, error: "Error interno al consultar el volumen por categoría." });
   }
 });
 
-// 3. Endpoint para obtener la distribución por estatus (Maestro)
 router.get("/dashboard/distribucion-estados", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM tickets.view_dashboard_distribucion_estados",
-    );
-    res.status(200).json({
-      success: true,
-      data: result.rows,
-    });
+    const { whereClause, params } = construirFiltrosDashboard(req);
+    const query = `
+      SELECT 
+        COALESCE(e.str_nombre, 'Sin Estatus') AS estado,
+        COUNT(t.id) AS total
+      FROM tickets.tbl_tickets t
+      LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
+      ${whereClause}
+      GROUP BY e.str_nombre
+      ORDER BY total DESC;
+    `;
+    const result = await pool.query(query, params);
+    res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener distribución de estatus:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar la distribución de estados.",
-    });
+    res.status(500).json({ success: false, error: "Error interno al consultar la distribución de estados." });
   }
 });
 
-// 4. Endpoint para obtener los últimos tickets registrados
 router.get("/dashboard/ultimos-tickets", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM tickets.view_dashboard_ultimos_tickets",
-    );
-    res.status(200).json({
-      success: true,
-      data: result.rows,
-    });
+    const { whereClause, params } = construirFiltrosDashboard(req);
+    const query = `
+      SELECT 
+        t.id,
+        t.str_ticket AS codigo,
+        t.str_asunto AS asunto,
+        e.str_nombre AS estado,
+        COALESCE(c.str_nombre || ' ' || c.str_apellido, 'Cliente / Usuario') AS solicitante,
+        TO_CHAR(t.created_at, 'DD/MM/YYYY HH24:MI') AS tiempo
+      FROM tickets.tbl_tickets t
+      LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
+      LEFT JOIN tickets.tbl_clientes c ON t.cliente_id = c.id
+      ${whereClause}
+      ORDER BY t.created_at DESC
+      LIMIT 10;
+    `;
+    const result = await pool.query(query, params);
+    res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener últimos tickets:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar los tickets recientes.",
-    });
+    res.status(500).json({ success: false, error: "Error interno al consultar los tickets recientes." });
+  }
+});
+
+router.get("/dashboard/casos-por-analista", async (req, res) => {
+  try {
+    const { whereClause, params } = construirFiltrosDashboard(req);
+    const query = `
+      SELECT 
+        COALESCE(u.str_nombre || ' ' || u.str_apellido, 'Sin Asignar / Desconocido') AS nombre_analista,
+        COUNT(t.id) AS total_tickets
+      FROM tickets.tbl_tickets t
+      LEFT JOIN public.tbl_usuarios u ON t.creador_agente_id = u.id
+      ${whereClause}
+      GROUP BY u.id, u.str_nombre, u.str_apellido
+      ORDER BY total_tickets DESC
+      LIMIT 10;
+    `;
+    const result = await pool.query(query, params);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error("Error al obtener casos por analista:", err.message);
+    res.status(500).json({ success: false, error: "Error interno al consultar los casos por analista." });
+  }
+});
+
+router.get("/dashboard/casos-cerrados-por-analista", async (req, res) => {
+  try {
+    const { whereClause, params } = construirFiltrosDashboard(req);
+    const query = `
+      SELECT 
+        COALESCE(u.str_nombre || ' ' || u.str_apellido, 'Sin Asignar / Desconocido') AS nombre_analista,
+        COUNT(t.id) AS tickets_cerrados
+      FROM tickets.tbl_tickets t
+      LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
+      LEFT JOIN public.tbl_usuarios u ON t.usuario_asignado_id = u.id
+      ${whereClause}
+      AND e.str_tipo = 'ESTATUSTICKET' 
+      AND e.str_nombre ILIKE 'Cerrado'
+      GROUP BY u.id, u.str_nombre, u.str_apellido
+      ORDER BY tickets_cerrados DESC
+      LIMIT 10;
+    `;
+    const result = await pool.query(query, params);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error("Error al obtener casos cerrados por analista:", err.message);
+    res.status(500).json({ success: false, error: "Error interno." });
   }
 });
 
@@ -100,7 +213,6 @@ router.get("/dashboard/ultimos-tickets", async (req, res) => {
 // ENDPOINTS DE CATÁLOGOS Y GESTIÓN DE TICKETS
 // ==========================================
 
-// Endpoint para obtener el listado de departamentos desde public.cat_departamentos
 router.get("/departamentos", async (req, res) => {
   try {
     const query = `
@@ -109,21 +221,13 @@ router.get("/departamentos", async (req, res) => {
       ORDER BY str_nombre ASC;
     `;
     const resultado = await pool.query(query);
-
-    res.status(200).json({
-      success: true,
-      departamentos: resultado.rows,
-    });
+    res.status(200).json({ success: true, departamentos: resultado.rows });
   } catch (err) {
     console.error("Error al obtener los departamentos:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al obtener los departamentos.",
-    });
+    res.status(500).json({ success: false, error: "Error interno al obtener los departamentos." });
   }
 });
 
-// Endpoint para obtener el listado de departamentos y usuarios asociados
 router.get("/departamentos-usuarios", async (req, res) => {
   try {
     const queryDept = `
@@ -150,14 +254,10 @@ router.get("/departamentos-usuarios", async (req, res) => {
     });
   } catch (err) {
     console.error("Error al obtener departamentos y usuarios:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al obtener catálogos.",
-    });
+    res.status(500).json({ success: false, error: "Error interno al obtener catálogos." });
   }
 });
 
-// Endpoint para obtener listas maestras desde public.cat_datos_maestros
 router.get("/datos-maestros", async (req, res) => {
   try {
     const query = `
@@ -170,12 +270,8 @@ router.get("/datos-maestros", async (req, res) => {
 
     const datos = resultado.rows;
     const canales = datos.filter((item) => item.str_tipo === "CANAL");
-    const categoria_externa = datos.filter(
-      (item) => item.str_tipo === "CATEGORIA_EXTERNA",
-    );
-    const categoria_interna = datos.filter(
-      (item) => item.str_tipo === "CATEGORIA_INTERNA",
-    );
+    const categoria_externa = datos.filter((item) => item.str_tipo === "CATEGORIA_EXTERNA");
+    const categoria_interna = datos.filter((item) => item.str_tipo === "CATEGORIA_INTERNA");
     const prioridades = datos.filter((item) => item.str_tipo === "PRIORIDAD");
     const tipoTicket = datos.filter((item) => item.str_tipo === "TIPO_TICKET");
     const estatus = datos.filter((item) => item.str_tipo === "ESTATUSTICKET");
@@ -191,14 +287,10 @@ router.get("/datos-maestros", async (req, res) => {
     });
   } catch (err) {
     console.error("Error al obtener los datos maestros:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al obtener los datos maestros.",
-    });
+    res.status(500).json({ success: false, error: "Error interno al obtener los datos maestros." });
   }
 });
 
-// Endpoint para consultar si un cliente ya existe por su cédula
 router.get("/cliente/:cedula", async (req, res) => {
   const { cedula } = req.params;
   try {
@@ -211,27 +303,17 @@ router.get("/cliente/:cedula", async (req, res) => {
     const resultado = await pool.query(query, [cedula]);
 
     if (resultado.rows.length > 0) {
-      res.status(200).json({
-        success: true,
-        existe: true,
-        cliente: resultado.rows[0],
-      });
+      res.status(200).json({ success: true, existe: true, cliente: resultado.rows[0] });
     } else {
-      res.status(200).json({
-        success: true,
-        existe: false,
-      });
+      res.status(200).json({ success: true, existe: false });
     }
   } catch (err) {
     console.error("Error al buscar el cliente:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al buscar el cliente.",
-    });
+    res.status(500).json({ success: false, error: "Error interno al buscar el cliente." });
   }
 });
 
-// Endpoint para crear el ticket y subir archivos multimedia asociados (con Socket.io)
+// Endpoint principal para crear tickets con asignación automática para tecnología
 router.post("/crear", upload.any(), async (req, res) => {
   const client = await pool.connect();
 
@@ -257,27 +339,36 @@ router.post("/crear", upload.any(), async (req, res) => {
     } = req.body;
 
     const usuarioIdSesion = req.user?.id;
-
-    let valoresAsignado = usuario_asignado_id
-      ? Number(usuario_asignado_id)
-      : null;
-
+    let valoresAsignado = usuario_asignado_id ? Number(usuario_asignado_id) : null;
     let clienteFinalId = cliente_id ? Number(cliente_id) : null;
-    const correoMinuscula = str_correo_cliente
-      ? str_correo_cliente.trim().toLowerCase()
-      : null;
-    const nombreMinuscula = str_nombre_cliente
-      ? str_nombre_cliente.trim().toLowerCase()
-      : null;
-    const apellidoMinuscula = str_apellido_cliente
-      ? str_apellido_cliente.trim().toLowerCase()
-      : null;
+
+    if (!valoresAsignado && departamento_id) {
+      const deptoRes = await client.query(
+        `SELECT str_nombre FROM public.cat_departamentos WHERE id = $1`,
+        [Number(departamento_id)]
+      );
+      if (deptoRes.rows.length > 0) {
+        const nombreDepto = deptoRes.rows[0].str_nombre.toLowerCase();
+        if (nombreDepto.includes("tecnolog") || nombreDepto.includes("sistema") || nombreDepto.includes("ti")) {
+          const usuariosDeptoRes = await client.query(
+            `SELECT id FROM public.tbl_usuarios WHERE departamento_id = $1 AND bol_activo = true`,
+            [Number(departamento_id)]
+          );
+          if (usuariosDeptoRes.rows.length > 0) {
+            const indexAleatorio = Math.floor(Math.random() * usuariosDeptoRes.rows.length);
+            valoresAsignado = usuariosDeptoRes.rows[indexAleatorio].id;
+          }
+        }
+      }
+    }
+
+    const correoMinuscula = str_correo_cliente ? str_correo_cliente.trim().toLowerCase() : null;
+    const nombreMinuscula = str_nombre_cliente ? str_nombre_cliente.trim().toLowerCase() : null;
+    const apellidoMinuscula = str_apellido_cliente ? str_apellido_cliente.trim().toLowerCase() : null;
 
     if (!clienteFinalId && str_cedula_cliente) {
       const queryClienteCheck = `SELECT id FROM tickets.tbl_clientes WHERE str_cedula = $1 LIMIT 1;`;
-      const clienteRes = await client.query(queryClienteCheck, [
-        str_cedula_cliente,
-      ]);
+      const clienteRes = await client.query(queryClienteCheck, [str_cedula_cliente]);
 
       if (clienteRes.rows.length > 0) {
         clienteFinalId = clienteRes.rows[0].id;
@@ -322,7 +413,7 @@ router.post("/crear", upload.any(), async (req, res) => {
         ON CONFLICT (int_anio, int_mes)
         DO UPDATE SET int_ultimo_secuencial = tickets.tbl_secuencias_tickets.int_ultimo_secuencial + 1
         RETURNING int_ultimo_secuencial;
-        `,
+      `,
       [year, month],
     );
 
@@ -330,10 +421,10 @@ router.post("/crear", upload.any(), async (req, res) => {
     const str_ticket = `TCK${year}-${monthStr}-${String(nextNumber).padStart(6, "0")}`;
 
     const slaQuery = `
-        SELECT tiempo_maximo
-        FROM tickets.sla_configuracion
-        WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;
-      `;
+      SELECT tiempo_maximo
+      FROM tickets.sla_configuracion
+      WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;
+    `;
     const slaRes = await client.query(slaQuery, [categoria_id, prioridad_id]);
     const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
 
@@ -344,7 +435,6 @@ router.post("/crear", upload.any(), async (req, res) => {
 
     let contadorImagen = 1;
     let contadorVideo = 1;
-    let contadorAudio = 1;
 
     archivos.forEach((file) => {
       const tipoMime = file.mimetype;
@@ -357,9 +447,6 @@ router.post("/crear", upload.any(), async (req, res) => {
       } else if (tipoMime.startsWith("video/")) {
         nuevoNombreArchivo = `${str_ticket}-vid-${contadorVideo}${extension}`;
         contadorVideo++;
-      } else if (tipoMime.startsWith("audio/")) {
-        nuevoNombreArchivo = `${str_ticket}-aud-${contadorAudio}${extension}`;
-        contadorAudio++;
       } else {
         nuevoNombreArchivo = `${str_ticket}-file-${contadorImagen}${extension}`;
         contadorImagen++;
@@ -371,10 +458,7 @@ router.post("/crear", upload.any(), async (req, res) => {
       try {
         fs.renameSync(rutaAntigua, rutaNueva);
       } catch (renameErr) {
-        console.error(
-          "Error al renombrar el archivo físico:",
-          renameErr.message,
-        );
+        console.error("Error al renombrar el archivo físico:", renameErr.message);
       }
 
       const rutaCompletaBD = `/var/www/uploads/${nuevoNombreArchivo}`;
@@ -387,31 +471,28 @@ router.post("/crear", upload.any(), async (req, res) => {
       }
     });
 
-    const str_ruta_imagen =
-      rutasImagenes.length > 0 ? rutasImagenes.join(",") : null;
-    const str_ruta_video =
-      rutasVideos.length > 0 ? rutasVideos.join(",") : null;
-    const str_ruta_audio =
-      rutasAudios.length > 0 ? rutasAudios.join(",") : null;
+    const str_ruta_imagen = rutasImagenes.length > 0 ? rutasImagenes.join(",") : null;
+    const str_ruta_video = rutasVideos.length > 0 ? rutasVideos.join(",") : null;
+    const str_ruta_audio = rutasAudios.length > 0 ? rutasAudios.join(",") : null;
 
     const queryInsert = `
-        INSERT INTO tickets.tbl_tickets (
-          str_ticket, tipo_ticket_id, cliente_id, creador_agente_id, cierre_agente_id,
-          departamento_id, categoria_id, prioridad_id,
-          canal_id, str_asunto, str_descripcion, int_sla,
-          str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id,
-          dmt_fecha_vencimiento_sla, created_at, updated_at
-        ) VALUES (
-          $1, $2::integer, $3::integer, $4::integer, $5::integer,
-          $6::integer, $7::integer, $8::integer, $9::integer,
-          $10::varchar, $11::text, $12::integer,
-          $13::text, $14::text, $15::text, $16::integer,
-          COALESCE(CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) + ($12::integer * INTERVAL '1 hour'),
-          CURRENT_TIMESTAMP,
-          CURRENT_TIMESTAMP
-        )
-        RETURNING *;
-      `;
+      INSERT INTO tickets.tbl_tickets (
+        str_ticket, tipo_ticket_id, cliente_id, creador_agente_id, cierre_agente_id,
+        departamento_id, categoria_id, prioridad_id,
+        canal_id, str_asunto, str_descripcion, int_sla,
+        str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id,
+        dmt_fecha_vencimiento_sla, created_at, updated_at
+      ) VALUES (
+        $1, $2::integer, $3::integer, $4::integer, $5::integer,
+        $6::integer, $7::integer, $8::integer, $9::integer,
+        $10::varchar, $11::text, $12::integer,
+        $13::text, $14::text, $15::text, $16::integer,
+        COALESCE(CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) + ($12::integer * INTERVAL '1 hour'),
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+      )
+      RETURNING *;
+    `;
 
     const values = [
       str_ticket,
@@ -478,7 +559,7 @@ router.post("/crear", upload.any(), async (req, res) => {
   }
 });
 
-// Endpoint para listar tickets
+// Endpoint para listar tickets con soporte completo de filtros por categoría
 router.get("/listar", async (req, res) => {
   try {
     const {
@@ -487,6 +568,7 @@ router.get("/listar", async (req, res) => {
       prioridad_id,
       canal_id,
       departamento_id,
+      categoria_id,
       buscar,
       creacion_desde,
       creacion_hasta,
@@ -520,6 +602,10 @@ router.get("/listar", async (req, res) => {
       query += ` AND t.departamento_id = $${paramIndex++}`;
       params.push(Number(departamento_id));
     }
+    if (categoria_id) {
+      query += ` AND t.categoria_id = $${paramIndex++}`;
+      params.push(Number(categoria_id));
+    }
     if (creacion_desde) {
       query += ` AND t.created_at >= $${paramIndex++}::timestamp`;
       params.push(creacion_desde);
@@ -545,7 +631,7 @@ router.get("/listar", async (req, res) => {
       params.push(vencimiento_hasta);
     }
     if (buscar) {
-      query += ` AND (t.str_ticket ILIKE $${paramIndex} OR t.str_asunto ILIKE $${paramIndex} OR c.str_cedula ILIKE $${paramIndex} OR c.str_nombre ILIKE $${paramIndex})`;
+      query += ` AND (t.str_ticket ILIKE $${paramIndex} OR t.str_asunto ILIKE $${paramIndex})`;
       params.push(`%${buscar}%`);
       paramIndex++;
     }
@@ -553,16 +639,10 @@ router.get("/listar", async (req, res) => {
     query += ` ORDER BY t.created_at DESC;`;
     const resultado = await pool.query(query, params);
 
-    res.status(200).json({
-      success: true,
-      tickets: resultado.rows,
-    });
+    res.status(200).json({ success: true, tickets: resultado.rows });
   } catch (err) {
     console.error("Error al listar los tickets:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al obtener los tickets.",
-    });
+    res.status(500).json({ success: false, error: "Error interno al obtener los tickets." });
   }
 });
 
@@ -585,20 +665,16 @@ router.get("/bitacora/:ticket_id", async (req, res) => {
       ORDER BY b.created_at ASC;
     `;
     const resultado = await pool.query(query, [Number(ticket_id)]);
-    res.status(200).json({
-      success: true,
-      bitacora: resultado.rows,
-    });
+    res.status(200).json({ success: true, bitacora: resultado.rows });
   } catch (err) {
     console.error("Error al obtener la bitácora:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al obtener la bitácora.",
-    });
+    res.status(500).json({ success: false, error: "Error interno al obtener la bitácora." });
   }
 });
 
-// Endpoint para actualizar el ticket (con control de pausas, bitácora y alertas por Socket.io)
+// ==========================================
+// ENDPOINT PARA ACTUALIZAR TICKETS (DESDE EL MODAL)
+// ==========================================
 router.put("/actualizar/:id", upload.any(), async (req, res) => {
   const { id } = req.params;
   const {
@@ -615,24 +691,13 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
   try {
     await client.query("BEGIN");
 
-    const nuevoEstatus =
-      estatus_id !== undefined && estatus_id !== "" ? Number(estatus_id) : null;
-    const nuevoDepartamento =
-      departamento_id !== undefined && departamento_id !== ""
-        ? Number(departamento_id)
-        : null;
-    const nuevaPrioridad =
-      prioridad_id !== undefined && prioridad_id !== ""
-        ? Number(prioridad_id)
-        : null;
+    const nuevoEstatus = estatus_id !== undefined && estatus_id !== "" ? Number(estatus_id) : null;
+    const nuevoDepartamento = departamento_id !== undefined && departamento_id !== "" ? Number(departamento_id) : null;
+    const nuevaPrioridad = prioridad_id !== undefined && prioridad_id !== "" ? Number(prioridad_id) : null;
 
     let nuevoAsignado = undefined;
     if (usuario_asignado_id !== undefined) {
-      if (
-        usuario_asignado_id === "" ||
-        usuario_asignado_id === "null" ||
-        usuario_asignado_id === null
-      ) {
+      if (usuario_asignado_id === "" || usuario_asignado_id === "null" || usuario_asignado_id === null) {
         nuevoAsignado = null;
       } else {
         nuevoAsignado = Number(usuario_asignado_id);
@@ -641,14 +706,12 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     const ticketActualRes = await client.query(
       `SELECT categoria_id, prioridad_id, estatus_id, usuario_asignado_id, str_ticket, str_asunto, dmt_fecha_vencimiento_sla, updated_at FROM tickets.tbl_tickets WHERE id = $1`,
-      [Number(id)],
+      [Number(id)]
     );
 
     if (ticketActualRes.rows.length === 0) {
       await client.query("ROLLBACK");
-      return res
-        .status(404)
-        .json({ success: false, error: "Ticket no encontrado." });
+      return res.status(404).json({ success: false, error: "Ticket no encontrado." });
     }
 
     const ticketActual = ticketActualRes.rows[0];
@@ -656,17 +719,12 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     const estatusActual = Number(ticketActual.estatus_id);
     const asignadoAnterior = ticketActual.usuario_asignado_id;
 
-    const cambioEstatus =
-      nuevoEstatus !== null && nuevoEstatus !== estatusActual;
-    if (
-      cambioEstatus &&
-      (!str_descripcion_respuesta || str_descripcion_respuesta.trim() === "")
-    ) {
+    const cambioEstatus = nuevoEstatus !== null && nuevoEstatus !== estatusActual;
+    if (cambioEstatus && (!str_descripcion_respuesta || str_descripcion_respuesta.trim() === "")) {
       await client.query("ROLLBACK");
       return res.status(400).json({
         success: false,
-        error:
-          "Debe ingresar un comentario o respuesta en la bitácora al cambiar el estatus del ticket.",
+        error: "Debe ingresar un comentario o respuesta en la bitácora al cambiar el estatus del ticket.",
       });
     }
 
@@ -676,15 +734,11 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     const estActualInfoRes = await client.query(
       `SELECT str_nombre FROM public.cat_datos_maestros WHERE id = $1`,
-      [estatusActual],
+      [estatusActual]
     );
     if (estActualInfoRes.rows.length > 0) {
       const nombreActual = estActualInfoRes.rows[0].str_nombre.toLowerCase();
-      if (
-        nombreActual.includes("espera") ||
-        nombreActual.includes("pendiente") ||
-        nombreActual.includes("pausa")
-      ) {
+      if (nombreActual.includes("espera") || nombreActual.includes("pendiente") || nombreActual.includes("pausa")) {
         esEstatusActualPausa = true;
       }
     }
@@ -692,39 +746,27 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     if (nuevoEstatus !== null) {
       const estNuevoInfoRes = await client.query(
         `SELECT str_nombre FROM public.cat_datos_maestros WHERE id = $1`,
-        [nuevoEstatus],
+        [nuevoEstatus]
       );
       if (estNuevoInfoRes.rows.length > 0) {
         const nombreNuevo = estNuevoInfoRes.rows[0].str_nombre.toLowerCase();
-        if (
-          nombreNuevo.includes("espera") ||
-          nombreNuevo.includes("pendiente") ||
-          nombreNuevo.includes("pausa")
-        ) {
+        if (nombreNuevo.includes("espera") || nombreNuevo.includes("pendiente") || nombreNuevo.includes("pausa")) {
           esEstatusNuevoPausa = true;
         }
-        if (
-          nombreNuevo.includes("cerrado") ||
-          nombreNuevo.includes("cancelado") ||
-          nuevoEstatus === 22
-        ) {
+        if (nombreNuevo.includes("cerrado") || nombreNuevo.includes("cancelado") || nuevoEstatus === 22) {
           esEstatusCierre = true;
         }
       }
     }
 
-    const prioridadAUtilizar =
-      nuevaPrioridad !== null ? nuevaPrioridad : ticketActual.prioridad_id;
+    const prioridadAUtilizar = nuevaPrioridad !== null ? nuevaPrioridad : ticketActual.prioridad_id;
 
     const slaQuery = `
       SELECT tiempo_maximo
       FROM tickets.sla_configuracion
       WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;
     `;
-    const slaRes = await client.query(slaQuery, [
-      categoriaId,
-      prioridadAUtilizar,
-    ]);
+    const slaRes = await client.query(slaQuery, [categoriaId, prioridadAUtilizar]);
     const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
 
     if (str_descripcion_respuesta && str_descripcion_respuesta.trim() !== "") {
@@ -735,7 +777,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
           Number(id),
           usuarioIdSesion ? Number(usuarioIdSesion) : null,
           str_descripcion_respuesta.trim(),
-        ],
+        ]
       );
     }
 
@@ -866,24 +908,16 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     await client.query("COMMIT");
 
-    if (
-      nuevoResponsableId &&
-      nuevoResponsableId !== asignadoAnterior &&
-      nuevaAlertaActualizacion
-    ) {
+    if (nuevoResponsableId && nuevoResponsableId !== asignadoAnterior && nuevaAlertaActualizacion) {
       const io = req.app.get("io");
       if (io && Number(nuevoResponsableId) !== Number(usuarioIdSesion)) {
-        io.to(`user_${nuevoResponsableId}`).emit(
-          "nueva_alerta",
-          nuevaAlertaActualizacion,
-        );
+        io.to(`user_${nuevoResponsableId}`).emit("nueva_alerta", nuevaAlertaActualizacion);
       }
     }
 
     res.status(200).json({
       success: true,
-      message:
-        "Ticket actualizado y respuesta guardada en la bitácora exitosamente.",
+      message: "Ticket actualizado y respuesta guardada en la bitácora exitosamente.",
       ticket: ticketActualizado,
     });
   } catch (err) {
@@ -895,25 +929,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     });
   } finally {
     client.release();
-  }
-});
-
-// Endpoint para obtener los casos creados por analista (tickets externos)
-router.get("/dashboard/casos-por-analista", async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT * FROM tickets.view_dashboard_casos_por_analista",
-    );
-    res.status(200).json({
-      success: true,
-      data: result.rows,
-    });
-  } catch (err) {
-    console.error("Error al obtener casos por analista:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar los casos por analista.",
-    });
   }
 });
 

@@ -43,7 +43,6 @@ export function useNuevoTicket() {
   const nombre = user?.nombre || "Analista";
   const apellido = user?.apellido || "";
 
-  // Notificación permanente hasta cierre manual o recarga
   const showToast = (message, type = "success") => {
     setToast({ message, type });
   };
@@ -81,36 +80,52 @@ export function useNuevoTicket() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resDeptUsers = await axiosTickets.get("/departamentos-usuarios");
-        if (resDeptUsers.data.success) {
-          setListaDepartamentos(resDeptUsers.data.departamentos);
-          setListaUsuarios(resDeptUsers.data.usuarios);
+        // 1. Cargar Departamentos y Usuarios
+        try {
+          const resDeptUsers = await axiosTickets.get(
+            "/departamentos-usuarios",
+          );
+          if (resDeptUsers.data && resDeptUsers.data.success) {
+            setListaDepartamentos(resDeptUsers.data.departamentos || []);
+            setListaUsuarios(resDeptUsers.data.usuarios || []);
+          }
+        } catch (err) {
+          console.error("Error al cargar /departamentos-usuarios:", err);
         }
 
-        const resMaestros = await axiosTickets.get("/datos-maestros");
-        if (resMaestros.data.success) {
-          setListaCanales(resMaestros.data.canales);
-          setListaCategoriasExternas(resMaestros.data.categoria_externa || []);
-          setListaCategoriasInternas(resMaestros.data.categoria_interna || []);
-          setListaPrioridades(resMaestros.data.prioridades);
-          setListaTipoTicket(resMaestros.data.tipoTicket);
+        // 2. Cargar Datos Maestros (Tipos, Categorías, Canales, Prioridades)
+        try {
+          const resMaestros = await axiosTickets.get("/datos-maestros");
+          if (resMaestros.data && resMaestros.data.success) {
+            setListaCanales(resMaestros.data.canales || []);
+            setListaCategoriasExternas(
+              resMaestros.data.categoria_externa || [],
+            );
+            setListaCategoriasInternas(
+              resMaestros.data.categoria_interna || [],
+            );
+            setListaPrioridades(resMaestros.data.prioridades || []);
+            setListaTipoTicket(resMaestros.data.tipoTicket || []);
 
-          if (resMaestros.data.tipoTicket?.length > 0) {
-            const externoDefault = resMaestros.data.tipoTicket.find(
-              (t) =>
-                t.str_nombre.toLowerCase().includes("externo") ||
-                t.str_nombre.toLowerCase().includes("app"),
-            );
-            setTipoTicketId(
-              externoDefault
-                ? String(externoDefault.id)
-                : String(resMaestros.data.tipoTicket[0].id),
-            );
+            if (resMaestros.data.tipoTicket?.length > 0) {
+              const externoDefault = resMaestros.data.tipoTicket.find(
+                (t) =>
+                  t.str_nombre.toLowerCase().includes("externo") ||
+                  t.str_nombre.toLowerCase().includes("app"),
+              );
+              setTipoTicketId(
+                externoDefault
+                  ? String(externoDefault.id)
+                  : String(resMaestros.data.tipoTicket[0].id),
+              );
+            }
           }
+        } catch (err) {
+          console.error("Error al cargar /datos-maestros:", err);
+          showToast("Error al cargar los catálogos del sistema.", "error");
         }
       } catch (error) {
-        console.error("Error al cargar los catálogos del sistema:", error);
-        showToast("Error al cargar los catálogos del sistema.", "error");
+        console.error("Error general al inicializar catálogos:", error);
       }
     };
     fetchData();
@@ -134,17 +149,6 @@ export function useNuevoTicket() {
           seleccionado.str_nombre.toLowerCase().includes("app")
       : false;
   };
-
-  useEffect(() => {
-    if (esTipoExterno() && listaDepartamentos.length > 0) {
-      const deptoTecnologia = listaDepartamentos.find(
-        (dep) =>
-          dep.str_nombre.toLowerCase().includes("tecnología") ||
-          dep.str_nombre.toLowerCase().includes("tecnologia"),
-      );
-      //if (deptoTecnologia) setDepartamentoId(String(deptoTecnologia.id));
-    }
-  }, [tipoTicketId, listaDepartamentos]);
 
   useEffect(() => {
     if (departamentoId) {
@@ -476,19 +480,14 @@ export function useNuevoTicket() {
     return "FiFile";
   };
 
-  const departamentosActuales = (() => {
-    if (esTipoExterno()) {
-      return listaDepartamentos.filter((dep) => {
-        const nombre = dep.str_nombre.toLowerCase();
-        return (
-          nombre.includes("atención al cliente") ||
-          nombre.includes("atencion al cliente") ||
-          nombre.includes("tecnología") ||
-          nombre.includes("tecnologia")
-        );
-      });
-    }
-    return listaDepartamentos;
+  // Departamentos disponibles según el tipo de ticket seleccionado
+  const departamentosActuales = listaDepartamentos;
+
+  // Categorías filtradas dinámicamente según el tipo de ticket seleccionado en Nuevo Ticket
+  const categoriasActuales = (() => {
+    if (esTipoInterno()) return listaCategoriasInternas;
+    if (esTipoExterno()) return listaCategoriasExternas;
+    return [...listaCategoriasInternas, ...listaCategoriasExternas];
   })();
 
   return {
@@ -548,9 +547,7 @@ export function useNuevoTicket() {
     handleSubmit,
     obtenerIconoPorTipo,
     validarCorreo,
-    categoriasActuales: esTipoInterno()
-      ? listaCategoriasInternas
-      : listaCategoriasExternas,
+    categoriasActuales,
     departamentosActuales,
   };
 }

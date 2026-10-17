@@ -8,6 +8,9 @@ export function TicketsFiltros({
   setFEstado,
   fDepartamento,
   setFDepartamento,
+  fCategoria,
+  setFCategoria,
+  categorias,
   fAgente,
   setFAgente,
   fPrioridad,
@@ -63,6 +66,20 @@ export function TicketsFiltros({
           {tiposTicket.map((t) => (
             <option key={t.id} value={t.id}>
               {t.str_nombre}
+            </option>
+          ))}
+        </select>
+
+        {/* SELECT DE CATEGORÍA DINÁMICA SEGÚN TIPO DE TICKET */}
+        <select
+          value={fCategoria}
+          onChange={(e) => setFCategoria(e.target.value)}
+          style={filtroStyle}
+        >
+          <option value="">Todas las categorías</option>
+          {categorias.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.str_nombre}
             </option>
           ))}
         </select>

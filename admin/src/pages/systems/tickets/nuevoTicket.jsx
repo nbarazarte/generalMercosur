@@ -4,7 +4,7 @@ import { BlockNoteView } from "@blocknote/mantine";
 import { useNuevoTicket } from "./hooks/useNuevoTicket";
 import { TicketParametros } from "./components/TicketParametros";
 import { ClienteExternoFields } from "./components/ClienteExternoFields";
-import  CopiableCodigoPartes  from "./components/CopiableCodigoPartes";
+import CopiableCodigoPartes from "./components/CopiableCodigoPartes";
 
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";

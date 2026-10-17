@@ -16,6 +16,7 @@ export default function CasosTickets() {
     prioridades,
     tiposTicket,
     listaEstatus,
+    categorias,
     fBuscar,
     setFBuscar,
     fTipoTicket,
@@ -28,6 +29,8 @@ export default function CasosTickets() {
     setFCanal,
     fDepartamento,
     setFDepartamento,
+    fCategoria,
+    setFCategoria,
     fAgente,
     setFAgente,
     fTipoFecha,
@@ -74,61 +77,54 @@ export default function CasosTickets() {
     conteoKpi,
   } = useCasosTickets();
 
-  // Configuración visual para cada tarjeta de estatus
   const tarjetasEstatus = [
+    {
+      titulo: "Total Tickets",
+      valor: ticketsFiltrados.length,
+      icono: "FiLayers",
+      color: "#3B82F6",
+    },
     {
       titulo: "En Proceso",
       valor: conteoKpi["En Proceso"] || 0,
-      icono: "FiBell",
-      color: "#3B82F6", // Azul
+      icono: "FiClock",
+      color: "#3B82F6",
+    },
+    {
+      titulo: "En Aprobación",
+      valor: conteoKpi["En Aprobación"] || 0,
+      icono: "FiAlertCircle",
+      color: "#EC4899",
     },
     {
       titulo: "Pendiente de Usuario",
       valor: conteoKpi["Pendiente de Usuario"] || 0,
-      icono: "FiUserCheck",
-      color: "#F59E0B", // Ámbar / Naranja
+      icono: "FiUser",
+      color: "#F59E0B",
     },
     {
       titulo: "En Espera Proveedor",
       valor: conteoKpi["En Espera Proveedor"] || 0,
       icono: "FiTruck",
-      color: "#A855F7", // Morado
-    },
-    {
-      titulo: "En Aprobación",
-      valor: conteoKpi["En Aprobación"] || 0,
-      icono: "FiFileText",
-      color: "#EC4899", // Rosa
-    },
-    {
-      titulo: "Por vencer (<2h)",
-      valor: conteoKpi["porVencer"] || 0,
-      icono: "FiClock",
-      color: "#D97706", // Naranja advertencia
+      color: "#A855F7",
     },
     {
       titulo: "Vencidos",
       valor: conteoKpi["Vencido"] || 0,
       icono: "FiAlertTriangle",
-      color: "#DC2626", // Rojo
+      color: "#DC2626",
     },
-    /* {
-        titulo: "Resueltos",
-        valor: conteoKpi["Resuelto"] || 0,
-        icono: "FiCheckCircle",
-        color: "#10B981", // Verde
-      }, */
     {
       titulo: "Cerrados",
       valor: conteoKpi["Cerrado"] || 0,
       icono: "FiArchive",
-      color: "#059669", // Verde Oscuro
+      color: "#059669",
     },
     {
       titulo: "Cancelados",
       valor: conteoKpi["Cancelado"] || 0,
       icono: "FiXCircle",
-      color: "#0EA5E9", // Celeste / Gris
+      color: "#0EA5E9",
     },
   ];
 
@@ -171,7 +167,7 @@ export default function CasosTickets() {
       <div
         style={{ fontFamily: "var(--font-sans, system-ui)", padding: "10px 0" }}
       >
-        {/* TARJETAS KPI DE TODOS LOS ESTATUS */}
+        {/* TARJETAS KPI */}
         <div
           className="ma-stats"
           style={{
@@ -216,6 +212,9 @@ export default function CasosTickets() {
           setFEstado={setFEstado}
           fDepartamento={fDepartamento}
           setFDepartamento={setFDepartamento}
+          fCategoria={fCategoria}
+          setFCategoria={setFCategoria}
+          categorias={categorias}
           fAgente={fAgente}
           setFAgente={setFAgente}
           fPrioridad={fPrioridad}
@@ -244,7 +243,7 @@ export default function CasosTickets() {
           filtroStyle={filtroStyle}
         />
 
-        {/* TABLA DE CASOS / TICKETS */}
+        {/* TABLA DE CASOS */}
         <div
           className="ma-card"
           style={{ marginTop: 15, display: "flex", flexDirection: "column" }}
@@ -300,94 +299,17 @@ export default function CasosTickets() {
                       tipoLower.includes("externo") ||
                       tipoLower.includes("app");
 
-                    // Colores dinámicos del estatus
-                    const estatusLower = (t.estatus_nombre || "").toLowerCase();
-                    let estiloEstatus = {
-                      background: "rgba(59, 130, 246, 0.1)",
-                      color: "#3b82f6",
-                    };
-
-                    if (estatusLower.includes("en proceso")) {
-                      estiloEstatus = {
-                        background: "rgba(59, 130, 246, 0.1)",
-                        color: "#3b82f6",
-                      };
-                    } else if (estatusLower.includes("pendiente de usuario")) {
-                      estiloEstatus = {
-                        background: "rgba(245, 158, 11, 0.1)",
-                        color: "#f59e0b",
-                      };
-                    } else if (estatusLower.includes("en espera proveedor")) {
-                      estiloEstatus = {
-                        background: "rgba(168, 85, 247, 0.1)",
-                        color: "#a855f7",
-                      };
-                    } else if (estatusLower.includes("en aprobación")) {
-                      estiloEstatus = {
-                        background: "rgba(236, 72, 153, 0.1)",
-                        color: "#ec4899",
-                      };
-                    } else if (
-                      estatusLower.includes("resuelto") ||
-                      estatusLower.includes("cerrado")
-                    ) {
-                      estiloEstatus = {
-                        background: "rgba(16, 185, 129, 0.1)",
-                        color: "#10b981",
-                      };
-                    } else if (
-                      estatusLower.includes("vencido") ||
-                      estatusLower.includes("crítico") ||
-                      estatusLower.includes("urgente")
-                    ) {
-                      estiloEstatus = {
-                        background: "rgba(239, 68, 68, 0.1)",
-                        color: "#ef4444",
-                      };
-                    } else if (estatusLower.includes("cancelado")) {
-                      estiloEstatus = {
-                        background: "rgba(14, 165, 233, 0.1)",
-                        color: "#0ea5e9",
-                      };
-                    }
-
-                    // Lógica de SLA con pausas
-                    const estaEnPausaActual =
-                      estatusLower.includes("espera") ||
-                      estatusLower.includes("pendiente") ||
-                      estatusLower.includes("pausa");
-
-                    let minutosPausaActual = 0;
-                    if (estaEnPausaActual && t.updated_at) {
-                      const msPausa = new Date() - new Date(t.updated_at);
-                      minutosPausaActual = Math.floor(msPausa / (1000 * 60));
-                    }
-
-                    const totalMinutosPausa =
-                      Number(t.int_minutos_pausa || 0) + minutosPausaActual;
-                    const tieneHistorialPausa = totalMinutosPausa > 0;
-
-                    const tiempoResolucionStr = (
-                      t.tiempo_resolucion || ""
-                    ).toLowerCase();
-                    let excedeSLA =
-                      tiempoResolucionStr.includes("fuera") ||
-                      tiempoResolucionStr.includes("vencido") ||
-                      estatusLower.includes("vencido");
-
-                    if (!excedeSLA && t.int_sla && t.created_at) {
-                      const fechaInicio = new Date(t.created_at);
-                      const fechaFin = t.dmt_fecha_cierre
-                        ? new Date(t.dmt_fecha_cierre)
-                        : new Date();
-                      const diferenciaHoras =
-                        (fechaFin - fechaInicio) / (1000 * 60 * 60);
-                      if (diferenciaHoras > Number(t.int_sla)) {
-                        excedeSLA = true;
-                      }
-                    }
-
-                    const esCancelado = estatusLower.includes("cancelado");
+                    const nombreEstatus = t.estatus_nombre || "En Proceso";
+                    const estName = nombreEstatus.toLowerCase();
+                    const esCanceladoModal = estName.includes("cancelado");
+                    const esRojo =
+                      estName.includes("vencido") ||
+                      estName.includes("crítico") ||
+                      estName.includes("urgente");
+                    const esEnProceso = estName.includes("en proceso");
+                    const esEnEspera =
+                      estName.includes("espera") ||
+                      estName.includes("pendiente");
 
                     return (
                       <tr
@@ -498,104 +420,58 @@ export default function CasosTickets() {
                         <td
                           style={{ textAlign: "center", whiteSpace: "nowrap" }}
                         >
-                          <div
+                          <span
                             style={{
-                              position: "relative",
-                              display: "inline-block",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              padding: "4px 12px",
+                              borderRadius: "8px",
+                              fontSize: "11px",
+                              fontWeight: 700,
+                              background: "rgba(245, 158, 11, 0.18)",
+                              color: "#f59e0b",
                             }}
                           >
-                            <span
-                              style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                padding: "4px 12px",
-                                borderRadius: "8px",
-                                fontSize: "11px",
-                                fontWeight: 700,
-                                background: "rgba(245, 158, 11, 0.18)",
-                                color: "#f59e0b",
-                              }}
-                            >
-                              {t.int_sla ? `${t.int_sla} hrs` : "—"}
-                            </span>
-
-                            {estaEnPausaActual && (
-                              <span
-                                title={`Ticket en espera (${totalMinutosPausa} minutos añadidos)`}
-                                style={{
-                                  position: "absolute",
-                                  top: "-6px",
-                                  right: "-8px",
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  padding: "1px 5px",
-                                  borderRadius: "10px",
-                                  fontSize: "9px",
-                                  background: "#a855f7",
-                                  color: "#ffffff",
-                                  lineHeight: 1,
-                                }}
-                              >
-                                +{totalMinutosPausa}m
-                              </span>
-                            )}
-
-                            {!estaEnPausaActual && tieneHistorialPausa && (
-                              <span
-                                title={`Se añadieron ${Math.round(t.int_minutos_pausa)} minutos por pausa`}
-                                style={{
-                                  position: "absolute",
-                                  top: "-6px",
-                                  right: "-8px",
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  padding: "1px 5px",
-                                  borderRadius: "10px",
-                                  fontSize: "9px",
-                                  background: "#f59e0b",
-                                  color: "#18181b",
-                                  lineHeight: 1,
-                                }}
-                              >
-                                +{Math.round(t.int_minutos_pausa)}m
-                              </span>
-                            )}
-                          </div>
+                            {t.int_sla ? `${t.int_sla} hrs` : "—"}
+                          </span>
                         </td>
                         <td>
                           <span
-                            className="tag"
                             style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              padding: "4px 10px",
+                              borderRadius: 10,
                               fontSize: 11,
                               fontWeight: 600,
-                              ...estiloEstatus,
+                              background: esEnEspera
+                                ? "rgba(168, 85, 247, 0.1)"
+                                : esCanceladoModal
+                                  ? "rgba(14, 165, 233, 0.1)"
+                                  : esRojo
+                                    ? "rgba(239, 68, 68, 0.1)"
+                                    : esEnProceso
+                                      ? "rgba(59, 130, 246, 0.1)"
+                                      : "rgba(16, 185, 129, 0.1)",
+                              color: esEnEspera
+                                ? "#a855f7"
+                                : esCanceladoModal
+                                  ? "#0ea5e9"
+                                  : esRojo
+                                    ? "#ef4444"
+                                    : esEnProceso
+                                      ? "#3b82f6"
+                                      : "#10b981",
                             }}
                           >
-                            {t.estatus_nombre || "En Proceso"}
+                            {nombreEstatus}
                           </span>
                         </td>
                         <td>
                           <span
                             className="tag"
-                            style={{
-                              fontSize: 11,
-                              background: esCancelado
-                                ? "rgba(14, 165, 233, 0.1)"
-                                : excedeSLA
-                                  ? "rgba(239, 68, 68, 0.1)"
-                                  : t.dmt_fecha_cierre
-                                    ? "rgba(16, 185, 129, 0.1)"
-                                    : "rgba(59, 130, 246, 0.1)",
-                              color: esCancelado
-                                ? "#0ea5e9"
-                                : excedeSLA
-                                  ? "#ef4444"
-                                  : t.dmt_fecha_cierre
-                                    ? "#10b981"
-                                    : "#3b82f6",
-                              fontWeight: 600,
-                            }}
+                            style={{ fontSize: 11, fontWeight: 600 }}
                           >
                             {t.tiempo_resolucion || "En curso"}
                           </span>
@@ -627,7 +503,6 @@ export default function CasosTickets() {
                 Mostrando <b>{registroInicio}</b> a <b>{registroFin}</b> de{" "}
                 <b>{ticketsFiltrados.length}</b> registros
               </span>
-
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <label htmlFor="porPaginaSelect">Mostrar:</label>
                 <select
