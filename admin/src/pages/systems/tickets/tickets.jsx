@@ -5,7 +5,7 @@ import { TicketDetalleModal } from "./components/TicketDetalleModal";
 import { DynamicIcon } from "../../../components/IconCatalog";
 import formatearFechaHora from "../../../components/formatearFechaHora";
 
-export default function CasosTickets() {
+export default function Tickets() {
   const {
     loading,
     ticketsFiltrados,
@@ -81,7 +81,7 @@ export default function CasosTickets() {
     {
       titulo: "Total Tickets",
       valor: ticketsFiltrados.length,
-      icono: "FiLayers",
+      icono: "HiTicket",
       color: "#3B82F6",
     },
     {
@@ -105,7 +105,7 @@ export default function CasosTickets() {
     {
       titulo: "En Espera Proveedor",
       valor: conteoKpi["En Espera Proveedor"] || 0,
-      icono: "FiTruck",
+      icono: "FaUserClock",
       color: "#A855F7",
     },
     {

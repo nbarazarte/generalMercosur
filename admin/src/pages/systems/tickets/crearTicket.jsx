@@ -1,7 +1,7 @@
 import SystemLayout from "../../../pages/layouts/SystemLayout";
 import { DynamicIcon } from "../../../components/IconCatalog";
 import { BlockNoteView } from "@blocknote/mantine";
-import { useNuevoTicket } from "./hooks/useNuevoTicket";
+import { useCrearTicket } from "./hooks/useCrearTicket";
 import { TicketParametros } from "./components/TicketParametros";
 import { ClienteExternoFields } from "./components/ClienteExternoFields";
 import CopiableCodigoPartes from "./components/CopiableCodigoPartes";
@@ -9,7 +9,7 @@ import CopiableCodigoPartes from "./components/CopiableCodigoPartes";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 
-export default function NuevoTicket() {
+export default function CrearTicket() {
   const {
     tipoTicketId,
     categoriaId,
@@ -68,7 +68,7 @@ export default function NuevoTicket() {
     obtenerIconoPorTipo,
     validarCorreo,
     categoriasActuales,
-  } = useNuevoTicket();
+  } = useCrearTicket();
 
   const inputStyle = {
     width: "100%",

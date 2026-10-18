@@ -5,7 +5,7 @@ import axiosTickets from "../../../../api/axiosTickets";
 import { useCreateBlockNote } from "@blocknote/react";
 import { es } from "@blocknote/core/locales";
 
-export function useNuevoTicket() {
+export function useCrearTicket() {
   const [tipoTicketId, setTipoTicketId] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
   const [prioridadId, setPrioridadId] = useState("");

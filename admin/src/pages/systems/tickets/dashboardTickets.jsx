@@ -279,9 +279,9 @@ export default function DashboardTickets() {
           }}
         >
           <KPICard
-            icon="FiLayers"
+            icon="HiTicket"
             val={loading ? "..." : kpis.total_tickets || 0}
-            label="Total Casos"
+            label="Total Tickets"
             iconColor="#3B82F6"
           />
           <KPICard
@@ -303,7 +303,7 @@ export default function DashboardTickets() {
             iconColor="#F59E0B"
           />
           <KPICard
-            icon="FiTruck"
+            icon="FaUserClock"
             val={loading ? "..." : kpis.espera_proveedor || 0}
             label="En Espera Proveedor"
             iconColor="#A855F7"

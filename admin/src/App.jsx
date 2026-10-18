@@ -24,10 +24,9 @@ import Empleados from "./pages/systems/rrhh/empleados";
 
 //tickets:
 import DashboardTickets from "./pages/systems/tickets/dashboardTickets";
-import CasosTickets from "./pages/systems/tickets/casosTickets";
+import Tickets from "./pages/systems/tickets/tickets";
 import Clientes from "./pages/systems/tickets/clientes";
-import ReportesDesempeño from "./pages/systems/tickets/reportesDesempeño";
-import NuevoTicket from "./pages/systems/tickets/nuevoTicket";
+import CrearTicket from "./pages/systems/tickets/crearTicket";
 
 //kcs:
 import DashboardKcs from "./pages/systems/kcs/dashboard";
@@ -328,7 +327,7 @@ function App() {
             <Route path="dashboard" element={<DashboardTickets />} />
 
             {/* Subruta 1: Casos / Tickets */}
-            <Route path="casos-tickets" element={<CasosTickets />} />
+            <Route path="tickets" element={<Tickets />} />
 
             {/* Subruta 2: Seguimiento */}
 
@@ -336,10 +335,9 @@ function App() {
             <Route path="clientes" element={<Clientes />} />
 
             {/* Subruta 4: Reportes - Desempeño */}
-            <Route path="reportes-desempeño" element={<ReportesDesempeño />} />
 
             {/* Subruta 5: Nuevo Ticket */}
-            <Route path="nuevo-ticket" element={<NuevoTicket />} />
+            <Route path="crear" element={<CrearTicket />} />
 
             {/* Redirección por defecto al entrar solo a /tickets */}
             <Route index element={<Navigate to="dashboard" replace />} />
