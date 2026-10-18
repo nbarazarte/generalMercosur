@@ -89,7 +89,7 @@ export default function CrearTicket() {
   };
 
   return (
-    <SystemLayout identificacion="Tickets" opcionMenu="Nuevo Ticket">
+    <SystemLayout identificacion="Tickets" opcionMenu="Crear">
       {toast && (
         <div
           style={{

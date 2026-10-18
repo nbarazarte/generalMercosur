@@ -2,8 +2,9 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import copy from "copy-to-clipboard";
 import axiosTickets from "../../../../api/axiosTickets";
+import formatearFechaHora from "../../../../components/formatearFechaHora";
 
-export function useCasosTickets() {
+export function useTickets() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -101,7 +102,7 @@ export function useCasosTickets() {
         console.error("Error al cargar /datos-maestros:", err);
       }
 
-      // 3. Cargar Departamentos y Usuarios (Con respaldo automático si el endpoint falla)
+      // 3. Cargar Departamentos y Usuarios
       try {
         const resDeptUsers = await axiosTickets.get("/departamentos-usuarios");
         if (resDeptUsers.data && resDeptUsers.data.success) {
@@ -117,7 +118,6 @@ export function useCasosTickets() {
         );
       }
 
-      // Respaldo de emergencia: si el endpoint no devolvió departamentos/usuarios, los extraemos de los datos maestros o tickets
       if (deptosTemp.length === 0 && listaTickets.length > 0) {
         const mapDeptos = new Map();
         listaTickets.forEach((t) => {
@@ -214,7 +214,6 @@ export function useCasosTickets() {
       : false;
   }, [fTipoTicket, tiposTicket]);
 
-  // Propiedad computada segura: si no hay tipo seleccionado, muestra todas las categorías combinadas
   const categoriasFiltradas = useMemo(() => {
     const todas = [...categoriaExterna, ...categoriaInterna];
     if (!fTipoTicket || fTipoTicket === "") return todas;
@@ -233,7 +232,6 @@ export function useCasosTickets() {
     return todas;
   }, [fTipoTicket, tiposTicket, categoriaExterna, categoriaInterna]);
 
-  // Limpiar categoría si el tipo de ticket cambia y la categoría seleccionada ya no es válida
   useEffect(() => {
     if (fCategoria && categoriasFiltradas.length > 0) {
       const existe = categoriasFiltradas.some(
@@ -368,7 +366,6 @@ export function useCasosTickets() {
     return tickets.filter((t) => {
       if (fTipoTicket && Number(t.tipo_ticket_id) !== Number(fTipoTicket))
         return false;
-      // Validación segura para que si fCategoria está vacío no bloquee registros
       if (
         fCategoria &&
         fCategoria !== "" &&
@@ -452,9 +449,99 @@ export function useCasosTickets() {
       );
       return;
     }
-    // Lógica exportación CSV/Excel...
-  };
 
+    const formatearTextoFecha = (fechaStr) => {
+      if (!fechaStr) return "";
+      try {
+        const fecha = new Date(fechaStr);
+        if (isNaN(fecha.getTime())) return String(fechaStr);
+        return fecha.toISOString().replace("T", " ").substring(0, 19);
+      } catch {
+        return String(fechaStr);
+      }
+    };
+
+    const filasCsv = [];
+
+    // Cabeceras del reporte de tickets
+    filasCsv.push([
+      "Código Ticket",
+      "Tipo",
+      "Canal",
+      "Creado Por",
+      "Cliente / Afectado",
+      "Cédula Cliente",
+      "Asunto",
+      "Departamento",
+      "Prioridad",
+      "Asignado A",
+      "Creación",
+      "Vencimiento SLA",
+      "Cierre",
+      "SLA (hrs)",
+      "Estado",
+      "Duración",
+    ]);
+
+    ticketsFiltrados.forEach((t) => {
+      const tipoLower = (t.tipo_ticket || "").toLowerCase();
+      const esExterno =
+        tipoLower.includes("externo") || tipoLower.includes("app");
+      const clienteNombre =
+        esExterno && t.cliente_nombre
+          ? `${t.cliente_nombre} ${t.cliente_apellido || ""}`.trim()
+          : esExterno
+            ? "Cliente Externo"
+            : "N/A";
+      const clienteCedula = esExterno ? t.cliente_cedula || "—" : "N/A";
+      const asignado = t.asignado_nombre
+        ? `${t.asignado_nombre} ${t.asignado_apellido || ""}`.trim()
+        : "Sin asignar";
+
+      filasCsv.push([
+        t.str_ticket || "",
+        t.tipo_ticket || "",
+        t.canal_nombre || "",
+        `${t.creador_nombre || ""} ${t.creador_apellido || ""}`.trim() || "",
+        clienteNombre,
+        clienteCedula,
+        t.str_asunto || "",
+        t.departamento_nombre || "",
+        t.prioridad_nombre || "",
+        asignado,
+        formatearTextoFecha(t.created_at),
+        t.dmt_fecha_vencimiento_sla
+          ? formatearTextoFecha(t.dmt_fecha_vencimiento_sla)
+          : "",
+        t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-",
+        t.int_sla ? `${t.int_sla} hrs` : "",
+        t.estatus_nombre || "",
+        t.tiempo_resolucion || "En curso",
+      ]);
+    });
+
+    // Convertir a formato CSV con separación por punto y coma y codificación UTF-8
+    const contenidoCsv = filasCsv
+      .map((e) =>
+        e.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(";"),
+      )
+      .join("\n");
+
+    const blob = new Blob(["\ufeff" + contenidoCsv], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    const fechaActual = new Date().toISOString().slice(0, 10);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `reporte_tickets_${fechaActual}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showToast("Exportación de tickets exitosa.", "success");
+  };
   const conteoKpi = useMemo(() => {
     const contadores = {
       "En Aprobación": 0,

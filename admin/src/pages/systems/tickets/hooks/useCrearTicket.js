@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import axiosTickets from "../../../../api/axiosTickets";
@@ -480,8 +480,21 @@ export function useCrearTicket() {
     return "FiFile";
   };
 
-  // Departamentos disponibles según el tipo de ticket seleccionado
-  const departamentosActuales = listaDepartamentos;
+  // Departamentos disponibles según el tipo de ticket seleccionado (filtrado para externos)
+  const departamentosActuales = useMemo(() => {
+    if (esTipoExterno()) {
+      return listaDepartamentos.filter((dep) => {
+        const nombreDepto = (dep.str_nombre || "").toLowerCase();
+        return (
+          nombreDepto.includes("tecnología") ||
+          nombreDepto.includes("tecnologia") ||
+          nombreDepto.includes("atención al cliente") ||
+          nombreDepto.includes("atencion al cliente")
+        );
+      });
+    }
+    return listaDepartamentos;
+  }, [listaDepartamentos, tipoTicketId]);
 
   // Categorías filtradas dinámicamente según el tipo de ticket seleccionado en Nuevo Ticket
   const categoriasActuales = (() => {

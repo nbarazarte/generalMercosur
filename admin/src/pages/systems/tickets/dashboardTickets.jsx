@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../../components/IconCatalog";
 import { useTicketsDashboard } from "./hooks/useTicketsDashboard";
+import { TicketDetalleModal } from "../../../pages/systems/tickets/components/TicketDetalleModal";
+import axiosTickets from "../../../../src/api/axiosTickets";
 
 function obtenerColorEstatus(nombreEstatus) {
   const est = (nombreEstatus || "").toLowerCase();
@@ -61,9 +63,166 @@ export default function DashboardTickets() {
     tiposTicket,
     listaEstatus,
     listaDepartamentos,
-    categorias, // <- Catálogo de categorías
+    categorias,
     toast,
+    recargarDatos,
   } = useTicketsDashboard();
+
+  // Estados locales para el modal de detalle de ticket
+  const [ticketSeleccionado, setTicketSeleccionado] = useState(null);
+  const [nuevoEstatusId, setNuevoEstatusId] = useState("");
+  const [nuevoAsignadoId, setNuevoAsignadoId] = useState("");
+  const [nuevoPrioridadId, setNuevoPrioridadId] = useState("");
+  const [modalDepartamentoId, setModalDepartamentoId] = useState("");
+  const [respuestaTexto, setRespuestaTexto] = useState("");
+  const [tabActiva, setTabActiva] = useState("descripcion");
+  const [bitacoraList, setBitacoraList] = useState([]);
+  const [errorModal, setErrorModal] = useState("");
+  const [listaUsuariosModal, setListaUsuariosModal] = useState([]);
+
+  // Cargar usuarios para el modal al montar el dashboard
+  useEffect(() => {
+    const fetchUsuariosModal = async () => {
+      try {
+        const res = await axiosTickets.get("/departamentos-usuarios");
+        if (res.data && res.data.success) {
+          setListaUsuariosModal(res.data.usuarios || []);
+        }
+      } catch (err) {
+        console.error("Error al cargar usuarios para el modal:", err);
+      }
+    };
+    fetchUsuariosModal();
+  }, []);
+
+  const usuariosModalFiltrados = useMemo(() => {
+    if (!modalDepartamentoId) return listaUsuariosModal;
+    return listaUsuariosModal.filter(
+      (u) => Number(u.departamento_id) === Number(modalDepartamentoId),
+    );
+  }, [modalDepartamentoId, listaUsuariosModal]);
+
+  const estatusModalDisponibles = useMemo(() => {
+    return listaEstatus.filter(
+      (est) => !(est.str_nombre || "").toLowerCase().includes("vencido"),
+    );
+  }, [listaEstatus]);
+
+  const esTicketBloqueado = useMemo(() => {
+    if (!ticketSeleccionado) return false;
+    const estatusStr = (ticketSeleccionado.estatus_nombre || "").toLowerCase();
+    return (
+      estatusStr.includes("cerrado") ||
+      estatusStr.includes("cancelado") ||
+      estatusStr.includes("vencido")
+    );
+  }, [ticketSeleccionado]);
+
+  // Abrir detalle del ticket y cargar su bitácora
+  const abrirDetalle = async (ticketMinimo) => {
+    try {
+      const res = await axiosTickets.get("/listar");
+      if (res.data && res.data.success) {
+        const ticketCompleto = (res.data.tickets || []).find(
+          (t) => Number(t.id) === Number(ticketMinimo.id),
+        );
+        if (ticketCompleto) {
+          setTicketSeleccionado(ticketCompleto);
+          setNuevoEstatusId(
+            ticketCompleto.estatus_id ? String(ticketCompleto.estatus_id) : "",
+          );
+          setNuevoAsignadoId(
+            ticketCompleto.usuario_asignado_id
+              ? String(ticketCompleto.usuario_asignado_id)
+              : "",
+          );
+          setNuevoPrioridadId(
+            ticketCompleto.prioridad_id
+              ? String(ticketCompleto.prioridad_id)
+              : "",
+          );
+          setModalDepartamentoId(
+            ticketCompleto.departamento_id
+              ? String(ticketCompleto.departamento_id)
+              : "",
+          );
+        } else {
+          setTicketSeleccionado(ticketMinimo);
+        }
+      } else {
+        setTicketSeleccionado(ticketMinimo);
+      }
+    } catch {
+      setTicketSeleccionado(ticketMinimo);
+    }
+
+    setRespuestaTexto("");
+    setErrorModal("");
+    setTabActiva("descripcion");
+
+    try {
+      const resBit = await axiosTickets.get(`/bitacora/${ticketMinimo.id}`);
+      if (resBit.data.success) setBitacoraList(resBit.data.bitacora || []);
+    } catch {
+      setBitacoraList([]);
+    }
+  };
+
+  const handleGuardarCambiosTicket = async (e) => {
+    e.preventDefault();
+    if (!ticketSeleccionado) return;
+    const estatusCambiado =
+      Number(nuevoEstatusId) !== Number(ticketSeleccionado.estatus_id);
+
+    if (estatusCambiado && (!respuestaTexto || respuestaTexto.trim() === "")) {
+      setErrorModal(
+        "Debe ingresar una respuesta o avance en la bitácora al cambiar el estatus.",
+      );
+      return;
+    }
+
+    setErrorModal("");
+    try {
+      const response = await axiosTickets.put(
+        `/actualizar/${ticketSeleccionado.id}`,
+        {
+          estatus_id:
+            nuevoEstatusId !== ""
+              ? Number(nuevoEstatusId)
+              : Number(ticketSeleccionado.estatus_id),
+          usuario_asignado_id:
+            nuevoAsignadoId !== "" && nuevoAsignadoId !== "null"
+              ? Number(nuevoAsignadoId)
+              : null,
+          departamento_id:
+            modalDepartamentoId !== ""
+              ? Number(modalDepartamentoId)
+              : Number(ticketSeleccionado.departamento_id),
+          prioridad_id:
+            nuevoPrioridadId !== ""
+              ? Number(nuevoPrioridadId)
+              : Number(ticketSeleccionado.prioridad_id),
+          str_descripcion_respuesta: respuestaTexto.trim(),
+        },
+      );
+
+      if (response.data.success) {
+        setTicketSeleccionado(null);
+        setRespuestaTexto("");
+        setErrorModal("");
+        recargarDatos();
+      }
+    } catch (error) {
+      const mensajeError =
+        error.response?.data?.error || "Error al guardar los cambios.";
+      setErrorModal(mensajeError);
+    }
+  };
+
+  const copiarTextoClipboard = (e, texto) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(texto);
+  };
 
   const filtroStyle = {
     padding: "8px 12px",
@@ -137,7 +296,7 @@ export default function DashboardTickets() {
               ))}
             </select>
 
-            {/* Categoría (Nuevo filtro) */}
+            {/* Categoría */}
             <select
               value={filtros.categoria_id}
               onChange={(e) =>
@@ -328,7 +487,7 @@ export default function DashboardTickets() {
           />
         </div>
 
-        {/* FILA 1 DE GRÁFICOS: Volumen de Casos por Categoría primero, luego Estatus de Tickets */}
+        {/* FILA 1 DE GRÁFICOS */}
         <div className="dashboard-grid-2col">
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
@@ -372,7 +531,7 @@ export default function DashboardTickets() {
           </div>
         </div>
 
-        {/* FILA 2: Tickets recientes (5 elementos, altura compacta) y Analistas */}
+        {/* FILA 2: Tickets recientes */}
         <div className="dashboard-grid-2col" style={{ marginTop: 16 }}>
           <div
             className="ma-card"
@@ -417,17 +576,18 @@ export default function DashboardTickets() {
               <table className="ma-table">
                 <thead>
                   <tr>
-                    <th>CÓDIGO / ASUNTO</th>
+                    <th>TICKET / ASUNTO</th>
                     <th>ESTATUS</th>
                     <th>CLIENTE / SOLICITANTE</th>
-                    <th>FECHA</th>
+                    <th>CREACIÓN</th>
+                    <th>CIERRE</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     <tr>
                       <td
-                        colSpan="4"
+                        colSpan="5"
                         style={{ textAlign: "center", padding: "20px" }}
                       >
                         Cargando registros...
@@ -436,7 +596,7 @@ export default function DashboardTickets() {
                   ) : ultimosTickets.length === 0 ? (
                     <tr>
                       <td
-                        colSpan="4"
+                        colSpan="5"
                         style={{
                           textAlign: "center",
                           padding: "20px",
@@ -453,12 +613,8 @@ export default function DashboardTickets() {
                         <tr
                           key={t.id}
                           style={{ cursor: "pointer" }}
-                          title="Ver detalle"
-                          onClick={() =>
-                            navigate(
-                              `/tickets/casos-tickets?abrirTicket=${t.id}`,
-                            )
-                          }
+                          title="Ver detalle del ticket"
+                          onClick={() => abrirDetalle(t)}
                         >
                           <td style={{ padding: "12px 16px" }}>
                             <div>
@@ -507,6 +663,15 @@ export default function DashboardTickets() {
                             }}
                           >
                             {t.tiempo}
+                          </td>
+                          <td
+                            style={{
+                              padding: "12px 16px",
+                              color: "var(--merco-muted)",
+                              fontSize: "11px",
+                            }}
+                          >
+                            {t.fecha_cierre ? t.fecha_cierre : "-"}
                           </td>
                         </tr>
                       );
@@ -563,6 +728,36 @@ export default function DashboardTickets() {
           </div>
         </div>
       </div>
+
+      {/* RENDERIZADO DEL MODAL DE DETALLE */}
+      <TicketDetalleModal
+        ticketSeleccionado={ticketSeleccionado}
+        setTicketSeleccionado={setTicketSeleccionado}
+        listaEstatus={listaEstatus}
+        listaDepartamentos={listaDepartamentos}
+        prioridades={prioridades}
+        usuariosModalFiltrados={usuariosModalFiltrados}
+        estatusModalDisponibles={estatusModalDisponibles}
+        nuevoEstatusId={nuevoEstatusId}
+        setNuevoEstatusId={setNuevoEstatusId}
+        nuevoAsignadoId={nuevoAsignadoId}
+        setNuevoAsignadoId={setNuevoAsignadoId}
+        nuevoPrioridadId={nuevoPrioridadId}
+        setNuevoPrioridadId={setNuevoPrioridadId}
+        modalDepartamentoId={modalDepartamentoId}
+        setModalDepartamentoId={setModalDepartamentoId}
+        respuestaTexto={respuestaTexto}
+        setRespuestaTexto={setRespuestaTexto}
+        tabActiva={tabActiva}
+        setTabActiva={setTabActiva}
+        bitacoraList={bitacoraList}
+        errorModal={errorModal}
+        setErrorModal={setErrorModal}
+        esTicketBloqueado={esTicketBloqueado}
+        handleGuardarCambiosTicket={handleGuardarCambiosTicket}
+        copiarTextoClipboard={copiarTextoClipboard}
+        filtroStyle={filtroStyle}
+      />
     </SystemLayout>
   );
 }

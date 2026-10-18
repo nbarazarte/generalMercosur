@@ -1,5 +1,5 @@
 import SystemLayout from "../../layouts/SystemLayout";
-import { useCasosTickets } from "./hooks/useCasosTickets";
+import { useTickets } from "./hooks/useTickets";
 import { TicketsFiltros } from "./components/TicketsFiltros";
 import { TicketDetalleModal } from "./components/TicketDetalleModal";
 import { DynamicIcon } from "../../../components/IconCatalog";
@@ -75,7 +75,7 @@ export default function Tickets() {
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
     conteoKpi,
-  } = useCasosTickets();
+  } = useTickets();
 
   const tarjetasEstatus = [
     {
@@ -145,7 +145,7 @@ export default function Tickets() {
   };
 
   return (
-    <SystemLayout identificacion="Tickets" opcionMenu="Casos Tickets">
+    <SystemLayout identificacion="Tickets" opcionMenu="Tickets">
       {toast && (
         <div
           style={{

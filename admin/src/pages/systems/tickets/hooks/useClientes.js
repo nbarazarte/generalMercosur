@@ -1,11 +1,20 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import axiosTickets from "../../../../api/axiosTickets";
+import copy from "copy-to-clipboard";
+import formatearFechaHora from "../../../../components/formatearFechaHora";
 
 export const useClientes = () => {
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
+
+  // Estado para controlar las filas expandidas de la tabla
+  const [expandidos, setExpandidos] = useState({});
+
+  const toggleExpandir = (id) => {
+    setExpandidos((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   // Estados de Paginación
   const [paginaActual, setPaginaActual] = useState(1);
@@ -18,9 +27,32 @@ export const useClientes = () => {
     fechaCalendario: "",
   });
 
+  // Estados para el Modal de Detalle de Ticket
+  const [ticketSeleccionado, setTicketSeleccionado] = useState(null);
+  const [nuevoEstatusId, setNuevoEstatusId] = useState("");
+  const [nuevoAsignadoId, setNuevoAsignadoId] = useState("");
+  const [nuevoPrioridadId, setNuevoPrioridadId] = useState("");
+  const [modalDepartamentoId, setModalDepartamentoId] = useState("");
+  const [respuestaTexto, setRespuestaTexto] = useState("");
+  const [tabActiva, setTabActiva] = useState("descripcion");
+  const [bitacoraList, setBitacoraList] = useState([]);
+  const [errorModal, setErrorModal] = useState("");
+
+  // Catálogos para el modal
+  const [listaDepartamentos, setListaDepartamentos] = useState([]);
+  const [listaUsuarios, setListaUsuarios] = useState([]);
+  const [listaEstatus, setListaEstatus] = useState([]);
+  const [prioridades, setPrioridades] = useState([]);
+
   const showToast = (message, type = "success") => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3500);
+  };
+
+  const copiarTextoClipboard = (e, texto, etiqueta = "Texto") => {
+    e.stopPropagation();
+    copy(texto);
+    showToast(`¡${etiqueta} copiado al portapapeles!`, "success");
   };
 
   const obtenerClientes = useCallback(async () => {
@@ -29,21 +61,49 @@ export const useClientes = () => {
     try {
       const response = await axiosTickets.get("/clientes-con-tickets");
       if (response.data && response.data.success) {
-        setClientes(response.data.data || []);
+        setClientes(response.data.clientes || response.data.data || []);
       } else {
         setClientes([]);
       }
     } catch (err) {
       console.error("Error al obtener los clientes con tickets:", err);
-      setError("No se pudo cargar el listado de clientes.");
+      if (err.response && err.response.status === 401) {
+        setError(
+          "Sesión no autorizada (401). Verifique su token o credenciales.",
+        );
+      } else {
+        setError("No se pudo cargar el listado de clientes.");
+      }
       setClientes([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Cargar clientes y catálogos al montar
   useEffect(() => {
     obtenerClientes();
+    const cargarCatalogos = async () => {
+      try {
+        const [resDeptUsers, resMaestros] = await Promise.all([
+          axiosTickets.get("/departamentos-usuarios"),
+          axiosTickets.get("/datos-maestros"),
+        ]);
+
+        if (resDeptUsers.data && resDeptUsers.data.success) {
+          setListaDepartamentos(resDeptUsers.data.departamentos || []);
+          setListaUsuarios(resDeptUsers.data.usuarios || []);
+        }
+
+        if (resMaestros.data && resMaestros.data.success) {
+          setListaEstatus(resMaestros.data.estatus || []);
+          setPrioridades(resMaestros.data.prioridades || []);
+        }
+      } catch (err) {
+        console.error("Error al cargar catálogos para el modal:", err);
+      }
+    };
+    cargarCatalogos();
   }, [obtenerClientes]);
 
   // Reiniciar a la página 1 cuando cambie cualquier filtro
@@ -55,7 +115,6 @@ export const useClientes = () => {
     const { name, value } = e.target;
     setFiltros((prev) => {
       const nuevosFiltros = { ...prev, [name]: value };
-      // Si se deselecciona el tipo de fecha, limpiamos la fecha calendario
       if (name === "tipoFecha" && !value) {
         nuevosFiltros.fechaCalendario = "";
       }
@@ -71,10 +130,108 @@ export const useClientes = () => {
     });
   };
 
-  // Filtrado local instantáneo (incluyendo fecha de última atención y texto)
+  // Abrir detalle de ticket en modal y cargar su bitácora
+  const abrirDetalle = async (ticket) => {
+    setTicketSeleccionado(ticket);
+    setNuevoEstatusId(ticket.estatus_id ? String(ticket.estatus_id) : "");
+    setNuevoAsignadoId(
+      ticket.usuario_asignado_id ? String(ticket.usuario_asignado_id) : "",
+    );
+    setNuevoPrioridadId(ticket.prioridad_id ? String(ticket.prioridad_id) : "");
+    setModalDepartamentoId(
+      ticket.departamento_id ? String(ticket.departamento_id) : "",
+    );
+    setRespuestaTexto("");
+    setErrorModal("");
+    setTabActiva("descripcion");
+
+    try {
+      const res = await axiosTickets.get(`/bitacora/${ticket.id}`);
+      if (res.data.success) setBitacoraList(res.data.bitacora || []);
+    } catch (err) {
+      setBitacoraList([]);
+    }
+  };
+
+  const handleGuardarCambiosTicket = async (e) => {
+    e.preventDefault();
+    if (!ticketSeleccionado) return;
+    const estatusCambiado =
+      Number(nuevoEstatusId) !== Number(ticketSeleccionado.estatus_id);
+
+    if (estatusCambiado && (!respuestaTexto || respuestaTexto.trim() === "")) {
+      setErrorModal(
+        "Debe ingresar una respuesta o avance en la bitácora al cambiar el estatus.",
+      );
+      return;
+    }
+
+    setErrorModal("");
+    try {
+      const response = await axiosTickets.put(
+        `/actualizar/${ticketSeleccionado.id}`,
+        {
+          estatus_id:
+            nuevoEstatusId !== ""
+              ? Number(nuevoEstatusId)
+              : Number(ticketSeleccionado.estatus_id),
+          usuario_asignado_id:
+            nuevoAsignadoId !== "" && nuevoAsignadoId !== "null"
+              ? Number(nuevoAsignadoId)
+              : null,
+          departamento_id:
+            modalDepartamentoId !== ""
+              ? Number(modalDepartamentoId)
+              : Number(ticketSeleccionado.departamento_id),
+          prioridad_id:
+            nuevoPrioridadId !== ""
+              ? Number(nuevoPrioridadId)
+              : Number(ticketSeleccionado.prioridad_id),
+          str_descripcion_respuesta: respuestaTexto.trim(),
+        },
+      );
+
+      if (response.data.success) {
+        showToast("Ticket actualizado exitosamente.", "success");
+        setTicketSeleccionado(null);
+        setRespuestaTexto("");
+        setErrorModal("");
+        obtenerClientes();
+      }
+    } catch (error) {
+      const mensajeError =
+        error.response?.data?.error || "Error al guardar los cambios.";
+      setErrorModal(mensajeError);
+      showToast(mensajeError, "error");
+    }
+  };
+
+  const usuariosModalFiltrados = useMemo(() => {
+    if (!modalDepartamentoId) return listaUsuarios;
+    return listaUsuarios.filter(
+      (u) => Number(u.departamento_id) === Number(modalDepartamentoId),
+    );
+  }, [modalDepartamentoId, listaUsuarios]);
+
+  const estatusModalDisponibles = useMemo(() => {
+    return listaEstatus.filter(
+      (est) => !(est.str_nombre || "").toLowerCase().includes("vencido"),
+    );
+  }, [listaEstatus]);
+
+  const esTicketBloqueado = useMemo(() => {
+    if (!ticketSeleccionado) return false;
+    const estatusStr = (ticketSeleccionado.estatus_nombre || "").toLowerCase();
+    return (
+      estatusStr.includes("cerrado") ||
+      estatusStr.includes("cancelado") ||
+      estatusStr.includes("vencido")
+    );
+  }, [ticketSeleccionado]);
+
+  // Filtrado local instantáneo
   const clientesFiltrados = useMemo(() => {
     return clientes.filter((c) => {
-      // Filtro por fecha de última atención
       if (filtros.tipoFecha && filtros.fechaCalendario) {
         if (!c.ultima_atencion) return false;
         const dCliente = new Date(c.ultima_atencion);
@@ -88,10 +245,10 @@ export const useClientes = () => {
         }
       }
 
-      // Filtro por texto general de búsqueda
       if (filtros.busqueda) {
         const q = filtros.busqueda.toLowerCase().trim();
-        const texto = `${c.cedula || ""} ${c.cliente || ""} ${c.telefono || ""} ${c.correo || ""}`.toLowerCase();
+        const texto =
+          `${c.cedula || ""} ${c.cliente || ""} ${c.telefono || ""} ${c.correo || ""}`.toLowerCase();
         if (!texto.includes(q)) return false;
       }
 
@@ -101,7 +258,7 @@ export const useClientes = () => {
 
   // Cálculos de paginación
   const totalPaginas = Math.ceil(clientesFiltrados.length / porPagina) || 1;
-  
+
   const clientesPaginados = useMemo(() => {
     const inicio = (paginaActual - 1) * porPagina;
     return clientesFiltrados.slice(inicio, inicio + porPagina);
@@ -109,7 +266,7 @@ export const useClientes = () => {
 
   const registroInicio =
     clientesFiltrados.length === 0 ? 0 : (paginaActual - 1) * porPagina + 1;
-    
+
   const registroFin = Math.min(
     paginaActual * porPagina,
     clientesFiltrados.length,
@@ -122,34 +279,108 @@ export const useClientes = () => {
   };
 
   const exportarExcel = () => {
-    if (clientesFiltrados.length === 0) {
-      showToast("No hay registros para exportar con los filtros actuales.", "error");
+    if (!clientesFiltrados || clientesFiltrados.length === 0) {
+      showToast("No hay registros para exportar", "error");
       return;
     }
-    
-    // Lógica para exportar a CSV / Excel descargable
-    const headers = ["Cedula", "Cliente", "Telefono", "Correo", "Tickets", "Ultima Atencion"];
-    const rows = clientesFiltrados.map((c) => [
-      `"${c.cedula || ""}"`,
-      `"${c.cliente || ""}"`,
-      `"${c.telefono || ""}"`,
-      `"${c.correo || ""}"`,
-      c.tickets || 0,
-      `"${c.ultima_atencion || ""}"`
+
+    const formatearTextoFecha = (fechaStr) => {
+      if (!fechaStr) return "";
+      try {
+        const fecha = new Date(fechaStr);
+        if (isNaN(fecha.getTime())) return String(fechaStr);
+        return fecha.toISOString().replace("T", " ").substring(0, 19);
+      } catch {
+        return String(fechaStr);
+      }
+    };
+
+    const filasCsv = [];
+
+    filasCsv.push([
+      "Cédula",
+      "Cliente",
+      "Teléfono",
+      "Correo",
+      "Ticket",
+      "Asunto",
+      "Categoría",
+      "Prioridad",
+      "Estatus",
+      "Asignado A",
+      "Creación",
+      "Cierre",
     ]);
 
-    const csvContent = "data:text/csv;charset=utf-8," + 
-      [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
-    
-    const encodedUri = encodeURI(csvContent);
+    clientesFiltrados.forEach((c) => {
+      const listaTickets = c.lista_tickets || [];
+
+      if (listaTickets.length === 0) {
+        filasCsv.push([
+          c.cedula || "",
+          c.cliente || "",
+          c.telefono || "",
+          c.correo || "",
+          "—",
+          "Sin tickets registrados",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+        ]);
+      } else {
+        const ticketsOrdenados = listaTickets
+          .slice()
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        ticketsOrdenados.forEach((t) => {
+          const asignado = t.asignado_nombre
+            ? `${t.asignado_nombre} ${t.asignado_apellido || ""}`.trim()
+            : "Sin asignar";
+
+          filasCsv.push([
+            c.cedula || "",
+            c.cliente || "",
+            c.telefono || "",
+            c.correo || "",
+            t.str_ticket || "",
+            t.str_asunto || "",
+            t.categoria_nombre || "",
+            t.prioridad_nombre || "",
+            t.estatus_nombre || "",
+            asignado,
+            formatearTextoFecha(t.created_at),
+            t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-",
+          ]);
+        });
+      }
+    });
+
+    const contenidoCsv = filasCsv
+      .map((e) =>
+        e.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(";"),
+      )
+      .join("\n");
+
+    const blob = new Blob(["\ufeff" + contenidoCsv], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `reporte_clientes_${new Date().toISOString().split("T")[0]}.csv`);
+
+    const fechaActual = new Date().toISOString().slice(0, 10);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `reporte_clientes_con_detalles_${fechaActual}.csv`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
-    showToast("¡Reporte exportado exitosamente!", "success");
+
+    showToast("Exportación exitosa", "success");
   };
 
   return {
@@ -165,10 +396,39 @@ export const useClientes = () => {
     totalPaginas,
     registroInicio,
     registroFin,
+    expandidos,
+    toggleExpandir,
     handleFiltroChange,
     limpiarFiltros,
     handlePorPaginaChange,
     exportarExcel,
     recargarClientes: obtenerClientes,
+    ticketSeleccionado,
+    setTicketSeleccionado,
+    nuevoEstatusId,
+    setNuevoEstatusId,
+    nuevoAsignadoId,
+    setNuevoAsignadoId,
+    nuevoPrioridadId,
+    setNuevoPrioridadId,
+    modalDepartamentoId,
+    setModalDepartamentoId,
+    respuestaTexto,
+    setRespuestaTexto,
+    tabActiva,
+    setTabActiva,
+    bitacoraList,
+    errorModal,
+    setErrorModal,
+    listaDepartamentos,
+    listaUsuarios,
+    listaEstatus,
+    prioridades,
+    usuariosModalFiltrados,
+    estatusModalDisponibles,
+    esTicketBloqueado,
+    abrirDetalle,
+    handleGuardarCambiosTicket,
+    copiarTextoClipboard,
   };
 };

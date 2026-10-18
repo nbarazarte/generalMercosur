@@ -157,7 +157,8 @@ router.get("/dashboard/ultimos-tickets", async (req, res) => {
         t.str_asunto AS asunto,
         e.str_nombre AS estado,
         COALESCE(c.str_nombre || ' ' || c.str_apellido, 'Cliente / Usuario') AS solicitante,
-        TO_CHAR(t.created_at, 'DD/MM/YYYY HH24:MI') AS tiempo
+        TO_CHAR(t.created_at, 'DD/MM/YYYY HH24:MI') AS tiempo,
+        TO_CHAR(t.dmt_fecha_cierre, 'DD/MM/YYYY HH24:MI') AS fecha_cierre
       FROM tickets.tbl_tickets t
       LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
       LEFT JOIN tickets.tbl_clientes c ON t.cliente_id = c.id
@@ -1033,7 +1034,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
   }
 });
 
-// Ruta para listar todos los clientes con el conteo de tickets y última atención
+// Ruta para listar todos los clientes con el conteo de tickets y el detalle completo de cada ticket obtenido desde view_listar_tickets
 router.get("/clientes-con-tickets", async (req, res) => {
   try {
     const query = `
@@ -1043,12 +1044,60 @@ router.get("/clientes-con-tickets", async (req, res) => {
             CONCAT(c.str_nombre, ' ', c.str_apellido) AS cliente,
             c.str_telefono AS telefono,
             c.str_email AS correo,
-            COUNT(t.id) AS tickets,
-            MAX(t.created_at) AS ultima_atencion
+            COUNT(vt.id) AS tickets,
+            MAX(vt.created_at) AS ultima_atencion,
+            COALESCE(
+                json_agg(
+                    json_build_object(
+                        'id', vt.id,
+                        'str_ticket', vt.str_ticket,
+                        'tipo_ticket_id', vt.tipo_ticket_id,
+                        'tipo_ticket', vt.tipo_ticket,
+                        'cliente_id', vt.cliente_id,
+                        'cliente_nombre', vt.cliente_nombre,
+                        'cliente_apellido', vt.cliente_apellido,
+                        'cliente_cedula', vt.cliente_cedula,
+                        'cliente_correo', vt.cliente_correo,
+                        'cliente_telefono', vt.cliente_telefono,
+                        'creador_agente_id', vt.creador_agente_id,
+                        'creador_nombre', vt.creador_nombre,
+                        'creador_apellido', vt.creador_apellido,
+                        'creador_correo', vt.creador_correo,
+                        'departamento_id', vt.departamento_id,
+                        'departamento_nombre', vt.departamento_nombre,
+                        'categoria_id', vt.categoria_id,
+                        'categoria_nombre', vt.categoria_nombre,
+                        'prioridad_id', vt.prioridad_id,
+                        'prioridad_nombre', vt.prioridad_nombre,
+                        'estatus_id', vt.estatus_id,
+                        'estatus_nombre', vt.estatus_nombre,
+                        'canal_id', vt.canal_id,
+                        'canal_nombre', vt.canal_nombre,
+                        'str_asunto', vt.str_asunto,
+                        'str_descripcion', vt.str_descripcion,
+                        'int_sla', vt.int_sla,
+                        'dmt_fecha_vencimiento_sla', vt.dmt_fecha_vencimiento_sla,
+                        'dmt_fecha_cierre', vt.dmt_fecha_cierre,
+                        'bool_cumplio_sla', vt.bool_cumplio_sla,
+                        'created_at', vt.created_at,
+                        'updated_at', vt.updated_at,
+                        'usuario_asignado_id', vt.usuario_asignado_id,
+                        'asignado_nombre', vt.asignado_nombre,
+                        'asignado_apellido', vt.asignado_apellido,
+                        'asignado_correo', vt.asignado_correo,
+                        'str_ruta_imagen', vt.str_ruta_imagen,
+                        'str_ruta_video', vt.str_ruta_video,
+                        'str_ruta_audio', vt.str_ruta_audio,
+                        'int_minutos_pausa', vt.int_minutos_pausa,
+                        'tiempo_resolucion', vt.tiempo_resolucion
+                    )
+                ) FILTER (WHERE vt.id IS NOT NULL),
+                '[]'
+            ) AS lista_tickets
         FROM
             tickets.tbl_clientes c
         LEFT JOIN
-            tickets.tbl_tickets t ON c.id = t.cliente_id
+            tickets.view_listar_tickets vt ON c.id = vt.cliente_id
         GROUP BY
             c.id, c.str_cedula, c.str_nombre, c.str_apellido, c.str_telefono, c.str_email
         ORDER BY c.created_at DESC;
