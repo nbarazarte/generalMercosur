@@ -1,5 +1,9 @@
 import ReactDOM from "react-dom";
 import { DynamicIcon } from "../../../../components/IconCatalog";
+import { BlockNoteView } from "@blocknote/mantine";
+
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
 
 export function TicketDetalleModal({
   ticketSeleccionado,
@@ -28,6 +32,9 @@ export function TicketDetalleModal({
   handleGuardarCambiosTicket,
   copiarTextoClipboard,
   filtroStyle,
+  editorRespuesta,
+  handleEditorRespuestaChange,
+  isDarkMode,
 }) {
   if (!ticketSeleccionado) return null;
 
@@ -761,9 +768,10 @@ export function TicketDetalleModal({
                       {new Date(item.created_at).toLocaleString("es-VE")}
                     </span>
                   </div>
-                  <div style={{ whiteSpace: "pre-wrap" }}>
-                    {item.str_comentario}
-                  </div>
+                  <div
+                    className="ticket-html-content"
+                    dangerouslySetInnerHTML={{ __html: item.str_comentario }}
+                  />
                 </div>
               ))
             )}
@@ -895,26 +903,27 @@ export function TicketDetalleModal({
               >
                 Responder / Agregar Nota
               </label>
-              <textarea
-                rows={3}
-                value={respuestaTexto}
-                onChange={(e) => {
-                  setRespuestaTexto(e.target.value);
-                  if (errorModal) setErrorModal("");
-                }}
-                placeholder={
-                  Number(nuevoEstatusId) !==
-                  Number(ticketSeleccionado?.estatus_id)
-                    ? "Escriba obligatoriamente la respuesta o motivo del cambio de estatus..."
-                    : "Escriba una nota opcional para la bitácora..."
-                }
+
+              <div
                 style={{
-                  ...filtroStyle,
-                  width: "100%",
-                  resize: "vertical",
-                  borderColor: errorModal ? "#ef4444" : "var(--merco-border)",
+                  position: "relative",
+                  border: errorModal
+                    ? "1px solid #ef4444"
+                    : "1px solid var(--merco-border, #ccc)",
+                  borderRadius: 6,
+                  padding: "2px",
+                  minHeight: "auto",
                 }}
-              />
+              >
+                {editorRespuesta && (
+                  <BlockNoteView
+                    editor={editorRespuesta}
+                    theme={isDarkMode ? "dark" : "light"}
+                    onChange={handleEditorRespuestaChange}
+                  />
+                )}
+              </div>
+
               {errorModal && (
                 <div
                   style={{

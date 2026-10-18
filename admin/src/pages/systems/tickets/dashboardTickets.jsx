@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Chart from "chart.js/auto";
 import SystemLayout from "../../layouts/SystemLayout";
@@ -6,6 +6,8 @@ import { DynamicIcon } from "../../../components/IconCatalog";
 import { useTicketsDashboard } from "./hooks/useTicketsDashboard";
 import { TicketDetalleModal } from "../../../pages/systems/tickets/components/TicketDetalleModal";
 import axiosTickets from "../../../../src/api/axiosTickets";
+import { useCreateBlockNote } from "@blocknote/react";
+import { es } from "@blocknote/core/locales";
 
 function obtenerColorEstatus(nombreEstatus) {
   const est = (nombreEstatus || "").toLowerCase();
@@ -80,6 +82,34 @@ export default function DashboardTickets() {
   const [errorModal, setErrorModal] = useState("");
   const [listaUsuariosModal, setListaUsuariosModal] = useState([]);
 
+  // Configuración de BlockNote para la respuesta
+  const uploadFileForReply = async (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const editorRespuesta = useCreateBlockNote(
+    { uploadFile: uploadFileForReply, dictionary: es },
+    [],
+  );
+
+  const handleEditorRespuestaChange = async () => {
+    if (!editorRespuesta) return;
+    try {
+      const html = await editorRespuesta.blocksToHTMLLossy(
+        editorRespuesta.document,
+      );
+      setRespuestaTexto(html);
+      if (errorModal) setErrorModal("");
+    } catch (err) {
+      console.error("Error al convertir bloques de respuesta a HTML:", err);
+    }
+  };
+
   // Cargar usuarios para el modal al montar el dashboard
   useEffect(() => {
     const fetchUsuariosModal = async () => {
@@ -120,6 +150,35 @@ export default function DashboardTickets() {
 
   // Abrir detalle del ticket y cargar su bitácora
   const abrirDetalle = async (ticketMinimo) => {
+    setTicketSeleccionado(ticketMinimo);
+    setNuevoEstatusId(
+      ticketMinimo.estatus_id ? String(ticketMinimo.estatus_id) : "",
+    );
+    setNuevoAsignadoId(
+      ticketMinimo.usuario_asignado_id
+        ? String(ticketMinimo.usuario_asignado_id)
+        : "",
+    );
+    setNuevoPrioridadId(
+      ticketMinimo.prioridad_id ? String(ticketMinimo.prioridad_id) : "",
+    );
+    setModalDepartamentoId(
+      ticketMinimo.departamento_id ? String(ticketMinimo.departamento_id) : "",
+    );
+    setRespuestaTexto("");
+    setErrorModal("");
+    setTabActiva("descripcion");
+
+    if (editorRespuesta) {
+      try {
+        await editorRespuesta.replaceBlocks(editorRespuesta.document, [
+          { type: "paragraph", content: "" },
+        ]);
+      } catch (err) {
+        console.error("Error al limpiar editor de respuesta:", err);
+      }
+    }
+
     try {
       const res = await axiosTickets.get("/listar");
       if (res.data && res.data.success) {
@@ -146,19 +205,11 @@ export default function DashboardTickets() {
               ? String(ticketCompleto.departamento_id)
               : "",
           );
-        } else {
-          setTicketSeleccionado(ticketMinimo);
         }
-      } else {
-        setTicketSeleccionado(ticketMinimo);
       }
     } catch {
-      setTicketSeleccionado(ticketMinimo);
+      // Mantiene el ticket mínimo si falla la consulta detallada
     }
-
-    setRespuestaTexto("");
-    setErrorModal("");
-    setTabActiva("descripcion");
 
     try {
       const resBit = await axiosTickets.get(`/bitacora/${ticketMinimo.id}`);
@@ -174,7 +225,15 @@ export default function DashboardTickets() {
     const estatusCambiado =
       Number(nuevoEstatusId) !== Number(ticketSeleccionado.estatus_id);
 
-    if (estatusCambiado && (!respuestaTexto || respuestaTexto.trim() === "")) {
+    const htmlRespuesta = editorRespuesta
+      ? await editorRespuesta.blocksToHTMLLossy(editorRespuesta.document)
+      : respuestaTexto;
+    const textoPlanoRespuesta = htmlRespuesta.replace(/<[^>]*>/g, "").trim();
+
+    if (
+      estatusCambiado &&
+      (!textoPlanoRespuesta || htmlRespuesta === "<p></p>")
+    ) {
       setErrorModal(
         "Debe ingresar una respuesta o avance en la bitácora al cambiar el estatus.",
       );
@@ -202,7 +261,7 @@ export default function DashboardTickets() {
             nuevoPrioridadId !== ""
               ? Number(nuevoPrioridadId)
               : Number(ticketSeleccionado.prioridad_id),
-          str_descripcion_respuesta: respuestaTexto.trim(),
+          str_descripcion_respuesta: htmlRespuesta.trim(),
         },
       );
 
@@ -210,6 +269,11 @@ export default function DashboardTickets() {
         setTicketSeleccionado(null);
         setRespuestaTexto("");
         setErrorModal("");
+        if (editorRespuesta) {
+          await editorRespuesta.replaceBlocks(editorRespuesta.document, [
+            { type: "paragraph", content: "" },
+          ]);
+        }
         recargarDatos();
       }
     } catch (error) {
@@ -729,7 +793,7 @@ export default function DashboardTickets() {
         </div>
       </div>
 
-      {/* RENDERIZADO DEL MODAL DE DETALLE */}
+      {/* RENDERIZADO DEL MODAL DE DETALLE CON BLOCKNOTE */}
       <TicketDetalleModal
         ticketSeleccionado={ticketSeleccionado}
         setTicketSeleccionado={setTicketSeleccionado}
@@ -757,6 +821,10 @@ export default function DashboardTickets() {
         handleGuardarCambiosTicket={handleGuardarCambiosTicket}
         copiarTextoClipboard={copiarTextoClipboard}
         filtroStyle={filtroStyle}
+        /* PROPS DE BLOCKNOTE */
+        editorRespuesta={editorRespuesta}
+        handleEditorRespuestaChange={handleEditorRespuestaChange}
+        isDarkMode={isDark}
       />
     </SystemLayout>
   );

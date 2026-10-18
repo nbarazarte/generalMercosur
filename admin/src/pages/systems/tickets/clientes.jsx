@@ -53,6 +53,10 @@ export default function ClientesTickets() {
     abrirDetalle,
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
+    // <-- PROPIEDADES DE BLOCKNOTE AÑADIDAS AQUÍ:
+    editorRespuesta,
+    handleEditorRespuestaChange,
+    isDarkMode,
   } = useClientes();
 
   const totalClientes = clientesFiltrados.length;
@@ -584,6 +588,10 @@ export default function ClientesTickets() {
         handleGuardarCambiosTicket={handleGuardarCambiosTicket}
         copiarTextoClipboard={copiarTextoClipboard}
         filtroStyle={filtroStyle}
+        /* PROPS DE BLOCKNOTE */
+        editorRespuesta={editorRespuesta}
+        handleEditorRespuestaChange={handleEditorRespuestaChange}
+        isDarkMode={isDarkMode}
       />
     </SystemLayout>
   );

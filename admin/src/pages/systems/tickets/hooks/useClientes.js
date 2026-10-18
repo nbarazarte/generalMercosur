@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import axiosTickets from "../../../../api/axiosTickets";
 import copy from "copy-to-clipboard";
 import formatearFechaHora from "../../../../components/formatearFechaHora";
+import { useCreateBlockNote } from "@blocknote/react";
+import { es } from "@blocknote/core/locales";
 
 export const useClientes = () => {
   const [clientes, setClientes] = useState([]);
@@ -43,6 +45,61 @@ export const useClientes = () => {
   const [listaUsuarios, setListaUsuarios] = useState([]);
   const [listaEstatus, setListaEstatus] = useState([]);
   const [prioridades, setPrioridades] = useState([]);
+
+  // Detección de Modo Oscuro para BlockNote
+  const [isDarkMode, setIsDarkMode] = useState(
+    () =>
+      document.documentElement.classList.contains("dark") ||
+      document.body.classList.contains("dark"),
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const darkActive =
+        document.documentElement.classList.contains("dark") ||
+        document.body.classList.contains("dark");
+      setIsDarkMode(darkActive);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Configuración de BlockNote para la respuesta
+  const uploadFileForReply = async (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const editorRespuesta = useCreateBlockNote(
+    { uploadFile: uploadFileForReply, dictionary: es },
+    [],
+  );
+
+  const handleEditorRespuestaChange = async () => {
+    if (!editorRespuesta) return;
+    try {
+      const html = await editorRespuesta.blocksToHTMLLossy(
+        editorRespuesta.document,
+      );
+      setRespuestaTexto(html);
+      if (errorModal) setErrorModal("");
+    } catch (err) {
+      console.error("Error al convertir bloques de respuesta a HTML:", err);
+    }
+  };
 
   const showToast = (message, type = "success") => {
     setToast({ message, type });
@@ -145,6 +202,16 @@ export const useClientes = () => {
     setErrorModal("");
     setTabActiva("descripcion");
 
+    if (editorRespuesta) {
+      try {
+        await editorRespuesta.replaceBlocks(editorRespuesta.document, [
+          { type: "paragraph", content: "" },
+        ]);
+      } catch (err) {
+        console.error("Error al limpiar editor de respuesta:", err);
+      }
+    }
+
     try {
       const res = await axiosTickets.get(`/bitacora/${ticket.id}`);
       if (res.data.success) setBitacoraList(res.data.bitacora || []);
@@ -159,7 +226,15 @@ export const useClientes = () => {
     const estatusCambiado =
       Number(nuevoEstatusId) !== Number(ticketSeleccionado.estatus_id);
 
-    if (estatusCambiado && (!respuestaTexto || respuestaTexto.trim() === "")) {
+    const htmlRespuesta = editorRespuesta
+      ? await editorRespuesta.blocksToHTMLLossy(editorRespuesta.document)
+      : respuestaTexto;
+    const textoPlanoRespuesta = htmlRespuesta.replace(/<[^>]*>/g, "").trim();
+
+    if (
+      estatusCambiado &&
+      (!textoPlanoRespuesta || htmlRespuesta === "<p></p>")
+    ) {
       setErrorModal(
         "Debe ingresar una respuesta o avance en la bitácora al cambiar el estatus.",
       );
@@ -187,7 +262,7 @@ export const useClientes = () => {
             nuevoPrioridadId !== ""
               ? Number(nuevoPrioridadId)
               : Number(ticketSeleccionado.prioridad_id),
-          str_descripcion_respuesta: respuestaTexto.trim(),
+          str_descripcion_respuesta: htmlRespuesta.trim(),
         },
       );
 
@@ -196,6 +271,11 @@ export const useClientes = () => {
         setTicketSeleccionado(null);
         setRespuestaTexto("");
         setErrorModal("");
+        if (editorRespuesta) {
+          await editorRespuesta.replaceBlocks(editorRespuesta.document, [
+            { type: "paragraph", content: "" },
+          ]);
+        }
         obtenerClientes();
       }
     } catch (error) {
@@ -430,5 +510,8 @@ export const useClientes = () => {
     abrirDetalle,
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
+    editorRespuesta,
+    handleEditorRespuestaChange,
+    isDarkMode,
   };
 };

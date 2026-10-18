@@ -75,6 +75,10 @@ export default function Tickets() {
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
     conteoKpi,
+    // Propiedades de BlockNote añadidas:
+    editorRespuesta,
+    handleEditorRespuestaChange,
+    isDarkMode,
   } = useTickets();
 
   const tarjetasEstatus = [
@@ -576,6 +580,10 @@ export default function Tickets() {
         handleGuardarCambiosTicket={handleGuardarCambiosTicket}
         copiarTextoClipboard={copiarTextoClipboard}
         filtroStyle={filtroStyle}
+        /* PROPS DE BLOCKNOTE */
+        editorRespuesta={editorRespuesta}
+        handleEditorRespuestaChange={handleEditorRespuestaChange}
+        isDarkMode={isDarkMode}
       />
     </SystemLayout>
   );
