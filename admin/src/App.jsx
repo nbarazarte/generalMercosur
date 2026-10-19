@@ -55,8 +55,21 @@ const RouteTracker = () => {
   return null;
 };
 
-// Componente Wrapper genérico para la pantalla de carga previa
+// Componente Wrapper genérico para la pantalla de carga previa y validación de acceso
 const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
+  const sistemas =
+    useSelector((state) => state.auth?.user.sistemasOpciones) || [];
+
+  // Buscamos si el usuario tiene asignado este sistema específico
+  const currentSystemData = sistemas.find(
+    (sys) => sys.sistema.toLowerCase() === systemName.toLowerCase(),
+  );
+
+  // SEGURIDAD: Si el usuario no tiene el sistema asignado, lo sacamos a /home de inmediato
+  if (!currentSystemData) {
+    return <Navigate to="/home" replace />;
+  }
+
   const lastActiveSystem = localStorage.getItem("active_system");
   const loaderSeen =
     localStorage.getItem(`loader_seen_${systemKey}`) === "true";
@@ -65,13 +78,6 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
   const shouldShowLoader = isComingFromOutside || !loaderSeen;
 
   const [loading, setLoading] = useState(shouldShowLoader);
-
-  const sistemas =
-    useSelector((state) => state.auth?.user.sistemasOpciones) || [];
-
-  const currentSystemData = sistemas.find(
-    (sys) => sys.sistema.toLowerCase() === systemName.toLowerCase(),
-  );
 
   const iconName = currentSystemData?.icono || "FiMonitor";
   const systemColor = currentSystemData?.color || "#2f6fed";
@@ -90,12 +96,10 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
   }, [shouldShowLoader, systemKey]);
 
   if (loading) {
-    // Comprobamos si el tema actual guardado es oscuro
     const isDarkMode = localStorage.getItem("theme") === "dark";
 
     return (
       <div className="system-loader-screen relative overflow-hidden">
-        {/* Solo renderiza FloatingLines si el tema es oscuro */}
         {isDarkMode && (
           <div
             style={{
@@ -188,7 +192,6 @@ const SystemLoaderWrapper = ({ systemName, systemKey, children }) => {
 
   return children;
 };
-
 // Componente Guard/Protector de Rutas
 const ProtectedRoute = () => {
   const isAuthenticated = useSelector((state) => state.auth?.isAuthenticated);
