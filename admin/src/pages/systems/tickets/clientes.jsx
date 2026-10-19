@@ -57,6 +57,8 @@ export default function ClientesTickets() {
     editorRespuesta,
     handleEditorRespuestaChange,
     isDarkMode,
+    currentUserId,
+    currentUserRole,
   } = useClientes();
 
   const totalClientes = clientesFiltrados.length;
@@ -592,6 +594,8 @@ export default function ClientesTickets() {
         editorRespuesta={editorRespuesta}
         handleEditorRespuestaChange={handleEditorRespuestaChange}
         isDarkMode={isDarkMode}
+        currentUserId={currentUserId}
+        currentUserRole={currentUserRole}
       />
     </SystemLayout>
   );

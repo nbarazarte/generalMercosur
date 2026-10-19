@@ -79,6 +79,8 @@ export default function Tickets() {
     editorRespuesta,
     handleEditorRespuestaChange,
     isDarkMode,
+    currentUserId,
+    currentUserRole,
   } = useTickets();
 
   const tarjetasEstatus = [
@@ -584,6 +586,8 @@ export default function Tickets() {
         editorRespuesta={editorRespuesta}
         handleEditorRespuestaChange={handleEditorRespuestaChange}
         isDarkMode={isDarkMode}
+        currentUserId={currentUserId}
+        currentUserRole={currentUserRole}
       />
     </SystemLayout>
   );

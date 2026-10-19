@@ -1,11 +1,17 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import axiosTickets from "../../../../api/axiosTickets";
+import { useSelector } from "react-redux";
 import copy from "copy-to-clipboard";
-import formatearFechaHora from "../../../../components/formatearFechaHora";
+//import formatearFechaHora from "../../../../components/formatearFechaHora";
 import { useCreateBlockNote } from "@blocknote/react";
 import { es } from "@blocknote/core/locales";
 
 export const useClientes = () => {
+  const currentUserId = useSelector((state) => state.auth?.user?.id);
+  const currentUserRole = useSelector(
+    (state) => state.auth?.user?.sistemasOpciones[0]?.rol,
+  );
+
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -117,6 +123,7 @@ export const useClientes = () => {
     setError(null);
     try {
       const response = await axiosTickets.get("/clientes-con-tickets");
+
       if (response.data && response.data.success) {
         setClientes(response.data.clientes || response.data.data || []);
       } else {
@@ -513,5 +520,7 @@ export const useClientes = () => {
     editorRespuesta,
     handleEditorRespuestaChange,
     isDarkMode,
+    currentUserId,
+    currentUserRole,
   };
 };

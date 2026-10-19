@@ -35,6 +35,8 @@ export function TicketDetalleModal({
   editorRespuesta,
   handleEditorRespuestaChange,
   isDarkMode,
+  currentUserId,
+  currentUserRole
 }) {
   if (!ticketSeleccionado) return null;
 
@@ -195,6 +197,9 @@ export function TicketDetalleModal({
               ticketSeleccionado.creador_nombre || ""
             } ${ticketSeleccionado.creador_apellido || ""}`.trim();
             const correoCreadorModal = ticketSeleccionado.creador_correo || "";
+
+            const creador_id = ticketSeleccionado.creador_agente_id || "";
+            const asignado_id = ticketSeleccionado.usuario_asignado_id || "";
 
             return (
               <>
@@ -952,9 +957,52 @@ export function TicketDetalleModal({
               >
                 Cancelar
               </button>
-              <button type="submit" className="btn btn-primary">
+
+              {(() => {
+                const creadorId = Number(ticketSeleccionado.creador_agente_id);
+                const asignadoId = Number(
+                  ticketSeleccionado.usuario_asignado_id,
+                );
+                const userId = Number(currentUserId);
+                const rolLower = (currentUserRole || "").toLowerCase();
+
+                // ¿Es administrador o gerente ATC? (Tienen privilegios globales o de supervisión)
+                const esAdminOGerente =
+                  rolLower.includes("administrador") ||
+                  rolLower.includes("admin") ||
+                  rolLower.includes("gerente atc");
+
+                // ¿Es participante directo del ticket? (Creador o asignado)
+                const esParticipanteDirecto =
+                  (userId && userId === creadorId) ||
+                  (userId && userId === asignadoId);
+
+                const puedeGuardar = esAdminOGerente || esParticipanteDirecto;
+
+                return (
+                  <>
+                    {puedeGuardar ? (
+                      <button type="submit" className="btn btn-primary">
+                        <DynamicIcon name="FiSave" /> Guardar Cambios
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        className="btn btn-primary"
+                        disabled={true}
+                        title="Debe ser administrador, gerente, el creador del ticket o habérsele asignado para guardar cambios"
+                      >
+                        <DynamicIcon name="FiSave" /> Sin permisos para
+                        modificar
+                      </button>
+                    )}
+                  </>
+                );
+              })()}
+
+              {/* <button type="submit" className="btn btn-primary">
                 <DynamicIcon name="FiSave" /> Guardar Cambios
-              </button>
+              </button> */}
             </div>
           </form>
         ) : (

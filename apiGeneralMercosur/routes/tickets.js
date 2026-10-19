@@ -26,11 +26,29 @@ function construirFiltrosDashboard(req) {
     categoria_id,
     creacion_desde,
     creacion_hasta,
+    rol, // Recibido por parámetros desde el frontend
   } = req.query;
 
+  const usuarioId = req.user?.id; // ID seguro desde el backend
   let whereClause = `WHERE 1=1`;
   const params = [];
   let paramIndex = 1;
+
+  const rolUsuario = (rol || "").toLowerCase();
+
+  // REGLAS DE VISIBILIDAD SEGÚN ROL
+  if (rolUsuario.includes("gerente atc")) {
+    // 2. Gerente ATC: Todo lo externo (25) o interno (24) asignado/creado por él
+    whereClause += ` AND (t.tipo_ticket_id = 25 OR (t.tipo_ticket_id = 24 AND (t.usuario_asignado_id = $${paramIndex} OR t.creador_agente_id = $${paramIndex})))`;
+    params.push(Number(usuarioId));
+    paramIndex++;
+  } else if (rolUsuario.includes("operador atc")) {
+    // 3. Operador ATC: Solo tickets asignados o creados por él
+    whereClause += ` AND (t.usuario_asignado_id = $${paramIndex} OR t.creador_agente_id = $${paramIndex})`;
+    params.push(Number(usuarioId));
+    paramIndex++;
+  }
+  // 1. Administrador ve todo sin restricciones adicionales.
 
   if (tipo_ticket_id) {
     whereClause += ` AND t.tipo_ticket_id = $${paramIndex++}`;
@@ -147,6 +165,86 @@ router.get("/dashboard/distribucion-estados", async (req, res) => {
   }
 });
 
+router.get("/clientes-con-tickets", async (req, res) => {
+  try {
+    const query = `
+        SELECT
+            c.id,
+            c.str_cedula AS cedula,
+            CONCAT(c.str_nombre, ' ', c.str_apellido) AS cliente,
+            c.str_telefono AS telefono,
+            c.str_email AS correo,
+            COUNT(vt.id) AS tickets,
+            MAX(vt.created_at) AS ultima_atencion,
+            COALESCE(
+                json_agg(
+                    json_build_object(
+                        'id', vt.id,
+                        'str_ticket', vt.str_ticket,
+                        'tipo_ticket_id', vt.tipo_ticket_id,
+                        'tipo_ticket', vt.tipo_ticket,
+                        'cliente_id', vt.cliente_id,
+                        'cliente_nombre', vt.cliente_nombre,
+                        'cliente_apellido', vt.cliente_apellido,
+                        'cliente_cedula', vt.cliente_cedula,
+                        'cliente_correo', vt.cliente_correo,
+                        'cliente_telefono', vt.cliente_telefono,
+                        'creador_agente_id', vt.creador_agente_id,
+                        'creador_nombre', vt.creador_nombre,
+                        'creador_apellido', vt.creador_apellido,
+                        'creador_correo', vt.creador_correo,
+                        'departamento_id', vt.departamento_id,
+                        'departamento_nombre', vt.departamento_nombre,
+                        'categoria_id', vt.categoria_id,
+                        'categoria_nombre', vt.categoria_nombre,
+                        'prioridad_id', vt.prioridad_id,
+                        'prioridad_nombre', vt.prioridad_nombre,
+                        'estatus_id', vt.estatus_id,
+                        'estatus_nombre', vt.estatus_nombre,
+                        'canal_id', vt.canal_id,
+                        'canal_nombre', vt.canal_nombre,
+                        'str_asunto', vt.str_asunto,
+                        'str_descripcion', vt.str_descripcion,
+                        'int_sla', vt.int_sla,
+                        'dmt_fecha_vencimiento_sla', vt.dmt_fecha_vencimiento_sla,
+                        'dmt_fecha_cierre', vt.dmt_fecha_cierre,
+                        'bool_cumplio_sla', vt.bool_cumplio_sla,
+                        'created_at', vt.created_at,
+                        'updated_at', vt.updated_at,
+                        'usuario_asignado_id', vt.usuario_asignado_id,
+                        'asignado_nombre', vt.asignado_nombre,
+                        'asignado_apellido', vt.asignado_apellido,
+                        'asignado_correo', vt.asignado_correo,
+                        'str_ruta_imagen', vt.str_ruta_imagen,
+                        'str_ruta_video', vt.str_ruta_video,
+                        'str_ruta_audio', vt.str_ruta_audio,
+                        'int_minutos_pausa', vt.int_minutos_pausa,
+                        'tiempo_resolucion', vt.tiempo_resolucion
+                    )
+                ) FILTER (WHERE vt.id IS NOT NULL),
+                '[]'
+            ) AS lista_tickets
+        FROM
+            tickets.tbl_clientes c
+        LEFT JOIN
+            tickets.view_listar_tickets vt ON c.id = vt.cliente_id
+        GROUP BY
+            c.id, c.str_cedula, c.str_nombre, c.str_apellido, c.str_telefono, c.str_email
+        ORDER BY c.created_at DESC;
+    `;
+    const { rows } = await pool.query(query);
+    return res
+      .status(200)
+      .json({ success: true, total: rows.length, data: rows });
+  } catch (error) {
+    console.error("Error al listar clientes con tickets:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor al obtener los datos de clientes.",
+    });
+  }
+});
+
 router.get("/dashboard/ultimos-tickets", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req);
@@ -158,7 +256,9 @@ router.get("/dashboard/ultimos-tickets", async (req, res) => {
         e.str_nombre AS estado,
         COALESCE(c.str_nombre || ' ' || c.str_apellido, 'Cliente / Usuario') AS solicitante,
         TO_CHAR(t.created_at, 'DD/MM/YYYY HH24:MI') AS tiempo,
-        TO_CHAR(t.dmt_fecha_cierre, 'DD/MM/YYYY HH24:MI') AS fecha_cierre
+        TO_CHAR(t.dmt_fecha_cierre, 'DD/MM/YYYY HH24:MI') AS fecha_cierre,
+        t.creador_agente_id,
+        t.usuario_asignado_id
       FROM tickets.tbl_tickets t
       LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
       LEFT JOIN tickets.tbl_clientes c ON t.cliente_id = c.id
@@ -211,7 +311,7 @@ router.get("/dashboard/casos-cerrados-por-analista", async (req, res) => {
         COUNT(t.id) AS tickets_cerrados
       FROM tickets.tbl_tickets t
       LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
-      LEFT JOIN public.tbl_usuarios u ON t.usuario_asignado_id = u.id
+      LEFT JOIN public.tbl_usuarios u ON t.cierre_agente_id = u.id
       ${whereClause}
       AND e.str_tipo = 'ESTATUSTICKET'
       AND e.str_nombre ILIKE 'Cerrado'
@@ -233,11 +333,7 @@ router.get("/dashboard/casos-cerrados-por-analista", async (req, res) => {
 
 router.get("/departamentos", async (req, res) => {
   try {
-    const query = `
-      SELECT id, str_nombre, str_descripcion
-      FROM public.cat_departamentos
-      ORDER BY str_nombre ASC;
-    `;
+    const query = `SELECT id, str_nombre, str_descripcion FROM public.cat_departamentos ORDER BY str_nombre ASC;`;
     const resultado = await pool.query(query);
     res.status(200).json({ success: true, departamentos: resultado.rows });
   } catch (err) {
@@ -251,17 +347,8 @@ router.get("/departamentos", async (req, res) => {
 
 router.get("/departamentos-usuarios", async (req, res) => {
   try {
-    const queryDept = `
-      SELECT id, str_nombre, str_descripcion
-      FROM public.cat_departamentos
-      ORDER BY str_nombre ASC;
-    `;
-    const queryUsers = `
-      SELECT id, departamento_id, str_nombre, str_apellido, str_email, bol_activo
-      FROM public.tbl_usuarios
-      WHERE bol_activo = true
-      ORDER BY str_nombre ASC;
-    `;
+    const queryDept = `SELECT id, str_nombre, str_descripcion FROM public.cat_departamentos ORDER BY str_nombre ASC;`;
+    const queryUsers = `SELECT id, departamento_id, str_nombre, str_apellido, str_email, bol_activo FROM public.tbl_usuarios WHERE bol_activo = true ORDER BY str_nombre ASC;`;
 
     const [resDept, resUsers] = await Promise.all([
       pool.query(queryDept),
@@ -283,12 +370,7 @@ router.get("/departamentos-usuarios", async (req, res) => {
 
 router.get("/datos-maestros", async (req, res) => {
   try {
-    const query = `
-      SELECT id, str_tipo, str_nombre, str_descripcion, bol_activo
-      FROM public.cat_datos_maestros
-      WHERE bol_activo = true
-      ORDER BY str_tipo, id ASC;
-    `;
+    const query = `SELECT id, str_tipo, str_nombre, str_descripcion, bol_activo FROM public.cat_datos_maestros WHERE bol_activo = true ORDER BY str_tipo, id ASC;`;
     const resultado = await pool.query(query);
 
     const datos = resultado.rows;
@@ -324,12 +406,7 @@ router.get("/datos-maestros", async (req, res) => {
 router.get("/cliente/:cedula", async (req, res) => {
   const { cedula } = req.params;
   try {
-    const query = `
-      SELECT id, str_cedula, str_nombre, str_apellido, str_telefono, str_email
-      FROM tickets.tbl_clientes
-      WHERE str_cedula = $1
-      LIMIT 1;
-    `;
+    const query = `SELECT id, str_cedula, str_nombre, str_apellido, str_telefono, str_email FROM tickets.tbl_clientes WHERE str_cedula = $1 LIMIT 1;`;
     const resultado = await pool.query(query, [cedula]);
 
     if (resultado.rows.length > 0) {
@@ -347,10 +424,8 @@ router.get("/cliente/:cedula", async (req, res) => {
   }
 });
 
-// Endpoint principal para crear tickets con asignación automática para tecnología
 router.post("/crear", upload.any(), async (req, res) => {
   const client = await pool.connect();
-
   try {
     await client.query("BEGIN");
 
@@ -470,11 +545,7 @@ router.post("/crear", upload.any(), async (req, res) => {
     const nextNumber = seqResult.rows[0].int_ultimo_secuencial;
     const str_ticket = `TCK${year}-${monthStr}-${String(nextNumber).padStart(6, "0")}`;
 
-    const slaQuery = `
-      SELECT tiempo_maximo
-      FROM tickets.sla_configuracion
-      WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;
-    `;
+    const slaQuery = `SELECT tiempo_maximo FROM tickets.sla_configuracion WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;`;
     const slaRes = await client.query(slaQuery, [categoria_id, prioridad_id]);
     const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
 
@@ -515,13 +586,9 @@ router.post("/crear", upload.any(), async (req, res) => {
       }
 
       const rutaCompletaBD = `/var/www/uploads/${nuevoNombreArchivo}`;
-      if (tipoMime.startsWith("image/")) {
-        rutasImagenes.push(rutaCompletaBD);
-      } else if (tipoMime.startsWith("video/")) {
-        rutasVideos.push(rutaCompletaBD);
-      } else if (tipoMime.startsWith("audio/")) {
-        rutasAudios.push(rutaCompletaBD);
-      }
+      if (tipoMime.startsWith("image/")) rutasImagenes.push(rutaCompletaBD);
+      else if (tipoMime.startsWith("video/")) rutasVideos.push(rutaCompletaBD);
+      else if (tipoMime.startsWith("audio/")) rutasAudios.push(rutaCompletaBD);
     });
 
     const str_ruta_imagen =
@@ -615,7 +682,6 @@ router.post("/crear", upload.any(), async (req, res) => {
   }
 });
 
-// Endpoint para listar tickets con soporte completo de filtros por categoría
 router.get("/listar", async (req, res) => {
   try {
     const {
@@ -632,11 +698,25 @@ router.get("/listar", async (req, res) => {
       cierre_hasta,
       vencimiento_desde,
       vencimiento_hasta,
+      rol, // Recibido por parámetros desde el frontend
     } = req.query;
+
+    const usuarioIdSesion = req.user?.id;
+    const rolUsuario = (rol || "").toLowerCase();
 
     let query = `SELECT * FROM tickets.view_listar_tickets t WHERE 1=1`;
     const params = [];
     let paramIndex = 1;
+
+    if (rolUsuario.includes("gerente atc")) {
+      query += ` AND (t.tipo_ticket_id = 25 OR (t.tipo_ticket_id = 24 AND (t.usuario_asignado_id = $${paramIndex} OR t.creador_agente_id = $${paramIndex})))`;
+      params.push(Number(usuarioIdSesion));
+      paramIndex++;
+    } else if (rolUsuario.includes("operador atc")) {
+      query += ` AND (t.usuario_asignado_id = $${paramIndex} OR t.creador_agente_id = $${paramIndex})`;
+      params.push(Number(usuarioIdSesion));
+      paramIndex++;
+    }
 
     if (tipo_ticket_id) {
       query += ` AND t.tipo_ticket_id = $${paramIndex++}`;
@@ -704,7 +784,6 @@ router.get("/listar", async (req, res) => {
   }
 });
 
-// Endpoint para obtener la bitácora de un ticket
 router.get("/bitacora/:ticket_id", async (req, res) => {
   const { ticket_id } = req.params;
   try {
@@ -732,9 +811,6 @@ router.get("/bitacora/:ticket_id", async (req, res) => {
   }
 });
 
-// ==========================================
-// ENDPOINT PARA ACTUALIZAR TICKETS (DESDE EL MODAL)
-// ==========================================
 router.put("/actualizar/:id", upload.any(), async (req, res) => {
   const { id } = req.params;
   const {
@@ -761,6 +837,8 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       prioridad_id !== undefined && prioridad_id !== ""
         ? Number(prioridad_id)
         : null;
+
+    const usuarioId = req.user?.id; // ID seguro desde el backend
 
     let nuevoAsignado = undefined;
     if (usuario_asignado_id !== undefined) {
@@ -851,12 +929,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     const prioridadAUtilizar =
       nuevaPrioridad !== null ? nuevaPrioridad : ticketActual.prioridad_id;
-
-    const slaQuery = `
-      SELECT tiempo_maximo
-      FROM tickets.sla_configuracion
-      WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;
-    `;
+    const slaQuery = `SELECT tiempo_maximo FROM tickets.sla_configuracion WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;`;
     const slaRes = await client.query(slaQuery, [
       categoriaId,
       prioridadAUtilizar,
@@ -865,8 +938,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
     if (str_descripcion_respuesta && str_descripcion_respuesta.trim() !== "") {
       await client.query(
-        `INSERT INTO tickets.tbl_tickets_bitacora (ticket_id, usuario_id, str_comentario, created_at)
-         VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
+        `INSERT INTO tickets.tbl_tickets_bitacora (ticket_id, usuario_id, str_comentario, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
         [
           Number(id),
           usuarioIdSesion ? Number(usuarioIdSesion) : null,
@@ -883,7 +955,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         UPDATE tickets.tbl_tickets
         SET
           estatus_id = COALESCE($1, estatus_id),
-          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
+          cierre_agente_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
           departamento_id = COALESCE($3, departamento_id),
           prioridad_id = COALESCE($4, prioridad_id),
           int_sla = $5::integer,
@@ -902,7 +974,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       `;
       updateParams = [
         nuevoEstatus,
-        nuevoAsignado,
+        usuarioId,
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
@@ -925,7 +997,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       `;
       updateParams = [
         nuevoEstatus,
-        nuevoAsignado,
+        usuarioId,
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
@@ -949,7 +1021,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       `;
       updateParams = [
         nuevoEstatus,
-        nuevoAsignado,
+        usuarioId,
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
@@ -970,7 +1042,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       `;
       updateParams = [
         nuevoEstatus,
-        nuevoAsignado,
+        usuarioId,
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
@@ -1031,91 +1103,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     });
   } finally {
     client.release();
-  }
-});
-
-// Ruta para listar todos los clientes con el conteo de tickets y el detalle completo de cada ticket obtenido desde view_listar_tickets
-router.get("/clientes-con-tickets", async (req, res) => {
-  try {
-    const query = `
-        SELECT
-            c.id,
-            c.str_cedula AS cedula,
-            CONCAT(c.str_nombre, ' ', c.str_apellido) AS cliente,
-            c.str_telefono AS telefono,
-            c.str_email AS correo,
-            COUNT(vt.id) AS tickets,
-            MAX(vt.created_at) AS ultima_atencion,
-            COALESCE(
-                json_agg(
-                    json_build_object(
-                        'id', vt.id,
-                        'str_ticket', vt.str_ticket,
-                        'tipo_ticket_id', vt.tipo_ticket_id,
-                        'tipo_ticket', vt.tipo_ticket,
-                        'cliente_id', vt.cliente_id,
-                        'cliente_nombre', vt.cliente_nombre,
-                        'cliente_apellido', vt.cliente_apellido,
-                        'cliente_cedula', vt.cliente_cedula,
-                        'cliente_correo', vt.cliente_correo,
-                        'cliente_telefono', vt.cliente_telefono,
-                        'creador_agente_id', vt.creador_agente_id,
-                        'creador_nombre', vt.creador_nombre,
-                        'creador_apellido', vt.creador_apellido,
-                        'creador_correo', vt.creador_correo,
-                        'departamento_id', vt.departamento_id,
-                        'departamento_nombre', vt.departamento_nombre,
-                        'categoria_id', vt.categoria_id,
-                        'categoria_nombre', vt.categoria_nombre,
-                        'prioridad_id', vt.prioridad_id,
-                        'prioridad_nombre', vt.prioridad_nombre,
-                        'estatus_id', vt.estatus_id,
-                        'estatus_nombre', vt.estatus_nombre,
-                        'canal_id', vt.canal_id,
-                        'canal_nombre', vt.canal_nombre,
-                        'str_asunto', vt.str_asunto,
-                        'str_descripcion', vt.str_descripcion,
-                        'int_sla', vt.int_sla,
-                        'dmt_fecha_vencimiento_sla', vt.dmt_fecha_vencimiento_sla,
-                        'dmt_fecha_cierre', vt.dmt_fecha_cierre,
-                        'bool_cumplio_sla', vt.bool_cumplio_sla,
-                        'created_at', vt.created_at,
-                        'updated_at', vt.updated_at,
-                        'usuario_asignado_id', vt.usuario_asignado_id,
-                        'asignado_nombre', vt.asignado_nombre,
-                        'asignado_apellido', vt.asignado_apellido,
-                        'asignado_correo', vt.asignado_correo,
-                        'str_ruta_imagen', vt.str_ruta_imagen,
-                        'str_ruta_video', vt.str_ruta_video,
-                        'str_ruta_audio', vt.str_ruta_audio,
-                        'int_minutos_pausa', vt.int_minutos_pausa,
-                        'tiempo_resolucion', vt.tiempo_resolucion
-                    )
-                ) FILTER (WHERE vt.id IS NOT NULL),
-                '[]'
-            ) AS lista_tickets
-        FROM
-            tickets.tbl_clientes c
-        LEFT JOIN
-            tickets.view_listar_tickets vt ON c.id = vt.cliente_id
-        GROUP BY
-            c.id, c.str_cedula, c.str_nombre, c.str_apellido, c.str_telefono, c.str_email
-        ORDER BY c.created_at DESC;
-    `;
-
-    const { rows } = await pool.query(query);
-
-    return res.status(200).json({
-      success: true,
-      total: rows.length,
-      data: rows,
-    });
-  } catch (error) {
-    console.error("Error al listar clientes con tickets:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Error interno del servidor al obtener los datos de clientes.",
-    });
   }
 });
 

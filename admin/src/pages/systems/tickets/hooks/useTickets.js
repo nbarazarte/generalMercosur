@@ -2,11 +2,17 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import copy from "copy-to-clipboard";
 import axiosTickets from "../../../../api/axiosTickets";
-import formatearFechaHora from "../../../../components/formatearFechaHora";
+import { useSelector } from "react-redux";
+//import formatearFechaHora from "../../../../components/formatearFechaHora";
 import { useCreateBlockNote } from "@blocknote/react";
 import { es } from "@blocknote/core/locales";
 
 export function useTickets() {
+  const currentUserId = useSelector((state) => state.auth?.user?.id);
+  const currentUserRole = useSelector(
+    (state) => state.auth?.user?.sistemasOpciones[0]?.rol,
+  );
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -127,7 +133,11 @@ export function useTickets() {
 
       // 1. Cargar Tickets
       try {
-        const resTickets = await axiosTickets.get("/listar");
+        //const resTickets = await axiosTickets.get("/listar");
+        const resTickets = await axiosTickets.get("/listar", {
+          params: { rol: currentUserRole },
+        });
+
         if (resTickets.data && resTickets.data.success) {
           listaTickets = resTickets.data.tickets || [];
           setTickets(listaTickets);
@@ -726,5 +736,7 @@ export function useTickets() {
     editorRespuesta,
     handleEditorRespuestaChange,
     isDarkMode,
+    currentUserId,
+    currentUserRole,
   };
 }
