@@ -1114,7 +1114,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       `;
       updateParams = [
         nuevoEstatus,
-        usuarioId,
+        usuario_asignado_id,
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
@@ -1144,7 +1144,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       `;
       updateParams = [
         nuevoEstatus,
-        usuarioId,
+        usuario_asignado_id,
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
@@ -1171,7 +1171,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       `;
       updateParams = [
         nuevoEstatus,
-        usuarioId,
+        usuario_asignado_id,
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
