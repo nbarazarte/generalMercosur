@@ -8,10 +8,116 @@ const verificarSesion = require("../middlewares/verificarSesion");
 const upload = require("../middlewares/multerConfig"); // Middleware configurado en /var/www/uploads
 const path = require("path");
 const fs = require("fs");
+const sharp = require("sharp"); // 📌 Procesamiento y compresión de imágenes
 
 // 🔒 Doble capa de seguridad global
 router.use(verificarClienteFrontend);
 router.use(verificarSesion);
+
+// ==========================================
+// FUNCIÓN AUXILIAR PARA PROCESAR Y COMPRIMIR ARCHIVOS (MÁX. 500 KB)
+// ==========================================
+async function procesarArchivosConSharp(archivos, prefijoTicket) {
+  const rutasImagenes = [];
+  const rutasVideos = [];
+  const rutasAudios = [];
+
+  let contadorImagen = 1;
+  let contadorVideo = 1;
+
+  for (const file of archivos) {
+    const tipoMime = file.mimetype;
+    const extension = path.extname(file.originalname);
+    let nuevoNombreArchivo = "";
+
+    if (tipoMime.startsWith("image/")) {
+      nuevoNombreArchivo = `${prefijoTicket}-${contadorImagen}${extension}`;
+      contadorImagen++;
+
+      const rutaNueva = path.join("/var/www/uploads", nuevoNombreArchivo);
+
+      try {
+        let calidad = 80;
+        let bufferTransformado = await sharp(file.path)
+          .resize({
+            width: 1920,
+            height: 1080,
+            fit: "inside",
+            withoutEnlargement: true,
+          })
+          .jpeg({ quality: calidad })
+          .toBuffer();
+
+        // Disminuir calidad iterativamente si excede los 500 KB (512,000 bytes)
+        while (bufferTransformado.length > 500 * 1024 && calidad > 10) {
+          calidad -= 10;
+          bufferTransformado = await sharp(file.path)
+            .resize({
+              width: 1920,
+              height: 1080,
+              fit: "inside",
+              withoutEnlargement: true,
+            })
+            .jpeg({ quality: calidad })
+            .toBuffer();
+        }
+
+        // Guardar la imagen comprimida directamente en disco
+        fs.writeFileSync(rutaNueva, bufferTransformado);
+
+        // Limpiar el archivo temporal subido originalmente por Multer
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+
+        rutasImagenes.push(`/var/www/uploads/${nuevoNombreArchivo}`);
+      } catch (sharpErr) {
+        console.error(
+          "Error al comprimir la imagen con sharp:",
+          sharpErr.message,
+        );
+        // Fallback: Mover archivo original si falla la compresión
+        if (fs.existsSync(file.path)) {
+          fs.renameSync(file.path, rutaNueva);
+        }
+        rutasImagenes.push(`/var/www/uploads/${nuevoNombreArchivo}`);
+      }
+    } else {
+      // Manejo de videos y audios (sin compresión de imágenes)
+      if (tipoMime.startsWith("video/")) {
+        nuevoNombreArchivo = `${prefijoTicket}-vid-${contadorVideo}${extension}`;
+        contadorVideo++;
+      } else {
+        nuevoNombreArchivo = `${prefijoTicket}-file-${contadorImagen}${extension}`;
+        contadorImagen++;
+      }
+
+      const rutaAntigua = file.path;
+      const rutaNueva = path.join("/var/www/uploads", nuevoNombreArchivo);
+
+      try {
+        if (fs.existsSync(rutaAntigua)) {
+          fs.renameSync(rutaAntigua, rutaNueva);
+        }
+      } catch (renameErr) {
+        console.error(
+          "Error al renombrar el archivo físico:",
+          renameErr.message,
+        );
+      }
+
+      const rutaCompletaBD = `/var/www/uploads/${nuevoNombreArchivo}`;
+      if (tipoMime.startsWith("video/")) rutasVideos.push(rutaCompletaBD);
+      else if (tipoMime.startsWith("audio/")) rutasAudios.push(rutaCompletaBD);
+    }
+  }
+
+  return {
+    str_ruta_imagen: rutasImagenes.length > 0 ? rutasImagenes.join(",") : null,
+    str_ruta_video: rutasVideos.length > 0 ? rutasVideos.join(",") : null,
+    str_ruta_audio: rutasAudios.length > 0 ? rutasAudios.join(",") : null,
+  };
+}
 
 // ==========================================
 // FUNCIÓN AUXILIAR DE FILTROS DINÁMICOS PARA DASHBOARD
@@ -26,29 +132,25 @@ function construirFiltrosDashboard(req) {
     categoria_id,
     creacion_desde,
     creacion_hasta,
-    rol, // Recibido por parámetros desde el frontend
+    rol,
   } = req.query;
 
-  const usuarioId = req.user?.id; // ID seguro desde el backend
+  const usuarioId = req.user?.id;
   let whereClause = `WHERE 1=1`;
   const params = [];
   let paramIndex = 1;
 
   const rolUsuario = (rol || "").toLowerCase();
 
-  // REGLAS DE VISIBILIDAD SEGÚN ROL
   if (rolUsuario.includes("gerente atc")) {
-    // 2. Gerente ATC: Todo lo externo (25) o interno (24) asignado/creado por él
     whereClause += ` AND (t.tipo_ticket_id = 25 OR (t.tipo_ticket_id = 24 AND (t.usuario_asignado_id = $${paramIndex} OR t.creador_agente_id = $${paramIndex})))`;
     params.push(Number(usuarioId));
     paramIndex++;
   } else if (rolUsuario.includes("operador atc")) {
-    // 3. Operador ATC: Solo tickets asignados o creados por él
     whereClause += ` AND (t.usuario_asignado_id = $${paramIndex} OR t.creador_agente_id = $${paramIndex})`;
     params.push(Number(usuarioId));
     paramIndex++;
   }
-  // 1. Administrador ve todo sin restricciones adicionales.
 
   if (tipo_ticket_id) {
     whereClause += ` AND t.tipo_ticket_id = $${paramIndex++}`;
@@ -134,10 +236,12 @@ router.get("/dashboard/tickets-por-categoria", async (req, res) => {
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener tickets por categoría:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar el volumen por categoría.",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "Error interno al consultar el volumen por categoría.",
+      });
   }
 });
 
@@ -158,10 +262,12 @@ router.get("/dashboard/distribucion-estados", async (req, res) => {
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener distribución de estatus:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar la distribución de estados.",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "Error interno al consultar la distribución de estados.",
+      });
   }
 });
 
@@ -238,10 +344,12 @@ router.get("/clientes-con-tickets", async (req, res) => {
       .json({ success: true, total: rows.length, data: rows });
   } catch (error) {
     console.error("Error al listar clientes con tickets:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Error interno del servidor al obtener los datos de clientes.",
-    });
+    return res
+      .status(500)
+      .json({
+        success: false,
+        message: "Error interno del servidor al obtener los datos de clientes.",
+      });
   }
 });
 
@@ -270,10 +378,12 @@ router.get("/dashboard/ultimos-tickets", async (req, res) => {
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener últimos tickets:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar los tickets recientes.",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "Error interno al consultar los tickets recientes.",
+      });
   }
 });
 
@@ -295,10 +405,12 @@ router.get("/dashboard/casos-por-analista", async (req, res) => {
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener casos por analista:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar los casos por analista.",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "Error interno al consultar los casos por analista.",
+      });
   }
 });
 
@@ -338,10 +450,12 @@ router.get("/departamentos", async (req, res) => {
     res.status(200).json({ success: true, departamentos: resultado.rows });
   } catch (err) {
     console.error("Error al obtener los departamentos:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al obtener los departamentos.",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "Error interno al obtener los departamentos.",
+      });
   }
 });
 
@@ -396,10 +510,12 @@ router.get("/datos-maestros", async (req, res) => {
     });
   } catch (err) {
     console.error("Error al obtener los datos maestros:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al obtener los datos maestros.",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "Error interno al obtener los datos maestros.",
+      });
   }
 });
 
@@ -424,6 +540,9 @@ router.get("/cliente/:cedula", async (req, res) => {
   }
 });
 
+// ==========================================
+// CREAR TICKET CON COMPRESIÓN DE IMÁGENES
+// ==========================================
 router.post("/crear", upload.any(), async (req, res) => {
   const client = await pool.connect();
   try {
@@ -549,54 +668,10 @@ router.post("/crear", upload.any(), async (req, res) => {
     const slaRes = await client.query(slaQuery, [categoria_id, prioridad_id]);
     const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
 
+    // 🛑 PROCESAMIENTO Y COMPRESIÓN DE ARCHIVOS CON SHARP (<500 KB)
     const archivos = req.files || [];
-    const rutasImagenes = [];
-    const rutasVideos = [];
-    const rutasAudios = [];
-
-    let contadorImagen = 1;
-    let contadorVideo = 1;
-
-    archivos.forEach((file) => {
-      const tipoMime = file.mimetype;
-      const extension = path.extname(file.originalname);
-      let nuevoNombreArchivo = "";
-
-      if (tipoMime.startsWith("image/")) {
-        nuevoNombreArchivo = `${str_ticket}-${contadorImagen}${extension}`;
-        contadorImagen++;
-      } else if (tipoMime.startsWith("video/")) {
-        nuevoNombreArchivo = `${str_ticket}-vid-${contadorVideo}${extension}`;
-        contadorVideo++;
-      } else {
-        nuevoNombreArchivo = `${str_ticket}-file-${contadorImagen}${extension}`;
-        contadorImagen++;
-      }
-
-      const rutaAntigua = file.path;
-      const rutaNueva = path.join("/var/www/uploads", nuevoNombreArchivo);
-
-      try {
-        fs.renameSync(rutaAntigua, rutaNueva);
-      } catch (renameErr) {
-        console.error(
-          "Error al renombrar el archivo físico:",
-          renameErr.message,
-        );
-      }
-
-      const rutaCompletaBD = `/var/www/uploads/${nuevoNombreArchivo}`;
-      if (tipoMime.startsWith("image/")) rutasImagenes.push(rutaCompletaBD);
-      else if (tipoMime.startsWith("video/")) rutasVideos.push(rutaCompletaBD);
-      else if (tipoMime.startsWith("audio/")) rutasAudios.push(rutaCompletaBD);
-    });
-
-    const str_ruta_imagen =
-      rutasImagenes.length > 0 ? rutasImagenes.join(",") : null;
-    const str_ruta_video =
-      rutasVideos.length > 0 ? rutasVideos.join(",") : null;
-    const str_ruta_audio =
-      rutasAudios.length > 0 ? rutasAudios.join(",") : null;
+    const { str_ruta_imagen, str_ruta_video, str_ruta_audio } =
+      await procesarArchivosConSharp(archivos, str_ticket);
 
     const queryInsert = `
       INSERT INTO tickets.tbl_tickets (
@@ -667,16 +742,18 @@ router.post("/crear", upload.any(), async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Ticket creado y archivos multimedia renombrados exitosamente.",
+      message: "Ticket creado y archivos comprimidos exitosamente.",
       ticket: ticketCreado,
     });
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error al crear el ticket con multimedia:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al procesar la solicitud del ticket.",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "Error interno al procesar la solicitud del ticket.",
+      });
   } finally {
     client.release();
   }
@@ -698,7 +775,7 @@ router.get("/listar", async (req, res) => {
       cierre_hasta,
       vencimiento_desde,
       vencimiento_hasta,
-      rol, // Recibido por parámetros desde el frontend
+      rol,
     } = req.query;
 
     const usuarioIdSesion = req.user?.id;
@@ -811,6 +888,9 @@ router.get("/bitacora/:ticket_id", async (req, res) => {
   }
 });
 
+// ==========================================
+// ACTUALIZAR TICKET CON COMPRESIÓN DE ARCHIVOS
+// ==========================================
 router.put("/actualizar/:id", upload.any(), async (req, res) => {
   const { id } = req.params;
   const {
@@ -837,8 +917,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       prioridad_id !== undefined && prioridad_id !== ""
         ? Number(prioridad_id)
         : null;
-
-    const usuarioId = req.user?.id; // ID seguro desde el backend
+    const usuarioId = req.user?.id;
 
     let nuevoAsignado = undefined;
     if (usuario_asignado_id !== undefined) {
@@ -854,7 +933,7 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     }
 
     const ticketActualRes = await client.query(
-      `SELECT categoria_id, prioridad_id, estatus_id, usuario_asignado_id, str_ticket, str_asunto, dmt_fecha_vencimiento_sla, updated_at FROM tickets.tbl_tickets WHERE id = $1`,
+      `SELECT categoria_id, prioridad_id, estatus_id, usuario_asignado_id, str_ticket, str_asunto, dmt_fecha_vencimiento_sla, updated_at, str_ruta_imagen, str_ruta_video, str_ruta_audio FROM tickets.tbl_tickets WHERE id = $1`,
       [Number(id)],
     );
 
@@ -882,6 +961,35 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         error:
           "Debe ingresar un comentario o respuesta en la bitácora al cambiar el estatus del ticket.",
       });
+    }
+
+    // 🛑 PROCESAR Y COMPRIMIR ARCHIVOS ADJUNTOS EN ACTUALIZACIÓN
+    const archivos = req.files || [];
+    let nuevasRutasImagenes = ticketActual.str_ruta_imagen;
+    let nuevasRutasVideos = ticketActual.str_ruta_video;
+    let nuevasRutasAudios = ticketActual.str_ruta_audio;
+
+    if (archivos.length > 0) {
+      const resultadoArchivos = await procesarArchivosConSharp(
+        archivos,
+        `${ticketActual.str_ticket}-upd`,
+      );
+
+      if (resultadoArchivos.str_ruta_imagen) {
+        nuevasRutasImagenes = nuevasRutasImagenes
+          ? `${nuevasRutasImagenes},${resultadoArchivos.str_ruta_imagen}`
+          : resultadoArchivos.str_ruta_imagen;
+      }
+      if (resultadoArchivos.str_ruta_video) {
+        nuevasRutasVideos = nuevasRutasVideos
+          ? `${nuevasRutasVideos},${resultadoArchivos.str_ruta_video}`
+          : resultadoArchivos.str_ruta_video;
+      }
+      if (resultadoArchivos.str_ruta_audio) {
+        nuevasRutasAudios = nuevasRutasAudios
+          ? `${nuevasRutasAudios},${resultadoArchivos.str_ruta_audio}`
+          : resultadoArchivos.str_ruta_audio;
+      }
     }
 
     let esEstatusActualPausa = false;
@@ -959,17 +1067,20 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
           departamento_id = COALESCE($3, departamento_id),
           prioridad_id = COALESCE($4, prioridad_id),
           int_sla = $5::integer,
+          str_ruta_imagen = $6,
+          str_ruta_video = $7,
+          str_ruta_audio = $8,
           int_minutos_pausa = CASE
             WHEN dmt_fecha_inicio_pausa IS NOT NULL THEN COALESCE(int_minutos_pausa, 0) + ROUND(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - dmt_fecha_inicio_pausa)) / 60::numeric, 2)
             ELSE COALESCE(int_minutos_pausa, 0)
           END,
           dmt_fecha_inicio_pausa = NULL,
           dmt_fecha_cierre = CASE
-            WHEN $6::boolean AND dmt_fecha_cierre IS NULL THEN CURRENT_TIMESTAMP
+            WHEN $9::boolean AND dmt_fecha_cierre IS NULL THEN CURRENT_TIMESTAMP
             ELSE dmt_fecha_cierre
           END,
           updated_at = CURRENT_TIMESTAMP
-        WHERE id = $7
+        WHERE id = $10
         RETURNING *;
       `;
       updateParams = [
@@ -978,6 +1089,9 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
+        nuevasRutasImagenes,
+        nuevasRutasVideos,
+        nuevasRutasAudios,
         esEstatusCierre,
         Number(id),
       ];
@@ -990,9 +1104,12 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
           departamento_id = COALESCE($3, departamento_id),
           prioridad_id = COALESCE($4, prioridad_id),
           int_sla = $5::integer,
+          str_ruta_imagen = $6,
+          str_ruta_video = $7,
+          str_ruta_audio = $8,
           dmt_fecha_inicio_pausa = CURRENT_TIMESTAMP,
           updated_at = CURRENT_TIMESTAMP
-        WHERE id = $6
+        WHERE id = $9
         RETURNING *;
       `;
       updateParams = [
@@ -1001,6 +1118,9 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
+        nuevasRutasImagenes,
+        nuevasRutasVideos,
+        nuevasRutasAudios,
         Number(id),
       ];
     } else if (esEstatusActualPausa && !esEstatusNuevoPausa) {
@@ -1012,11 +1132,14 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
           departamento_id = COALESCE($3, departamento_id),
           prioridad_id = COALESCE($4, prioridad_id),
           int_sla = $5::integer,
+          str_ruta_imagen = $6,
+          str_ruta_video = $7,
+          str_ruta_audio = $8,
           dmt_fecha_vencimiento_sla = dmt_fecha_vencimiento_sla + (CURRENT_TIMESTAMP - COALESCE(dmt_fecha_inicio_pausa, updated_at)),
           int_minutos_pausa = COALESCE(int_minutos_pausa, 0) + ROUND(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - COALESCE(dmt_fecha_inicio_pausa, updated_at))) / 60::numeric, 2),
           dmt_fecha_inicio_pausa = NULL,
           updated_at = CURRENT_TIMESTAMP
-        WHERE id = $6
+        WHERE id = $9
         RETURNING *;
       `;
       updateParams = [
@@ -1025,6 +1148,9 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
+        nuevasRutasImagenes,
+        nuevasRutasVideos,
+        nuevasRutasAudios,
         Number(id),
       ];
     } else {
@@ -1036,8 +1162,11 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
           departamento_id = COALESCE($3, departamento_id),
           prioridad_id = COALESCE($4, prioridad_id),
           int_sla = $5::integer,
+          str_ruta_imagen = $6,
+          str_ruta_video = $7,
+          str_ruta_audio = $8,
           updated_at = CURRENT_TIMESTAMP
-        WHERE id = $6
+        WHERE id = $9
         RETURNING *;
       `;
       updateParams = [
@@ -1046,6 +1175,9 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         nuevoDepartamento,
         nuevaPrioridad,
         Number(horasSla),
+        nuevasRutasImagenes,
+        nuevasRutasVideos,
+        nuevasRutasAudios,
         Number(id),
       ];
     }
@@ -1091,16 +1223,18 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     res.status(200).json({
       success: true,
       message:
-        "Ticket actualizado y respuesta guardada en la bitácora exitosamente.",
+        "Ticket actualizado, archivos procesados y respuesta guardada en la bitácora exitosamente.",
       ticket: ticketActualizado,
     });
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error al actualizar el ticket:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al actualizar el ticket.",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        error: "Error interno al actualizar el ticket.",
+      });
   } finally {
     client.release();
   }
