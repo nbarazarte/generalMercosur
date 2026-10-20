@@ -9,13 +9,42 @@ const upload = require("../middlewares/multerConfig"); // Middleware configurado
 const path = require("path");
 const fs = require("fs");
 const sharp = require("sharp"); // 📌 Procesamiento y compresión de imágenes
+const ffmpeg = require("fluent-ffmpeg"); // 📌 Procesamiento y compresión de videos
 
 // 🔒 Doble capa de seguridad global
 router.use(verificarClienteFrontend);
 router.use(verificarSesion);
 
 // ==========================================
-// FUNCIÓN AUXILIAR PARA PROCESAR Y COMPRIMIR ARCHIVOS (MÁX. 500 KB)
+// FUNCIÓN AUXILIAR PARA COMPRIMIR VIDEOS CON FFPMPEG
+// ==========================================
+function comprimirVideoConFFmpeg(inputPath, outputPath) {
+  return new Promise((resolve, reject) => {
+    ffmpeg(inputPath)
+      .output(outputPath)
+      .videoCodec("libx264")
+      .audioCodec("aac")
+      .outputOptions([
+        "-crf 28", // Control de calidad (28 reduce notablemente el peso)
+        "-preset ultrafast", // Codificación rápida
+        "-vf scale=-2:720", // 📌 Opcional recomendado: Forzar resolución máxima a 720p de altura para reducir drásticamente el peso en videos de teléfonos
+      ])
+      .on("end", () => {
+        resolve(true);
+      })
+      .on("error", (err) => {
+        console.error(
+          "Error detallado al comprimir video con FFmpeg:",
+          err.message,
+        );
+        reject(err);
+      })
+      .run();
+  });
+}
+
+// ==========================================
+// FUNCIÓN AUXILIAR PARA PROCESAR Y COMPRIMIR ARCHIVOS (MÁX. 500 KB IMÁGENES / VIDEOS OPTIMIZADOS)
 // ==========================================
 async function procesarArchivosConSharp(archivos, prefijoTicket) {
   const rutasImagenes = [];
@@ -82,15 +111,38 @@ async function procesarArchivosConSharp(archivos, prefijoTicket) {
         }
         rutasImagenes.push(`/var/www/uploads/${nuevoNombreArchivo}`);
       }
-    } else {
-      // Manejo de videos y audios (sin compresión de imágenes)
-      if (tipoMime.startsWith("video/")) {
-        nuevoNombreArchivo = `${prefijoTicket}-vid-${contadorVideo}${extension}`;
-        contadorVideo++;
-      } else {
-        nuevoNombreArchivo = `${prefijoTicket}-file-${contadorImagen}${extension}`;
-        contadorImagen++;
+    } else if (tipoMime.startsWith("video/")) {
+      nuevoNombreArchivo = `${prefijoTicket}-vid-${contadorVideo}${extension}`;
+      contadorVideo++;
+
+      const rutaAntigua = file.path;
+      const rutaNueva = path.join("/var/www/uploads", nuevoNombreArchivo);
+
+      try {
+        // Comprimir video utilizando FFmpeg
+        await comprimirVideoConFFmpeg(rutaAntigua, rutaNueva);
+
+        // Limpiar el archivo temporal original de Multer
+        if (fs.existsSync(rutaAntigua)) {
+          fs.unlinkSync(rutaAntigua);
+        }
+
+        rutasVideos.push(`/var/www/uploads/${nuevoNombreArchivo}`);
+      } catch (ffmpegErr) {
+        console.error(
+          "Fallback: Mover video sin comprimir debido a un error:",
+          ffmpegErr.message,
+        );
+        // Fallback: si falla la compresión, movemos el archivo original
+        if (fs.existsSync(rutaAntigua)) {
+          fs.renameSync(rutaAntigua, rutaNueva);
+        }
+        rutasVideos.push(`/var/www/uploads/${nuevoNombreArchivo}`);
       }
+    } else {
+      // Manejo de audios y archivos generales
+      nuevoNombreArchivo = `${prefijoTicket}-file-${contadorImagen}${extension}`;
+      contadorImagen++;
 
       const rutaAntigua = file.path;
       const rutaNueva = path.join("/var/www/uploads", nuevoNombreArchivo);
@@ -107,8 +159,7 @@ async function procesarArchivosConSharp(archivos, prefijoTicket) {
       }
 
       const rutaCompletaBD = `/var/www/uploads/${nuevoNombreArchivo}`;
-      if (tipoMime.startsWith("video/")) rutasVideos.push(rutaCompletaBD);
-      else if (tipoMime.startsWith("audio/")) rutasAudios.push(rutaCompletaBD);
+      if (tipoMime.startsWith("audio/")) rutasAudios.push(rutaCompletaBD);
     }
   }
 
@@ -236,12 +287,10 @@ router.get("/dashboard/tickets-por-categoria", async (req, res) => {
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener tickets por categoría:", err.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Error interno al consultar el volumen por categoría.",
-      });
+    res.status(500).json({
+      success: false,
+      error: "Error interno al consultar el volumen por categoría.",
+    });
   }
 });
 
@@ -262,12 +311,10 @@ router.get("/dashboard/distribucion-estados", async (req, res) => {
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener distribución de estatus:", err.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Error interno al consultar la distribución de estados.",
-      });
+    res.status(500).json({
+      success: false,
+      error: "Error interno al consultar la distribución de estados.",
+    });
   }
 });
 
@@ -344,12 +391,10 @@ router.get("/clientes-con-tickets", async (req, res) => {
       .json({ success: true, total: rows.length, data: rows });
   } catch (error) {
     console.error("Error al listar clientes con tickets:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error interno del servidor al obtener los datos de clientes.",
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor al obtener los datos de clientes.",
+    });
   }
 });
 
@@ -378,12 +423,10 @@ router.get("/dashboard/ultimos-tickets", async (req, res) => {
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener últimos tickets:", err.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Error interno al consultar los tickets recientes.",
-      });
+    res.status(500).json({
+      success: false,
+      error: "Error interno al consultar los tickets recientes.",
+    });
   }
 });
 
@@ -405,12 +448,10 @@ router.get("/dashboard/casos-por-analista", async (req, res) => {
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
     console.error("Error al obtener casos por analista:", err.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Error interno al consultar los casos por analista.",
-      });
+    res.status(500).json({
+      success: false,
+      error: "Error interno al consultar los casos por analista.",
+    });
   }
 });
 
@@ -450,12 +491,10 @@ router.get("/departamentos", async (req, res) => {
     res.status(200).json({ success: true, departamentos: resultado.rows });
   } catch (err) {
     console.error("Error al obtener los departamentos:", err.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Error interno al obtener los departamentos.",
-      });
+    res.status(500).json({
+      success: false,
+      error: "Error interno al obtener los departamentos.",
+    });
   }
 });
 
@@ -510,12 +549,10 @@ router.get("/datos-maestros", async (req, res) => {
     });
   } catch (err) {
     console.error("Error al obtener los datos maestros:", err.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Error interno al obtener los datos maestros.",
-      });
+    res.status(500).json({
+      success: false,
+      error: "Error interno al obtener los datos maestros.",
+    });
   }
 });
 
@@ -541,7 +578,7 @@ router.get("/cliente/:cedula", async (req, res) => {
 });
 
 // ==========================================
-// CREAR TICKET CON COMPRESIÓN DE IMÁGENES
+// CREAR TICKET CON COMPRESIÓN MULTIMEDIA
 // ==========================================
 router.post("/crear", upload.any(), async (req, res) => {
   const client = await pool.connect();
@@ -668,7 +705,7 @@ router.post("/crear", upload.any(), async (req, res) => {
     const slaRes = await client.query(slaQuery, [categoria_id, prioridad_id]);
     const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
 
-    // 🛑 PROCESAMIENTO Y COMPRESIÓN DE ARCHIVOS CON SHARP (<500 KB)
+    // 🛑 PROCESAMIENTO Y COMPRESIÓN DE ARCHIVOS (SHARP + FFPEG)
     const archivos = req.files || [];
     const { str_ruta_imagen, str_ruta_video, str_ruta_audio } =
       await procesarArchivosConSharp(archivos, str_ticket);
@@ -748,12 +785,10 @@ router.post("/crear", upload.any(), async (req, res) => {
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error al crear el ticket con multimedia:", err.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Error interno al procesar la solicitud del ticket.",
-      });
+    res.status(500).json({
+      success: false,
+      error: "Error interno al procesar la solicitud del ticket.",
+    });
   } finally {
     client.release();
   }
@@ -889,7 +924,7 @@ router.get("/bitacora/:ticket_id", async (req, res) => {
 });
 
 // ==========================================
-// ACTUALIZAR TICKET CON COMPRESIÓN DE ARCHIVOS
+// ACTUALIZAR TICKET CON COMPRESIÓN MULTIMEDIA
 // ==========================================
 router.put("/actualizar/:id", upload.any(), async (req, res) => {
   const { id } = req.params;
@@ -1229,12 +1264,10 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
   } catch (err) {
     await client.query("ROLLBACK");
     console.error("Error al actualizar el ticket:", err.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Error interno al actualizar el ticket.",
-      });
+    res.status(500).json({
+      success: false,
+      error: "Error interno al actualizar el ticket.",
+    });
   } finally {
     client.release();
   }
