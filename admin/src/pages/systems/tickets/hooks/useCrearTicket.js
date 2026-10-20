@@ -215,6 +215,32 @@ export function useCrearTicket() {
   const handleEditorChange = async () => {
     if (!editor) return;
     setStrDescripcion(await obtenerContenidoHTML());
+
+    // Sincronizar archivos adjuntos: verificar qué imágenes/archivos siguen vivos en los bloques del editor
+    const bloquesActuales = editor.document;
+    const urlsEnEditor = new Set();
+
+    bloquesActuales.forEach((bloque) => {
+      if (bloque.type === "image" && bloque.props?.url) {
+        urlsEnEditor.add(bloque.props.url);
+      }
+      // Por si maneja otros tipos de bloques multimedia o attachments
+      if (bloque.props?.url) {
+        urlsEnEditor.add(bloque.props.url);
+      }
+    });
+
+    // Si hay archivos en el estado que ya no están en el editor, los filtramos
+    setArchivosAdjuntos((prev) =>
+      prev.filter((archivo) => {
+        // Si el archivo usa su data base64 como URL o nombre, verificamos si sigue en el editor
+        // O si el editor contiene la data base64 del archivo
+        return (
+          urlsEnEditor.has(archivo.data) ||
+          Array.from(urlsEnEditor).some((url) => url.includes(archivo.name))
+        );
+      }),
+    );
   };
 
   const handleLimpiarTodo = async () => {
@@ -267,7 +293,26 @@ export function useCrearTicket() {
     const urlIA = import.meta.env.VITE_URL_API_OLLAMA;
     const modelo = import.meta.env.VITE_URL_MODELO_OLLAMA;
 
-    const promptExterno = `Actúa como un analista de atencion al cliente de la app de la casa de bolsa Mercosur Casa de Bolsa S.A y redacta una descripción detallada y profesional para un ticket de soporte basándote en la siguiente nota o borrador del analista: "${strDescripcion}".`;
+    const infoCliente = `Cliente: ${strNombreCliente} ${strApellidoCliente}, Cédula/RIF: ${strCedulaCliente}, Teléfono: ${strTelefonoCliente}, Correo: ${strCorreoCliente}`;
+
+    const nombresArchivos = archivosAdjuntos.map((f) => f.name).join(", ");
+    const infoArchivos = nombresArchivos
+      ? `Archivos adjuntos de soporte: [${nombresArchivos}].`
+      : "No hay archivos adjuntos.";
+
+    const promptExterno = `Eres un asistente de redacción para analistas de soporte en Mercosur Casa de Bolsa S.A.
+Tu ÚNICA tarea es reescribir y pulir el siguiente texto escrito por el analista para darle un tono más profesional, claro y técnico, manteniendo exactamente el mismo significado.
+
+Texto original del analista a mejorar: "${strDescripcion}"
+Datos del cliente asociados al ticket: [${infoCliente}].
+${infoArchivos}
+
+REGLAS ABSOLUTAS:
+1. NO inventes ningún detalle, problema, fecha, hora, código de error ni situación que no esté explícitamente en el texto original del analista o en los nombres de los archivos adjuntos.
+2. Si se mencionan archivos adjuntos, puedes referenciar su existencia de manera natural en la redacción sin asumir contenido que no veas.
+3. No incluyas saludos, despedidas, introducciones ("Aquí tienes...") ni bloques de metadatos (como Asunto, Fecha, Estado o Prioridad).
+4. Sé directo, breve y conciso.`;
+
     const promptInterno = `Actúa como un asistente que ayuda a los usuarios de Mercosur Casa de Bolsa a redactar sus tickets. Toma la siguiente nota: "${strDescripcion}"`;
 
     const promptSeleccionado = esTipoInterno() ? promptInterno : promptExterno;
