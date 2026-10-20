@@ -701,9 +701,18 @@ router.post("/crear", upload.any(), async (req, res) => {
     const nextNumber = seqResult.rows[0].int_ultimo_secuencial;
     const str_ticket = `TCK${year}-${monthStr}-${String(nextNumber).padStart(6, "0")}`;
 
-    const slaQuery = `SELECT tiempo_maximo FROM tickets.sla_configuracion WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;`;
-    const slaRes = await client.query(slaQuery, [categoria_id, prioridad_id]);
-    const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
+    // 🛑 NUEVO CÁLCULO DE SLA: Consulta exclusiva por prioridad_id en tickets.cat_sla_configuracion
+    const slaQuery = `
+      SELECT tiempo_maximo 
+      FROM tickets.cat_sla_configuracion 
+      WHERE prioridad_id = $1 AND activo = TRUE 
+      LIMIT 1;
+    `;
+    const slaRes = await client.query(slaQuery, [prioridad_id ? Number(prioridad_id) : null]);
+    const horasSla = slaRes.rows.length > 0 ? Number(slaRes.rows[0].tiempo_maximo) : 24;
+
+    // Cálculo directo de la fecha de vencimiento en JS para evitar conflictos de tipos en parámetros duplicados
+    const fechaVencimientoSla = new Date(Date.now() + horasSla * 60 * 60 * 1000);
 
     // 🛑 PROCESAMIENTO Y COMPRESIÓN DE ARCHIVOS (SHARP + FFPEG)
     const archivos = req.files || [];
@@ -722,7 +731,7 @@ router.post("/crear", upload.any(), async (req, res) => {
         $6::integer, $7::integer, $8::integer, $9::integer,
         $10::varchar, $11::text, $12::integer,
         $13::text, $14::text, $15::text, $16::integer,
-        COALESCE(CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) + ($12::integer * INTERVAL '1 hour'),
+        $17::timestamp,
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP
       )
@@ -746,6 +755,7 @@ router.post("/crear", upload.any(), async (req, res) => {
       str_ruta_video,
       str_ruta_audio,
       valoresAsignado,
+      fechaVencimientoSla,
     ];
 
     const nuevoTicketRes = await client.query(queryInsert, values);
@@ -980,7 +990,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     }
 
     const ticketActual = ticketActualRes.rows[0];
-    const categoriaId = ticketActual.categoria_id;
     const estatusActual = Number(ticketActual.estatus_id);
     const asignadoAnterior = ticketActual.usuario_asignado_id;
 
@@ -1070,14 +1079,18 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       }
     }
 
+    // 🛑 NUEVO CÁLCULO DE SLA EN ACTUALIZACIÓN: Exclusivo por prioridad_id en tickets.cat_sla_configuracion
     const prioridadAUtilizar =
       nuevaPrioridad !== null ? nuevaPrioridad : ticketActual.prioridad_id;
-    const slaQuery = `SELECT tiempo_maximo FROM tickets.sla_configuracion WHERE categoria_id = $1 AND prioridad_id = $2 AND activo = true;`;
-    const slaRes = await client.query(slaQuery, [
-      categoriaId,
-      prioridadAUtilizar,
-    ]);
-    const horasSla = slaRes.rows.length > 0 ? slaRes.rows[0].tiempo_maximo : 24;
+      
+    const slaQuery = `
+      SELECT tiempo_maximo 
+      FROM tickets.cat_sla_configuracion 
+      WHERE prioridad_id = $1 AND activo = TRUE 
+      LIMIT 1;
+    `;
+    const slaRes = await client.query(slaQuery, [prioridadAUtilizar]);
+    const horasSla = slaRes.rows.length > 0 ? Number(slaRes.rows[0].tiempo_maximo) : 24;
 
     if (str_descripcion_respuesta && str_descripcion_respuesta.trim() !== "") {
       await client.query(
