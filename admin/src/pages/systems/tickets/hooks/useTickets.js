@@ -554,22 +554,26 @@ export function useTickets() {
     const filasCsv = [];
 
     filasCsv.push([
-      "Código Ticket",
-      "Tipo",
-      "Canal",
-      "Creado Por",
-      "Cliente / Afectado",
-      "Cédula Cliente",
+      "Código",
       "Asunto",
-      "Departamento",
-      "Prioridad",
-      "Asignado A",
-      "Creación",
-      "Vencimiento SLA",
-      "Cierre",
-      "SLA (hrs)",
       "Estado",
+      "Prioridad",
+      "Canal",
+      "RIF",
+      "Cliente",
+      "Operador",
+      "Categoria", //falta la categoria
+      "Creado",
+      "Primera Respuesta", //falta primera respuesta
+      "Resolucion",
+      "Cierre",
+      // De aqui en adelante no estan en el reporte que emite el admin
+      "Vencimiento SLA",
+      "SLA (hrs)",
+      "Departamento",
+      "Asignado A",
       "Duración",
+      "Tipo",
     ]);
 
     ticketsFiltrados.forEach((t) => {
@@ -589,23 +593,28 @@ export function useTickets() {
 
       filasCsv.push([
         t.str_ticket || "",
-        t.tipo_ticket || "",
-        t.canal_nombre || "",
-        `${t.creador_nombre || ""} ${t.creador_apellido || ""}`.trim() || "",
-        clienteNombre,
-        clienteCedula,
         t.str_asunto || "",
-        t.departamento_nombre || "",
+        t.estatus_nombre || "",
         t.prioridad_nombre || "",
-        asignado,
+        t.canal_nombre || "",
+        clienteCedula,
+        clienteNombre,
+        `${t.creador_nombre || ""} ${t.creador_apellido || ""}`.trim() || "",
+        "", //falta la categoria
         formatearTextoFecha(t.created_at),
+        "-", //falta primera respuesta
+        t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-", //Resolucion la misma de cierre
+        t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-",
+
+        // De aqui en adelante no estan en el reporte que emite el admin
         t.dmt_fecha_vencimiento_sla
           ? formatearTextoFecha(t.dmt_fecha_vencimiento_sla)
           : "",
-        t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-",
         t.int_sla ? `${t.int_sla} hrs` : "",
-        t.estatus_nombre || "",
+        t.departamento_nombre || "",
+        asignado,
         t.tiempo_resolucion || "En curso",
+        t.tipo_ticket || "",
       ]);
     });
 
