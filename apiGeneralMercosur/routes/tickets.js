@@ -249,7 +249,7 @@ router.get("/dashboard/kpis", async (req, res) => {
     const queryKpis = `
       SELECT
         (SELECT count(*) FROM tickets.tbl_tickets t ${whereClause}) AS total_tickets,
-        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Proceso') AS en_proceso,
+        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Progreso') AS en_progreso,
         (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Aprobación') AS en_aprobacion,
         (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Pendiente de Usuario') AS pendiente_usuario,
         (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Espera Proveedor') AS espera_proveedor,

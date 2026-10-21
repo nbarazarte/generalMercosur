@@ -91,8 +91,8 @@ export default function Tickets() {
       color: "#3B82F6",
     },
     {
-      titulo: "En Proceso",
-      valor: conteoKpi["En Proceso"] || 0,
+      titulo: "En Progreso",
+      valor: conteoKpi["En Progreso"] || 0,
       icono: "FiClock",
       color: "#3B82F6",
     },
@@ -109,8 +109,8 @@ export default function Tickets() {
       color: "#F59E0B",
     },
     {
-      titulo: "En Espera Proveedor",
-      valor: conteoKpi["En Espera Proveedor"] || 0,
+      titulo: "Esperando Proveedor",
+      valor: conteoKpi["Esperando Proveedor"] || 0,
       icono: "FaUserClock",
       color: "#A855F7",
     },
@@ -305,16 +305,16 @@ export default function Tickets() {
                       tipoLower.includes("externo") ||
                       tipoLower.includes("app");
 
-                    const nombreEstatus = t.estatus_nombre || "En Proceso";
+                    const nombreEstatus = t.estatus_nombre || "En Progreso";
                     const estName = nombreEstatus.toLowerCase();
                     const esCanceladoModal = estName.includes("cancelado");
                     const esRojo =
                       estName.includes("vencido") ||
                       estName.includes("crítico") ||
                       estName.includes("urgente");
-                    const esEnProceso = estName.includes("en proceso");
+                    const esEnProgreso = estName.includes("en progreso");
                     const esEnEspera =
-                      estName.includes("espera") ||
+                      estName.includes("esperando") ||
                       estName.includes("pendiente");
 
                     return (
@@ -431,6 +431,7 @@ export default function Tickets() {
                               display: "inline-flex",
                               alignItems: "center",
                               justifyContent: "center",
+                              gap: "4px",
                               padding: "4px 12px",
                               borderRadius: "8px",
                               fontSize: "11px",
@@ -440,13 +441,26 @@ export default function Tickets() {
                             }}
                           >
                             {t.int_sla ? `${t.int_sla} hrs` : "—"}
+                            {t.int_minutos_pausa > 0 && (
+                              <span
+                                style={{
+                                  fontSize: "10px",
+                                  fontWeight: 500,
+                                  opacity: 0.85,
+                                }}
+                              >
+                                (+{t.int_minutos_pausa} min)
+                              </span>
+                            )}
                           </span>
                         </td>
+
                         <td>
                           <span
                             style={{
                               display: "inline-flex",
                               alignItems: "center",
+                              position: "relative",
                               padding: "4px 10px",
                               borderRadius: 10,
                               fontSize: 11,
@@ -457,7 +471,7 @@ export default function Tickets() {
                                   ? "rgba(14, 165, 233, 0.1)"
                                   : esRojo
                                     ? "rgba(239, 68, 68, 0.1)"
-                                    : esEnProceso
+                                    : esEnProgreso
                                       ? "rgba(59, 130, 246, 0.1)"
                                       : "rgba(16, 185, 129, 0.1)",
                               color: esEnEspera
@@ -466,14 +480,43 @@ export default function Tickets() {
                                   ? "#0ea5e9"
                                   : esRojo
                                     ? "#ef4444"
-                                    : esEnProceso
+                                    : esEnProgreso
                                       ? "#3b82f6"
                                       : "#10b981",
                             }}
                           >
+                            {esEnEspera && (
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  top: "-5px",
+                                  left: "-5px", // Ajustado para un mejor centrado en la esquina
+                                  width: "16px",
+                                  height: "16px",
+                                  borderRadius: "50%",
+                                  backgroundColor: "#F59E0B",
+                                  color: "#FFFFFF",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                                }}
+                                title="En espera"
+                              >
+                                <DynamicIcon
+                                  name="FiPause"
+                                  style={{
+                                    fontSize: 8,
+                                    display: "block",
+                                    lineHeight: 1,
+                                  }}
+                                />
+                              </span>
+                            )}
                             {nombreEstatus}
                           </span>
                         </td>
+
                         <td>
                           <span
                             className="tag"

@@ -291,7 +291,7 @@ tbody tr:last-child td{border-bottom:none}
       <section class="view" id="view-casos">
         <div class="toolbar">
           <div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input class="inp srch" id="f-buscar" placeholder="Cédula, nombre o descripción..." style="width:260px"></div>
-          <select class="sel" id="f-estado"><option value="">Todos los estados</option><option>Pendiente</option><option>En Proceso</option><option>Resuelto</option><option>Escalado</option></select>
+          <select class="sel" id="f-estado"><option value="">Todos los estados</option><option>Pendiente</option><option>En Progreso</option><option>Resuelto</option><option>Escalado</option></select>
           <select class="sel" id="f-prioridad"><option value="">Toda prioridad</option><option>Alta</option><option>Media</option><option>Baja</option></select>
           <select class="sel" id="f-canal"></select>
           <select class="sel" id="f-agente"></select>
@@ -379,7 +379,7 @@ tbody tr:last-child td{border-bottom:none}
         <div class="fg"><label>Canal de atención <span class="req">*</span></label><select class="sel" id="m-canal"></select></div>
         <div class="fg"><label>Tipo de consulta <span class="req">*</span></label><select class="sel" id="m-tipo"></select></div>
         <div class="fg"><label>Prioridad <span class="req">*</span></label><select class="sel" id="m-prioridad"><option>Alta</option><option selected>Media</option><option>Baja</option></select></div>
-        <div class="fg"><label>Estado <span class="req">*</span></label><select class="sel" id="m-estado"><option>Pendiente</option><option>En Proceso</option><option>Resuelto</option><option>Escalado</option></select></div>
+        <div class="fg"><label>Estado <span class="req">*</span></label><select class="sel" id="m-estado"><option>Pendiente</option><option>En Progreso</option><option>Resuelto</option><option>Escalado</option></select></div>
         <div class="fg"><label>Agente responsable <span class="req">*</span></label><select class="sel" id="m-agente"></select></div>
         <div class="fg"><label>Fecha de atención</label><input class="inp" type="date" id="m-fecha"></div>
         <div class="fg full"><label>Descripción del caso o incidencia <span class="req">*</span></label><textarea id="m-desc" placeholder="Describe el motivo de la consulta o incidencia..."></textarea></div>
@@ -399,7 +399,7 @@ tbody tr:last-child td{border-bottom:none}
 const CANALES = ['Wasapi','Tickets','Presencial','Telefónico','Correo electrónico','Telegram','Instagram'];
 const TIPOS = ['Firma Electrónica','Generar Certificado','Web App','Legacy','Akkela','Caja Venezolana de Valores','Mercado de Valores','Otros'];
 const AGENTES = ['Eleany 1','Maria J 2','Andrea 3','Ira 4','Moises 5','Vanessa 6','Dayerling 7','Yabelis 8','Cladimar 9','Yetsimar 10','Zulmar 11','Albert 12'];
-const ESTADOS = ['Pendiente','En Proceso','Resuelto','Escalado'];
+const ESTADOS = ['Pendiente','En Progreso','Resuelto','Escalado'];
 const SLA = {Alta:4, Media:24, Baja:72}; // horas máximas de respuesta
 const NOW = new Date('2026-09-24T15:30:00');
 
@@ -416,20 +416,20 @@ let CLIENTES = [
 ];
 const H = 3600*1000;
 let CASOS = [
-  {id:1042, cedula:'12.345.678', canal:'Wasapi', tipo:'Firma Electrónica', prioridad:'Alta', estado:'En Proceso', agente:'Eleany 1', opened:new Date(NOW-6*H), desc:'Cliente no puede renovar su firma electrónica, el token expiró.', obs:'Escalado a soporte técnico de firma.'},
+  {id:1042, cedula:'12.345.678', canal:'Wasapi', tipo:'Firma Electrónica', prioridad:'Alta', estado:'En Progreso', agente:'Eleany 1', opened:new Date(NOW-6*H), desc:'Cliente no puede renovar su firma electrónica, el token expiró.', obs:'Escalado a soporte técnico de firma.'},
   {id:1041, cedula:'15.987.654', canal:'Tickets', tipo:'Generar Certificado', prioridad:'Media', estado:'Pendiente', agente:'Maria J 2', opened:new Date(NOW-3*H), desc:'Solicita certificado de custodia de valores.', obs:''},
   {id:1040, cedula:'18.223.114', canal:'Telefónico', tipo:'Mercado de Valores', prioridad:'Alta', estado:'Pendiente', agente:'Andrea 3', opened:new Date(NOW-9*H), desc:'Consulta sobre orden de compra no ejecutada.', obs:''},
-  {id:1039, cedula:'20.556.789', canal:'Correo electrónico', tipo:'Web App', prioridad:'Baja', estado:'En Proceso', agente:'Ira 4', opened:new Date(NOW-30*H), desc:'No puede iniciar sesión en la Web App del portal.', obs:'Se envió instructivo de recuperación.'},
+  {id:1039, cedula:'20.556.789', canal:'Correo electrónico', tipo:'Web App', prioridad:'Baja', estado:'En Progreso', agente:'Ira 4', opened:new Date(NOW-30*H), desc:'No puede iniciar sesión en la Web App del portal.', obs:'Se envió instructivo de recuperación.'},
   {id:1038, cedula:'9.112.334', canal:'Presencial', tipo:'Caja Venezolana de Valores', prioridad:'Media', estado:'Resuelto', agente:'Moises 5', opened:new Date(NOW-40*H), desc:'Actualización de datos en la CVV.', obs:'Resuelto en sucursal.'},
   {id:1037, cedula:'25.667.001', canal:'Instagram', tipo:'Otros', prioridad:'Baja', estado:'Resuelto', agente:'Vanessa 6', opened:new Date(NOW-52*H), desc:'Consulta general de horarios de atención.', obs:''},
   {id:1036, cedula:'14.009.556', canal:'Wasapi', tipo:'Legacy', prioridad:'Alta', estado:'Escalado', agente:'Dayerling 7', opened:new Date(NOW-20*H), desc:'Error en sistema Legacy al consultar saldo.', obs:'Escalado a área de sistemas.'},
-  {id:1035, cedula:'22.778.443', canal:'Telegram', tipo:'Akkela', prioridad:'Media', estado:'En Proceso', agente:'Yabelis 8', opened:new Date(NOW-14*H), desc:'Problema de acceso a plataforma Akkela.', obs:''},
+  {id:1035, cedula:'22.778.443', canal:'Telegram', tipo:'Akkela', prioridad:'Media', estado:'En Progreso', agente:'Yabelis 8', opened:new Date(NOW-14*H), desc:'Problema de acceso a plataforma Akkela.', obs:''},
   {id:1034, cedula:'12.345.678', canal:'Tickets', tipo:'Generar Certificado', prioridad:'Baja', estado:'Resuelto', agente:'Eleany 1', opened:new Date(NOW-70*H), desc:'Certificado de tenencia solicitado.', obs:'Enviado por correo.'},
   {id:1033, cedula:'15.987.654', canal:'Telefónico', tipo:'Firma Electrónica', prioridad:'Media', estado:'Pendiente', agente:'Cladimar 9', opened:new Date(NOW-26*H), desc:'Consulta sobre vigencia de firma electrónica.', obs:''},
-  {id:1032, cedula:'18.223.114', canal:'Correo electrónico', tipo:'Mercado de Valores', prioridad:'Baja', estado:'En Proceso', agente:'Yetsimar 10', opened:new Date(NOW-10*H), desc:'Información sobre nuevos instrumentos de renta fija.', obs:''},
+  {id:1032, cedula:'18.223.114', canal:'Correo electrónico', tipo:'Mercado de Valores', prioridad:'Baja', estado:'En Progreso', agente:'Yetsimar 10', opened:new Date(NOW-10*H), desc:'Información sobre nuevos instrumentos de renta fija.', obs:''},
   {id:1031, cedula:'20.556.789', canal:'Presencial', tipo:'Firma Electrónica', prioridad:'Alta', estado:'Resuelto', agente:'Zulmar 11', opened:new Date(NOW-48*H), desc:'Emisión de firma electrónica nueva.', obs:'Completado en sucursal.'},
   {id:1030, cedula:'9.112.334', canal:'Wasapi', tipo:'Web App', prioridad:'Media', estado:'Resuelto', agente:'Albert 12', opened:new Date(NOW-90*H), desc:'Asistencia para registro en Web App.', obs:''},
-  {id:1029, cedula:'25.667.001', canal:'Tickets', tipo:'Otros', prioridad:'Media', estado:'En Proceso', agente:'Eleany 1', opened:new Date(NOW-2*H), desc:'Solicitud de estado de cuenta detallado.', obs:''}
+  {id:1029, cedula:'25.667.001', canal:'Tickets', tipo:'Otros', prioridad:'Media', estado:'En Progreso', agente:'Eleany 1', opened:new Date(NOW-2*H), desc:'Solicitud de estado de cuenta detallado.', obs:''}
 ];
 
 /* ====== UTILIDADES ====== */
@@ -451,7 +451,7 @@ function slaInfo(c){
   return {state:'ok', label:'En plazo', mins, due};
 }
 function humanLeft(mins){const a=Math.abs(mins);const h=Math.floor(a/60),m=a%60;const s=(h?h+'h ':'')+(m+'m');return mins<0?('hace '+s):('en '+s);}
-const estadoBadge={'Pendiente':'b-open','En Proceso':'b-proc','Resuelto':'b-res','Escalado':'b-esc'};
+const estadoBadge={'Pendiente':'b-open','En Progreso':'b-proc','Resuelto':'b-res','Escalado':'b-esc'};
 const priClass={'Alta':'pri-alta','Media':'pri-media','Baja':'pri-baja'};
 function clienteDe(ced){return CLIENTES.find(c=>c.cedula===ced)||{nombre:'—',cedula:ced,tel:'',correo:''};}
 /* ====== PALETA CHARTS ====== */
@@ -470,7 +470,7 @@ const ICONS={
 };
 function renderKPIsDash(){
   const tot=CASOS.length, open=CASOS.filter(ACTIVE).length;
-  const seg=CASOS.filter(c=>c.estado==='En Proceso'||c.estado==='Escalado').length;
+  const seg=CASOS.filter(c=>c.estado==='En Progreso'||c.estado==='Escalado').length;
   const res=CASOS.filter(c=>c.estado==='Resuelto').length;
   const late=CASOS.filter(c=>slaInfo(c).state==='late').length;
   $('#kpi-dash').innerHTML=
@@ -554,7 +554,7 @@ function renderCasos(){
 function renderSegui(){
   const late=CASOS.filter(c=>slaInfo(c).state==='late').length;
   const warn=CASOS.filter(c=>slaInfo(c).state==='warn').length;
-  const proc=CASOS.filter(c=>c.estado==='En Proceso').length;
+  const proc=CASOS.filter(c=>c.estado==='En Progreso').length;
   const escl=CASOS.filter(c=>c.estado==='Escalado').length;
   $('#kpi-segui').innerHTML=
     kpiCard(ICONS.late,'ic-red',late,'Vencidos (SLA)')+
@@ -584,7 +584,7 @@ function renderReportes(){
     kpiCard(ICONS.user,'ic-gold',best?esc(best[0]):'—','Mejor agente')+
     kpiCard(ICONS.follow,'ic-blue',canal?esc(canal[0]):'—','Canal más usado');
   const m={};AGENTES.forEach(a=>m[a]={t:0,r:0,s:0,e:0});
-  CASOS.forEach(c=>{const o=m[c.agente];if(!o)return;o.t++;if(c.estado==='Resuelto')o.r++;if(c.estado==='En Proceso')o.s++;if(c.estado==='Escalado')o.e++;});
+  CASOS.forEach(c=>{const o=m[c.agente];if(!o)return;o.t++;if(c.estado==='Resuelto')o.r++;if(c.estado==='En Progreso')o.s++;if(c.estado==='Escalado')o.e++;});
   $('#rep-body').innerHTML=AGENTES.filter(a=>m[a].t>0).sort((a,b)=>m[b].t-m[a].t).map(a=>{const o=m[a];const pc=o.t?Math.round(o.r/o.t*100):0;
     return '<tr><td><b style="color:var(--navy)">'+esc(a)+'</b></td><td>'+o.t+'</td><td>'+o.r+'</td><td>'+o.s+'</td><td>'+o.e+'</td><td><div class="bar" style="display:inline-block;width:80px;height:7px;background:var(--bg);border-radius:99px;overflow:hidden;vertical-align:middle;margin-right:8px"><i style="display:block;height:100%;width:'+pc+'%;background:linear-gradient(90deg,var(--gold),var(--gold-dark))"></i></div><b style="color:var(--navy)">'+pc+'%</b></td></tr>';}).join('');
   renderChartsRep();

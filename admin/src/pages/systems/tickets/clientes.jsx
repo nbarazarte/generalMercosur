@@ -99,7 +99,7 @@ export default function ClientesTickets() {
       estName.includes("vencido") ||
       estName.includes("crítico") ||
       estName.includes("urgente");
-    const esEnProceso = estName.includes("en proceso");
+    const esEnProceso = estName.includes("en progreso");
     const esEnEspera =
       estName.includes("espera") || estName.includes("pendiente");
 
@@ -448,7 +448,7 @@ export default function ClientesTickets() {
                                                     }}
                                                   >
                                                     {t.estatus_nombre ||
-                                                      "En Proceso"}
+                                                      "En Progreso"}
                                                   </span>
                                                 </td>
                                                 <td>

@@ -124,7 +124,7 @@ export function TicketDetalleModal({
               const nombreEstatus =
                 estatusObj?.str_nombre ||
                 ticketSeleccionado.estatus_nombre ||
-                "En Proceso";
+                "En Progreso";
               const descEstatus = estatusObj?.str_descripcion;
 
               const estName = nombreEstatus.toLowerCase();
@@ -133,7 +133,7 @@ export function TicketDetalleModal({
                 estName.includes("vencido") ||
                 estName.includes("crítico") ||
                 estName.includes("urgente");
-              const esEnProceso = estName.includes("en proceso");
+              const esEnProceso = estName.includes("en progreso");
               const esEnEspera =
                 estName.includes("espera") || estName.includes("pendiente");
 

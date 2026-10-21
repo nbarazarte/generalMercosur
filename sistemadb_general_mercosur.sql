@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict njntu99figSVQMODzoCuY6SrlXBx0O58yUWIhbVoYd639CNyrYHWX7v0A11aLPC
+\restrict eqHfGXum1y2myOD3wKs1HvjuCnHMntMxfOnhkwD2UVwNxHA629x8BtCbWh46dHn
 
 -- Dumped from database version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 
--- Started on 2026-10-21 11:15:45 -04
+-- Started on 2026-10-21 15:20:52 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -8056,6 +8056,251 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 1	6006	36278	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:12:00.077234-04	2026-10-21 11:12:00.079567-04
 1	6008	37161	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:14:00.010796-04	2026-10-21 11:14:00.013289-04
 1	6009	37339	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:15:00.010554-04	2026-10-21 11:15:00.013122-04
+1	6010	37483	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:16:00.006785-04	2026-10-21 11:16:00.009358-04
+1	6011	37602	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:17:00.010933-04	2026-10-21 11:17:00.01321-04
+1	6012	37682	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:18:00.009577-04	2026-10-21 11:18:00.012254-04
+1	6034	47973	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:40:00.009183-04	2026-10-21 11:40:00.011343-04
+1	6048	56717	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:54:00.010006-04	2026-10-21 11:54:00.012398-04
+1	6013	37786	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:19:00.010206-04	2026-10-21 11:19:00.012467-04
+1	6022	42278	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:28:00.010188-04	2026-10-21 11:28:00.012803-04
+1	6029	45700	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:35:00.010167-04	2026-10-21 11:35:00.012654-04
+1	6014	38092	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:20:00.010775-04	2026-10-21 11:20:00.012981-04
+1	6042	54023	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:48:00.010428-04	2026-10-21 11:48:00.012791-04
+1	6023	42731	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:29:00.010219-04	2026-10-21 11:29:00.012977-04
+1	6015	38298	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:21:00.010928-04	2026-10-21 11:21:00.014324-04
+1	6035	48397	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:41:00.010519-04	2026-10-21 11:41:00.012553-04
+1	6016	38553	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:22:00.009515-04	2026-10-21 11:22:00.011692-04
+1	6030	46176	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:36:00.009667-04	2026-10-21 11:36:00.011989-04
+1	6024	43347	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:30:00.00989-04	2026-10-21 11:30:00.011735-04
+1	6017	38755	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:23:00.008758-04	2026-10-21 11:23:00.011226-04
+1	6039	52450	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:45:00.01041-04	2026-10-21 11:45:00.012504-04
+1	6018	39236	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:24:00.009557-04	2026-10-21 11:24:00.012287-04
+1	6025	43814	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:31:00.00992-04	2026-10-21 11:31:00.012415-04
+1	6019	39329	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:25:00.010279-04	2026-10-21 11:25:00.012525-04
+1	6031	46624	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:37:00.010566-04	2026-10-21 11:37:00.01281-04
+1	6026	44339	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:32:00.010538-04	2026-10-21 11:32:00.013087-04
+1	6020	39413	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:26:00.010373-04	2026-10-21 11:26:00.012692-04
+1	6036	49894	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:42:00.008535-04	2026-10-21 11:42:00.0104-04
+1	6021	41236	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:27:00.009935-04	2026-10-21 11:27:00.012758-04
+1	6027	44776	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:33:00.008891-04	2026-10-21 11:33:00.011067-04
+1	6032	47071	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:38:00.009409-04	2026-10-21 11:38:00.011653-04
+1	6052	58616	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:58:00.009999-04	2026-10-21 11:58:00.01254-04
+1	6028	45222	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:34:00.010308-04	2026-10-21 11:34:00.012564-04
+1	6045	55380	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:51:00.010408-04	2026-10-21 11:51:00.012681-04
+1	6040	52937	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:46:00.009854-04	2026-10-21 11:46:00.012058-04
+1	6033	47521	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:39:00.01005-04	2026-10-21 11:39:00.012266-04
+1	6037	50548	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:43:00.010677-04	2026-10-21 11:43:00.013244-04
+1	6043	54480	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:49:00.010062-04	2026-10-21 11:49:00.012349-04
+1	6038	52026	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:44:00.00951-04	2026-10-21 11:44:00.011287-04
+1	6041	53543	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:47:00.009761-04	2026-10-21 11:47:00.012333-04
+1	6047	56270	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:53:00.010228-04	2026-10-21 11:53:00.012512-04
+1	6044	54927	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:50:00.009312-04	2026-10-21 11:50:00.011714-04
+1	6046	55831	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:52:00.010378-04	2026-10-21 11:52:00.012544-04
+1	6050	57585	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:56:00.010472-04	2026-10-21 11:56:00.012987-04
+1	6049	57152	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:55:00.010423-04	2026-10-21 11:55:00.012708-04
+1	6051	58089	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:57:00.010243-04	2026-10-21 11:57:00.012459-04
+1	6053	59766	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 11:59:00.0101-04	2026-10-21 11:59:00.012344-04
+1	6054	60466	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:00:00.013243-04	2026-10-21 12:00:00.015776-04
+1	6055	61031	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:01:00.010103-04	2026-10-21 12:01:00.012532-04
+1	6056	61814	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:02:00.0114-04	2026-10-21 12:02:00.014537-04
+1	6057	62521	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:03:00.010172-04	2026-10-21 12:03:00.012625-04
+1	6079	73272	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:25:00.009832-04	2026-10-21 12:25:00.012079-04
+1	6093	81275	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:39:00.010276-04	2026-10-21 12:39:00.012527-04
+1	6058	63098	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:04:00.009907-04	2026-10-21 12:04:00.01219-04
+1	6067	67511	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:13:00.009826-04	2026-10-21 12:13:00.011933-04
+1	6074	70701	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:20:00.006772-04	2026-10-21 12:20:00.008341-04
+1	6059	63655	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:05:00.009243-04	2026-10-21 12:05:00.011861-04
+1	6087	78156	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:33:00.010691-04	2026-10-21 12:33:00.013044-04
+1	6068	67967	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:14:00.010186-04	2026-10-21 12:14:00.012596-04
+1	6060	64275	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:06:00.009946-04	2026-10-21 12:06:00.01207-04
+1	6080	73828	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:26:00.009784-04	2026-10-21 12:26:00.012387-04
+1	6061	64730	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:07:00.009977-04	2026-10-21 12:07:00.012375-04
+1	6075	71154	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:21:00.010108-04	2026-10-21 12:21:00.012445-04
+1	6069	68401	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:15:00.010229-04	2026-10-21 12:15:00.012481-04
+1	6062	65193	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:08:00.009498-04	2026-10-21 12:08:00.011849-04
+1	6084	76085	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:30:00.010311-04	2026-10-21 12:30:00.012252-04
+1	6063	65636	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:09:00.00872-04	2026-10-21 12:09:00.011103-04
+1	6070	68892	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:16:00.009879-04	2026-10-21 12:16:00.012087-04
+1	6064	66068	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:10:00.007771-04	2026-10-21 12:10:00.009572-04
+1	6076	71604	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:22:00.009634-04	2026-10-21 12:22:00.011935-04
+1	6071	69348	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:17:00.01025-04	2026-10-21 12:17:00.012655-04
+1	6065	66515	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:11:00.01045-04	2026-10-21 12:11:00.013011-04
+1	6081	74271	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:27:00.010241-04	2026-10-21 12:27:00.012686-04
+1	6066	66972	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:12:00.009975-04	2026-10-21 12:12:00.012518-04
+1	6072	69796	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:18:00.009857-04	2026-10-21 12:18:00.012137-04
+1	6077	72039	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:23:00.009726-04	2026-10-21 12:23:00.011905-04
+1	6097	83068	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:43:00.009766-04	2026-10-21 12:43:00.01244-04
+1	6073	70268	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:19:00.01001-04	2026-10-21 12:19:00.012269-04
+1	6090	79921	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:36:00.009876-04	2026-10-21 12:36:00.012031-04
+1	6085	76730	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:31:00.009969-04	2026-10-21 12:31:00.01278-04
+1	6078	72626	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:24:00.010198-04	2026-10-21 12:24:00.012508-04
+1	6082	74819	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:28:00.009805-04	2026-10-21 12:28:00.012031-04
+1	6088	78777	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:34:00.010106-04	2026-10-21 12:34:00.012557-04
+1	6083	75251	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:29:00.009516-04	2026-10-21 12:29:00.011856-04
+1	6086	77505	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:32:00.010992-04	2026-10-21 12:32:00.014244-04
+1	6092	80828	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:38:00.010652-04	2026-10-21 12:38:00.012836-04
+1	6089	79254	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:35:00.00909-04	2026-10-21 12:35:00.011667-04
+1	6091	80395	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:37:00.01055-04	2026-10-21 12:37:00.012933-04
+1	6095	82150	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:41:00.01035-04	2026-10-21 12:41:00.012506-04
+1	6094	81695	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:40:00.009859-04	2026-10-21 12:40:00.012121-04
+1	6096	82580	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:42:00.010289-04	2026-10-21 12:42:00.012453-04
+1	6098	83582	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:44:00.010683-04	2026-10-21 12:44:00.013002-04
+1	6099	84051	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:45:00.01011-04	2026-10-21 12:45:00.01273-04
+1	6100	84527	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:46:00.009443-04	2026-10-21 12:46:00.011853-04
+1	6101	84979	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:47:00.009143-04	2026-10-21 12:47:00.011406-04
+1	6102	85407	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:48:00.009628-04	2026-10-21 12:48:00.012028-04
+1	6124	95095	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:10:00.009858-04	2026-10-21 13:10:00.012034-04
+1	6138	101194	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:24:00.010127-04	2026-10-21 13:24:00.012383-04
+1	6103	85860	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:49:00.009893-04	2026-10-21 12:49:00.012134-04
+1	6112	89833	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:58:00.008384-04	2026-10-21 12:58:00.010542-04
+1	6119	92906	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:05:00.010875-04	2026-10-21 13:05:00.013499-04
+1	6104	86274	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:50:00.00788-04	2026-10-21 12:50:00.009418-04
+1	6132	98567	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:18:00.010499-04	2026-10-21 13:18:00.012694-04
+1	6113	90277	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:59:00.010196-04	2026-10-21 12:59:00.012391-04
+1	6105	86721	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:51:00.009908-04	2026-10-21 12:51:00.01238-04
+1	6125	95546	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:11:00.010231-04	2026-10-21 13:11:00.012712-04
+1	6106	87154	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:52:00.011262-04	2026-10-21 12:52:00.013871-04
+1	6120	93339	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:06:00.010498-04	2026-10-21 13:06:00.012755-04
+1	6114	90697	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:00:00.010547-04	2026-10-21 13:00:00.012748-04
+1	6107	87608	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:53:00.009993-04	2026-10-21 12:53:00.012153-04
+1	6129	97285	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:15:00.008214-04	2026-10-21 13:15:00.009857-04
+1	6108	88049	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:54:00.0109-04	2026-10-21 12:54:00.013418-04
+1	6115	91143	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:01:00.010094-04	2026-10-21 13:01:00.012324-04
+1	6109	88518	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:55:00.009873-04	2026-10-21 12:55:00.012058-04
+1	6121	93787	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:07:00.010575-04	2026-10-21 13:07:00.012772-04
+1	6116	91565	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:02:00.009919-04	2026-10-21 13:02:00.012272-04
+1	6110	88952	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:56:00.009903-04	2026-10-21 12:56:00.012115-04
+1	6126	95994	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:12:00.009916-04	2026-10-21 13:12:00.012032-04
+1	6111	89396	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 12:57:00.010153-04	2026-10-21 12:57:00.01235-04
+1	6117	92007	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:03:00.010183-04	2026-10-21 13:03:00.012101-04
+1	6122	94214	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:08:00.009947-04	2026-10-21 13:08:00.012315-04
+1	6142	102939	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:28:00.009751-04	2026-10-21 13:28:00.012151-04
+1	6118	92441	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:04:00.009971-04	2026-10-21 13:04:00.012162-04
+1	6135	99876	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:21:00.010128-04	2026-10-21 13:21:00.012333-04
+1	6130	97713	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:16:00.010216-04	2026-10-21 13:16:00.012407-04
+1	6123	94665	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:09:00.009986-04	2026-10-21 13:09:00.012319-04
+1	6127	96428	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:13:00.010297-04	2026-10-21 13:13:00.012508-04
+1	6133	99008	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:19:00.010276-04	2026-10-21 13:19:00.012598-04
+1	6128	96855	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:14:00.010403-04	2026-10-21 13:14:00.012543-04
+1	6131	98151	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:17:00.009779-04	2026-10-21 13:17:00.012013-04
+1	6137	100766	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:23:00.009953-04	2026-10-21 13:23:00.012134-04
+1	6134	99429	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:20:00.010436-04	2026-10-21 13:20:00.012667-04
+1	6136	100326	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:22:00.009509-04	2026-10-21 13:22:00.011689-04
+1	6140	102054	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:26:00.010394-04	2026-10-21 13:26:00.012823-04
+1	6139	101625	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:25:00.010002-04	2026-10-21 13:25:00.012267-04
+1	6141	102498	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:27:00.010035-04	2026-10-21 13:27:00.012275-04
+1	6143	103377	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:29:00.010257-04	2026-10-21 13:29:00.012461-04
+1	6144	103800	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:30:00.009659-04	2026-10-21 13:30:00.012133-04
+1	6145	104239	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:31:00.009377-04	2026-10-21 13:31:00.011575-04
+1	6146	104702	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:32:00.010169-04	2026-10-21 13:32:00.012561-04
+1	6147	105126	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:33:00.008712-04	2026-10-21 13:33:00.010425-04
+1	6177	113931	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:03:00.008414-04	2026-10-21 14:03:00.010816-04
+1	6157	111065	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:43:00.008985-04	2026-10-21 13:43:00.011278-04
+1	6148	105574	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:34:00.010177-04	2026-10-21 13:34:00.012431-04
+1	6164	112002	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:50:00.009507-04	2026-10-21 13:50:00.011892-04
+1	6149	106220	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:35:00.009848-04	2026-10-21 13:35:00.012147-04
+1	6158	111183	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:44:00.007225-04	2026-10-21 13:44:00.009445-04
+1	6174	113562	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:00:00.008555-04	2026-10-21 14:00:00.010824-04
+1	6150	106841	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:36:00.010415-04	2026-10-21 13:36:00.01275-04
+1	6170	112924	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:56:00.008786-04	2026-10-21 13:56:00.011034-04
+1	6165	112104	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:51:00.009195-04	2026-10-21 13:51:00.011422-04
+1	6159	111310	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:45:00.007397-04	2026-10-21 13:45:00.009032-04
+1	6151	107312	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:37:00.009209-04	2026-10-21 13:37:00.01079-04
+1	6152	107773	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:38:00.010238-04	2026-10-21 13:38:00.012543-04
+1	6153	\N	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	failed	job startup timeout	2026-10-21 13:39:00.000559-04	2026-10-21 13:39:57.311029-04
+1	6160	111455	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:46:00.008873-04	2026-10-21 13:46:00.011084-04
+1	6154	108711	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:40:00.007409-04	2026-10-21 13:40:00.009089-04
+1	6166	112254	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:52:00.008676-04	2026-10-21 13:52:00.010915-04
+1	6161	111564	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:47:00.009073-04	2026-10-21 13:47:00.011398-04
+1	6155	110767	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:41:00.013545-04	2026-10-21 13:41:00.016159-04
+1	6188	115101	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:14:00.008874-04	2026-10-21 14:14:00.011159-04
+1	6171	113104	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:57:00.008776-04	2026-10-21 13:57:00.010967-04
+1	6156	110887	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:42:00.008933-04	2026-10-21 13:42:00.01118-04
+1	6167	112535	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:53:00.009145-04	2026-10-21 13:53:00.011528-04
+1	6162	111665	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:48:00.009115-04	2026-10-21 13:48:00.011314-04
+1	6180	114456	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:06:00.009017-04	2026-10-21 14:06:00.01125-04
+1	6175	113680	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:01:00.00836-04	2026-10-21 14:01:00.010938-04
+1	6163	111790	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:49:00.008373-04	2026-10-21 13:49:00.010524-04
+1	6172	113322	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:58:00.009171-04	2026-10-21 13:58:00.01169-04
+1	6168	112682	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:54:00.009516-04	2026-10-21 13:54:00.011756-04
+1	6178	114084	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:04:00.009676-04	2026-10-21 14:04:00.012136-04
+1	6169	112811	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:55:00.009058-04	2026-10-21 13:55:00.011291-04
+1	6173	113448	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 13:59:00.008281-04	2026-10-21 13:59:00.010491-04
+1	6182	114640	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:08:00.008853-04	2026-10-21 14:08:00.01135-04
+1	6176	113826	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:02:00.009862-04	2026-10-21 14:02:00.012102-04
+1	6179	114191	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:05:00.009398-04	2026-10-21 14:05:00.011658-04
+1	6185	114852	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:11:00.009503-04	2026-10-21 14:11:00.011759-04
+1	6184	114778	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:10:00.009208-04	2026-10-21 14:10:00.01149-04
+1	6181	114567	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:07:00.009829-04	2026-10-21 14:07:00.011927-04
+1	6186	114921	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:12:00.009121-04	2026-10-21 14:12:00.011377-04
+1	6183	114710	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:09:00.009372-04	2026-10-21 14:09:00.011713-04
+1	6187	115013	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:13:00.008298-04	2026-10-21 14:13:00.010479-04
+1	6189	115170	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:15:00.009372-04	2026-10-21 14:15:00.011638-04
+1	6190	115320	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:16:00.009999-04	2026-10-21 14:16:00.012168-04
+1	6191	115447	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:17:00.010163-04	2026-10-21 14:17:00.012486-04
+1	6192	115620	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:18:00.009239-04	2026-10-21 14:18:00.011717-04
+1	6214	118313	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:40:00.00844-04	2026-10-21 14:40:00.010777-04
+1	6228	120645	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:54:00.009263-04	2026-10-21 14:54:00.012013-04
+1	6193	115756	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:19:00.008364-04	2026-10-21 14:19:00.010744-04
+1	6202	116667	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:28:00.008039-04	2026-10-21 14:28:00.010433-04
+1	6209	117553	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:35:00.008578-04	2026-10-21 14:35:00.011194-04
+1	6194	115922	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:20:00.008448-04	2026-10-21 14:20:00.010988-04
+1	6222	119970	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:48:00.008912-04	2026-10-21 14:48:00.011352-04
+1	6203	116774	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:29:00.008661-04	2026-10-21 14:29:00.01122-04
+1	6195	116081	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:21:00.008725-04	2026-10-21 14:21:00.011067-04
+1	6215	118579	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:41:00.007939-04	2026-10-21 14:41:00.009721-04
+1	6196	116152	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:22:00.00883-04	2026-10-21 14:22:00.011085-04
+1	6210	117671	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:36:00.008879-04	2026-10-21 14:36:00.011493-04
+1	6204	116849	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:30:00.009338-04	2026-10-21 14:30:00.011608-04
+1	6197	116221	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:23:00.009351-04	2026-10-21 14:23:00.011654-04
+1	6219	119239	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:45:00.009636-04	2026-10-21 14:45:00.011896-04
+1	6198	116294	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:24:00.008639-04	2026-10-21 14:24:00.010835-04
+1	6205	116927	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:31:00.009603-04	2026-10-21 14:31:00.011901-04
+1	6199	116362	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:25:00.008716-04	2026-10-21 14:25:00.010903-04
+1	6211	117848	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:37:00.007293-04	2026-10-21 14:37:00.009322-04
+1	6206	117055	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:32:00.008777-04	2026-10-21 14:32:00.011497-04
+1	6200	116524	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:26:00.008471-04	2026-10-21 14:26:00.010644-04
+1	6216	118869	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:42:00.009091-04	2026-10-21 14:42:00.011647-04
+1	6201	116581	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:27:00.009392-04	2026-10-21 14:27:00.011687-04
+1	6207	117277	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:33:00.008625-04	2026-10-21 14:33:00.01095-04
+1	6212	117952	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:38:00.009138-04	2026-10-21 14:38:00.01141-04
+1	6232	121047	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:58:00.009808-04	2026-10-21 14:58:00.011993-04
+1	6208	117417	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:34:00.009331-04	2026-10-21 14:34:00.011835-04
+1	6225	120344	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:51:00.008661-04	2026-10-21 14:51:00.011281-04
+1	6220	119489	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:46:00.009161-04	2026-10-21 14:46:00.011359-04
+1	6213	118067	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:39:00.008159-04	2026-10-21 14:39:00.010127-04
+1	6217	119081	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:43:00.008437-04	2026-10-21 14:43:00.010628-04
+1	6223	120141	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:49:00.009355-04	2026-10-21 14:49:00.011693-04
+1	6218	119166	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:44:00.008763-04	2026-10-21 14:44:00.011038-04
+1	6221	119813	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:47:00.009082-04	2026-10-21 14:47:00.011288-04
+1	6227	120543	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:53:00.009075-04	2026-10-21 14:53:00.011646-04
+1	6224	120239	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:50:00.00935-04	2026-10-21 14:50:00.011238-04
+1	6226	120445	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:52:00.009872-04	2026-10-21 14:52:00.012365-04
+1	6230	120846	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:56:00.008056-04	2026-10-21 14:56:00.010886-04
+1	6229	120743	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:55:00.009341-04	2026-10-21 14:55:00.011604-04
+1	6231	120949	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:57:00.010129-04	2026-10-21 14:57:00.012408-04
+1	6233	121359	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 14:59:00.009278-04	2026-10-21 14:59:00.011495-04
+1	6234	121723	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:00:00.008843-04	2026-10-21 15:00:00.011085-04
+1	6235	121950	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:01:00.0089-04	2026-10-21 15:01:00.011137-04
+1	6236	122081	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:02:00.010912-04	2026-10-21 15:02:00.013081-04
+1	6237	122257	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:03:00.009471-04	2026-10-21 15:03:00.011743-04
+1	6238	122459	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:04:00.009864-04	2026-10-21 15:04:00.012298-04
+1	6247	124197	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:13:00.008455-04	2026-10-21 15:13:00.011054-04
+1	6254	125889	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:20:00.009862-04	2026-10-21 15:20:00.012126-04
+1	6239	122563	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:05:00.008995-04	2026-10-21 15:05:00.011971-04
+1	6248	124433	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:14:00.008955-04	2026-10-21 15:14:00.011141-04
+1	6240	122720	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:06:00.009897-04	2026-10-21 15:06:00.012216-04
+1	6241	122936	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:07:00.009918-04	2026-10-21 15:07:00.012344-04
+1	6249	124564	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:15:00.010266-04	2026-10-21 15:15:00.012776-04
+1	6242	123129	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:08:00.009674-04	2026-10-21 15:08:00.012299-04
+1	6243	123231	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:09:00.009912-04	2026-10-21 15:09:00.012809-04
+1	6250	125057	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:16:00.009912-04	2026-10-21 15:16:00.012077-04
+1	6244	123445	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:10:00.009203-04	2026-10-21 15:10:00.011968-04
+1	6251	125227	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:17:00.011939-04	2026-10-21 15:17:00.014168-04
+1	6245	123972	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:11:00.00963-04	2026-10-21 15:11:00.012187-04
+1	6246	124098	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:12:00.009614-04	2026-10-21 15:12:00.012198-04
+1	6252	125413	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:18:00.009284-04	2026-10-21 15:18:00.011915-04
+1	6253	125647	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-21 15:19:00.008444-04	2026-10-21 15:19:00.010821-04
 \.
 
 
@@ -8096,14 +8341,14 @@ COPY public.cat_datos_maestros (id, str_tipo, str_nombre, str_descripcion, bol_a
 13	CATEGORIA_EXTERNA	Otros	Categoría Otros	f	2026-10-09 16:24:56.960588-04	2026-10-09 16:24:56.960588-04
 37	ESTATUSTICKET	Vencido	El ticket se venció	t	2026-10-11 22:38:50.84172-04	2026-10-11 22:38:50.84172-04
 21	ESTATUSTICKET	Resuelto	La solución fue aplicada y está a la espera de confirmación por parte del usuario o del periodo de gracia.	f	2026-10-09 21:01:40.476086-04	2026-10-09 21:01:40.476086-04
-17	ESTATUSTICKET	En Proceso	El ticket fue asignado y se está trabajando en él.	t	2026-10-09 21:01:40.476086-04	2026-10-09 21:01:40.476086-04
 22	ESTATUSTICKET	Cerrado	El ticket fue solucionado.	t	2026-10-09 21:01:40.476086-04	2026-10-09 21:01:40.476086-04
 23	ESTATUSTICKET	Cancelado	El ticket fue ingresado por error o el usuario retiró la solicitud.	t	2026-10-09 21:01:40.476086-04	2026-10-09 21:01:40.476086-04
 9	CATEGORIA_EXTERNA	Web App	Categoría Web App	t	2026-10-09 16:24:56.960588-04	2026-10-09 16:24:56.960588-04
 11	CATEGORIA_EXTERNA	Onboarding	Ficha KYC	t	2026-10-09 16:24:56.960588-04	2026-10-09 16:24:56.960588-04
-18	ESTATUSTICKET	Pendiente de Usuario	El trabajo activo está pausado porque se requiere información, pruebas o confirmación del usuario.	t	2026-10-09 21:01:40.476086-04	2026-10-09 21:01:40.476086-04
-19	ESTATUSTICKET	En Espera Proveedor	El trabajo depende de el proveedor externo.	t	2026-10-09 21:01:40.476086-04	2026-10-09 21:01:40.476086-04
 39	PRIORIDAD	Crítica	Nivel de prioridad Crítica	t	2026-10-20 13:37:37.38943-04	2026-10-20 13:37:37.38943-04
+17	ESTATUSTICKET	En Progreso	El ticket fue asignado y se está trabajando en él.	t	2026-10-09 21:01:40.476086-04	2026-10-09 21:01:40.476086-04
+18	ESTATUSTICKET	Esperando Cliente	El trabajo activo está pausado porque se requiere información, pruebas o confirmación del cliente.	t	2026-10-09 21:01:40.476086-04	2026-10-09 21:01:40.476086-04
+19	ESTATUSTICKET	Esperando Proveedor	El trabajo depende de el proveedor externo.	t	2026-10-09 21:01:40.476086-04	2026-10-09 21:01:40.476086-04
 \.
 
 
@@ -8192,10 +8437,9 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 --
 
 COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, str_device_id, str_device_name) FROM stdin;
-461	74	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzQsInVzZXJuYW1lIjoiZWdpbCIsImlhdCI6MTc5MjA5NDMzNiwiZXhwIjoxNzkyMDk3OTM2fQ.h8rpN6A1bofiYpnAk2BXkVoTbA-AolXfSbvPV3JidBs	2026-10-15 15:46:50.075323-04	2026-10-15 16:58:56.44831-04	f	58bc3d16-8bea-4072-ac69-cf9b35fa2b0a	Edge en Windows PC
 463	80	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODAsInVzZXJuYW1lIjoiemxpbmFyZXMiLCJpYXQiOjE3OTIwOTU4MTksImV4cCI6MTc5MjA5OTQxOX0.XLjRlL8agGzUotPTvPgffATja0ZMUfuUyW-RBOX80Ew	2026-10-15 16:04:54.683445-04	2026-10-15 17:23:39.490997-04	f	234523f5-3a87-4432-84d8-c113bf606a37	Edge en Windows PC
 462	71	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzEsInVzZXJuYW1lIjoiYWZlcm5hbmRleiIsImlhdCI6MTc5MjA5NDA5NSwiZXhwIjoxNzkyMDk3Njk1fQ.k0KIq-RjpRS70hAQdYoe8oRzwZK2pEyho-Yv_VeskUY	2026-10-15 15:54:23.261114-04	2026-10-15 16:54:55.5969-04	f	e64c3d30-3f60-47cd-97c4-2adb50d7d459	Edge en Windows PC
-520	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkyNTk1NTQ3LCJleHAiOjE3OTI1OTkxNDd9.T-gUGdp2FjcmXCmfloEx7zzGe4UWMIAPASSHHiLMwg0	2026-10-21 11:12:22.840754-04	2026-10-21 12:12:27.913681-04	f	0eb51e2f-09df-43ce-86f3-f2af29ed5edf	Chrome en Linux PC
+529	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzkyNjEwMjk5LCJleHAiOjE3OTI2MTM4OTl9.xLYv4QYcu4CDXi-8yTr2wix2TcqbLN4ifraWKmSLSvY	2026-10-21 14:58:30.04804-04	2026-10-21 16:18:19.908129-04	f	24d3bd9a-b025-4788-b224-7653e5765e5e	Chrome en Linux PC
 \.
 
 
@@ -8296,13 +8540,13 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 66	7	16086597	Sindy Karina	Cordero Herrera	scordero@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	f	2026-10-01 16:41:00.998101-04	2026-10-01 18:41:29.329298-04	\N	\N	scordero	\N	\N	\N
 95	6	25327464	Samuel Josue	Tapias Ramirez	stapias@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:02.176906-04	\N	\N	stapias	\N	\N	\N
 96	8	6249886	Jose Vicente	Toro Dias	jtoro@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:13.553797-04	\N	\N	jtoro	\N	\N	\N
-57	1	30646620	Cesar Augusto	Acosta Guerrero	cacosta@mercosur.com.ve	$2a$10$yp8FL2bMk5t9oGqTh6ZjD.BGgy.vzgUy0ZBlTqbzzGGnKDHtnu8G2	t	2026-10-01 16:41:00.998101-04	2026-10-14 13:34:33.807087-04	\N	\N	cacosta	\N	\N	2026-10-14 14:46:55.608268
-74	5	32227026	Eleany Camila	Gil Fernandez	egil@mercosur.com.ve	$2a$10$ifvZ/d0UmZngTvzIxSexIezPGrRhpN1YRP4o1Ccy9rCa5WUsjFJBW	t	2026-10-01 16:41:00.998101-04	2026-10-15 14:20:44.27114-04	\N	\N	egil	\N	\N	2026-10-15 15:46:50.079921
 71	5	32784457	Andrea Valentina	Fernandez Palomo	afernandez@mercosur.com.ve	$2a$10$QCKtWeYQTqaBE.3X63xi4enhoADwzRoUqXswKpClZuye7zABhPLEO	t	2026-10-01 16:41:00.998101-04	2026-10-15 14:24:30.693956-04	\N	\N	afernandez	\N	\N	2026-10-15 15:54:23.264271
 80	5	27661857	Zulmar Sarai	Linares Huise	zlinares@mercosur.com.ve	$2a$10$rJMvC.Ijs83yIGLuKQY0ZOCy5jy/SRpbZUbFtVG.tl5/qODtQKF8G	t	2026-10-01 16:41:00.998101-04	2026-10-15 16:02:53.217239-04	\N	\N	zlinares	\N	\N	2026-10-15 16:04:54.687279
 97	5	32695846	Maria Jose	Urbina Patiño	murbina@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:26.650035-04	\N	\N	murbina	\N	\N	\N
 61	5	13409801	Helianta Del Valle	Blanco Di Cristofaro	hblanco@mercosur.com.ve	$2a$10$pb7GmvHJIHI3emiOygUfOe4J6w.m0w.VxUGFGTwaV9QG2/dUmkdeC	t	2026-10-01 16:41:00.998101-04	2026-10-18 20:13:17.191674-04	\N	\N	hblanco	\N	\N	2026-10-18 23:48:06.075458
 98	9	22504244	Cynthia Deysi	Valdospin Yontomo	cvaldospin@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:40.857542-04	\N	\N	cvaldospin	\N	\N	\N
+57	1	30646620	Cesar Augusto	Acosta Guerrero	cacosta@mercosur.com.ve	$2a$10$yp8FL2bMk5t9oGqTh6ZjD.BGgy.vzgUy0ZBlTqbzzGGnKDHtnu8G2	t	2026-10-01 16:41:00.998101-04	2026-10-14 13:34:33.807087-04	\N	\N	cacosta	\N	\N	2026-10-21 12:29:51.164943
+74	5	32227026	Eleany Camila	Gil Fernandez	egil@mercosur.com.ve	$2a$10$ifvZ/d0UmZngTvzIxSexIezPGrRhpN1YRP4o1Ccy9rCa5WUsjFJBW	t	2026-10-01 16:41:00.998101-04	2026-10-15 14:20:44.27114-04	\N	\N	egil	\N	\N	2026-10-21 12:30:55.09669
 99	7	27793131	Gabriela Alexandra	Valera Gamboa	gvalera@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:56.289728-04	\N	\N	gvalera	\N	\N	\N
 100	9	32227070	Willianyelis Sarait	Vasquez Villamizar	wvasquez@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:10.842593-04	\N	\N	wvasquez	\N	\N	\N
 101	3	21436685	Zaidi Raida	Zambrano Aranguren	zzambrano@mercosur.com.ve	$2a$10$ksR7l7eI8403dxy/HxQ4MOq7w960LDJJajdFJR8pgaC5JxshI237C	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:27.482944-04	\N	\N	zzambrano	\N	\N	\N
@@ -8313,7 +8557,7 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 58	3	18935045	Felneyry Coromoto	Barreto Bastidas	fbarrteto@mercosur.com.ve	$2a$10$I6jXxESq.YFnyvcG2fatmeJY4wBCCrYO5EMf3stRaCsf9uVe2rU7C	t	2026-10-01 16:41:00.998101-04	2026-10-19 12:52:06.613889-04	\N	\N	fbarrteto	\N	\N	2026-10-19 12:54:49.857255
 1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$sQJ1WZfXydLA91xjFb59AeyIMxmQ7xa66uPnYq8FtBjQIFUM3zbZK	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-10-19 12:58:06.705159
 64	5	32560280	Yarbelis Carolina	Cervantes Herrera	ycervantes@mercosur.com.ve	$2a$10$J7CUsv2bsMGkjSrM3hS/puqHuIv/D7UJ1UeCENPvOMFfBctHZgdXm	t	2026-10-01 16:41:00.998101-04	2026-10-09 21:11:34.545712-04	\N	\N	ycervantes	\N	\N	2026-10-19 15:43:43.79404
-4	1	16379712	Neel Ezequiel	Barazarte Aché	nbarazarte@mercosur.com.ve	$2a$10$XmwnY2gfUArfm7Gtl2B5R.Dxl9JNK2SECdsZaconwOTK6x7Da5ayK	t	2026-10-01 14:51:25.418478-04	2026-10-09 21:12:50.402422-04	\N	\N	nbarazarte	\N	\N	2026-10-21 11:12:22.84425
+4	1	16379712	Neel Ezequiel	Barazarte Aché	nbarazarte@mercosur.com.ve	$2a$10$XmwnY2gfUArfm7Gtl2B5R.Dxl9JNK2SECdsZaconwOTK6x7Da5ayK	t	2026-10-01 14:51:25.418478-04	2026-10-09 21:12:50.402422-04	\N	\N	nbarazarte	\N	\N	2026-10-21 14:58:30.049093
 \.
 
 
@@ -8501,6 +8745,13 @@ COPY tickets.sla_configuracion (id, categoria_id, prioridad_id, tiempo_maximo, a
 
 COPY tickets.tbl_alertas (id, caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido, fecha_generacion, fecha_lectura) FROM stdin;
 1	1	57	ASIGNACION	Se te ha asignado el ticket: [TCK2026-10-000001] vbn	f	2026-10-21 11:12:41.363082-04	\N
+2	2	74	ASIGNACION	Se te ha asignado el ticket: [TCK2026-10-000002] test	f	2026-10-21 11:20:03.334975-04	\N
+3	3	57	ASIGNACION	Se te ha asignado el ticket: [TCK2026-10-000003] dfgdf	f	2026-10-21 11:21:08.036933-04	\N
+4	4	57	ASIGNACION	Se te ha asignado el ticket: [TCK2026-10-000004] dgdg	f	2026-10-21 12:02:21.420038-04	\N
+5	5	57	ASIGNACION	Se te ha asignado el ticket: [TCK2026-10-000005] dfsdf	f	2026-10-21 12:31:46.116149-04	\N
+6	6	2	ASIGNACION	Se te ha asignado el ticket: [TCK2026-10-000006] test	f	2026-10-21 15:10:44.481278-04	\N
+7	7	2	ASIGNACION	Se te ha asignado el ticket: [TCK2026-10-000007] dfgdf	f	2026-10-21 15:15:24.271316-04	\N
+8	8	57	ASIGNACION	Se te ha asignado el ticket: [TCK2026-10-000008] dfg	f	2026-10-21 15:15:42.003756-04	\N
 \.
 
 
@@ -8521,7 +8772,7 @@ COPY tickets.tbl_clientes (id, str_cedula, str_nombre, str_apellido, str_telefon
 --
 
 COPY tickets.tbl_secuencias_tickets (int_anio, int_mes, int_ultimo_secuencial) FROM stdin;
-2026	10	1
+2026	10	8
 \.
 
 
@@ -8532,7 +8783,14 @@ COPY tickets.tbl_secuencias_tickets (int_anio, int_mes, int_ultimo_secuencial) F
 --
 
 COPY tickets.tbl_tickets (id, str_ticket, cliente_id, creador_agente_id, cierre_agente_id, departamento_id, categoria_id, prioridad_id, estatus_id, canal_id, str_asunto, str_descripcion, int_sla, dmt_fecha_cierre, created_at, updated_at, str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id, tipo_ticket_id, dmt_fecha_vencimiento_sla, bool_cumplio_sla, int_minutos_pausa, dmt_fecha_inicio_pausa) FROM stdin;
-1	TCK2026-10-000001	\N	4	\N	1	26	14	17	\N	vbn	<p>bvn</p>	72	\N	2026-10-21 11:12:41.363082-04	2026-10-21 11:12:41.363082-04	\N	\N	\N	57	24	2026-10-24 11:12:41.367-04	\N	0.00	\N
+5	TCK2026-10-000005	\N	74	4	1	27	15	22	\N	dfsdf	<p>sdf</p>	24	2026-10-21 14:42:36.170976-04	2026-10-21 12:31:46.116149-04	2026-10-21 14:42:36.170976-04	\N	\N	\N	57	24	2026-10-22 13:02:30.849449-04	\N	30.75	\N
+4	TCK2026-10-000004	\N	4	\N	1	26	14	17	\N	dgdg	<p>dfgdf</p>	72	\N	2026-10-21 12:02:21.420038-04	2026-10-21 15:00:56.47375-04	\N	\N	\N	57	24	2026-10-24 12:30:19.229349-04	\N	27.96	\N
+3	TCK2026-10-000003	\N	74	\N	1	30	15	17	\N	dfgdf	<p>sdf</p>	24	\N	2026-10-21 11:21:08.036933-04	2026-10-21 15:02:02.604554-04	\N	\N	\N	57	24	2026-10-22 11:23:27.712661-04	\N	2.33	\N
+2	TCK2026-10-000002	\N	4	4	5	27	14	22	\N	test	<p>fd</p>	72	2026-10-21 15:05:11.306133-04	2026-10-21 11:20:03.334975-04	2026-10-21 15:05:11.306133-04	\N	\N	\N	74	24	2026-10-24 11:20:03.336-04	\N	1.36	\N
+1	TCK2026-10-000001	\N	4	\N	1	26	14	17	\N	vbn	<p>bvn</p>	72	\N	2026-10-21 11:12:41.363082-04	2026-10-21 15:09:30.056093-04	\N	\N	\N	57	24	2026-10-24 11:14:45.476666-04	\N	2.07	\N
+6	TCK2026-10-000006	\N	4	\N	1	26	14	17	\N	test	<p>test</p>	72	\N	2026-10-21 15:10:44.481278-04	2026-10-21 15:13:47.340139-04	\N	\N	\N	2	24	2026-10-24 15:13:35.152084-04	\N	2.84	\N
+7	TCK2026-10-000007	\N	4	\N	1	26	14	17	\N	dfgdf	<p>dfgdfg</p>	72	\N	2026-10-21 15:15:24.271316-04	2026-10-21 15:18:25.397186-04	\N	\N	\N	2	24	2026-10-24 15:17:55.037902-04	\N	2.51	\N
+8	TCK2026-10-000008	\N	4	\N	1	34	14	17	\N	dfg	<p>dfg</p>	72	\N	2026-10-21 15:15:42.003756-04	2026-10-21 15:18:29.101222-04	\N	\N	\N	57	24	2026-10-24 15:18:08.703306-04	\N	2.44	\N
 \.
 
 
@@ -8543,6 +8801,29 @@ COPY tickets.tbl_tickets (id, str_ticket, cliente_id, creador_agente_id, cierre_
 --
 
 COPY tickets.tbl_tickets_bitacora (id, ticket_id, usuario_id, str_comentario, created_at) FROM stdin;
+1	5	4	<p>xx</p>	2026-10-21 14:02:33.296109-04
+2	4	4	<p>gf</p>	2026-10-21 14:06:42.794501-04
+3	5	4	<p>gh</p>	2026-10-21 14:07:48.72412-04
+4	4	4	<p>fgh</p>	2026-10-21 14:08:01.000144-04
+5	5	4	<p>er</p>	2026-10-21 14:16:44.978829-04
+6	4	4	<p>sd</p>	2026-10-21 14:16:54.468646-04
+7	4	4	<p>￼</p>	2026-10-21 14:42:03.207078-04
+8	5	4	<p>￼</p>	2026-10-21 14:42:14.283267-04
+9	5	4	<p>￼</p>	2026-10-21 14:42:36.170976-04
+10	4	4	<p>￼</p>	2026-10-21 14:59:25.610476-04
+11	3	4	<p>￼</p>	2026-10-21 14:59:42.928893-04
+12	4	4	<p>￼</p>	2026-10-21 15:00:56.47375-04
+13	3	4	<p>￼</p>	2026-10-21 15:02:02.604554-04
+14	2	4	<p>￼</p>	2026-10-21 15:03:49.442766-04
+15	2	4	<p>￼</p>	2026-10-21 15:05:11.306133-04
+16	1	4	<p>test</p>	2026-10-21 15:07:25.946427-04
+17	1	4	<p>￼</p>	2026-10-21 15:09:30.056093-04
+18	6	4	<p>￼</p>	2026-10-21 15:10:56.670055-04
+19	6	4	<p>￼</p>	2026-10-21 15:13:47.340139-04
+20	7	4	<p>vbc</p>	2026-10-21 15:15:54.631284-04
+21	8	4	<p>cvbc</p>	2026-10-21 15:16:02.401916-04
+22	7	4	<p>￼</p>	2026-10-21 15:18:25.397186-04
+23	8	4	<p>￼</p>	2026-10-21 15:18:29.101222-04
 \.
 
 
@@ -8561,7 +8842,7 @@ SELECT pg_catalog.setval('cron.jobid_seq', 1, true);
 -- Name: runid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
 
-SELECT pg_catalog.setval('cron.runid_seq', 6009, true);
+SELECT pg_catalog.setval('cron.runid_seq', 6254, true);
 
 
 --
@@ -8597,7 +8878,7 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 10, true);
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 520, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 529, true);
 
 
 --
@@ -8750,7 +9031,7 @@ SELECT pg_catalog.setval('tickets.sla_configuracion_id_seq', 46, true);
 -- Name: tbl_alertas_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_alertas_id_seq', 1, true);
+SELECT pg_catalog.setval('tickets.tbl_alertas_id_seq', 8, true);
 
 
 --
@@ -8768,7 +9049,7 @@ SELECT pg_catalog.setval('tickets.tbl_clientes_id_seq', 1, false);
 -- Name: tbl_tickets_bitacora_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_tickets_bitacora_id_seq', 1, false);
+SELECT pg_catalog.setval('tickets.tbl_tickets_bitacora_id_seq', 23, true);
 
 
 --
@@ -8777,7 +9058,7 @@ SELECT pg_catalog.setval('tickets.tbl_tickets_bitacora_id_seq', 1, false);
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 1, true);
+SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 8, true);
 
 
 --
@@ -9477,11 +9758,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT tbl_tickets_tipo_ticket_id_fkey FOREIGN KEY (tipo_ticket_id) REFERENCES public.cat_datos_maestros(id);
 
 
--- Completed on 2026-10-21 11:15:45 -04
+-- Completed on 2026-10-21 15:20:52 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict njntu99figSVQMODzoCuY6SrlXBx0O58yUWIhbVoYd639CNyrYHWX7v0A11aLPC
+\unrestrict eqHfGXum1y2myOD3wKs1HvjuCnHMntMxfOnhkwD2UVwNxHA629x8BtCbWh46dHn
 

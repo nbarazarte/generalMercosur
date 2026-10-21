@@ -636,7 +636,7 @@ export function useTickets() {
       "En Aprobación": 0,
       Vencido: 0,
       Resuelto: 0,
-      "En Proceso": 0,
+      "En Progreso": 0,
       Cerrado: 0,
       Cancelado: 0,
       "Pendiente de Usuario": 0,

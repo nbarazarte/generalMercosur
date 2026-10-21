@@ -3,7 +3,7 @@ import Chart from "chart.js/auto";
 
 function obtenerColorEstatus(nombreEstatus) {
   const est = (nombreEstatus || "").toLowerCase();
-  if (est.includes("en proceso")) return "#3B82F6";
+  if (est.includes("en progreso")) return "#3B82F6";
   if (est.includes("pendiente de usuario")) return "#F59E0B";
   if (est.includes("en espera proveedor")) return "#A855F7";
   if (est.includes("en aprobación")) return "#EC4899";

@@ -151,7 +151,7 @@ export default function DashboardTickets() {
           <KPICard
             icon="FiClock"
             val={loading ? "..." : kpis.en_proceso || 0}
-            label="En Proceso"
+            label="En Progreso"
             iconColor="#3B82F6"
           />
           <KPICard
