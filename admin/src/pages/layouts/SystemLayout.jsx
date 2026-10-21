@@ -37,7 +37,10 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
   const apellido = usuario?.apellido;
   const sistemas = useSelector((state) => state.auth?.user.sistemasOpciones);
 
-  const backendUrl = import.meta.env.VITE_URL_API_LOCAL_VER;
+  // Toma la URL base del backend desde tu variable de entorno o usa el host actual
+  const backendUrl =
+    import.meta.env.VITE_URL_API_LOCAL_VER ||
+    `http://${window.location.hostname}:3001`;
   const { socket } = useSocket(backendUrl);
 
   useEffect(() => {
