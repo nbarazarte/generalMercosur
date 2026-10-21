@@ -310,7 +310,7 @@ export default function Tickets() {
                     const esCanceladoModal = estName.includes("cancelado");
                     const esRojo =
                       estName.includes("vencido") ||
-                      estName.includes("crítico") ||
+                      //estName.includes("crítico") ||
                       estName.includes("urgente");
                     const esEnProgreso = estName.includes("en progreso");
                     const esEnEspera =
