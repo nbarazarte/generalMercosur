@@ -6,11 +6,23 @@ export const useSocket = (serverUrl) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    // Inicializa la conexión con el servidor de WebSockets
-    // Si no le pasas URL, por defecto intentará conectarse al dominio actual
-    socketRef.current = io(serverUrl, {
+    let baseUrl = serverUrl;
+    let socketPath = "/socket.io/";
+
+    // Extrae automáticamente el subdirectorio si existe (ej: /apimep)
+    try {
+      const urlObj = new URL(serverUrl);
+      if (urlObj.pathname && urlObj.pathname !== "/") {
+        baseUrl = `${urlObj.protocol}//${urlObj.host}`;
+        socketPath = `${urlObj.pathname.replace(/\/$/, "")}/socket.io/`;
+      }
+    } catch (e) {
+      // Si la URL es relativa o formato simple, usa valores por defecto
+    }
+
+    socketRef.current = io(baseUrl, {
+      path: socketPath,
       autoConnect: true,
-      // Puedes agregar opciones adicionales aquí si las necesitas (ej. auth, transports)
     });
 
     const socket = socketRef.current;
@@ -23,7 +35,6 @@ export const useSocket = (serverUrl) => {
       setIsConnected(false);
     });
 
-    // Limpieza al desmontar el componente
     return () => {
       socket.disconnect();
     };
