@@ -127,7 +127,7 @@ export default function CrearTicket() {
             {(() => {
               const mensaje =
                 typeof toast.message === "string" ? toast.message : "";
-              const matchCodigo = mensaje.match(/(TCK\d{4}-\d{2}-\d{6})/);
+              const matchCodigo = mensaje.match(/([A-Z]+-\d{8}-\d{3})/);
 
               if (matchCodigo) {
                 const codigo = matchCodigo[1];

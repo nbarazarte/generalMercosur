@@ -45,7 +45,7 @@ export function ChartBarAnalistaCreador({ data, isDark, loading }) {
         <div style={{ textAlign: "center", paddingTop: 100 }}>Cargando gráfico...</div>
       ) : !data || data.length === 0 ? (
         <div style={{ textAlign: "center", paddingTop: 100, color: "var(--merco-muted)", fontSize: "13px" }}>
-          Sin casos creados por analista con los filtros seleccionados.
+          Sin tickets creados por analista con los filtros seleccionados.
         </div>
       ) : (
         <canvas ref={canvasRef} />

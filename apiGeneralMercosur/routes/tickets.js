@@ -173,7 +173,7 @@ async function procesarArchivosConSharp(archivos, prefijoTicket) {
 // ==========================================
 // FUNCIÓN AUXILIAR DE FILTROS DINÁMICOS PARA DASHBOARD
 // ==========================================
-function construirFiltrosDashboard(req) {
+function construirFiltrosDashboard(req, aliasTabla = "t") {
   const {
     tipo_ticket_id,
     estatus_id,
@@ -194,45 +194,45 @@ function construirFiltrosDashboard(req) {
   const rolUsuario = (rol || "").toLowerCase();
 
   if (rolUsuario.includes("gerente atc")) {
-    whereClause += ` AND (t.tipo_ticket_id = 25 OR (t.tipo_ticket_id = 24 AND (t.usuario_asignado_id = $${paramIndex} OR t.creador_agente_id = $${paramIndex})))`;
+    whereClause += ` AND (${aliasTabla}.tipo_ticket_id = 25 OR (${aliasTabla}.tipo_ticket_id = 24 AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})))`;
     params.push(Number(usuarioId));
     paramIndex++;
   } else if (rolUsuario.includes("operador atc")) {
-    whereClause += ` AND (t.usuario_asignado_id = $${paramIndex} OR t.creador_agente_id = $${paramIndex})`;
+    whereClause += ` AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})`;
     params.push(Number(usuarioId));
     paramIndex++;
   }
 
   if (tipo_ticket_id) {
-    whereClause += ` AND t.tipo_ticket_id = $${paramIndex++}`;
+    whereClause += ` AND ${aliasTabla}.tipo_ticket_id = $${paramIndex++}`;
     params.push(Number(tipo_ticket_id));
   }
   if (estatus_id) {
-    whereClause += ` AND t.estatus_id = $${paramIndex++}`;
+    whereClause += ` AND ${aliasTabla}.estatus_id = $${paramIndex++}`;
     params.push(Number(estatus_id));
   }
   if (prioridad_id) {
-    whereClause += ` AND t.prioridad_id = $${paramIndex++}`;
+    whereClause += ` AND ${aliasTabla}.prioridad_id = $${paramIndex++}`;
     params.push(Number(prioridad_id));
   }
   if (canal_id) {
-    whereClause += ` AND t.canal_id = $${paramIndex++}`;
+    whereClause += ` AND ${aliasTabla}.canal_id = $${paramIndex++}`;
     params.push(Number(canal_id));
   }
   if (departamento_id) {
-    whereClause += ` AND t.departamento_id = $${paramIndex++}`;
+    whereClause += ` AND ${aliasTabla}.departamento_id = $${paramIndex++}`;
     params.push(Number(departamento_id));
   }
   if (categoria_id) {
-    whereClause += ` AND t.categoria_id = $${paramIndex++}`;
+    whereClause += ` AND ${aliasTabla}.categoria_id = $${paramIndex++}`;
     params.push(Number(categoria_id));
   }
   if (creacion_desde) {
-    whereClause += ` AND t.created_at >= $${paramIndex++}::timestamp`;
+    whereClause += ` AND ${aliasTabla}.created_at >= $${paramIndex++}::timestamp`;
     params.push(creacion_desde);
   }
   if (creacion_hasta) {
-    whereClause += ` AND t.created_at <= ($${paramIndex++}::timestamp + INTERVAL '1 day' - INTERVAL '1 second')`;
+    whereClause += ` AND ${aliasTabla}.created_at <= ($${paramIndex++}::timestamp + INTERVAL '1 day' - INTERVAL '1 second')`;
     params.push(creacion_hasta);
   }
 
@@ -272,15 +272,14 @@ router.get("/dashboard/kpis", async (req, res) => {
 
 router.get("/dashboard/tickets-por-categoria", async (req, res) => {
   try {
-    const { whereClause, params } = construirFiltrosDashboard(req);
+    const { whereClause, params } = construirFiltrosDashboard(req, "t");
     const query = `
       SELECT
-        COALESCE(cat.str_nombre, 'Sin Categoría') AS nombre_categoria,
-        COUNT(t.id) AS total_tickets
-      FROM tickets.tbl_tickets t
-      LEFT JOIN public.cat_datos_maestros cat ON t.categoria_id = cat.id
+        nombre_categoria,
+        COUNT(ticket_id) AS total_tickets
+      FROM tickets.view_tickets_por_categoria t
       ${whereClause}
-      GROUP BY cat.str_nombre
+      GROUP BY nombre_categoria
       ORDER BY total_tickets DESC;
     `;
     const result = await pool.query(query, params);
@@ -296,15 +295,14 @@ router.get("/dashboard/tickets-por-categoria", async (req, res) => {
 
 router.get("/dashboard/distribucion-estados", async (req, res) => {
   try {
-    const { whereClause, params } = construirFiltrosDashboard(req);
+    const { whereClause, params } = construirFiltrosDashboard(req, "t");
     const query = `
       SELECT
-        COALESCE(e.str_nombre, 'Sin Estatus') AS estado,
-        COUNT(t.id) AS total
-      FROM tickets.tbl_tickets t
-      LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
+        estado,
+        COUNT(ticket_id) AS total
+      FROM tickets.view_distribucion_estados t
       ${whereClause}
-      GROUP BY e.str_nombre
+      GROUP BY estado
       ORDER BY total DESC;
     `;
     const result = await pool.query(query, params);
@@ -320,71 +318,7 @@ router.get("/dashboard/distribucion-estados", async (req, res) => {
 
 router.get("/clientes-con-tickets", async (req, res) => {
   try {
-    const query = `
-        SELECT
-            c.id,
-            c.str_cedula AS cedula,
-            CONCAT(c.str_nombre, ' ', c.str_apellido) AS cliente,
-            c.str_telefono AS telefono,
-            c.str_email AS correo,
-            COUNT(vt.id) AS tickets,
-            MAX(vt.created_at) AS ultima_atencion,
-            COALESCE(
-                json_agg(
-                    json_build_object(
-                        'id', vt.id,
-                        'str_ticket', vt.str_ticket,
-                        'tipo_ticket_id', vt.tipo_ticket_id,
-                        'tipo_ticket', vt.tipo_ticket,
-                        'cliente_id', vt.cliente_id,
-                        'cliente_nombre', vt.cliente_nombre,
-                        'cliente_apellido', vt.cliente_apellido,
-                        'cliente_cedula', vt.cliente_cedula,
-                        'cliente_correo', vt.cliente_correo,
-                        'cliente_telefono', vt.cliente_telefono,
-                        'creador_agente_id', vt.creador_agente_id,
-                        'creador_nombre', vt.creador_nombre,
-                        'creador_apellido', vt.creador_apellido,
-                        'creador_correo', vt.creador_correo,
-                        'departamento_id', vt.departamento_id,
-                        'departamento_nombre', vt.departamento_nombre,
-                        'categoria_id', vt.categoria_id,
-                        'categoria_nombre', vt.categoria_nombre,
-                        'prioridad_id', vt.prioridad_id,
-                        'prioridad_nombre', vt.prioridad_nombre,
-                        'estatus_id', vt.estatus_id,
-                        'estatus_nombre', vt.estatus_nombre,
-                        'canal_id', vt.canal_id,
-                        'canal_nombre', vt.canal_nombre,
-                        'str_asunto', vt.str_asunto,
-                        'str_descripcion', vt.str_descripcion,
-                        'int_sla', vt.int_sla,
-                        'dmt_fecha_vencimiento_sla', vt.dmt_fecha_vencimiento_sla,
-                        'dmt_fecha_cierre', vt.dmt_fecha_cierre,
-                        'bool_cumplio_sla', vt.bool_cumplio_sla,
-                        'created_at', vt.created_at,
-                        'updated_at', vt.updated_at,
-                        'usuario_asignado_id', vt.usuario_asignado_id,
-                        'asignado_nombre', vt.asignado_nombre,
-                        'asignado_apellido', vt.asignado_apellido,
-                        'asignado_correo', vt.asignado_correo,
-                        'str_ruta_imagen', vt.str_ruta_imagen,
-                        'str_ruta_video', vt.str_ruta_video,
-                        'str_ruta_audio', vt.str_ruta_audio,
-                        'int_minutos_pausa', vt.int_minutos_pausa,
-                        'tiempo_resolucion', vt.tiempo_resolucion
-                    )
-                ) FILTER (WHERE vt.id IS NOT NULL),
-                '[]'
-            ) AS lista_tickets
-        FROM
-            tickets.tbl_clientes c
-        LEFT JOIN
-            tickets.view_listar_tickets vt ON c.id = vt.cliente_id
-        GROUP BY
-            c.id, c.str_cedula, c.str_nombre, c.str_apellido, c.str_telefono, c.str_email
-        ORDER BY c.created_at DESC;
-    `;
+    const query = `SELECT * FROM tickets.view_clientes_con_tickets ORDER BY created_at DESC;`;
     const { rows } = await pool.query(query);
     return res
       .status(200)
@@ -578,7 +512,7 @@ router.get("/cliente/:cedula", async (req, res) => {
 });
 
 // ==========================================
-// CREAR TICKET CON COMPRESIÓN MULTIMEDIA
+// CREAR TICKET CON COMPRESIÓN MULTIMEDIA Y SECUENCIAL DIARIO
 // ==========================================
 router.post("/crear", upload.any(), async (req, res) => {
   const client = await pool.connect();
@@ -685,36 +619,42 @@ router.post("/crear", upload.any(), async (req, res) => {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
+    const day = now.getDate();
+    const dayStr = String(day).padStart(2, "0");
     const monthStr = String(month).padStart(2, "0");
 
+    // Secuencial independiente por día
     const seqResult = await client.query(
       `
-        INSERT INTO tickets.tbl_secuencias_tickets (int_anio, int_mes, int_ultimo_secuencial)
-        VALUES ($1, $2, 1)
-        ON CONFLICT (int_anio, int_mes)
+        INSERT INTO tickets.tbl_secuencias_tickets (int_anio, int_mes, int_dia, int_ultimo_secuencial)
+        VALUES ($1, $2, $3, 1)
+        ON CONFLICT (int_anio, int_mes, int_dia)
         DO UPDATE SET int_ultimo_secuencial = tickets.tbl_secuencias_tickets.int_ultimo_secuencial + 1
         RETURNING int_ultimo_secuencial;
       `,
-      [year, month],
+      [year, month, day],
     );
 
     const nextNumber = seqResult.rows[0].int_ultimo_secuencial;
-    const str_ticket = `TCK${year}-${monthStr}-${String(nextNumber).padStart(6, "0")}`;
+    const str_ticket = `MEPTK-${year}${monthStr}${dayStr}-${String(nextNumber).padStart(3, "0")}`;
 
-    // 🛑 NUEVO CÁLCULO DE SLA: Consulta exclusiva por prioridad_id en tickets.cat_sla_configuracion
+    // CÁLCULO DE SLA
     const slaQuery = `
-      SELECT tiempo_maximo 
-      FROM tickets.cat_sla_configuracion 
-      WHERE prioridad_id = $1 AND activo = TRUE 
+      SELECT tiempo_maximo
+      FROM tickets.cat_sla_configuracion
+      WHERE prioridad_id = $1 AND activo = TRUE
       LIMIT 1;
     `;
-    const slaRes = await client.query(slaQuery, [prioridad_id ? Number(prioridad_id) : null]);
-    const horasSla = slaRes.rows.length > 0 ? Number(slaRes.rows[0].tiempo_maximo) : 24;
+    const slaRes = await client.query(slaQuery, [
+      prioridad_id ? Number(prioridad_id) : null,
+    ]);
+    const horasSla =
+      slaRes.rows.length > 0 ? Number(slaRes.rows[0].tiempo_maximo) : 24;
+    const fechaVencimientoSla = new Date(
+      Date.now() + horasSla * 60 * 60 * 1000,
+    );
 
-    // Cálculo directo de la fecha de vencimiento en JS para evitar conflictos de tipos en parámetros duplicados
-    const fechaVencimientoSla = new Date(Date.now() + horasSla * 60 * 60 * 1000);
-
-    // 🛑 PROCESAMIENTO Y COMPRESIÓN DE ARCHIVOS (SHARP + FFPEG)
+    // PROCESAMIENTO Y COMPRESIÓN DE ARCHIVOS
     const archivos = req.files || [];
     const { str_ruta_imagen, str_ruta_video, str_ruta_audio } =
       await procesarArchivosConSharp(archivos, str_ticket);
@@ -1007,7 +947,6 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       });
     }
 
-    // 🛑 PROCESAR Y COMPRIMIR ARCHIVOS ADJUNTOS EN ACTUALIZACIÓN
     const archivos = req.files || [];
     let nuevasRutasImagenes = ticketActual.str_ruta_imagen;
     let nuevasRutasVideos = ticketActual.str_ruta_video;
@@ -1079,18 +1018,18 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
       }
     }
 
-    // 🛑 NUEVO CÁLCULO DE SLA EN ACTUALIZACIÓN: Exclusivo por prioridad_id en tickets.cat_sla_configuracion
     const prioridadAUtilizar =
       nuevaPrioridad !== null ? nuevaPrioridad : ticketActual.prioridad_id;
-      
+
     const slaQuery = `
-      SELECT tiempo_maximo 
-      FROM tickets.cat_sla_configuracion 
-      WHERE prioridad_id = $1 AND activo = TRUE 
+      SELECT tiempo_maximo
+      FROM tickets.cat_sla_configuracion
+      WHERE prioridad_id = $1 AND activo = TRUE
       LIMIT 1;
     `;
     const slaRes = await client.query(slaQuery, [prioridadAUtilizar]);
-    const horasSla = slaRes.rows.length > 0 ? Number(slaRes.rows[0].tiempo_maximo) : 24;
+    const horasSla =
+      slaRes.rows.length > 0 ? Number(slaRes.rows[0].tiempo_maximo) : 24;
 
     if (str_descripcion_respuesta && str_descripcion_respuesta.trim() !== "") {
       await client.query(

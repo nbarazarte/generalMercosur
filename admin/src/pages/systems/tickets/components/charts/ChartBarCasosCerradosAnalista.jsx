@@ -45,7 +45,7 @@ export function ChartBarCasosCerradosAnalista({ data, isDark, loading }) {
         <div style={{ textAlign: "center", paddingTop: 100 }}>Cargando gráfico...</div>
       ) : !data || data.length === 0 ? (
         <div style={{ textAlign: "center", paddingTop: 100, color: "var(--merco-muted)", fontSize: "13px" }}>
-          Sin casos cerrados con los filtros seleccionados.
+          Sin tickets cerrados con los filtros seleccionados.
         </div>
       ) : (
         <canvas ref={canvasRef} />

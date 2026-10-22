@@ -602,7 +602,7 @@ export function useTickets() {
         `${t.creador_nombre || ""} ${t.creador_apellido || ""}`.trim() || "",
         "", //falta la categoria
         formatearTextoFecha(t.created_at),
-        "-", //falta primera respuesta
+        formatearTextoFecha(t.created_at),
         t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-", //Resolucion la misma de cierre
         t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-",
 
@@ -632,7 +632,7 @@ export function useTickets() {
 
     const fechaActual = new Date().toISOString().slice(0, 10);
     link.setAttribute("href", url);
-    link.setAttribute("download", `reporte_tickets_${fechaActual}.csv`);
+    link.setAttribute("download", `mep-tickets-${fechaActual}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -37,7 +37,7 @@ export function ChartBarCategoria({ data, isDark, loading }) {
         <div style={{ textAlign: "center", paddingTop: 100 }}>Cargando gráfico...</div>
       ) : !data || data.length === 0 ? (
         <div style={{ textAlign: "center", paddingTop: 100, color: "var(--merco-muted)", fontSize: "13px" }}>
-          Sin volumen de casos por categoría con los filtros seleccionados.
+          Sin volumen de tickets por categoría con los filtros seleccionados.
         </div>
       ) : (
         <canvas ref={canvasRef} />

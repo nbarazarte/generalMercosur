@@ -37,7 +37,6 @@ function useIsDarkMode() {
 }
 
 export default function DashboardTickets() {
-  const navigate = useNavigate();
   const isDark = useIsDarkMode();
   const {
     loading,
@@ -203,7 +202,7 @@ export default function DashboardTickets() {
                   color: "var(--merco-text)",
                 }}
               >
-                Volumen de Casos por Categoría
+                Volumen de Tickets por Categoría
               </span>
             </div>
             <ChartBarCategoria
@@ -256,7 +255,7 @@ export default function DashboardTickets() {
                     color: "var(--merco-text)",
                   }}
                 >
-                  Casos creados por analista
+                  Tickets creados por analista
                 </span>
               </div>
               <ChartBarAnalistaCreador
@@ -275,7 +274,7 @@ export default function DashboardTickets() {
                     color: "var(--merco-text)",
                   }}
                 >
-                  Casos cerrados por analista
+                  Tickets cerrados por analista
                 </span>{" "}
                 <small style={{ color: "var(--merco-muted)" }}>
                   rendimiento de cierre
