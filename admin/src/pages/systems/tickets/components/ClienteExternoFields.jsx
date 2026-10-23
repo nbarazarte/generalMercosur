@@ -40,19 +40,42 @@ export function ClienteExternoFields({
           <label style={labelStyle}>Cédula del Cliente</label>
           <input
             type="text"
-            inputMode="numeric"
-            maxLength={8}
+            maxLength={9}
             value={strCedulaCliente}
             onChange={(e) => {
-              const valorLimpio = e.target.value.replace(/\D/g, "").slice(0, 8);
+              const inputRaw = e.target.value.toLowerCase();
+
+              // Si está vacío, limpiamos el estado
+              if (!inputRaw.trim()) {
+                setStrCedulaCliente("");
+                if (clienteBloqueado) {
+                  setClienteBloqueado(false);
+                  setClienteId(null);
+                }
+                return;
+              }
+
+              // Detectar si el usuario especificó 'e' o 'v' al inicio
+              let prefijo = "v";
+              if (inputRaw.startsWith("e")) {
+                prefijo = "e";
+              }
+
+              // Extraer solo los números y limitar a máximo 8 dígitos
+              const numeros = inputRaw.replace(/\D/g, "").slice(0, 8);
+
+              // Formar la cédula combinando la letra inicial y los números
+              const valorLimpio = `${prefijo}${numeros}`;
+
               setStrCedulaCliente(valorLimpio);
+
               if (clienteBloqueado) {
                 setClienteBloqueado(false);
                 setClienteId(null);
               }
             }}
             onBlur={handleCedulaBlur}
-            placeholder="Ej. 12345678"
+            placeholder="Ej. v16000111 o e8123456"
             required
             style={inputStyle}
           />

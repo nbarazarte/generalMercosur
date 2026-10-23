@@ -348,7 +348,7 @@ router.get("/dashboard/ultimos-tickets", async (req, res) => {
         t.usuario_asignado_id
       FROM tickets.tbl_tickets t
       LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
-      LEFT JOIN tickets.tbl_clientes c ON t.cliente_id = c.id
+      LEFT JOIN tickets.tbl_clientes_naturales c ON t.cliente_id = c.id
       ${whereClause}
       ORDER BY t.created_at DESC
       LIMIT 10;
@@ -493,7 +493,7 @@ router.get("/datos-maestros", async (req, res) => {
 router.get("/cliente/:cedula", async (req, res) => {
   const { cedula } = req.params;
   try {
-    const query = `SELECT id, str_cedula, str_nombre, str_apellido, str_telefono, str_email FROM tickets.tbl_clientes WHERE str_cedula = $1 LIMIT 1;`;
+    const query = `SELECT id, str_cedula, str_nombre, str_apellido, str_telefono, str_email FROM tickets.tbl_clientes_naturales WHERE str_cedula = $1 LIMIT 1;`;
     const resultado = await pool.query(query, [cedula]);
 
     if (resultado.rows.length > 0) {
@@ -580,7 +580,7 @@ router.post("/crear", upload.any(), async (req, res) => {
       : null;
 
     if (!clienteFinalId && str_cedula_cliente) {
-      const queryClienteCheck = `SELECT id FROM tickets.tbl_clientes WHERE str_cedula = $1 LIMIT 1;`;
+      const queryClienteCheck = `SELECT id FROM tickets.tbl_clientes_naturales WHERE str_cedula = $1 LIMIT 1;`;
       const clienteRes = await client.query(queryClienteCheck, [
         str_cedula_cliente,
       ]);
@@ -588,8 +588,8 @@ router.post("/crear", upload.any(), async (req, res) => {
       if (clienteRes.rows.length > 0) {
         clienteFinalId = clienteRes.rows[0].id;
         const queryUpdateCliente = `
-          UPDATE tickets.tbl_clientes
-          SET str_nombre = $1, str_apellido = $2, str_email = $3, str_telefono = $4, updated_at = CURRENT_TIMESTAMP
+          UPDATE tickets.tbl_clientes_naturales
+          SET str_nombre = $1, str_apellido = $2, str_email = $3, str_telefono = $4, dmt_actualizado_en = CURRENT_TIMESTAMP
           WHERE id = $5;
         `;
         await client.query(queryUpdateCliente, [
@@ -601,8 +601,8 @@ router.post("/crear", upload.any(), async (req, res) => {
         ]);
       } else {
         const queryInsertCliente = `
-          INSERT INTO tickets.tbl_clientes (str_cedula, str_nombre, str_apellido, str_email, str_telefono, created_at, updated_at)
-          VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+          INSERT INTO tickets.tbl_clientes_naturales (str_cedula, str_nombre, str_apellido, str_email, str_telefono, dmt_actualizado_en)
+          VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
           RETURNING id;
         `;
         const nuevoClienteRes = await client.query(queryInsertCliente, [
