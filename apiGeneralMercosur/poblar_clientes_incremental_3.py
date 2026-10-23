@@ -51,16 +51,16 @@ def limpiar_texto(valor):
 
 
 def verificar_estructura_db(cursor):
-    """Crea las dos tablas independientes: una para naturales y otra para jurídicos."""
+    """Crea las dos tablas independientes y asegura las restricciones únicas para evitar duplicados."""
     logging.info("Verificando la estructura de las tablas en la base de datos...")
     cursor.execute(
         """
         CREATE SCHEMA IF NOT EXISTS tickets;
 
-        -- Tabla para clientes naturales con created_at y updated_at
+        -- Tabla para clientes naturales
         CREATE TABLE IF NOT EXISTS tickets.tbl_clientes_naturales (
             id SERIAL PRIMARY KEY,
-            str_cedula VARCHAR(50),
+            str_cedula VARCHAR(50) UNIQUE,
             str_nombre TEXT,
             str_apellido TEXT,
             str_telefono VARCHAR(50),
@@ -74,7 +74,7 @@ def verificar_estructura_db(cursor):
         -- Tabla para clientes jurídicos
         CREATE TABLE IF NOT EXISTS tickets.tbl_clientes_juridicos (
             id SERIAL PRIMARY KEY,
-            str_rif VARCHAR(50),
+            str_rif VARCHAR(50) UNIQUE,
             str_razon_social TEXT,
             str_telefono VARCHAR(50),
             str_email VARCHAR(255),
@@ -83,7 +83,9 @@ def verificar_estructura_db(cursor):
         );
     """
     )
-    logging.info("Tablas 'tbl_clientes_naturales' y 'tbl_clientes_juridicos' verificadas correctamente.")
+    logging.info(
+        "Tablas 'tbl_clientes_naturales' y 'tbl_clientes_juridicos' verificadas correctamente."
+    )
 
 
 def sincronizar_clientes_incremental():
@@ -119,7 +121,7 @@ def sincronizar_clientes_incremental():
 
         for reg in registros:
             tipo = limpiar_texto(reg.get("tipo"))
-            
+
             if tipo == "natural":
                 tuplas_naturales.append(
                     (
@@ -142,25 +144,44 @@ def sincronizar_clientes_incremental():
                     )
                 )
 
-        # Inserción masiva para Naturales
+        # Inserción masiva con UPSERT para Naturales (Evita duplicados y actualiza cambios)
         if tuplas_naturales:
             query_naturales = """
                 INSERT INTO tickets.tbl_clientes_naturales
                 (str_cedula, str_nombre, str_apellido, str_telefono, str_email, fuentes)
-                VALUES (%s, %s, %s, %s, %s, %s);
+                VALUES (%s, %s, %s, %s, %s, %s)
+                ON CONFLICT (str_cedula)
+                DO UPDATE SET
+                    str_nombre = EXCLUDED.str_nombre,
+                    str_apellido = EXCLUDED.str_apellido,
+                    str_telefono = EXCLUDED.str_telefono,
+                    str_email = EXCLUDED.str_email,
+                    fuentes = EXCLUDED.fuentes,
+                    updated_at = CURRENT_TIMESTAMP;
             """
             cursor.executemany(query_naturales, tuplas_naturales)
-            logging.info(f"Insertados {len(tuplas_naturales)} registros en tbl_clientes_naturales.")
+            logging.info(
+                f"Sincronizados {len(tuplas_naturales)} registros en tbl_clientes_naturales."
+            )
 
-        # Inserción masiva para Jurídicos
+        # Inserción masiva con UPSERT para Jurídicos (Evita duplicados y actualiza cambios)
         if tuplas_juridicas:
             query_juridicos = """
                 INSERT INTO tickets.tbl_clientes_juridicos
                 (str_rif, str_razon_social, str_telefono, str_email, fuentes)
-                VALUES (%s, %s, %s, %s, %s);
+                VALUES (%s, %s, %s, %s, %s)
+                ON CONFLICT (str_rif)
+                DO UPDATE SET
+                    str_razon_social = EXCLUDED.str_razon_social,
+                    str_telefono = EXCLUDED.str_telefono,
+                    str_email = EXCLUDED.str_email,
+                    fuentes = EXCLUDED.fuentes,
+                    dmt_actualizado_en = CURRENT_TIMESTAMP;
             """
             cursor.executemany(query_juridicos, tuplas_juridicas)
-            logging.info(f"Insertados {len(tuplas_juridicas)} registros en tbl_clientes_juridicos.")
+            logging.info(
+                f"Sincronizados {len(tuplas_juridicas)} registros en tbl_clientes_juridicos."
+            )
 
         conn.commit()
 
