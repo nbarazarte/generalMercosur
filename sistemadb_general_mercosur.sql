@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict gk6wZiVPcT4UdUi9BUVQbgMdeEEYwZxZ6cho1UXSVk6NPo1yWlyuGVbXBBKnYVV
+\restrict f89Vfzukf1xZtrV2vsztA90oPrMCgIaUccoM53CwjMrz6Wp4RvlgEBTX2m3cUXy
 
 -- Dumped from database version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 
--- Started on 2026-10-22 16:37:16 -04
+-- Started on 2026-10-22 16:37:47 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -61140,11 +61140,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT tbl_tickets_tipo_ticket_id_fkey FOREIGN KEY (tipo_ticket_id) REFERENCES public.cat_datos_maestros(id);
 
 
--- Completed on 2026-10-22 16:37:16 -04
+-- Completed on 2026-10-22 16:37:47 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict gk6wZiVPcT4UdUi9BUVQbgMdeEEYwZxZ6cho1UXSVk6NPo1yWlyuGVbXBBKnYVV
+\unrestrict f89Vfzukf1xZtrV2vsztA90oPrMCgIaUccoM53CwjMrz6Wp4RvlgEBTX2m3cUXy
 
