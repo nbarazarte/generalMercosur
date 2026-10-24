@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict cAwJSCRsKllff3ASrOdXos7JYDwmTxFVixxYI8TZeTmyrv7EXiSycJWudaI7jXc
+\restrict nqxwxcTETEPLRBp6BSMloxYu7kWiBqRgjNz8qQnz2It7GqWG9OPDfMDkXuJkWQG
 
 -- Dumped from database version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 
--- Started on 2026-10-24 02:02:10 -04
+-- Started on 2026-10-24 02:03:36 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -9908,6 +9908,7 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 1	7610	97183	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-24 02:00:00.008484-04	2026-10-24 02:00:00.009743-04
 1	7611	97616	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-24 02:01:00.00964-04	2026-10-24 02:01:00.011277-04
 1	7612	97902	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-24 02:02:00.009563-04	2026-10-24 02:02:00.011142-04
+1	7613	98095	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-24 02:03:00.010037-04	2026-10-24 02:03:00.011564-04
 \.
 
 
@@ -61145,7 +61146,7 @@ SELECT pg_catalog.setval('cron.jobid_seq', 1, true);
 -- Name: runid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
 
-SELECT pg_catalog.setval('cron.runid_seq', 7612, true);
+SELECT pg_catalog.setval('cron.runid_seq', 7613, true);
 
 
 --
@@ -62124,11 +62125,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT tbl_tickets_tipo_ticket_id_fkey FOREIGN KEY (tipo_ticket_id) REFERENCES public.cat_datos_maestros(id);
 
 
--- Completed on 2026-10-24 02:02:10 -04
+-- Completed on 2026-10-24 02:03:36 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict cAwJSCRsKllff3ASrOdXos7JYDwmTxFVixxYI8TZeTmyrv7EXiSycJWudaI7jXc
+\unrestrict nqxwxcTETEPLRBp6BSMloxYu7kWiBqRgjNz8qQnz2It7GqWG9OPDfMDkXuJkWQG
 
