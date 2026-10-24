@@ -27,6 +27,8 @@ export function TicketsFiltros({
   setFMinuto,
   fBuscar,
   setFBuscar,
+  fTipoPersona,
+  setFTipoPersona,
   tiposTicket,
   listaEstatus,
   listaDepartamentos,
@@ -38,6 +40,14 @@ export function TicketsFiltros({
   exportarExcel,
   filtroStyle,
 }) {
+  const tipoTicketSeleccionadoObj = tiposTicket.find(
+    (t) => String(t.id) === String(fTipoTicket),
+  );
+  const nombreTipoTicket = tipoTicketSeleccionadoObj?.str_nombre || "";
+  const esExternoSeleccionado = nombreTipoTicket
+    .toLowerCase()
+    .includes("externo");
+
   return (
     <div
       className="ma-toolbar"
@@ -59,7 +69,15 @@ export function TicketsFiltros({
       >
         <select
           value={fTipoTicket}
-          onChange={(e) => setFTipoTicket(e.target.value)}
+          onChange={(e) => {
+            setFTipoTicket(e.target.value);
+            const selectedObj = tiposTicket.find(
+              (t) => String(t.id) === String(e.target.value),
+            );
+            if (!selectedObj?.str_nombre.toLowerCase().includes("externo")) {
+              setFTipoPersona("");
+            }
+          }}
           style={filtroStyle}
         >
           <option value="">Todos los tickets</option>
@@ -70,7 +88,20 @@ export function TicketsFiltros({
           ))}
         </select>
 
-        {/* SELECT DE CATEGORÍA DINÁMICA SEGÚN TIPO DE TICKET */}
+        {/* SELECT DE TIPO DE PERSONA (USANDO EL ESTILO ESTÁNDAR SIN BORDE NARANJA) */}
+        {esExternoSeleccionado && (
+          <select
+            value={fTipoPersona}
+            onChange={(e) => setFTipoPersona(e.target.value)}
+            style={filtroStyle}
+          >
+            <option value="">Todos los tipos de persona</option>
+            <option value="natural">Persona Natural</option>
+            <option value="juridico">Persona Jurídica</option>
+          </select>
+        )}
+
+        {/* SELECT DE CATEGORÍA DINÁMICA */}
         <select
           value={fCategoria}
           onChange={(e) => setFCategoria(e.target.value)}
@@ -171,10 +202,10 @@ export function TicketsFiltros({
             }}
             style={filtroStyle}
           >
-            <option value="">Filtrar por</option>
-            <option value="creacion">Fecha de creación</option>
-            <option value="vencimiento">Fecha de vencimiento</option>
-            <option value="cierre">Fecha de cierre</option>
+            <option value="">Filtrar por Fecha de</option>
+            <option value="creacion">creación</option>
+            <option value="vencimiento">vencimiento</option>
+            <option value="cierre">cierre</option>
           </select>
 
           <input
@@ -253,7 +284,7 @@ export function TicketsFiltros({
           />
           <input
             type="text"
-            placeholder="Buscar por N° Ticket, creador, cédula, nombre o asunto"
+            placeholder="Buscar por N° Ticket, creador, cédula, RIF, nombre o asunto"
             value={fBuscar}
             onChange={(e) => setFBuscar(e.target.value)}
             style={{ ...filtroStyle, width: "100%", paddingLeft: "36px" }}

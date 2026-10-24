@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 import copy from "copy-to-clipboard";
 import axiosTickets from "../../../../api/axiosTickets";
 import { useSelector } from "react-redux";
-//import formatearFechaHora from "../../../../components/formatearFechaHora";
 import { useCreateBlockNote } from "@blocknote/react";
 import { es } from "@blocknote/core/locales";
 
@@ -37,6 +36,7 @@ export function useTickets() {
   const [fDepartamento, setFDepartamento] = useState("");
   const [fCategoria, setFCategoria] = useState("");
   const [fAgente, setFAgente] = useState("");
+  const [fTipoPersona, setFTipoPersona] = useState(""); // Nuevo estado para tipo de persona
 
   const [fTipoFecha, setFTipoFecha] = useState("");
   const [fFechaCalendario, setFFechaCalendario] = useState("");
@@ -57,7 +57,6 @@ export function useTickets() {
   const [errorModal, setErrorModal] = useState("");
   const [toast, setToast] = useState(null);
 
-  // Detección de Modo Oscuro para BlockNote
   const [isDarkMode, setIsDarkMode] = useState(
     () =>
       document.documentElement.classList.contains("dark") ||
@@ -84,7 +83,6 @@ export function useTickets() {
     return () => observer.disconnect();
   }, []);
 
-  // Configuración de BlockNote para la respuesta
   const uploadFileForReply = async (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -131,9 +129,7 @@ export function useTickets() {
       let deptosTemp = [];
       let usuariosTemp = [];
 
-      // 1. Cargar Tickets
       try {
-        //const resTickets = await axiosTickets.get("/listar");
         const resTickets = await axiosTickets.get("/listar", {
           params: { rol: currentUserRole },
         });
@@ -146,7 +142,6 @@ export function useTickets() {
         console.error("Error al cargar /listar:", err);
       }
 
-      // 2. Cargar Datos Maestros
       try {
         const resMaestros = await axiosTickets.get("/datos-maestros");
         if (resMaestros.data && resMaestros.data.success) {
@@ -169,7 +164,6 @@ export function useTickets() {
         console.error("Error al cargar /datos-maestros:", err);
       }
 
-      // 3. Cargar Departamentos y Usuarios
       try {
         const resDeptUsers = await axiosTickets.get("/departamentos-usuarios");
         if (resDeptUsers.data && resDeptUsers.data.success) {
@@ -180,7 +174,7 @@ export function useTickets() {
         }
       } catch (err) {
         console.warn(
-          "Endpoint /departamentos-usuarios falló, extrayendo de catálogos o respaldo...",
+          "Endpoint /departamentos-usuarios falló, extrayendo de catálogos...",
           err,
         );
       }
@@ -309,7 +303,10 @@ export function useTickets() {
   }, [fTipoTicket, categoriasFiltradas]);
 
   useEffect(() => {
-    if (esFiltroInterno) setFCanal("");
+    if (esFiltroInterno) {
+      setFCanal("");
+      setFTipoPersona(""); // Limpiar tipo de persona si es interno
+    }
   }, [esFiltroInterno]);
 
   useEffect(() => {
@@ -323,6 +320,7 @@ export function useTickets() {
     fDepartamento,
     fCategoria,
     fAgente,
+    fTipoPersona,
     fTipoFecha,
     fFechaCalendario,
     fHora,
@@ -338,6 +336,7 @@ export function useTickets() {
     setFDepartamento("");
     setFCategoria("");
     setFAgente("");
+    setFTipoPersona("");
     setFTipoFecha("");
     setFFechaCalendario("");
     setFHora("");
@@ -472,6 +471,19 @@ export function useTickets() {
       if (fAgente && Number(t.usuario_asignado_id) !== Number(fAgente))
         return false;
 
+      // FILTRADO POR TIPO DE PERSONA (Natural / Jurídico)
+      if (fTipoPersona) {
+        const rifEmpresa = t.cliente_rif || t.solicitante_documento || "";
+        const esJuridico = Boolean(
+          t.cliente_juridico_id ||
+          t.cliente_razon_social ||
+          (rifEmpresa && String(rifEmpresa).toLowerCase().startsWith("j")),
+        );
+
+        if (fTipoPersona === "juridico" && !esJuridico) return false;
+        if (fTipoPersona === "natural" && esJuridico) return false;
+      }
+
       if (fTipoFecha && fFechaCalendario) {
         let fechaTarget = null;
         if (fTipoFecha === "creacion") fechaTarget = t.created_at;
@@ -496,7 +508,7 @@ export function useTickets() {
       if (fBuscar) {
         const q = fBuscar.toLowerCase().trim();
         const texto =
-          `${t.str_ticket || ""} ${t.creador_nombre || ""} ${t.creador_apellido || ""} ${t.cliente_nombre || ""} ${t.cliente_cedula || ""} ${t.str_asunto || ""}`.toLowerCase();
+          `${t.str_ticket || ""} ${t.creador_nombre || ""} ${t.creador_apellido || ""} ${t.solicitante_nombre || ""} ${t.solicitante_documento || ""} ${t.str_asunto || ""}`.toLowerCase();
         if (!texto.includes(q)) return false;
       }
       return true;
@@ -511,6 +523,7 @@ export function useTickets() {
     fCanal,
     fDepartamento,
     fAgente,
+    fTipoPersona,
     fTipoFecha,
     fFechaCalendario,
     fHora,
@@ -559,15 +572,14 @@ export function useTickets() {
       "Estado",
       "Prioridad",
       "Canal",
-      "RIF",
-      "Cliente",
+      "Documento / RIF",
+      "Cliente / Empresa",
       "Operador",
-      "Categoria", //falta la categoria
+      "Categoria",
       "Creado",
-      "Primera Respuesta", //falta primera respuesta
+      "Primera Respuesta",
       "Resolucion",
       "Cierre",
-      // De aqui en adelante no estan en el reporte que emite el admin
       "Vencimiento SLA",
       "SLA (hrs)",
       "Departamento",
@@ -581,12 +593,17 @@ export function useTickets() {
       const esExterno =
         tipoLower.includes("externo") || tipoLower.includes("app");
       const clienteNombre =
-        esExterno && t.cliente_nombre
-          ? `${t.cliente_nombre} ${t.cliente_apellido || ""}`.trim()
+        esExterno && (t.solicitante_nombre || t.cliente_nombre)
+          ? (
+              t.solicitante_nombre ||
+              `${t.cliente_nombre} ${t.cliente_apellido || ""}`
+            ).trim()
           : esExterno
             ? "Cliente Externo"
             : "N/A";
-      const clienteCedula = esExterno ? t.cliente_cedula || "—" : "N/A";
+      const clienteDoc = esExterno
+        ? t.solicitante_documento || t.cliente_cedula || t.cliente_rif || "—"
+        : "N/A";
       const asignado = t.asignado_nombre
         ? `${t.asignado_nombre} ${t.asignado_apellido || ""}`.trim()
         : "Sin asignar";
@@ -597,16 +614,14 @@ export function useTickets() {
         t.estatus_nombre || "",
         t.prioridad_nombre || "",
         t.canal_nombre || "",
-        clienteCedula,
+        clienteDoc,
         clienteNombre,
         `${t.creador_nombre || ""} ${t.creador_apellido || ""}`.trim() || "",
-        "", //falta la categoria
+        t.nombre_categoria || "",
         formatearTextoFecha(t.created_at),
         formatearTextoFecha(t.created_at),
-        t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-", //Resolucion la misma de cierre
         t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-",
-
-        // De aqui en adelante no estan en el reporte que emite el admin
+        t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-",
         t.dmt_fecha_vencimiento_sla
           ? formatearTextoFecha(t.dmt_fecha_vencimiento_sla)
           : "",
@@ -700,6 +715,8 @@ export function useTickets() {
     setFCategoria,
     fAgente,
     setFAgente,
+    fTipoPersona,
+    setFTipoPersona,
     fTipoFecha,
     setFTipoFecha,
     fFechaCalendario,

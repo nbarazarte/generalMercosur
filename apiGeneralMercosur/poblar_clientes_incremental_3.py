@@ -79,7 +79,9 @@ def verificar_estructura_db(cursor):
             str_telefono VARCHAR(50),
             str_email VARCHAR(255),
             fuentes JSONB,
-            dmt_actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            dmt_actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     """
     )

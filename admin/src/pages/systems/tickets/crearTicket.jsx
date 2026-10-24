@@ -22,6 +22,8 @@ export default function CrearTicket() {
     setDepartamentoId,
     usuarioId,
     setUsuarioId,
+    tipoPersonaCliente,
+    setTipoPersonaCliente,
     strCedulaCliente,
     setStrCedulaCliente,
     strNombreCliente,
@@ -32,11 +34,22 @@ export default function CrearTicket() {
     setStrTelefonoCliente,
     strCorreoCliente,
     setStrCorreoCliente,
+    strRifCliente,
+    setStrRifCliente,
+    strRazonSocialCliente,
+    setStrRazonSocialCliente,
+    strTelefonoJuridicoCliente,
+    setStrTelefonoJuridicoCliente,
+    strCorreoJuridicoCliente,
+    setStrCorreoJuridicoCliente,
     correoInvalido,
     setCorreoInvalido,
     setClienteId,
     clienteBloqueado,
     setClienteBloqueado,
+    clienteJuridicoBloqueado,
+    setClienteJuridicoBloqueado,
+    setClienteJuridicoId,
     correoInputRef,
     listaDepartamentos,
     departamentosActuales,
@@ -64,6 +77,7 @@ export default function CrearTicket() {
     handleGenerarConIA,
     handleCorreoBlur,
     handleCedulaBlur,
+    handleRifBlur,
     handleSubmit,
     obtenerIconoPorTipo,
     validarCorreo,
@@ -200,7 +214,7 @@ export default function CrearTicket() {
               <span>
                 {esTipoInterno()
                   ? "Para crear Tickets internos de Mercosur"
-                  : "Para crear tickets referentes a la APP de Mercosur y sus clientes"}
+                  : "Para crear tickets referentes a la APP de Mercosur y sus clientes (Naturales o Jurídicos)"}
               </span>
             </div>
 
@@ -240,6 +254,8 @@ export default function CrearTicket() {
 
               {esTipoExterno() && (
                 <ClienteExternoFields
+                  tipoPersonaCliente={tipoPersonaCliente}
+                  setTipoPersonaCliente={setTipoPersonaCliente}
                   strCedulaCliente={strCedulaCliente}
                   setStrCedulaCliente={setStrCedulaCliente}
                   clienteBloqueado={clienteBloqueado}
@@ -254,6 +270,18 @@ export default function CrearTicket() {
                   setStrApellidoCliente={setStrApellidoCliente}
                   strCorreoCliente={strCorreoCliente}
                   setStrCorreoCliente={setStrCorreoCliente}
+                  strRifCliente={strRifCliente}
+                  setStrRifCliente={setStrRifCliente}
+                  clienteJuridicoBloqueado={clienteJuridicoBloqueado}
+                  setClienteJuridicoBloqueado={setClienteJuridicoBloqueado}
+                  setClienteJuridicoId={setClienteJuridicoId}
+                  handleRifBlur={handleRifBlur}
+                  strRazonSocialCliente={strRazonSocialCliente}
+                  setStrRazonSocialCliente={setStrRazonSocialCliente}
+                  strTelefonoJuridicoCliente={strTelefonoJuridicoCliente}
+                  setStrTelefonoJuridicoCliente={setStrTelefonoJuridicoCliente}
+                  strCorreoJuridicoCliente={strCorreoJuridicoCliente}
+                  setStrCorreoJuridicoCliente={setStrCorreoJuridicoCliente}
                   correoInvalido={correoInvalido}
                   setCorreoInvalido={setCorreoInvalido}
                   validarCorreo={validarCorreo}

@@ -13,15 +13,29 @@ export function useCrearTicket() {
   const [departamentoId, setDepartamentoId] = useState("");
   const [usuarioId, setUsuarioId] = useState("");
 
+  // Selector de tipo de persona para tickets externos
+  const [tipoPersonaCliente, setTipoPersonaCliente] = useState("natural");
+
+  // Campos Persona Natural
   const [strCedulaCliente, setStrCedulaCliente] = useState("");
   const [strNombreCliente, setStrNombreCliente] = useState("");
   const [strApellidoCliente, setStrApellidoCliente] = useState("");
   const [strTelefonoCliente, setStrTelefonoCliente] = useState("");
   const [strCorreoCliente, setStrCorreoCliente] = useState("");
-  const [correoInvalido, setCorreoInvalido] = useState(false);
-
   const [clienteId, setClienteId] = useState(null);
   const [clienteBloqueado, setClienteBloqueado] = useState(false);
+
+  // Campos Persona Jurídica
+  const [strRifCliente, setStrRifCliente] = useState("");
+  const [strRazonSocialCliente, setStrRazonSocialCliente] = useState("");
+  const [strTelefonoJuridicoCliente, setStrTelefonoJuridicoCliente] =
+    useState("");
+  const [strCorreoJuridicoCliente, setStrCorreoJuridicoCliente] = useState("");
+  const [clienteJuridicoId, setClienteJuridicoId] = useState(null);
+  const [clienteJuridicoBloqueado, setClienteJuridicoBloqueado] =
+    useState(false);
+
+  const [correoInvalido, setCorreoInvalido] = useState(false);
   const correoInputRef = useRef(null);
 
   const [listaDepartamentos, setListaDepartamentos] = useState([]);
@@ -80,7 +94,6 @@ export function useCrearTicket() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Cargar Departamentos y Usuarios
         try {
           const resDeptUsers = await axiosTickets.get(
             "/departamentos-usuarios",
@@ -93,7 +106,6 @@ export function useCrearTicket() {
           console.error("Error al cargar /departamentos-usuarios:", err);
         }
 
-        // 2. Cargar Datos Maestros (Tipos, Categorías, Canales, Prioridades)
         try {
           const resMaestros = await axiosTickets.get("/datos-maestros");
           if (resMaestros.data && resMaestros.data.success) {
@@ -216,7 +228,6 @@ export function useCrearTicket() {
     if (!editor) return;
     setStrDescripcion(await obtenerContenidoHTML());
 
-    // Sincronizar archivos adjuntos: verificar qué imágenes/archivos siguen vivos en los bloques del editor
     const bloquesActuales = editor.document;
     const urlsEnEditor = new Set();
 
@@ -224,17 +235,13 @@ export function useCrearTicket() {
       if (bloque.type === "image" && bloque.props?.url) {
         urlsEnEditor.add(bloque.props.url);
       }
-      // Por si maneja otros tipos de bloques multimedia o attachments
       if (bloque.props?.url) {
         urlsEnEditor.add(bloque.props.url);
       }
     });
 
-    // Si hay archivos en el estado que ya no están en el editor, los filtramos
     setArchivosAdjuntos((prev) =>
       prev.filter((archivo) => {
-        // Si el archivo usa su data base64 como URL o nombre, verificamos si sigue en el editor
-        // O si el editor contiene la data base64 del archivo
         return (
           urlsEnEditor.has(archivo.data) ||
           Array.from(urlsEnEditor).some((url) => url.includes(archivo.name))
@@ -253,6 +260,9 @@ export function useCrearTicket() {
     setPrioridadId("");
     setDepartamentoId("");
     setUsuarioId("");
+    setTipoPersonaCliente("natural");
+
+    // Limpiar Naturales
     setStrCedulaCliente("");
     setStrNombreCliente("");
     setStrApellidoCliente("");
@@ -260,6 +270,15 @@ export function useCrearTicket() {
     setStrCorreoCliente("");
     setClienteId(null);
     setClienteBloqueado(false);
+
+    // Limpiar Jurídicos
+    setStrRifCliente("");
+    setStrRazonSocialCliente("");
+    setStrTelefonoJuridicoCliente("");
+    setStrCorreoJuridicoCliente("");
+    setClienteJuridicoId(null);
+    setClienteJuridicoBloqueado(false);
+
     setCorreoInvalido(false);
     setArchivosAdjuntos([]);
     setStrDescripcion("");
@@ -293,7 +312,10 @@ export function useCrearTicket() {
     const urlIA = import.meta.env.VITE_URL_API_OLLAMA;
     const modelo = import.meta.env.VITE_URL_MODELO_OLLAMA;
 
-    const infoCliente = `Cliente: ${strNombreCliente} ${strApellidoCliente}, Cédula/RIF: ${strCedulaCliente}, Teléfono: ${strTelefonoCliente}, Correo: ${strCorreoCliente}`;
+    const infoCliente =
+      tipoPersonaCliente === "juridico"
+        ? `Cliente Jurídico: ${strRazonSocialCliente}, RIF: ${strRifCliente}, Teléfono: ${strTelefonoJuridicoCliente}, Correo: ${strCorreoJuridicoCliente}`
+        : `Cliente Natural: ${strNombreCliente} ${strApellidoCliente}, Cédula: ${strCedulaCliente}, Teléfono: ${strTelefonoCliente}, Correo: ${strCorreoCliente}`;
 
     const nombresArchivos = archivosAdjuntos.map((f) => f.name).join(", ");
     const infoArchivos = nombresArchivos
@@ -359,7 +381,11 @@ REGLAS ABSOLUTAS:
 
   const handleCorreoBlur = () => {
     if (!esTipoExterno()) return;
-    const valor = strCorreoCliente.trim();
+    const correoEvaluar =
+      tipoPersonaCliente === "juridico"
+        ? strCorreoJuridicoCliente
+        : strCorreoCliente;
+    const valor = (correoEvaluar || "").trim();
     if (valor && !validarCorreo(valor)) {
       setCorreoInvalido(true);
     } else {
@@ -411,6 +437,47 @@ REGLAS ABSOLUTAS:
     }
   };
 
+  const handleRifBlur = async () => {
+    const rif = strRifCliente.trim();
+    if (!rif || rif.length < 6) {
+      setClienteJuridicoId(null);
+      setClienteJuridicoBloqueado(false);
+      setStrRazonSocialCliente("");
+      setStrTelefonoJuridicoCliente("");
+      setStrCorreoJuridicoCliente("");
+      return;
+    }
+
+    try {
+      const response = await axiosTickets.get(`/cliente-juridico/${rif}`);
+      if (response.data.success && response.data.existe) {
+        const cli = response.data.cliente;
+        setClienteJuridicoId(cli.id);
+        setStrRazonSocialCliente(cli.str_razon_social || "");
+        setStrTelefonoJuridicoCliente(cli.str_telefono || "");
+        setStrCorreoJuridicoCliente(cli.str_email || "");
+        setClienteJuridicoBloqueado(true);
+        if (validarCorreo(cli.str_email || "")) {
+          setCorreoInvalido(false);
+        }
+        showToast(
+          "¡Cliente jurídico encontrado! Datos cargados en modo solo lectura.",
+          "success",
+        );
+      } else {
+        setClienteJuridicoId(null);
+        setClienteJuridicoBloqueado(false);
+        setStrRazonSocialCliente("");
+        setStrTelefonoJuridicoCliente("");
+        setStrCorreoJuridicoCliente("");
+      }
+    } catch (error) {
+      console.error("Error al verificar el cliente jurídico:", error);
+      setClienteJuridicoId(null);
+      setClienteJuridicoBloqueado(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!tipoTicketId) {
@@ -434,22 +501,53 @@ REGLAS ABSOLUTAS:
     }
 
     if (esTipoExterno()) {
-      if (
-        !strCedulaCliente.trim() ||
-        !strNombreCliente.trim() ||
-        !strApellidoCliente.trim() ||
-        !strTelefonoCliente.trim() ||
-        !strCorreoCliente.trim()
-      ) {
-        showToast("Por favor complete todos los datos del cliente.", "error");
-        return;
+      if (tipoPersonaCliente === "natural") {
+        if (
+          !strCedulaCliente.trim() ||
+          !strNombreCliente.trim() ||
+          !strApellidoCliente.trim() ||
+          !strTelefonoCliente.trim() ||
+          !strCorreoCliente.trim()
+        ) {
+          showToast(
+            "Por favor complete todos los datos del cliente natural.",
+            "error",
+          );
+          return;
+        }
+        if (!validarCorreo(strCorreoCliente)) {
+          showToast(
+            "El correo electrónico no tiene un formato válido.",
+            "error",
+          );
+          setCorreoInvalido(true);
+          correoInputRef.current?.focus();
+          return;
+        }
+      } else {
+        if (
+          !strRifCliente.trim() ||
+          !strRazonSocialCliente.trim() ||
+          !strTelefonoJuridicoCliente.trim() ||
+          !strCorreoJuridicoCliente.trim()
+        ) {
+          showToast(
+            "Por favor complete todos los datos de la empresa (jurídico).",
+            "error",
+          );
+          return;
+        }
+        if (!validarCorreo(strCorreoJuridicoCliente)) {
+          showToast(
+            "El correo electrónico corporativo no tiene un formato válido.",
+            "error",
+          );
+          setCorreoInvalido(true);
+          correoInputRef.current?.focus();
+          return;
+        }
       }
-      if (!validarCorreo(strCorreoCliente)) {
-        showToast("El correo electrónico no tiene un formato válido.", "error");
-        setCorreoInvalido(true);
-        correoInputRef.current?.focus();
-        return;
-      }
+
       if (!canalId) {
         showToast("Por favor seleccione un Canal de Recepción.", "error");
         return;
@@ -471,12 +569,32 @@ REGLAS ABSOLUTAS:
 
     if (esTipoExterno()) {
       if (canalId) formData.append("canal_id", Number(canalId));
-      if (clienteId) formData.append("cliente_id", Number(clienteId));
-      formData.append("str_cedula_cliente", strCedulaCliente.trim());
-      formData.append("str_nombre_cliente", strNombreCliente.trim());
-      formData.append("str_apellido_cliente", strApellidoCliente.trim());
-      formData.append("str_telefono_cliente", strTelefonoCliente.trim());
-      formData.append("str_correo_cliente", strCorreoCliente.trim());
+      if (tipoPersonaCliente === "natural") {
+        formData.append("tipo_solicitante_ext", "natural"); // <-- Opcional pero recomendado para simetría
+        if (clienteId) formData.append("cliente_id", Number(clienteId));
+        formData.append("str_cedula_cliente", strCedulaCliente.trim());
+        formData.append("str_nombre_cliente", strNombreCliente.trim());
+        formData.append("str_apellido_cliente", strApellidoCliente.trim());
+        formData.append("str_telefono_cliente", strTelefonoCliente.trim());
+        formData.append("str_correo_cliente", strCorreoCliente.trim());
+      } else {
+        formData.append("tipo_solicitante_ext", "juridico"); // <--- ¡Esta línea faltaba!
+        if (clienteJuridicoId)
+          formData.append("cliente_juridico_id", Number(clienteJuridicoId));
+        formData.append("str_rif_cliente", strRifCliente.trim());
+        formData.append(
+          "str_razon_social_cliente",
+          strRazonSocialCliente.trim(),
+        );
+        formData.append(
+          "str_telefono_juridico_cliente",
+          strTelefonoJuridicoCliente.trim(),
+        );
+        formData.append(
+          "str_correo_juridico_cliente",
+          strCorreoJuridicoCliente.trim(),
+        );
+      }
     }
 
     formData.append("categoria_id", Number(categoriaId));
@@ -525,7 +643,6 @@ REGLAS ABSOLUTAS:
     return "FiFile";
   };
 
-  // Departamentos disponibles según el tipo de ticket seleccionado (filtrado para externos)
   const departamentosActuales = useMemo(() => {
     if (esTipoExterno()) {
       return listaDepartamentos.filter((dep) => {
@@ -541,7 +658,6 @@ REGLAS ABSOLUTAS:
     return listaDepartamentos;
   }, [listaDepartamentos, tipoTicketId]);
 
-  // Categorías filtradas dinámicamente según el tipo de ticket seleccionado en Nuevo Ticket
   const categoriasActuales = (() => {
     if (esTipoInterno()) return listaCategoriasInternas;
     if (esTipoExterno()) return listaCategoriasExternas;
@@ -561,6 +677,8 @@ REGLAS ABSOLUTAS:
     setDepartamentoId,
     usuarioId,
     setUsuarioId,
+    tipoPersonaCliente,
+    setTipoPersonaCliente,
     strCedulaCliente,
     setStrCedulaCliente,
     strNombreCliente,
@@ -571,11 +689,22 @@ REGLAS ABSOLUTAS:
     setStrTelefonoCliente,
     strCorreoCliente,
     setStrCorreoCliente,
+    strRifCliente,
+    setStrRifCliente,
+    strRazonSocialCliente,
+    setStrRazonSocialCliente,
+    strTelefonoJuridicoCliente,
+    setStrTelefonoJuridicoCliente,
+    strCorreoJuridicoCliente,
+    setStrCorreoJuridicoCliente,
     correoInvalido,
     setCorreoInvalido,
     clienteBloqueado,
     setClienteBloqueado,
     setClienteId,
+    clienteJuridicoBloqueado,
+    setClienteJuridicoBloqueado,
+    setClienteJuridicoId,
     correoInputRef,
     listaDepartamentos,
     empleadosFiltrados,
@@ -602,6 +731,7 @@ REGLAS ABSOLUTAS:
     handleGenerarConIA,
     handleCorreoBlur,
     handleCedulaBlur,
+    handleRifBlur,
     handleSubmit,
     obtenerIconoPorTipo,
     validarCorreo,

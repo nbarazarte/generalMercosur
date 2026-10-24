@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import axiosTickets from "../../../../api/axiosTickets";
 import { useSelector } from "react-redux";
 import copy from "copy-to-clipboard";
-//import formatearFechaHora from "../../../../components/formatearFechaHora";
 import { useCreateBlockNote } from "@blocknote/react";
 import { es } from "@blocknote/core/locales";
 
@@ -125,19 +124,13 @@ export const useClientes = () => {
       const response = await axiosTickets.get("/clientes-con-tickets");
 
       if (response.data && response.data.success) {
-        setClientes(response.data.clientes || response.data.data || []);
+        setClientes(response.data.data || response.data.clientes || []);
       } else {
         setClientes([]);
       }
     } catch (err) {
       console.error("Error al obtener los clientes con tickets:", err);
-      if (err.response && err.response.status === 401) {
-        setError(
-          "Sesión no autorizada (401). Verifique su token o credenciales.",
-        );
-      } else {
-        setError("No se pudo cargar el listado de clientes.");
-      }
+      setError("No se pudo cargar el listado de clientes.");
       setClientes([]);
     } finally {
       setLoading(false);
@@ -194,9 +187,21 @@ export const useClientes = () => {
     });
   };
 
-  // Abrir detalle de ticket en modal y cargar su bitácora
+  // Abrir detalle de ticket en modal y enriquecerlo con datos del cliente contenedor
   const abrirDetalle = async (ticket) => {
-    setTicketSeleccionado(ticket);
+    const clientePadre = clientes.find(
+      (c) => c.lista_tickets && c.lista_tickets.some((t) => t.id === ticket.id),
+    );
+
+    const ticketEnriquecido = {
+      ...ticket,
+      cliente_nombre: ticket.cliente_nombre || clientePadre?.cliente || "",
+      cliente_cedula: ticket.cliente_cedula || clientePadre?.cedula || "",
+      cliente_telefono: ticket.cliente_telefono || clientePadre?.telefono || "",
+      cliente_correo: ticket.cliente_correo || clientePadre?.correo || "",
+    };
+
+    setTicketSeleccionado(ticketEnriquecido);
     setNuevoEstatusId(ticket.estatus_id ? String(ticket.estatus_id) : "");
     setNuevoAsignadoId(
       ticket.usuario_asignado_id ? String(ticket.usuario_asignado_id) : "",

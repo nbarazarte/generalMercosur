@@ -36,7 +36,7 @@ export function TicketDetalleModal({
   handleEditorRespuestaChange,
   isDarkMode,
   currentUserId,
-  currentUserRole
+  currentUserRole,
 }) {
   if (!ticketSeleccionado) return null;
 
@@ -53,6 +53,37 @@ export function TicketDetalleModal({
     : [];
   const tieneMultimedia =
     imagenes.length > 0 || videos.length > 0 || audios.length > 0;
+
+  const esJuridico = Boolean(
+    ticketSeleccionado.cliente_juridico_id ||
+    ticketSeleccionado.tipo_solicitante === "Jurídico" ||
+    ticketSeleccionado.cliente_rif,
+  );
+
+  // Resolver nombre de la prioridad actual con respaldo seguro
+  const prioridadObj = prioridades.find(
+    (p) => Number(p.id) === Number(ticketSeleccionado.prioridad_id),
+  );
+  const nombrePrioridadActual =
+    ticketSeleccionado.prioridad_nombre || prioridadObj?.str_nombre || "Normal";
+
+  // Resolver nombre de la categoría actual con respaldo seguro
+  const nombreCategoriaActual =
+    ticketSeleccionado.categoria_nombre ||
+    ticketSeleccionado.nombre_categoria ||
+    "General";
+
+  // Estilo auxiliar para los botones de copia miniatura junto aos textos
+  const btnCopyStyle = {
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    padding: "0 4px",
+    color: "var(--mercor-muted, #64748B)",
+    display: "inline-flex",
+    alignItems: "center",
+    verticalAlign: "middle",
+  };
 
   return ReactDOM.createPortal(
     <div
@@ -105,13 +136,9 @@ export function TicketDetalleModal({
             <button
               className="btn-icon"
               onClick={(e) =>
-                copiarTextoClipboard(
-                  e,
-                  ticketSeleccionado.str_ticket,
-                  `Código ${ticketSeleccionado.str_ticket}`,
-                )
+                copiarTextoClipboard(e, ticketSeleccionado.str_ticket)
               }
-              title="Copiar código"
+              title="Copiar código del ticket"
             >
               <DynamicIcon name="FiCopy" style={{ fontSize: 14 }} />
             </button>
@@ -179,7 +206,7 @@ export function TicketDetalleModal({
           </button>
         </div>
 
-        {/* METADATOS DEL TICKET */}
+        {/* METADATOS DEL TICKET CON BOTONES DE COPIA */}
         <div
           style={{
             display: "grid",
@@ -198,78 +225,51 @@ export function TicketDetalleModal({
             } ${ticketSeleccionado.creador_apellido || ""}`.trim();
             const correoCreadorModal = ticketSeleccionado.creador_correo || "";
 
-            const creador_id = ticketSeleccionado.creador_agente_id || "";
-            const asignado_id = ticketSeleccionado.usuario_asignado_id || "";
-
             return (
               <>
                 {nombreCreadorModal && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                    }}
-                  >
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <div>
                       <b>Creado por:</b> {nombreCreadorModal}
                     </div>
-                    <button
-                      className="btn-icon"
-                      onClick={(e) =>
-                        copiarTextoClipboard(
-                          e,
-                          nombreCreadorModal,
-                          "Creador del ticket",
-                        )
-                      }
-                      title="Copiar nombre del creador"
-                      style={{ padding: "4px" }}
-                    >
-                      <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
-                    </button>
                   </div>
                 )}
 
                 {correoCreadorModal && (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                    }}
-                  >
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <div>
-                      <b>Correo:</b> {correoCreadorModal}
+                      <b>Correo operador:</b> {correoCreadorModal}{" "}
+                      <button
+                        style={btnCopyStyle}
+                        onClick={(e) => copiarTextoClipboard(e, correoCreadorModal)}
+                        title="Copiar correo"
+                      >
+                        <DynamicIcon name="FiCopy" style={{ fontSize: 12 }} />
+                      </button>
                     </div>
-                    <button
-                      className="btn-icon"
-                      onClick={(e) =>
-                        copiarTextoClipboard(
-                          e,
-                          correoCreadorModal,
-                          "Correo del creador",
-                        )
-                      }
-                      title="Copiar correo del creador"
-                      style={{ padding: "4px" }}
-                    >
-                      <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
-                    </button>
                   </div>
                 )}
               </>
             );
           })()}
 
-          <div>
-            <b>Asunto:</b> {ticketSeleccionado.str_asunto}
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <div>
+              <b>Asunto:</b> {ticketSeleccionado.str_asunto}{" "}
+              <button
+                style={btnCopyStyle}
+                onClick={(e) => copiarTextoClipboard(e, ticketSeleccionado.str_asunto)}
+                title="Copiar asunto"
+              >
+                <DynamicIcon name="FiCopy" style={{ fontSize: 12 }} />
+              </button>
+            </div>
           </div>
           <div>
             <b>Tipo:</b> {ticketSeleccionado.tipo_ticket}
           </div>
           <div>
-            <b>Categoría:</b> {ticketSeleccionado.categoria_nombre}
+            <b>Categoría:</b> {nombreCategoriaActual}
           </div>
 
           {(ticketSeleccionado.tipo_ticket?.toLowerCase().includes("externo") ||
@@ -282,135 +282,173 @@ export function TicketDetalleModal({
           {ticketSeleccionado.tipo_ticket?.toLowerCase().includes("externo") ||
           ticketSeleccionado.tipo_ticket?.toLowerCase().includes("app") ? (
             <>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
+              {esJuridico ? (
+                <>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div>
+                      <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                        RIF Empresa:
+                      </b>{" "}
+                      {ticketSeleccionado.cliente_rif ||
+                        ticketSeleccionado.solicitante_documento ||
+                        "—"}{" "}
+                      {(ticketSeleccionado.cliente_rif || ticketSeleccionado.solicitante_documento) && (
+                        <button
+                          style={btnCopyStyle}
+                          onClick={(e) =>
+                            copiarTextoClipboard(
+                              e,
+                              ticketSeleccionado.cliente_rif ||
+                                ticketSeleccionado.solicitante_documento
+                            )
+                          }
+                          title="Copiar RIF"
+                        >
+                          <DynamicIcon name="FiCopy" style={{ fontSize: 12 }} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div>
+                      <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                        Razón Social:
+                      </b>{" "}
+                      {ticketSeleccionado.cliente_razon_social ||
+                        ticketSeleccionado.solicitante_nombre ||
+                        "—"}{" "}
+                      {(ticketSeleccionado.cliente_razon_social ||
+                        ticketSeleccionado.solicitante_nombre) && (
+                        <button
+                          style={btnCopyStyle}
+                          onClick={(e) =>
+                            copiarTextoClipboard(
+                              e,
+                              ticketSeleccionado.cliente_razon_social ||
+                                ticketSeleccionado.solicitante_nombre
+                            )
+                          }
+                          title="Copiar Razón Social"
+                        >
+                          <DynamicIcon name="FiCopy" style={{ fontSize: 12 }} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div>
+                      <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                        Cédula/RIF Cliente:
+                      </b>{" "}
+                      {ticketSeleccionado.cliente_cedula ||
+                        ticketSeleccionado.solicitante_documento ||
+                        "—"}{" "}
+                      {(ticketSeleccionado.cliente_cedula ||
+                        ticketSeleccionado.solicitante_documento) && (
+                        <button
+                          style={btnCopyStyle}
+                          onClick={(e) =>
+                            copiarTextoClipboard(
+                              e,
+                              ticketSeleccionado.cliente_cedula ||
+                                ticketSeleccionado.solicitante_documento
+                            )
+                          }
+                          title="Copiar Cédula"
+                        >
+                          <DynamicIcon name="FiCopy" style={{ fontSize: 12 }} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <div>
+                      <b style={{ color: "var(--merco-accent, #f95700)" }}>
+                        Nombre Cliente:
+                      </b>{" "}
+                      {ticketSeleccionado.cliente_nombre
+                        ? `${ticketSeleccionado.cliente_nombre} ${ticketSeleccionado.cliente_apellido || ""}`
+                        : ticketSeleccionado.solicitante_nombre || "—"}{" "}
+                      <button
+                        style={btnCopyStyle}
+                        onClick={(e) =>
+                          copiarTextoClipboard(
+                            e,
+                            ticketSeleccionado.cliente_nombre
+                              ? `${ticketSeleccionado.cliente_nombre} ${ticketSeleccionado.cliente_apellido || ""}`
+                              : ticketSeleccionado.solicitante_nombre || ""
+                          )
+                        }
+                        title="Copiar Nombre"
+                      >
+                        <DynamicIcon name="FiCopy" style={{ fontSize: 12 }} />
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <div>
                   <b style={{ color: "var(--merco-accent, #f95700)" }}>
-                    Cédula del Cliente:
+                    Teléfono:
                   </b>{" "}
-                  {ticketSeleccionado.cliente_cedula || "—"}
+                  {ticketSeleccionado.cliente_telefono ||
+                    ticketSeleccionado.solicitante_telefono ||
+                    "—"}{" "}
+                  {(ticketSeleccionado.cliente_telefono ||
+                    ticketSeleccionado.solicitante_telefono) && (
+                    <button
+                      style={btnCopyStyle}
+                      onClick={(e) =>
+                        copiarTextoClipboard(
+                          e,
+                          ticketSeleccionado.cliente_telefono ||
+                            ticketSeleccionado.solicitante_telefono
+                        )
+                      }
+                      title="Copiar Teléfono"
+                    >
+                      <DynamicIcon name="FiCopy" style={{ fontSize: 12 }} />
+                    </button>
+                  )}
                 </div>
-                {ticketSeleccionado.cliente_cedula && (
-                  <button
-                    className="btn-icon"
-                    onClick={(e) =>
-                      copiarTextoClipboard(
-                        e,
-                        ticketSeleccionado.cliente_cedula,
-                        "Cédula del cliente",
-                      )
-                    }
-                    title="Copiar cédula"
-                    style={{ padding: "4px" }}
-                  >
-                    <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
-                  </button>
-                )}
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <div>
                   <b style={{ color: "var(--merco-accent, #f95700)" }}>
-                    Nombre y Apellido Cliente:
+                    Correo:
                   </b>{" "}
-                  {ticketSeleccionado.cliente_nombre || "—"}{" "}
-                  {ticketSeleccionado.cliente_apellido || ""}
+                  {ticketSeleccionado.cliente_correo ||
+                    ticketSeleccionado.solicitante_email ||
+                    "—"}{" "}
+                  {(ticketSeleccionado.cliente_correo ||
+                    ticketSeleccionado.solicitante_email) && (
+                    <button
+                      style={btnCopyStyle}
+                      onClick={(e) =>
+                        copiarTextoClipboard(
+                          e,
+                          ticketSeleccionado.cliente_correo ||
+                            ticketSeleccionado.solicitante_email
+                        )
+                      }
+                      title="Copiar Correo"
+                    >
+                      <DynamicIcon name="FiCopy" style={{ fontSize: 12 }} />
+                    </button>
+                  )}
                 </div>
-                {ticketSeleccionado.cliente_nombre && (
-                  <button
-                    className="btn-icon"
-                    onClick={(e) =>
-                      copiarTextoClipboard(
-                        e,
-                        `${ticketSeleccionado.cliente_nombre || ""} ${ticketSeleccionado.cliente_apellido || ""}`.trim(),
-                        "Nombre del cliente",
-                      )
-                    }
-                    title="Copiar nombre y apellido"
-                    style={{ padding: "4px" }}
-                  >
-                    <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
-                  </button>
-                )}
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                <div>
-                  <b style={{ color: "var(--merco-accent, #f95700)" }}>
-                    Teléfono del Cliente:
-                  </b>{" "}
-                  {ticketSeleccionado.cliente_telefono || "—"}
-                </div>
-                {ticketSeleccionado.cliente_telefono && (
-                  <button
-                    className="btn-icon"
-                    onClick={(e) =>
-                      copiarTextoClipboard(
-                        e,
-                        ticketSeleccionado.cliente_telefono,
-                        "Teléfono del cliente",
-                      )
-                    }
-                    title="Copiar teléfono"
-                    style={{ padding: "4px" }}
-                  >
-                    <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
-                  </button>
-                )}
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                <div>
-                  <b style={{ color: "var(--merco-accent, #f95700)" }}>
-                    Correo del Cliente:
-                  </b>{" "}
-                  {ticketSeleccionado.cliente_correo || "—"}
-                </div>
-                {ticketSeleccionado.cliente_correo && (
-                  <button
-                    className="btn-icon"
-                    onClick={(e) =>
-                      copiarTextoClipboard(
-                        e,
-                        ticketSeleccionado.cliente_correo,
-                        "Correo del cliente",
-                      )
-                    }
-                    title="Copiar correo"
-                    style={{ padding: "4px" }}
-                  >
-                    <DynamicIcon name="FiCopy" style={{ fontSize: 13 }} />
-                  </button>
-                )}
               </div>
             </>
           ) : null}
 
           <div>
-            <b>Prioridad Actual:</b> {ticketSeleccionado.prioridad_nombre}
+            <b>Prioridad Actual:</b> {nombrePrioridadActual}
           </div>
 
           <div>
@@ -633,15 +671,6 @@ export function TicketDetalleModal({
                           }}
                         />
                       </a>
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          color: "var(--merco-muted)",
-                          marginTop: "4px",
-                        }}
-                      >
-                        {nombreArchivo}
-                      </div>
                     </div>
                   );
                 })}
@@ -666,15 +695,6 @@ export function TicketDetalleModal({
                         <source src={urlArchivo} />
                         Tu navegador no soporta la reproducción de video.
                       </video>
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          color: "var(--merco-muted)",
-                          marginTop: "4px",
-                        }}
-                      >
-                        {nombreArchivo}
-                      </div>
                     </div>
                   );
                 })}
@@ -694,9 +714,6 @@ export function TicketDetalleModal({
                   const urlArchivo = `${backendUrl}/uploads/${nombreArchivo}`;
                   return (
                     <div key={idx}>
-                      <div style={{ fontSize: "11px", marginBottom: "4px" }}>
-                        {nombreArchivo}
-                      </div>
                       <audio controls style={{ width: "100%" }}>
                         <source src={urlArchivo} />
                         Tu navegador no soporta la reproducción de audio.
@@ -709,7 +726,7 @@ export function TicketDetalleModal({
           </div>
         </div>
 
-        {/* SECCIÓN DE HISTORIAL DE BITÁCORA */}
+        {/* SECCIÓN DE BITÁCORA */}
         <div
           style={{
             marginBottom: 16,
@@ -966,13 +983,11 @@ export function TicketDetalleModal({
                 const userId = Number(currentUserId);
                 const rolLower = (currentUserRole || "").toLowerCase();
 
-                // ¿Es administrador o gerente ATC? (Tienen privilegios globales o de supervisión)
                 const esAdminOGerente =
                   rolLower.includes("administrador") ||
                   rolLower.includes("admin") ||
                   rolLower.includes("gerente atc");
 
-                // ¿Es participante directo del ticket? (Creador o asignado)
                 const esParticipanteDirecto =
                   (userId && userId === creadorId) ||
                   (userId && userId === asignadoId);
@@ -990,7 +1005,7 @@ export function TicketDetalleModal({
                         type="submit"
                         className="btn btn-primary"
                         disabled={true}
-                        title="Debe ser administrador, gerente, el creador del ticket o habérsele asignado para guardar cambios"
+                        title="Sin permisos para modificar"
                       >
                         <DynamicIcon name="FiSave" /> Sin permisos para
                         modificar
@@ -999,17 +1014,13 @@ export function TicketDetalleModal({
                   </>
                 );
               })()}
-
-              {/* <button type="submit" className="btn btn-primary">
-                <DynamicIcon name="FiSave" /> Guardar Cambios
-              </button> */}
             </div>
           </form>
         ) : (
           <div
             style={{
               display: "flex",
-              justifyContent: "flex-end",
+              justifyClient: "flex-end",
               marginTop: 16,
             }}
           >

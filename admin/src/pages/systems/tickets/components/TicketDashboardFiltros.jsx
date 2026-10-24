@@ -19,6 +19,32 @@ export function TicketDashboardFiltros({
     outline: "none",
   };
 
+  // Verificamos si el tipo de ticket seleccionado actualmente es de tipo "interno"
+  const tipoSeleccionado = tiposTicket.find(
+    (t) => Number(t.id) === Number(filtros.tipo_ticket_id)
+  );
+  const esInterno =
+    tipoSeleccionado &&
+    (tipoSeleccionado.str_nombre || "").toLowerCase().includes("interno");
+
+  // Manejador para limpiar el tipo de persona si se selecciona un tipo interno
+  const handleTipoTicketChange = (e) => {
+    const nuevoTipoId = e.target.value;
+    const seleccionado = tiposTicket.find(
+      (t) => Number(t.id) === Number(nuevoTipoId)
+    );
+    const esNuevoInterno =
+      seleccionado &&
+      (seleccionado.str_nombre || "").toLowerCase().includes("interno");
+
+    setFiltros((prev) => ({
+      ...prev,
+      tipo_ticket_id: nuevoTipoId,
+      // Si el nuevo tipo es interno, reseteamos el filtro de tipo de persona
+      tipo_persona: esNuevoInterno ? "" : prev.tipo_persona,
+    }));
+  };
+
   return (
     <div
       className="ma-card"
@@ -44,12 +70,7 @@ export function TicketDashboardFiltros({
         {/* Tipo de Ticket */}
         <select
           value={filtros.tipo_ticket_id}
-          onChange={(e) =>
-            setFiltros((prev) => ({
-              ...prev,
-              tipo_ticket_id: e.target.value,
-            }))
-          }
+          onChange={handleTipoTicketChange}
           style={filtroStyle}
         >
           <option value="">Todos los tipos</option>
@@ -59,6 +80,24 @@ export function TicketDashboardFiltros({
             </option>
           ))}
         </select>
+
+        {/* Tipo de Persona / Solicitante (Se muestra SOLO si NO es interno) */}
+        {!esInterno && (
+          <select
+            value={filtros.tipo_persona}
+            onChange={(e) =>
+              setFiltros((prev) => ({
+                ...prev,
+                tipo_persona: e.target.value,
+              }))
+            }
+            style={filtroStyle}
+          >
+            <option value="">Todos los solicitantes</option>
+            <option value="natural">Persona Natural</option>
+            <option value="juridico">Persona Jurídica</option>
+          </select>
+        )}
 
         {/* Categoría */}
         <select

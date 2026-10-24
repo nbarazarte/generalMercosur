@@ -36,6 +36,7 @@ export function useDashboardTickets() {
     canal_id: "",
     departamento_id: "",
     categoria_id: "",
+    tipo_persona: "",
     creacion_desde: "",
     creacion_hasta: "",
   });
@@ -375,6 +376,7 @@ export function useDashboardTickets() {
       canal_id: "",
       departamento_id: "",
       categoria_id: "",
+      tipo_persona: "",
       creacion_desde: "",
       creacion_hasta: "",
     });

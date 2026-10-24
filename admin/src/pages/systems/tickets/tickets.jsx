@@ -41,6 +41,8 @@ export default function Tickets() {
     setFHora,
     fMinuto,
     setFMinuto,
+    fTipoPersona, // Estado de tipo de persona recibido del hook
+    setFTipoPersona, // Función para actualizar el tipo de persona
     paginaActual,
     setPaginaActual,
     porPagina,
@@ -75,7 +77,6 @@ export default function Tickets() {
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
     conteoKpi,
-    // Propiedades de BlockNote añadidas:
     editorRespuesta,
     handleEditorRespuestaChange,
     isDarkMode,
@@ -237,6 +238,8 @@ export default function Tickets() {
           setFMinuto={setFMinuto}
           fBuscar={fBuscar}
           setFBuscar={setFBuscar}
+          fTipoPersona={fTipoPersona} // Pasamos el estado de tipo de persona
+          setFTipoPersona={setFTipoPersona} // Pasamos la función actualizadora
           tiposTicket={tiposTicket}
           listaEstatus={listaEstatus}
           listaDepartamentos={listaDepartamentos}
@@ -310,7 +313,6 @@ export default function Tickets() {
                     const esCanceladoModal = estName.includes("cancelado");
                     const esRojo =
                       estName.includes("vencido") ||
-                      //estName.includes("crítico") ||
                       estName.includes("urgente");
                     const esEnProgreso = estName.includes("en progreso");
                     const esEnEspera =
@@ -370,26 +372,84 @@ export default function Tickets() {
                         </td>
                         <td>
                           {esExterno ? (
-                            <div>
-                              <b
-                                style={{
-                                  color: "var(--merco-accent, #f95700)",
-                                }}
-                              >
-                                {t.cliente_nombre
-                                  ? `${t.cliente_nombre} ${t.cliente_apellido || ""}`
-                                  : "Cliente Externo"}
-                              </b>
-                              <small
-                                style={{
-                                  display: "block",
-                                  color: "var(--merco-muted)",
-                                  fontSize: "11px",
-                                }}
-                              >
-                                Cédula: {t.cliente_cedula || "—"}
-                              </small>
-                            </div>
+                            (() => {
+                              const cJuridico =
+                                t.cliente_juridico || t.clienteJuridico || {};
+                              const cNatural =
+                                t.cliente_natural || t.clienteNatural || {};
+
+                              const razonSocial =
+                                t.cliente_razon_social ||
+                                cJuridico.str_razon_social ||
+                                cJuridico.razon_social ||
+                                t.solicitante_nombre;
+
+                              const rifEmpresa =
+                                t.cliente_rif ||
+                                cJuridico.str_rif ||
+                                cJuridico.rif ||
+                                t.solicitante_documento;
+
+                              const nombreNatural =
+                                t.cliente_nombre ||
+                                cNatural.str_nombre ||
+                                cNatural.nombre ||
+                                t.solicitante_nombre;
+
+                              const apellidoNatural =
+                                t.cliente_apellido ||
+                                cNatural.str_apellido ||
+                                cNatural.apellido ||
+                                "";
+
+                              const cedulaNatural =
+                                t.cliente_cedula ||
+                                cNatural.str_cedula ||
+                                cNatural.cedula ||
+                                t.solicitante_documento;
+
+                              const esJuridicoReal = Boolean(
+                                t.cliente_juridico_id ||
+                                rifEmpresa ||
+                                razonSocial ||
+                                (t.tipo_solicitante &&
+                                  t.tipo_solicitante
+                                    .toLowerCase()
+                                    .includes("jurídico")) ||
+                                (rifEmpresa &&
+                                  String(rifEmpresa)
+                                    .toLowerCase()
+                                    .startsWith("j")),
+                              );
+
+                              return (
+                                <div>
+                                  <b
+                                    style={{
+                                      color: "var(--merco-accent, #f95700)",
+                                    }}
+                                  >
+                                    {esJuridicoReal
+                                      ? razonSocial || "Empresa sin nombre"
+                                      : nombreNatural
+                                        ? `${nombreNatural} ${apellidoNatural}`.trim()
+                                        : "Cliente"}
+                                  </b>
+                                  <small
+                                    style={{
+                                      display: "block",
+                                      color: "var(--merco-muted)",
+                                      fontSize: "11px",
+                                    }}
+                                  >
+                                    {esJuridicoReal ? "RIF: " : "Cédula: "}
+                                    {esJuridicoReal
+                                      ? rifEmpresa || "—"
+                                      : cedulaNatural || "—"}
+                                  </small>
+                                </div>
+                              );
+                            })()
                           ) : (
                             <span style={{ color: "var(--merco-muted)" }}>
                               N/A
@@ -490,7 +550,7 @@ export default function Tickets() {
                                 style={{
                                   position: "absolute",
                                   top: "-5px",
-                                  left: "-5px", // Ajustado para un mejor centrado en la esquina
+                                  left: "-5px",
                                   width: "16px",
                                   height: "16px",
                                   borderRadius: "50%",
@@ -625,7 +685,6 @@ export default function Tickets() {
         handleGuardarCambiosTicket={handleGuardarCambiosTicket}
         copiarTextoClipboard={copiarTextoClipboard}
         filtroStyle={filtroStyle}
-        /* PROPS DE BLOCKNOTE */
         editorRespuesta={editorRespuesta}
         handleEditorRespuestaChange={handleEditorRespuestaChange}
         isDarkMode={isDarkMode}

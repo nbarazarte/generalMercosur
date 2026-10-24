@@ -5,52 +5,32 @@ const router = express.Router();
 const pool = require("../db");
 const verificarClienteFrontend = require("../middlewares/autenticarToken");
 const verificarSesion = require("../middlewares/verificarSesion");
-const upload = require("../middlewares/multerConfig"); // Middleware configurado en /var/www/uploads
+const upload = require("../middlewares/multerConfig");
 const path = require("path");
 const fs = require("fs");
-const sharp = require("sharp"); // 📌 Procesamiento y compresión de imágenes
-const ffmpeg = require("fluent-ffmpeg"); // 📌 Procesamiento y compresión de videos
+const sharp = require("sharp");
+const ffmpeg = require("fluent-ffmpeg");
 
-// 🔒 Doble capa de seguridad global
 router.use(verificarClienteFrontend);
 router.use(verificarSesion);
 
-// ==========================================
-// FUNCIÓN AUXILIAR PARA COMPRIMIR VIDEOS CON FFPMPEG
-// ==========================================
 function comprimirVideoConFFmpeg(inputPath, outputPath) {
   return new Promise((resolve, reject) => {
     ffmpeg(inputPath)
       .output(outputPath)
       .videoCodec("libx264")
       .audioCodec("aac")
-      .outputOptions([
-        "-crf 28", // Control de calidad (28 reduce notablemente el peso)
-        "-preset ultrafast", // Codificación rápida
-        "-vf scale=-2:720", // 📌 Opcional recomendado: Forzar resolución máxima a 720p de altura para reducir drásticamente el peso en videos de teléfonos
-      ])
-      .on("end", () => {
-        resolve(true);
-      })
-      .on("error", (err) => {
-        console.error(
-          "Error detallado al comprimir video con FFmpeg:",
-          err.message,
-        );
-        reject(err);
-      })
+      .outputOptions(["-crf 28", "-preset ultrafast", "-vf scale=-2:720"])
+      .on("end", () => resolve(true))
+      .on("error", (err) => reject(err))
       .run();
   });
 }
 
-// ==========================================
-// FUNCIÓN AUXILIAR PARA PROCESAR Y COMPRIMIR ARCHIVOS (MÁX. 500 KB IMÁGENES / VIDEOS OPTIMIZADOS)
-// ==========================================
 async function procesarArchivosConSharp(archivos, prefijoTicket) {
   const rutasImagenes = [];
   const rutasVideos = [];
   const rutasAudios = [];
-
   let contadorImagen = 1;
   let contadorVideo = 1;
 
@@ -62,7 +42,6 @@ async function procesarArchivosConSharp(archivos, prefijoTicket) {
     if (tipoMime.startsWith("image/")) {
       nuevoNombreArchivo = `${prefijoTicket}-${contadorImagen}${extension}`;
       contadorImagen++;
-
       const rutaNueva = path.join("/var/www/uploads", nuevoNombreArchivo);
 
       try {
@@ -77,7 +56,6 @@ async function procesarArchivosConSharp(archivos, prefijoTicket) {
           .jpeg({ quality: calidad })
           .toBuffer();
 
-        // Disminuir calidad iterativamente si excede los 500 KB (512,000 bytes)
         while (bufferTransformado.length > 500 * 1024 && calidad > 10) {
           calidad -= 10;
           bufferTransformado = await sharp(file.path)
@@ -91,73 +69,33 @@ async function procesarArchivosConSharp(archivos, prefijoTicket) {
             .toBuffer();
         }
 
-        // Guardar la imagen comprimida directamente en disco
         fs.writeFileSync(rutaNueva, bufferTransformado);
-
-        // Limpiar el archivo temporal subido originalmente por Multer
-        if (fs.existsSync(file.path)) {
-          fs.unlinkSync(file.path);
-        }
-
+        if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
         rutasImagenes.push(`/var/www/uploads/${nuevoNombreArchivo}`);
       } catch (sharpErr) {
-        console.error(
-          "Error al comprimir la imagen con sharp:",
-          sharpErr.message,
-        );
-        // Fallback: Mover archivo original si falla la compresión
-        if (fs.existsSync(file.path)) {
-          fs.renameSync(file.path, rutaNueva);
-        }
+        if (fs.existsSync(file.path)) fs.renameSync(file.path, rutaNueva);
         rutasImagenes.push(`/var/www/uploads/${nuevoNombreArchivo}`);
       }
     } else if (tipoMime.startsWith("video/")) {
       nuevoNombreArchivo = `${prefijoTicket}-vid-${contadorVideo}${extension}`;
       contadorVideo++;
-
       const rutaAntigua = file.path;
       const rutaNueva = path.join("/var/www/uploads", nuevoNombreArchivo);
 
       try {
-        // Comprimir video utilizando FFmpeg
         await comprimirVideoConFFmpeg(rutaAntigua, rutaNueva);
-
-        // Limpiar el archivo temporal original de Multer
-        if (fs.existsSync(rutaAntigua)) {
-          fs.unlinkSync(rutaAntigua);
-        }
-
+        if (fs.existsSync(rutaAntigua)) fs.unlinkSync(rutaAntigua);
         rutasVideos.push(`/var/www/uploads/${nuevoNombreArchivo}`);
       } catch (ffmpegErr) {
-        console.error(
-          "Fallback: Mover video sin comprimir debido a un error:",
-          ffmpegErr.message,
-        );
-        // Fallback: si falla la compresión, movemos el archivo original
-        if (fs.existsSync(rutaAntigua)) {
-          fs.renameSync(rutaAntigua, rutaNueva);
-        }
+        if (fs.existsSync(rutaAntigua)) fs.renameSync(rutaAntigua, rutaNueva);
         rutasVideos.push(`/var/www/uploads/${nuevoNombreArchivo}`);
       }
     } else {
-      // Manejo de audios y archivos generales
       nuevoNombreArchivo = `${prefijoTicket}-file-${contadorImagen}${extension}`;
       contadorImagen++;
-
       const rutaAntigua = file.path;
       const rutaNueva = path.join("/var/www/uploads", nuevoNombreArchivo);
-
-      try {
-        if (fs.existsSync(rutaAntigua)) {
-          fs.renameSync(rutaAntigua, rutaNueva);
-        }
-      } catch (renameErr) {
-        console.error(
-          "Error al renombrar el archivo físico:",
-          renameErr.message,
-        );
-      }
-
+      if (fs.existsSync(rutaAntigua)) fs.renameSync(rutaAntigua, rutaNueva);
       const rutaCompletaBD = `/var/www/uploads/${nuevoNombreArchivo}`;
       if (tipoMime.startsWith("audio/")) rutasAudios.push(rutaCompletaBD);
     }
@@ -170,9 +108,6 @@ async function procesarArchivosConSharp(archivos, prefijoTicket) {
   };
 }
 
-// ==========================================
-// FUNCIÓN AUXILIAR DE FILTROS DINÁMICOS PARA DASHBOARD
-// ==========================================
 function construirFiltrosDashboard(req, aliasTabla = "t") {
   const {
     tipo_ticket_id,
@@ -181,6 +116,7 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
     canal_id,
     departamento_id,
     categoria_id,
+    tipo_persona,
     creacion_desde,
     creacion_hasta,
     rol,
@@ -190,7 +126,6 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
   let whereClause = `WHERE 1=1`;
   const params = [];
   let paramIndex = 1;
-
   const rolUsuario = (rol || "").toLowerCase();
 
   if (rolUsuario.includes("gerente atc")) {
@@ -227,6 +162,11 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
     whereClause += ` AND ${aliasTabla}.categoria_id = $${paramIndex++}`;
     params.push(Number(categoria_id));
   }
+  if (tipo_persona === "natural") {
+    whereClause += ` AND ${aliasTabla}.cliente_id IS NOT NULL`;
+  } else if (tipo_persona === "juridico") {
+    whereClause += ` AND ${aliasTabla}.cliente_juridico_id IS NOT NULL`;
+  }
   if (creacion_desde) {
     whereClause += ` AND ${aliasTabla}.created_at >= $${paramIndex++}::timestamp`;
     params.push(creacion_desde);
@@ -238,10 +178,6 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
 
   return { whereClause, params };
 }
-
-// ==========================================
-// ENDPOINTS DEL DASHBOARD DE TICKETS
-// ==========================================
 
 router.get("/dashboard/kpis", async (req, res) => {
   try {
@@ -260,10 +196,6 @@ router.get("/dashboard/kpis", async (req, res) => {
     const result = await pool.query(queryKpis, params);
     res.status(200).json({ success: true, kpis: result.rows });
   } catch (err) {
-    console.error(
-      "Error al obtener KPIs del dashboard de tickets:",
-      err.message,
-    );
     res
       .status(500)
       .json({ success: false, error: "Error interno al consultar los KPIs." });
@@ -274,9 +206,7 @@ router.get("/dashboard/tickets-por-categoria", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
     const query = `
-      SELECT
-        nombre_categoria,
-        COUNT(ticket_id) AS total_tickets
+      SELECT nombre_categoria, COUNT(ticket_id) AS total_tickets
       FROM tickets.view_tickets_por_categoria t
       ${whereClause}
       GROUP BY nombre_categoria
@@ -285,11 +215,7 @@ router.get("/dashboard/tickets-por-categoria", async (req, res) => {
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
-    console.error("Error al obtener tickets por categoría:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar el volumen por categoría.",
-    });
+    res.status(500).json({ success: false, error: "Error interno." });
   }
 });
 
@@ -297,9 +223,7 @@ router.get("/dashboard/distribucion-estados", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
     const query = `
-      SELECT
-        estado,
-        COUNT(ticket_id) AS total
+      SELECT estado, COUNT(ticket_id) AS total
       FROM tickets.view_distribucion_estados t
       ${whereClause}
       GROUP BY estado
@@ -308,11 +232,52 @@ router.get("/dashboard/distribucion-estados", async (req, res) => {
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
-    console.error("Error al obtener distribución de estatus:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar la distribución de estados.",
-    });
+    res.status(500).json({ success: false, error: "Error interno." });
+  }
+});
+
+router.get("/dashboard/casos-por-analista", async (req, res) => {
+  try {
+    const { whereClause, params } = construirFiltrosDashboard(req, "t");
+    const query = `
+      SELECT
+        COALESCE(u.str_nombre || ' ' || u.str_apellido, 'Sin Asignar') AS nombre_analista,
+        COUNT(t.id) AS total_tickets
+      FROM tickets.tbl_tickets t
+      LEFT JOIN public.tbl_usuarios u ON t.usuario_asignado_id = u.id
+      ${whereClause}
+      GROUP BY u.id, u.str_nombre, u.str_apellido
+      ORDER BY total_tickets DESC
+      LIMIT 10;
+    `;
+    const result = await pool.query(query, params);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error("Error en /dashboard/casos-por-analista:", err);
+    res.status(500).json({ success: false, error: "Error interno." });
+  }
+});
+
+router.get("/dashboard/casos-cerrados-por-analista", async (req, res) => {
+  try {
+    const { whereClause, params } = construirFiltrosDashboard(req, "t");
+    const query = `
+      SELECT
+        COALESCE(u.str_nombre || ' ' || u.str_apellido, 'Sin Asignar') AS nombre_analista,
+        COUNT(t.id) AS tickets_cerrados
+      FROM tickets.tbl_tickets t
+      LEFT JOIN public.tbl_usuarios u ON COALESCE(t.cierre_agente_id, t.usuario_asignado_id) = u.id
+      LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
+      ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Cerrado'
+      GROUP BY u.id, u.str_nombre, u.str_apellido
+      ORDER BY tickets_cerrados DESC
+      LIMIT 10;
+    `;
+    const result = await pool.query(query, params);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error("Error en /dashboard/casos-cerrados-por-analista:", err);
+    res.status(500).json({ success: false, error: "Error interno." });
   }
 });
 
@@ -324,11 +289,7 @@ router.get("/clientes-con-tickets", async (req, res) => {
       .status(200)
       .json({ success: true, total: rows.length, data: rows });
   } catch (error) {
-    console.error("Error al listar clientes con tickets:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Error interno del servidor al obtener los datos de clientes.",
-    });
+    return res.status(500).json({ success: false, message: "Error interno." });
   }
 });
 
@@ -341,14 +302,13 @@ router.get("/dashboard/ultimos-tickets", async (req, res) => {
         t.str_ticket AS codigo,
         t.str_asunto AS asunto,
         e.str_nombre AS estado,
-        COALESCE(c.str_nombre || ' ' || c.str_apellido, 'Cliente / Usuario') AS solicitante,
+        COALESCE(c_nat.str_nombre || ' ' || c_nat.str_apellido, c_jur.str_razon_social, 'Cliente / Usuario') AS solicitante,
         TO_CHAR(t.created_at, 'DD/MM/YYYY HH24:MI') AS tiempo,
-        TO_CHAR(t.dmt_fecha_cierre, 'DD/MM/YYYY HH24:MI') AS fecha_cierre,
-        t.creador_agente_id,
-        t.usuario_asignado_id
+        TO_CHAR(t.dmt_fecha_cierre, 'DD/MM/YYYY HH24:MI') AS fecha_cierre
       FROM tickets.tbl_tickets t
       LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
-      LEFT JOIN tickets.tbl_clientes_naturales c ON t.cliente_id = c.id
+      LEFT JOIN tickets.tbl_clientes_naturales c_nat ON t.cliente_id = c_nat.id
+      LEFT JOIN tickets.tbl_clientes_juridicos c_jur ON t.cliente_juridico_id = c_jur.id
       ${whereClause}
       ORDER BY t.created_at DESC
       LIMIT 10;
@@ -356,67 +316,9 @@ router.get("/dashboard/ultimos-tickets", async (req, res) => {
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
-    console.error("Error al obtener últimos tickets:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar los tickets recientes.",
-    });
-  }
-});
-
-router.get("/dashboard/casos-por-analista", async (req, res) => {
-  try {
-    const { whereClause, params } = construirFiltrosDashboard(req);
-    const query = `
-      SELECT
-        COALESCE(u.str_nombre || ' ' || u.str_apellido, 'Sin Asignar / Desconocido') AS nombre_analista,
-        COUNT(t.id) AS total_tickets
-      FROM tickets.tbl_tickets t
-      LEFT JOIN public.tbl_usuarios u ON t.creador_agente_id = u.id
-      ${whereClause}
-      GROUP BY u.id, u.str_nombre, u.str_apellido
-      ORDER BY total_tickets DESC
-      LIMIT 10;
-    `;
-    const result = await pool.query(query, params);
-    res.status(200).json({ success: true, data: result.rows });
-  } catch (err) {
-    console.error("Error al obtener casos por analista:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al consultar los casos por analista.",
-    });
-  }
-});
-
-router.get("/dashboard/casos-cerrados-por-analista", async (req, res) => {
-  try {
-    const { whereClause, params } = construirFiltrosDashboard(req);
-    const query = `
-      SELECT
-        COALESCE(u.str_nombre || ' ' || u.str_apellido, 'Sin Asignar / Desconocido') AS nombre_analista,
-        COUNT(t.id) AS tickets_cerrados
-      FROM tickets.tbl_tickets t
-      LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
-      LEFT JOIN public.tbl_usuarios u ON t.cierre_agente_id = u.id
-      ${whereClause}
-      AND e.str_tipo = 'ESTATUSTICKET'
-      AND e.str_nombre ILIKE 'Cerrado'
-      GROUP BY u.id, u.str_nombre, u.str_apellido
-      ORDER BY tickets_cerrados DESC
-      LIMIT 10;
-    `;
-    const result = await pool.query(query, params);
-    res.status(200).json({ success: true, data: result.rows });
-  } catch (err) {
-    console.error("Error al obtener casos cerrados por analista:", err.message);
     res.status(500).json({ success: false, error: "Error interno." });
   }
 });
-
-// ==========================================
-// ENDPOINTS DE CATÁLOGOS Y GESTIÓN DE TICKETS
-// ==========================================
 
 router.get("/departamentos", async (req, res) => {
   try {
@@ -424,11 +326,7 @@ router.get("/departamentos", async (req, res) => {
     const resultado = await pool.query(query);
     res.status(200).json({ success: true, departamentos: resultado.rows });
   } catch (err) {
-    console.error("Error al obtener los departamentos:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al obtener los departamentos.",
-    });
+    res.status(500).json({ success: false, error: "Error interno." });
   }
 });
 
@@ -436,22 +334,17 @@ router.get("/departamentos-usuarios", async (req, res) => {
   try {
     const queryDept = `SELECT id, str_nombre, str_descripcion FROM public.cat_departamentos ORDER BY str_nombre ASC;`;
     const queryUsers = `SELECT id, departamento_id, str_nombre, str_apellido, str_email, bol_activo FROM public.tbl_usuarios WHERE bol_activo = true ORDER BY str_nombre ASC;`;
-
     const [resDept, resUsers] = await Promise.all([
       pool.query(queryDept),
       pool.query(queryUsers),
     ]);
-
     res.status(200).json({
       success: true,
       departamentos: resDept.rows,
       usuarios: resUsers.rows,
     });
   } catch (err) {
-    console.error("Error al obtener departamentos y usuarios:", err.message);
-    res
-      .status(500)
-      .json({ success: false, error: "Error interno al obtener catálogos." });
+    res.status(500).json({ success: false, error: "Error interno." });
   }
 });
 
@@ -459,34 +352,22 @@ router.get("/datos-maestros", async (req, res) => {
   try {
     const query = `SELECT id, str_tipo, str_nombre, str_descripcion, bol_activo FROM public.cat_datos_maestros WHERE bol_activo = true ORDER BY str_tipo, id ASC;`;
     const resultado = await pool.query(query);
-
     const datos = resultado.rows;
-    const canales = datos.filter((item) => item.str_tipo === "CANAL");
-    const categoria_externa = datos.filter(
-      (item) => item.str_tipo === "CATEGORIA_EXTERNA",
-    );
-    const categoria_interna = datos.filter(
-      (item) => item.str_tipo === "CATEGORIA_INTERNA",
-    );
-    const prioridades = datos.filter((item) => item.str_tipo === "PRIORIDAD");
-    const tipoTicket = datos.filter((item) => item.str_tipo === "TIPO_TICKET");
-    const estatus = datos.filter((item) => item.str_tipo === "ESTATUSTICKET");
-
     res.status(200).json({
       success: true,
-      canales,
-      categoria_externa,
-      categoria_interna,
-      prioridades,
-      tipoTicket,
-      estatus,
+      canales: datos.filter((item) => item.str_tipo === "CANAL"),
+      categoria_externa: datos.filter(
+        (item) => item.str_tipo === "CATEGORIA_EXTERNA",
+      ),
+      categoria_interna: datos.filter(
+        (item) => item.str_tipo === "CATEGORIA_INTERNA",
+      ),
+      prioridades: datos.filter((item) => item.str_tipo === "PRIORIDAD"),
+      tipoTicket: datos.filter((item) => item.str_tipo === "TIPO_TICKET"),
+      estatus: datos.filter((item) => item.str_tipo === "ESTATUSTICKET"),
     });
   } catch (err) {
-    console.error("Error al obtener los datos maestros:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al obtener los datos maestros.",
-    });
+    res.status(500).json({ success: false, error: "Error interno." });
   }
 });
 
@@ -495,25 +376,31 @@ router.get("/cliente/:cedula", async (req, res) => {
   try {
     const query = `SELECT id, str_cedula, str_nombre, str_apellido, str_telefono, str_email FROM tickets.tbl_clientes_naturales WHERE str_cedula = $1 LIMIT 1;`;
     const resultado = await pool.query(query, [cedula]);
-
-    if (resultado.rows.length > 0) {
-      res
-        .status(200)
-        .json({ success: true, existe: true, cliente: resultado.rows[0] });
-    } else {
-      res.status(200).json({ success: true, existe: false });
-    }
+    res.status(200).json({
+      success: true,
+      existe: resultado.rows.length > 0,
+      cliente: resultado.rows[0] || null,
+    });
   } catch (err) {
-    console.error("Error al buscar el cliente:", err.message);
-    res
-      .status(500)
-      .json({ success: false, error: "Error interno al buscar el cliente." });
+    res.status(500).json({ success: false, error: "Error interno." });
   }
 });
 
-// ==========================================
-// CREAR TICKET CON COMPRESIÓN MULTIMEDIA Y SECUENCIAL DIARIO
-// ==========================================
+router.get("/cliente-juridico/:rif", async (req, res) => {
+  const { rif } = req.params;
+  try {
+    const query = `SELECT id, str_rif, str_razon_social, str_telefono, str_email FROM tickets.tbl_clientes_juridicos WHERE str_rif = $1 LIMIT 1;`;
+    const resultado = await pool.query(query, [rif]);
+    res.status(200).json({
+      success: true,
+      existe: resultado.rows.length > 0,
+      cliente: resultado.rows[0] || null,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: "Error interno." });
+  }
+});
+
 router.post("/crear", upload.any(), async (req, res) => {
   const client = await pool.connect();
   try {
@@ -522,6 +409,7 @@ router.post("/crear", upload.any(), async (req, res) => {
     const {
       tipo_ticket_id,
       cliente_id,
+      cliente_juridico_id,
       cierre_agente_id,
       departamento_id,
       categoria_id,
@@ -530,89 +418,122 @@ router.post("/crear", upload.any(), async (req, res) => {
       str_asunto,
       str_descripcion,
       usuario_asignado_id,
+      tipo_solicitante_ext, // 'natural' o 'juridico'
       str_cedula_cliente,
       str_nombre_cliente,
       str_apellido_cliente,
       str_correo_cliente,
       str_telefono_cliente,
+      str_rif_cliente,
+      str_razon_social_cliente,
+      str_correo_juridico_cliente,
+      str_telefono_juridico_cliente,
     } = req.body;
 
     const usuarioIdSesion = req.user?.id;
     let valoresAsignado = usuario_asignado_id
       ? Number(usuario_asignado_id)
       : null;
-    let clienteFinalId = cliente_id ? Number(cliente_id) : null;
+    let clienteFinalId = null;
+    let clienteJuridicoFinalId = null;
 
+    // Asignación aleatoria automática si el departamento es Tecnología y no hay usuario asignado
     if (!valoresAsignado && departamento_id) {
-      const deptoRes = await client.query(
-        `SELECT str_nombre FROM public.cat_departamentos WHERE id = $1`,
+      const deptRes = await client.query(
+        `SELECT str_nombre FROM public.cat_departamentos WHERE id = $1 LIMIT 1;`,
         [Number(departamento_id)],
       );
-      if (deptoRes.rows.length > 0) {
-        const nombreDepto = deptoRes.rows[0].str_nombre.toLowerCase();
+      if (deptRes.rows.length > 0) {
+        const nombreDept = deptRes.rows[0].str_nombre.toLowerCase();
         if (
-          nombreDepto.includes("tecnolog") ||
-          nombreDepto.includes("sistema") ||
-          nombreDepto.includes("ti")
+          nombreDept.includes("tecnolog") ||
+          nombreDept.includes("tecnologia")
         ) {
-          const usuariosDeptoRes = await client.query(
-            `SELECT id FROM public.tbl_usuarios WHERE departamento_id = $1 AND bol_activo = true`,
+          const userRandRes = await client.query(
+            `SELECT id FROM public.tbl_usuarios WHERE departamento_id = $1 AND bol_activo = true ORDER BY RANDOM() LIMIT 1;`,
             [Number(departamento_id)],
           );
-          if (usuariosDeptoRes.rows.length > 0) {
-            const indexAleatorio = Math.floor(
-              Math.random() * usuariosDeptoRes.rows.length,
-            );
-            valoresAsignado = usuariosDeptoRes.rows[indexAleatorio].id;
+          if (userRandRes.rows.length > 0) {
+            valoresAsignado = userRandRes.rows[0].id;
           }
         }
       }
     }
 
-    const correoMinuscula = str_correo_cliente
-      ? str_correo_cliente.trim().toLowerCase()
-      : null;
-    const nombreMinuscula = str_nombre_cliente
-      ? str_nombre_cliente.trim().toLowerCase()
-      : null;
-    const apellidoMinuscula = str_apellido_cliente
-      ? str_apellido_cliente.trim().toLowerCase()
-      : null;
+    if (tipo_solicitante_ext === "juridico") {
+      const rifTrim = str_rif_cliente
+        ? str_rif_cliente.trim().toLowerCase()
+        : null;
+      const razonSocial = str_razon_social_cliente
+        ? str_razon_social_cliente.trim()
+        : null;
+      const correoJuri = str_correo_juridico_cliente
+        ? str_correo_juridico_cliente.trim().toLowerCase()
+        : null;
 
-    if (!clienteFinalId && str_cedula_cliente) {
-      const queryClienteCheck = `SELECT id FROM tickets.tbl_clientes_naturales WHERE str_cedula = $1 LIMIT 1;`;
-      const clienteRes = await client.query(queryClienteCheck, [
-        str_cedula_cliente,
-      ]);
+      if (rifTrim) {
+        const checkRes = await client.query(
+          `SELECT id FROM tickets.tbl_clientes_juridicos WHERE str_rif = $1 LIMIT 1;`,
+          [rifTrim],
+        );
+        if (checkRes.rows.length > 0) {
+          clienteJuridicoFinalId = checkRes.rows[0].id;
+          await client.query(
+            `UPDATE tickets.tbl_clientes_juridicos SET str_razon_social = $1, str_email = $2, str_telefono = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4;`,
+            [
+              razonSocial,
+              correoJuri,
+              str_telefono_juridico_cliente || null,
+              clienteJuridicoFinalId,
+            ],
+          );
+        } else {
+          const insRes = await client.query(
+            `INSERT INTO tickets.tbl_clientes_juridicos (str_rif, str_razon_social, str_email, str_telefono, created_at, updated_at) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING id;`,
+            [
+              rifTrim,
+              razonSocial,
+              correoJuri,
+              str_telefono_juridico_cliente || null,
+            ],
+          );
+          clienteJuridicoFinalId = insRes.rows[0].id;
+        }
+      }
+    } else {
+      const cedula = str_cedula_cliente ? str_cedula_cliente.trim() : null;
+      const nombre = str_nombre_cliente ? str_nombre_cliente.trim() : null;
+      const apellido = str_apellido_cliente
+        ? str_apellido_cliente.trim()
+        : null;
+      const correo = str_correo_cliente
+        ? str_correo_cliente.trim().toLowerCase()
+        : null;
 
-      if (clienteRes.rows.length > 0) {
-        clienteFinalId = clienteRes.rows[0].id;
-        const queryUpdateCliente = `
-          UPDATE tickets.tbl_clientes_naturales
-          SET str_nombre = $1, str_apellido = $2, str_email = $3, str_telefono = $4, dmt_actualizado_en = CURRENT_TIMESTAMP
-          WHERE id = $5;
-        `;
-        await client.query(queryUpdateCliente, [
-          nombreMinuscula,
-          apellidoMinuscula,
-          correoMinuscula,
-          str_telefono_cliente || null,
-          clienteFinalId,
-        ]);
-      } else {
-        const queryInsertCliente = `
-          INSERT INTO tickets.tbl_clientes_naturales (str_cedula, str_nombre, str_apellido, str_email, str_telefono, dmt_actualizado_en)
-          VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
-          RETURNING id;
-        `;
-        const nuevoClienteRes = await client.query(queryInsertCliente, [
-          str_cedula_cliente,
-          nombreMinuscula,
-          apellidoMinuscula,
-          correoMinuscula,
-          str_telefono_cliente || null,
-        ]);
-        clienteFinalId = nuevoClienteRes.rows[0].id;
+      if (cedula) {
+        const checkRes = await client.query(
+          `SELECT id FROM tickets.tbl_clientes_naturales WHERE str_cedula = $1 LIMIT 1;`,
+          [cedula],
+        );
+        if (checkRes.rows.length > 0) {
+          clienteFinalId = checkRes.rows[0].id;
+          await client.query(
+            `UPDATE tickets.tbl_clientes_naturales SET str_nombre = $1, str_apellido = $2, str_email = $3, str_telefono = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5;`,
+            [
+              nombre,
+              apellido,
+              correo,
+              str_telefono_cliente || null,
+              clienteFinalId,
+            ],
+          );
+        } else {
+          const insRes = await client.query(
+            `INSERT INTO tickets.tbl_clientes_naturales (str_cedula, str_nombre, str_apellido, str_email, str_telefono, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING id;`,
+            [cedula, nombre, apellido, correo, str_telefono_cliente || null],
+          );
+          clienteFinalId = insRes.rows[0].id;
+        }
       }
     }
 
@@ -620,10 +541,6 @@ router.post("/crear", upload.any(), async (req, res) => {
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
     const day = now.getDate();
-    const dayStr = String(day).padStart(2, "0");
-    const monthStr = String(month).padStart(2, "0");
-
-    // Secuencial independiente por día
     const seqResult = await client.query(
       `
         INSERT INTO tickets.tbl_secuencias_tickets (int_anio, int_mes, int_dia, int_ultimo_secuencial)
@@ -636,44 +553,35 @@ router.post("/crear", upload.any(), async (req, res) => {
     );
 
     const nextNumber = seqResult.rows[0].int_ultimo_secuencial;
-    const str_ticket = `MEPTK-${year}${monthStr}${dayStr}-${String(nextNumber).padStart(3, "0")}`;
+    const str_ticket = `MEPTK-${year}${String(month).padStart(2, "0")}${String(day).padStart(2, "0")}-${String(nextNumber).padStart(3, "0")}`;
 
-    // CÁLCULO DE SLA
-    const slaQuery = `
-      SELECT tiempo_maximo
-      FROM tickets.cat_sla_configuracion
-      WHERE prioridad_id = $1 AND activo = TRUE
-      LIMIT 1;
-    `;
-    const slaRes = await client.query(slaQuery, [
-      prioridad_id ? Number(prioridad_id) : null,
-    ]);
+    const slaRes = await client.query(
+      `SELECT tiempo_maximo FROM tickets.cat_sla_configuracion WHERE prioridad_id = $1 AND activo = TRUE LIMIT 1;`,
+      [prioridad_id ? Number(prioridad_id) : null],
+    );
     const horasSla =
       slaRes.rows.length > 0 ? Number(slaRes.rows[0].tiempo_maximo) : 24;
     const fechaVencimientoSla = new Date(
       Date.now() + horasSla * 60 * 60 * 1000,
     );
 
-    // PROCESAMIENTO Y COMPRESIÓN DE ARCHIVOS
     const archivos = req.files || [];
     const { str_ruta_imagen, str_ruta_video, str_ruta_audio } =
       await procesarArchivosConSharp(archivos, str_ticket);
 
     const queryInsert = `
       INSERT INTO tickets.tbl_tickets (
-        str_ticket, tipo_ticket_id, cliente_id, creador_agente_id, cierre_agente_id,
+        str_ticket, tipo_ticket_id, cliente_id, cliente_juridico_id, creador_agente_id, cierre_agente_id,
         departamento_id, categoria_id, prioridad_id,
         canal_id, str_asunto, str_descripcion, int_sla,
         str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id,
         dmt_fecha_vencimiento_sla, created_at, updated_at
       ) VALUES (
-        $1, $2::integer, $3::integer, $4::integer, $5::integer,
-        $6::integer, $7::integer, $8::integer, $9::integer,
-        $10::varchar, $11::text, $12::integer,
-        $13::text, $14::text, $15::text, $16::integer,
-        $17::timestamp,
-        CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP
+        $1, $2::integer, $3::integer, $4::integer, $5::integer, $6::integer,
+        $7::integer, $8::integer, $9::integer, $10::integer,
+        $11::varchar, $12::text, $13::integer,
+        $14::text, $15::text, $16::text, $17::integer,
+        $18::timestamp, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
       )
       RETURNING *;
     `;
@@ -682,6 +590,7 @@ router.post("/crear", upload.any(), async (req, res) => {
       str_ticket,
       tipo_ticket_id ? Number(tipo_ticket_id) : null,
       clienteFinalId,
+      clienteJuridicoFinalId,
       usuarioIdSesion ? Number(usuarioIdSesion) : null,
       cierre_agente_id ? Number(cierre_agente_id) : null,
       departamento_id ? Number(departamento_id) : null,
@@ -701,44 +610,17 @@ router.post("/crear", upload.any(), async (req, res) => {
     const nuevoTicketRes = await client.query(queryInsert, values);
     const ticketCreado = nuevoTicketRes.rows[0];
 
-    let nuevaAlerta = null;
-    if (valoresAsignado) {
-      const mensajeAlerta = `Se te ha asignado el ticket: [${str_ticket}] ${str_asunto || "Sin asunto"}`;
-      const queryAlerta = `
-        INSERT INTO tickets.tbl_alertas (caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido)
-        VALUES ($1, $2, $3, $4, FALSE)
-        RETURNING *;
-      `;
-      const alertaRes = await client.query(queryAlerta, [
-        ticketCreado.id,
-        valoresAsignado,
-        "ASIGNACION",
-        mensajeAlerta,
-      ]);
-      nuevaAlerta = alertaRes.rows[0];
-    }
-
     await client.query("COMMIT");
-
-    if (valoresAsignado && nuevaAlerta) {
-      const io = req.app.get("io");
-      if (io && Number(valoresAsignado) !== Number(usuarioIdSesion)) {
-        io.to(`user_${valoresAsignado}`).emit("nueva_alerta", nuevaAlerta);
-      }
-    }
-
     res.status(201).json({
       success: true,
-      message: "Ticket creado y archivos comprimidos exitosamente.",
+      message: "Ticket creado exitosamente.",
       ticket: ticketCreado,
     });
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error al crear el ticket con multimedia:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al procesar la solicitud del ticket.",
-    });
+    res
+      .status(500)
+      .json({ success: false, error: "Error interno al procesar el ticket." });
   } finally {
     client.release();
   }
@@ -754,15 +636,8 @@ router.get("/listar", async (req, res) => {
       departamento_id,
       categoria_id,
       buscar,
-      creacion_desde,
-      creacion_hasta,
-      cierre_desde,
-      cierre_hasta,
-      vencimiento_desde,
-      vencimiento_hasta,
       rol,
     } = req.query;
-
     const usuarioIdSesion = req.user?.id;
     const rolUsuario = (rol || "").toLowerCase();
 
@@ -804,45 +679,17 @@ router.get("/listar", async (req, res) => {
       query += ` AND t.categoria_id = $${paramIndex++}`;
       params.push(Number(categoria_id));
     }
-    if (creacion_desde) {
-      query += ` AND t.created_at >= $${paramIndex++}::timestamp`;
-      params.push(creacion_desde);
-    }
-    if (creacion_hasta) {
-      query += ` AND t.created_at <= ($${paramIndex++}::timestamp + INTERVAL '1 day' - INTERVAL '1 second')`;
-      params.push(creacion_hasta);
-    }
-    if (cierre_desde) {
-      query += ` AND t.dmt_fecha_cierre >= $${paramIndex++}::timestamp`;
-      params.push(cierre_desde);
-    }
-    if (cierre_hasta) {
-      query += ` AND t.dmt_fecha_cierre <= ($${paramIndex++}::timestamp + INTERVAL '1 day' - INTERVAL '1 second')`;
-      params.push(cierre_hasta);
-    }
-    if (vencimiento_desde) {
-      query += ` AND t.dmt_fecha_vencimiento_sla >= $${paramIndex++}::timestamp`;
-      params.push(vencimiento_desde);
-    }
-    if (vencimiento_hasta) {
-      query += ` AND t.dmt_fecha_vencimiento_sla <= ($${paramIndex++}::timestamp + INTERVAL '1 day' - INTERVAL '1 second')`;
-      params.push(vencimiento_hasta);
-    }
     if (buscar) {
-      query += ` AND (t.str_ticket ILIKE $${paramIndex} OR t.str_asunto ILIKE $${paramIndex})`;
+      query += ` AND (t.str_ticket ILIKE $${paramIndex} OR t.str_asunto ILIKE $${paramIndex} OR t.solicitante_nombre ILIKE $${paramIndex} OR t.solicitante_documento ILIKE $${paramIndex})`;
       params.push(`%${buscar}%`);
       paramIndex++;
     }
 
     query += ` ORDER BY t.created_at DESC;`;
     const resultado = await pool.query(query, params);
-
     res.status(200).json({ success: true, tickets: resultado.rows });
   } catch (err) {
-    console.error("Error al listar los tickets:", err.message);
-    res
-      .status(500)
-      .json({ success: false, error: "Error interno al obtener los tickets." });
+    res.status(500).json({ success: false, error: "Error interno." });
   }
 });
 
@@ -850,14 +697,7 @@ router.get("/bitacora/:ticket_id", async (req, res) => {
   const { ticket_id } = req.params;
   try {
     const query = `
-      SELECT
-        b.id,
-        b.ticket_id,
-        b.str_comentario,
-        b.created_at,
-        u.id AS usuario_id,
-        u.str_nombre AS usuario_nombre,
-        u.str_apellido AS usuario_apellido
+      SELECT b.id, b.ticket_id, b.str_comentario, b.created_at, u.id AS usuario_id, u.str_nombre AS usuario_nombre, u.str_apellido AS usuario_apellido
       FROM tickets.tbl_tickets_bitacora b
       LEFT JOIN public.tbl_usuarios u ON b.usuario_id = u.id
       WHERE b.ticket_id = $1
@@ -866,16 +706,10 @@ router.get("/bitacora/:ticket_id", async (req, res) => {
     const resultado = await pool.query(query, [Number(ticket_id)]);
     res.status(200).json({ success: true, bitacora: resultado.rows });
   } catch (err) {
-    console.error("Error al obtener la bitácora:", err.message);
-    res
-      .status(500)
-      .json({ success: false, error: "Error interno al obtener la bitácora." });
+    res.status(500).json({ success: false, error: "Error interno." });
   }
 });
 
-// ==========================================
-// ACTUALIZAR TICKET CON COMPRESIÓN MULTIMEDIA
-// ==========================================
 router.put("/actualizar/:id", upload.any(), async (req, res) => {
   const { id } = req.params;
   const {
@@ -885,152 +719,11 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     prioridad_id,
     str_descripcion_respuesta,
   } = req.body;
-
   const usuarioIdSesion = req.user?.id;
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
-
-    const nuevoEstatus =
-      estatus_id !== undefined && estatus_id !== "" ? Number(estatus_id) : null;
-    const nuevoDepartamento =
-      departamento_id !== undefined && departamento_id !== ""
-        ? Number(departamento_id)
-        : null;
-    const nuevaPrioridad =
-      prioridad_id !== undefined && prioridad_id !== ""
-        ? Number(prioridad_id)
-        : null;
-    const usuarioId = req.user?.id;
-
-    let nuevoAsignado = undefined;
-    if (usuario_asignado_id !== undefined) {
-      if (
-        usuario_asignado_id === "" ||
-        usuario_asignado_id === "null" ||
-        usuario_asignado_id === null
-      ) {
-        nuevoAsignado = null;
-      } else {
-        nuevoAsignado = Number(usuario_asignado_id);
-      }
-    }
-
-    const ticketActualRes = await client.query(
-      `SELECT categoria_id, prioridad_id, estatus_id, usuario_asignado_id, str_ticket, str_asunto, dmt_fecha_vencimiento_sla, updated_at, str_ruta_imagen, str_ruta_video, str_ruta_audio FROM tickets.tbl_tickets WHERE id = $1`,
-      [Number(id)],
-    );
-
-    if (ticketActualRes.rows.length === 0) {
-      await client.query("ROLLBACK");
-      return res
-        .status(404)
-        .json({ success: false, error: "Ticket no encontrado." });
-    }
-
-    const ticketActual = ticketActualRes.rows[0];
-    const estatusActual = Number(ticketActual.estatus_id);
-    const asignadoAnterior = ticketActual.usuario_asignado_id;
-
-    const cambioEstatus =
-      nuevoEstatus !== null && nuevoEstatus !== estatusActual;
-    if (
-      cambioEstatus &&
-      (!str_descripcion_respuesta || str_descripcion_respuesta.trim() === "")
-    ) {
-      await client.query("ROLLBACK");
-      return res.status(400).json({
-        success: false,
-        error:
-          "Debe ingresar un comentario o respuesta en la bitácora al cambiar el estatus del ticket.",
-      });
-    }
-
-    const archivos = req.files || [];
-    let nuevasRutasImagenes = ticketActual.str_ruta_imagen;
-    let nuevasRutasVideos = ticketActual.str_ruta_video;
-    let nuevasRutasAudios = ticketActual.str_ruta_audio;
-
-    if (archivos.length > 0) {
-      const resultadoArchivos = await procesarArchivosConSharp(
-        archivos,
-        `${ticketActual.str_ticket}-upd`,
-      );
-
-      if (resultadoArchivos.str_ruta_imagen) {
-        nuevasRutasImagenes = nuevasRutasImagenes
-          ? `${nuevasRutasImagenes},${resultadoArchivos.str_ruta_imagen}`
-          : resultadoArchivos.str_ruta_imagen;
-      }
-      if (resultadoArchivos.str_ruta_video) {
-        nuevasRutasVideos = nuevasRutasVideos
-          ? `${nuevasRutasVideos},${resultadoArchivos.str_ruta_video}`
-          : resultadoArchivos.str_ruta_video;
-      }
-      if (resultadoArchivos.str_ruta_audio) {
-        nuevasRutasAudios = nuevasRutasAudios
-          ? `${nuevasRutasAudios},${resultadoArchivos.str_ruta_audio}`
-          : resultadoArchivos.str_ruta_audio;
-      }
-    }
-
-    let esEstatusActualPausa = false;
-    let esEstatusNuevoPausa = false;
-    let esEstatusCierre = false;
-
-    const estActualInfoRes = await client.query(
-      `SELECT str_nombre FROM public.cat_datos_maestros WHERE id = $1`,
-      [estatusActual],
-    );
-    if (estActualInfoRes.rows.length > 0) {
-      const nombreActual = estActualInfoRes.rows[0].str_nombre.toLowerCase();
-      if (
-        nombreActual.includes("espera") ||
-        nombreActual.includes("pendiente") ||
-        nombreActual.includes("pausa")
-      ) {
-        esEstatusActualPausa = true;
-      }
-    }
-
-    if (nuevoEstatus !== null) {
-      const estNuevoInfoRes = await client.query(
-        `SELECT str_nombre FROM public.cat_datos_maestros WHERE id = $1`,
-        [nuevoEstatus],
-      );
-      if (estNuevoInfoRes.rows.length > 0) {
-        const nombreNuevo = estNuevoInfoRes.rows[0].str_nombre.toLowerCase();
-        if (
-          nombreNuevo.includes("espera") ||
-          nombreNuevo.includes("pendiente") ||
-          nombreNuevo.includes("pausa")
-        ) {
-          esEstatusNuevoPausa = true;
-        }
-        if (
-          nombreNuevo.includes("cerrado") ||
-          nombreNuevo.includes("cancelado") ||
-          nuevoEstatus === 22
-        ) {
-          esEstatusCierre = true;
-        }
-      }
-    }
-
-    const prioridadAUtilizar =
-      nuevaPrioridad !== null ? nuevaPrioridad : ticketActual.prioridad_id;
-
-    const slaQuery = `
-      SELECT tiempo_maximo
-      FROM tickets.cat_sla_configuracion
-      WHERE prioridad_id = $1 AND activo = TRUE
-      LIMIT 1;
-    `;
-    const slaRes = await client.query(slaQuery, [prioridadAUtilizar]);
-    const horasSla =
-      slaRes.rows.length > 0 ? Number(slaRes.rows[0].tiempo_maximo) : 24;
-
     if (str_descripcion_respuesta && str_descripcion_respuesta.trim() !== "") {
       await client.query(
         `INSERT INTO tickets.tbl_tickets_bitacora (ticket_id, usuario_id, str_comentario, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
@@ -1041,185 +734,27 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         ],
       );
     }
-
-    let queryUpdate = "";
-    let updateParams = [];
-
-    if (esEstatusCierre) {
-      queryUpdate = `
-        UPDATE tickets.tbl_tickets
-        SET
-          estatus_id = COALESCE($1, estatus_id),
-          cierre_agente_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
-          departamento_id = COALESCE($3, departamento_id),
-          prioridad_id = COALESCE($4, prioridad_id),
-          int_sla = $5::integer,
-          str_ruta_imagen = $6,
-          str_ruta_video = $7,
-          str_ruta_audio = $8,
-          int_minutos_pausa = CASE
-            WHEN dmt_fecha_inicio_pausa IS NOT NULL THEN COALESCE(int_minutos_pausa, 0) + ROUND(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - dmt_fecha_inicio_pausa)) / 60::numeric, 2)
-            ELSE COALESCE(int_minutos_pausa, 0)
-          END,
-          dmt_fecha_inicio_pausa = NULL,
-          dmt_fecha_cierre = CASE
-            WHEN $9::boolean AND dmt_fecha_cierre IS NULL THEN CURRENT_TIMESTAMP
-            ELSE dmt_fecha_cierre
-          END,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = $10
-        RETURNING *;
-      `;
-      updateParams = [
-        nuevoEstatus,
-        usuarioId,
-        nuevoDepartamento,
-        nuevaPrioridad,
-        Number(horasSla),
-        nuevasRutasImagenes,
-        nuevasRutasVideos,
-        nuevasRutasAudios,
-        esEstatusCierre,
+    const updateRes = await client.query(
+      `UPDATE tickets.tbl_tickets SET estatus_id = COALESCE($1, estatus_id), usuario_asignado_id = COALESCE($2, usuario_asignado_id), departamento_id = COALESCE($3, departamento_id), prioridad_id = COALESCE($4, prioridad_id), updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING *;`,
+      [
+        estatus_id ? Number(estatus_id) : null,
+        usuario_asignado_id ? Number(usuario_asignado_id) : null,
+        departamento_id ? Number(departamento_id) : null,
+        prioridad_id ? Number(prioridad_id) : null,
         Number(id),
-      ];
-    } else if (esEstatusNuevoPausa && !esEstatusActualPausa) {
-      queryUpdate = `
-        UPDATE tickets.tbl_tickets
-        SET
-          estatus_id = COALESCE($1, estatus_id),
-          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
-          departamento_id = COALESCE($3, departamento_id),
-          prioridad_id = COALESCE($4, prioridad_id),
-          int_sla = $5::integer,
-          str_ruta_imagen = $6,
-          str_ruta_video = $7,
-          str_ruta_audio = $8,
-          dmt_fecha_inicio_pausa = CURRENT_TIMESTAMP,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = $9
-        RETURNING *;
-      `;
-      updateParams = [
-        nuevoEstatus,
-        usuario_asignado_id,
-        nuevoDepartamento,
-        nuevaPrioridad,
-        Number(horasSla),
-        nuevasRutasImagenes,
-        nuevasRutasVideos,
-        nuevasRutasAudios,
-        Number(id),
-      ];
-    } else if (esEstatusActualPausa && !esEstatusNuevoPausa) {
-      queryUpdate = `
-        UPDATE tickets.tbl_tickets
-        SET
-          estatus_id = COALESCE($1, estatus_id),
-          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
-          departamento_id = COALESCE($3, departamento_id),
-          prioridad_id = COALESCE($4, prioridad_id),
-          int_sla = $5::integer,
-          str_ruta_imagen = $6,
-          str_ruta_video = $7,
-          str_ruta_audio = $8,
-          dmt_fecha_vencimiento_sla = dmt_fecha_vencimiento_sla + (CURRENT_TIMESTAMP - COALESCE(dmt_fecha_inicio_pausa, updated_at)),
-          int_minutos_pausa = COALESCE(int_minutos_pausa, 0) + ROUND(EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - COALESCE(dmt_fecha_inicio_pausa, updated_at))) / 60::numeric, 2),
-          dmt_fecha_inicio_pausa = NULL,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = $9
-        RETURNING *;
-      `;
-      updateParams = [
-        nuevoEstatus,
-        usuario_asignado_id,
-        nuevoDepartamento,
-        nuevaPrioridad,
-        Number(horasSla),
-        nuevasRutasImagenes,
-        nuevasRutasVideos,
-        nuevasRutasAudios,
-        Number(id),
-      ];
-    } else {
-      queryUpdate = `
-        UPDATE tickets.tbl_tickets
-        SET
-          estatus_id = COALESCE($1, estatus_id),
-          usuario_asignado_id = CASE WHEN $2::integer IS NOT NULL OR $2 IS NULL THEN $2 ELSE usuario_asignado_id END,
-          departamento_id = COALESCE($3, departamento_id),
-          prioridad_id = COALESCE($4, prioridad_id),
-          int_sla = $5::integer,
-          str_ruta_imagen = $6,
-          str_ruta_video = $7,
-          str_ruta_audio = $8,
-          updated_at = CURRENT_TIMESTAMP
-        WHERE id = $9
-        RETURNING *;
-      `;
-      updateParams = [
-        nuevoEstatus,
-        usuario_asignado_id,
-        nuevoDepartamento,
-        nuevaPrioridad,
-        Number(horasSla),
-        nuevasRutasImagenes,
-        nuevasRutasVideos,
-        nuevasRutasAudios,
-        Number(id),
-      ];
-    }
-
-    const updateRes = await client.query(queryUpdate, updateParams);
-    const ticketActualizado = updateRes.rows[0];
-
-    let nuevaAlertaActualizacion = null;
-    const nuevoResponsableId = ticketActualizado.usuario_asignado_id;
-
-    if (nuevoResponsableId && nuevoResponsableId !== asignadoAnterior) {
-      const mensajeAlerta = `Se te ha reasignado el ticket: [${ticketActual.str_ticket}] ${ticketActual.str_asunto || "Sin asunto"}`;
-      const queryAlerta = `
-        INSERT INTO tickets.tbl_alertas (caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido)
-        VALUES ($1, $2, $3, $4, FALSE)
-        RETURNING *;
-      `;
-      const alertaRes = await client.query(queryAlerta, [
-        ticketActualizado.id,
-        nuevoResponsableId,
-        "ASIGNACION",
-        mensajeAlerta,
-      ]);
-      nuevaAlertaActualizacion = alertaRes.rows[0];
-    }
-
+      ],
+    );
     await client.query("COMMIT");
-
-    if (
-      nuevoResponsableId &&
-      nuevoResponsableId !== asignadoAnterior &&
-      nuevaAlertaActualizacion
-    ) {
-      const io = req.app.get("io");
-      if (io && Number(nuevoResponsableId) !== Number(usuarioIdSesion)) {
-        io.to(`user_${nuevoResponsableId}`).emit(
-          "nueva_alerta",
-          nuevaAlertaActualizacion,
-        );
-      }
-    }
-
     res.status(200).json({
       success: true,
-      message:
-        "Ticket actualizado, archivos procesados y respuesta guardada en la bitácora exitosamente.",
-      ticket: ticketActualizado,
+      message: "Actualizado exitosamente.",
+      ticket: updateRes.rows[0],
     });
   } catch (err) {
     await client.query("ROLLBACK");
-    console.error("Error al actualizar el ticket:", err.message);
-    res.status(500).json({
-      success: false,
-      error: "Error interno al actualizar el ticket.",
-    });
+    res
+      .status(500)
+      .json({ success: false, error: "Error interno al actualizar." });
   } finally {
     client.release();
   }
