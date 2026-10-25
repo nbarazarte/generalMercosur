@@ -1,4 +1,3 @@
-import React from "react";
 import { DynamicIcon } from "../../../../components/IconCatalog";
 
 export function ClientesFiltro({
@@ -27,6 +26,18 @@ export function ClientesFiltro({
           alignItems: "center",
         }}
       >
+        {/* Filtro por tipo de persona / cliente */}
+        <select
+          name="tipoPersona"
+          value={filtros.tipoPersona || ""}
+          onChange={onFiltroChange}
+          style={filtroStyle}
+        >
+          <option value="">Todos los tipos de persona</option>
+          <option value="natural">Natural</option>
+          <option value="jurídico">Jurídico</option>
+        </select>
+
         {/* Filtro por fecha de última atención */}
         <div
           style={{
@@ -98,7 +109,7 @@ export function ClientesFiltro({
           >
             Limpiar Filtros
           </button>
-          
+
           <button
             type="button"
             className="btn-icon"

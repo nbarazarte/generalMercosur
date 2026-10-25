@@ -59,71 +59,10 @@ export default function ClientesTickets() {
     isDarkMode,
     currentUserId,
     currentUserRole,
+    tarjetasKpi,
+    filtroStyle,
+    obtenerEstilosEstatus,
   } = useClientes();
-
-  const totalClientes = clientesFiltrados.length;
-  const totalTicketsAtendidos = clientesFiltrados.reduce(
-    (acc, curr) => acc + (Number(curr.tickets) || 0),
-    0,
-  );
-
-  const tarjetasKpi = [
-    {
-      titulo: "Total Clientes",
-      valor: totalClientes,
-      icono: "FaPeopleRoof",
-      color: "#3B82F6",
-    },
-    {
-      titulo: "Total Tickets Atendidos",
-      valor: totalTicketsAtendidos,
-      icono: "HiTicket",
-      color: "#059669",
-    },
-  ];
-
-  const filtroStyle = {
-    padding: "8px 12px",
-    borderRadius: 6,
-    border: "1px solid var(--merco-border)",
-    fontSize: "12px",
-    background: "var(--merco-surface, #fff)",
-    color: "inherit",
-    outline: "none",
-  };
-
-  const obtenerEstilosEstatus = (nombreEstatus) => {
-    const estName = (nombreEstatus || "").toLowerCase();
-    const esCanceladoModal = estName.includes("cancelado");
-    const esRojo =
-      estName.includes("vencido") ||
-      estName.includes("crítico") ||
-      estName.includes("urgente");
-    const esEnProceso = estName.includes("en progreso");
-    const esEnEspera =
-      estName.includes("espera") || estName.includes("pendiente");
-
-    return {
-      background: esEnEspera
-        ? "rgba(168, 85, 247, 0.1)"
-        : esCanceladoModal
-          ? "rgba(14, 165, 233, 0.1)"
-          : esRojo
-            ? "rgba(239, 68, 68, 0.1)"
-            : esEnProceso
-              ? "rgba(59, 130, 246, 0.1)"
-              : "rgba(16, 185, 129, 0.1)",
-      color: esEnEspera
-        ? "#a855f7"
-        : esCanceladoModal
-          ? "#0ea5e9"
-          : esRojo
-            ? "#ef4444"
-            : esEnProceso
-              ? "#3b82f6"
-              : "#10b981",
-    };
-  };
 
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Clientes">
@@ -221,7 +160,7 @@ export default function ClientesTickets() {
               <thead>
                 <tr>
                   <th style={{ width: 40 }}></th>
-                  <th>CÉDULA</th>
+                  <th>CÉDULA/RIF</th>
                   <th>CLIENTE</th>
                   <th>TELÉFONO</th>
                   <th>CORREO</th>

@@ -2,7 +2,7 @@ import SystemLayout from "../../../pages/layouts/SystemLayout";
 import { DynamicIcon } from "../../../components/IconCatalog";
 import { BlockNoteView } from "@blocknote/mantine";
 import { useCrearTicket } from "./hooks/useCrearTicket";
-import { TicketParametros } from "./components/TicketParametros";
+import { CrearTicketParametros } from "./components/CrearTicketParametros";
 import { ClienteExternoFields } from "./components/ClienteExternoFields";
 import CopiableCodigoPartes from "./components/CopiableCodigoPartes";
 
@@ -82,25 +82,10 @@ export default function CrearTicket() {
     obtenerIconoPorTipo,
     validarCorreo,
     categoriasActuales,
+    debeBloquearEmpleado,
+    inputStyle,
+    labelStyle,
   } = useCrearTicket();
-
-  const inputStyle = {
-    width: "100%",
-    padding: "6px 10px",
-    border: "1px solid var(--merco-border, #ccc)",
-    borderRadius: "6px",
-    fontFamily: "inherit",
-    fontSize: "13px",
-    background: "var(--input, var(--merco-surface))",
-    color: "var(--merco-text)",
-  };
-
-  const labelStyle = {
-    fontSize: "12px",
-    fontWeight: "600",
-    marginBottom: "4px",
-    display: "block",
-  };
 
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Crear">
@@ -213,8 +198,8 @@ export default function CrearTicket() {
               />
               <span>
                 {esTipoInterno()
-                  ? "Para crear Tickets internos de Mercosur"
-                  : "Para crear tickets referentes a la APP de Mercosur y sus clientes (Naturales o Jurídicos)"}
+                  ? "Para crear Tickets internos entre departamentos de Mercosur"
+                  : "Para crear tickets externos referentes a la APP de Mercosur y sus clientes (Naturales o Jurídicos)"}
               </span>
             </div>
 
@@ -230,7 +215,7 @@ export default function CrearTicket() {
                 padding: "16px",
               }}
             >
-              <TicketParametros
+              <CrearTicketParametros
                 tipoTicketId={tipoTicketId}
                 handleTipoTicketChange={handleTipoTicketChange}
                 listaTipoTicket={listaTipoTicket}
@@ -250,6 +235,7 @@ export default function CrearTicket() {
                 setStrAsunto={setStrAsunto}
                 inputStyle={inputStyle}
                 labelStyle={labelStyle}
+                debeBloquearEmpleado={debeBloquearEmpleado}
               />
 
               {esTipoExterno() && (

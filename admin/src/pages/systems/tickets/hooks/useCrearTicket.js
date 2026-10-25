@@ -559,6 +559,11 @@ REGLAS ABSOLUTAS:
       return;
     }
 
+    if (!prioridadId) {
+      showToast("Por favor seleccione la Prioridad.", "error");
+      return;
+    }
+
     if (!window.confirm(`¿${nombre}, confirmas que deseas crear este ticket?`))
       return;
 
@@ -664,6 +669,39 @@ REGLAS ABSOLUTAS:
     return [...listaCategoriasInternas, ...listaCategoriasExternas];
   })();
 
+  const esDepartamentoTecnologia = () => {
+    if (!departamentoId) return false;
+    const deptoObj = listaDepartamentos.find(
+      (dep) => Number(dep.id) === Number(departamentoId),
+    );
+    if (!deptoObj) return false;
+    const nombreDepto = deptoObj.str_nombre.toLowerCase();
+    return (
+      nombreDepto.includes("tecnología") || nombreDepto.includes("tecnologia")
+    );
+  };
+
+  const esTecnologia = esDepartamentoTecnologia();
+  const debeBloquearEmpleado = esTecnologia && !esTipoInterno();
+
+  const inputStyle = {
+    width: "100%",
+    padding: "6px 10px",
+    border: "1px solid var(--merco-border, #ccc)",
+    borderRadius: "6px",
+    fontFamily: "inherit",
+    fontSize: "13px",
+    background: "var(--input, var(--merco-surface))",
+    color: "var(--merco-text)",
+  };
+
+  const labelStyle = {
+    fontSize: "12px",
+    fontWeight: "600",
+    marginBottom: "4px",
+    display: "block",
+  };
+
   return {
     tipoTicketId,
     setTipoTicketId,
@@ -737,5 +775,8 @@ REGLAS ABSOLUTAS:
     validarCorreo,
     categoriasActuales,
     departamentosActuales,
+    debeBloquearEmpleado,
+    inputStyle,
+    labelStyle,
   };
 }

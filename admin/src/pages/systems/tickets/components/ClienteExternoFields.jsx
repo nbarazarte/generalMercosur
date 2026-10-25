@@ -1,5 +1,3 @@
-import React from "react";
-
 export function ClienteExternoFields({
   tipoPersonaCliente,
   setTipoPersonaCliente,
@@ -42,6 +40,7 @@ export function ClienteExternoFields({
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      
       {/* Selector de Tipo de Persona */}
       <div className="field">
         <label style={labelStyle}>Tipo de Solicitante / Cliente</label>

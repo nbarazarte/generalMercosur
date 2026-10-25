@@ -1,6 +1,4 @@
-import React from "react";
-
-export function TicketParametros({
+export function CrearTicketParametros({
   tipoTicketId,
   handleTipoTicketChange,
   listaTipoTicket,
@@ -9,7 +7,6 @@ export function TicketParametros({
   user,
   departamentoId,
   setDepartamentoId,
-  listaDepartamentos,
   departamentosActuales,
   usuarioId,
   setUsuarioId,
@@ -18,23 +15,8 @@ export function TicketParametros({
   setStrAsunto,
   inputStyle,
   labelStyle,
-  esTipoInterno,
+  debeBloquearEmpleado,
 }) {
-  const esDepartamentoTecnologia = () => {
-    if (!departamentoId) return false;
-    const deptoObj = listaDepartamentos.find(
-      (dep) => Number(dep.id) === Number(departamentoId),
-    );
-    if (!deptoObj) return false;
-    const nombreDepto = deptoObj.str_nombre.toLowerCase();
-    return (
-      nombreDepto.includes("tecnología") || nombreDepto.includes("tecnologia")
-    );
-  };
-
-  const esTecnologia = esDepartamentoTecnologia();
-  const debeBloquearEmpleado = esTecnologia && !esTipoInterno();
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
       {/* Fila 1: Tipo de Ticket, Remitente y Asunto */}
@@ -128,6 +110,8 @@ export function TicketParametros({
                 : inputStyle.background,
               opacity: debeBloquearEmpleado ? 0.7 : 1,
             }}
+
+            required={debeBloquearEmpleado ? false : true}
           >
             <option value="">
               {!departamentoId

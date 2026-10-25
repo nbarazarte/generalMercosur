@@ -27,11 +27,12 @@ export const useClientes = () => {
   const [paginaActual, setPaginaActual] = useState(1);
   const [porPagina, setPorPagina] = useState(10);
 
-  // Estados de Filtros unificados
+  // Estados de Filtros unificados (se añade tipoPersona)
   const [filtros, setFiltros] = useState({
     busqueda: "",
     tipoFecha: "",
     fechaCalendario: "",
+    tipoPersona: "",
   });
 
   // Estados para el Modal de Detalle de Ticket
@@ -184,6 +185,7 @@ export const useClientes = () => {
       busqueda: "",
       tipoFecha: "",
       fechaCalendario: "",
+      tipoPersona: "",
     });
   };
 
@@ -324,6 +326,12 @@ export const useClientes = () => {
   // Filtrado local instantáneo
   const clientesFiltrados = useMemo(() => {
     return clientes.filter((c) => {
+      // Filtrar por tipo_cliente (natural / juridico)
+      if (filtros.tipoPersona) {
+        const tipoCliente = (c.tipo_cliente || "").toLowerCase();
+        if (tipoCliente !== filtros.tipoPersona.toLowerCase()) return false;
+      }
+
       if (filtros.tipoFecha && filtros.fechaCalendario) {
         if (!c.ultima_atencion) return false;
         const dCliente = new Date(c.ultima_atencion);
@@ -475,6 +483,70 @@ export const useClientes = () => {
     showToast("Exportación exitosa", "success");
   };
 
+  const totalClientes = clientesFiltrados.length;
+  const totalTicketsAtendidos = clientesFiltrados.reduce(
+    (acc, curr) => acc + (Number(curr.tickets) || 0),
+    0,
+  );
+
+  const tarjetasKpi = [
+    {
+      titulo: "Total Clientes",
+      valor: totalClientes,
+      icono: "FaPeopleRoof",
+      color: "#3B82F6",
+    },
+    {
+      titulo: "Total Tickets Atendidos",
+      valor: totalTicketsAtendidos,
+      icono: "HiTicket",
+      color: "#059669",
+    },
+  ];
+
+  const filtroStyle = {
+    padding: "8px 12px",
+    borderRadius: 6,
+    border: "1px solid var(--merco-border)",
+    fontSize: "12px",
+    background: "var(--merco-surface, #fff)",
+    color: "inherit",
+    outline: "none",
+  };
+
+  const obtenerEstilosEstatus = (nombreEstatus) => {
+    const estName = (nombreEstatus || "").toLowerCase();
+    const esCanceladoModal = estName.includes("cancelado");
+    const esRojo =
+      estName.includes("vencido") ||
+      estName.includes("crítico") ||
+      estName.includes("urgente");
+    const esEnProceso = estName.includes("en progreso");
+    const esEnEspera =
+      estName.includes("espera") || estName.includes("pendiente");
+
+    return {
+      background: esEnEspera
+        ? "rgba(168, 85, 247, 0.1)"
+        : esCanceladoModal
+          ? "rgba(14, 165, 233, 0.1)"
+          : esRojo
+            ? "rgba(239, 68, 68, 0.1)"
+            : esEnProceso
+              ? "rgba(59, 130, 246, 0.1)"
+              : "rgba(16, 185, 129, 0.1)",
+      color: esEnEspera
+        ? "#a855f7"
+        : esCanceladoModal
+          ? "#0ea5e9"
+          : esRojo
+            ? "#ef4444"
+            : esEnProceso
+              ? "#3b82f6"
+              : "#10b981",
+    };
+  };
+
   return {
     clientes: clientesPaginados,
     clientesFiltrados,
@@ -527,5 +599,8 @@ export const useClientes = () => {
     isDarkMode,
     currentUserId,
     currentUserRole,
+    tarjetasKpi,
+    filtroStyle,
+    obtenerEstilosEstatus,
   };
 };
