@@ -124,16 +124,20 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
 
   const usuarioId = req.user?.id;
   let whereClause = `WHERE 1=1`;
+  //let whereClause2 = `WHERE 1=1`;
   const params = [];
   let paramIndex = 1;
   const rolUsuario = (rol || "").toLowerCase();
 
-  if (rolUsuario.includes("gerente atc")) {
+  if (rolUsuario.includes("gerente_atc")) {
     whereClause += ` AND (${aliasTabla}.tipo_ticket_id = 25 OR (${aliasTabla}.tipo_ticket_id = 24 AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})))`;
+    //whereClause2 += ` AND (${aliasTabla}.tipo_ticket_id = 25 OR (${aliasTabla}.tipo_ticket_id = 24 AND (${aliasTabla}.creador_agente_id = $${paramIndex})))`;
+
     params.push(Number(usuarioId));
     paramIndex++;
-  } else if (rolUsuario.includes("operador atc")) {
+  } else if (rolUsuario.includes("operador_atc")) {
     whereClause += ` AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})`;
+    //whereClause2 += ` AND (${aliasTabla}.creador_agente_id = $${paramIndex})`;
     params.push(Number(usuarioId));
     paramIndex++;
   }
@@ -176,6 +180,10 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
     params.push(creacion_hasta);
   }
 
+  //console.log(whereClause);
+  //console.log(usuarioId);
+
+  //return { whereClause, whereClause2, params };
   return { whereClause, params };
 }
 
@@ -205,6 +213,7 @@ router.get("/dashboard/kpis", async (req, res) => {
 router.get("/dashboard/tickets-por-categoria", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
+
     const query = `
       SELECT nombre_categoria, COUNT(ticket_id) AS total_tickets
       FROM tickets.view_tickets_por_categoria t
@@ -239,21 +248,24 @@ router.get("/dashboard/distribucion-estados", async (req, res) => {
 router.get("/dashboard/casos-por-analista", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
+    //${whereClause}
     const query = `
       SELECT
         COALESCE(u.str_nombre || ' ' || u.str_apellido, 'Sin Asignar') AS nombre_analista,
         COUNT(t.id) AS total_tickets
       FROM tickets.tbl_tickets t
-      LEFT JOIN public.tbl_usuarios u ON t.usuario_asignado_id = u.id
+      LEFT JOIN public.tbl_usuarios u ON t.creador_agente_id = u.id
       ${whereClause}
       GROUP BY u.id, u.str_nombre, u.str_apellido
       ORDER BY total_tickets DESC
       LIMIT 10;
     `;
+
+    //console.log(query);
+
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
-    console.error("Error en /dashboard/casos-por-analista:", err);
     res.status(500).json({ success: false, error: "Error interno." });
   }
 });
@@ -276,7 +288,6 @@ router.get("/dashboard/casos-cerrados-por-analista", async (req, res) => {
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
-    console.error("Error en /dashboard/casos-cerrados-por-analista:", err);
     res.status(500).json({ success: false, error: "Error interno." });
   }
 });
@@ -418,7 +429,7 @@ router.post("/crear", upload.any(), async (req, res) => {
       str_asunto,
       str_descripcion,
       usuario_asignado_id,
-      tipo_solicitante_ext, // 'natural' o 'juridico'
+      tipo_solicitante_ext,
       str_cedula_cliente,
       str_nombre_cliente,
       str_apellido_cliente,
@@ -437,7 +448,6 @@ router.post("/crear", upload.any(), async (req, res) => {
     let clienteFinalId = null;
     let clienteJuridicoFinalId = null;
 
-    // Asignación aleatoria automática si el departamento es Tecnología y no hay usuario asignado
     if (!valoresAsignado && departamento_id) {
       const deptRes = await client.query(
         `SELECT str_nombre FROM public.cat_departamentos WHERE id = $1 LIMIT 1;`,
@@ -610,7 +620,34 @@ router.post("/crear", upload.any(), async (req, res) => {
     const nuevoTicketRes = await client.query(queryInsert, values);
     const ticketCreado = nuevoTicketRes.rows[0];
 
+    // 🔔 INSERTAR ALERTA EN BD SI HAY USUARIO ASIGNADO
+    let nuevaAlerta = null;
+    if (valoresAsignado) {
+      const mensajeAlerta = `Se te ha asignado el ticket: [${str_ticket}] ${str_asunto || "Sin asunto"}`;
+      const queryAlerta = `
+        INSERT INTO tickets.tbl_alertas (caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido)
+        VALUES ($1, $2, $3, $4, FALSE)
+        RETURNING *;
+      `;
+      const alertaRes = await client.query(queryAlerta, [
+        ticketCreado.id,
+        valoresAsignado,
+        "ASIGNACION",
+        mensajeAlerta,
+      ]);
+      nuevaAlerta = alertaRes.rows[0];
+    }
+
     await client.query("COMMIT");
+
+    // 🔔 EMITIR SOCKET.IO
+    if (valoresAsignado && nuevaAlerta) {
+      const io = req.app.get("io");
+      if (io && Number(valoresAsignado) !== Number(usuarioIdSesion)) {
+        io.to(`user_${valoresAsignado}`).emit("nueva_alerta", nuevaAlerta);
+      }
+    }
+
     res.status(201).json({
       success: true,
       message: "Ticket creado exitosamente.",
@@ -628,57 +665,18 @@ router.post("/crear", upload.any(), async (req, res) => {
 
 router.get("/listar", async (req, res) => {
   try {
-    const {
-      tipo_ticket_id,
-      estatus_id,
-      prioridad_id,
-      canal_id,
-      departamento_id,
-      categoria_id,
-      buscar,
-      rol,
-    } = req.query;
-    const usuarioIdSesion = req.user?.id;
-    const rolUsuario = (rol || "").toLowerCase();
+    const { buscar } = req.query;
 
-    let query = `SELECT * FROM tickets.view_listar_tickets t WHERE 1=1`;
-    const params = [];
-    let paramIndex = 1;
+    // 1. Obtenemos el WHERE y los parámetros ya armados por la función global
+    const { whereClause, params } = construirFiltrosDashboard(req, "t");
 
-    if (rolUsuario.includes("gerente atc")) {
-      query += ` AND (t.tipo_ticket_id = 25 OR (t.tipo_ticket_id = 24 AND (t.usuario_asignado_id = $${paramIndex} OR t.creador_agente_id = $${paramIndex})))`;
-      params.push(Number(usuarioIdSesion));
-      paramIndex++;
-    } else if (rolUsuario.includes("operador atc")) {
-      query += ` AND (t.usuario_asignado_id = $${paramIndex} OR t.creador_agente_id = $${paramIndex})`;
-      params.push(Number(usuarioIdSesion));
-      paramIndex++;
-    }
+    // 2. Iniciamos la consulta usando la vista 'tickets.view_listar_tickets'
+    let query = `SELECT * FROM tickets.view_listar_tickets t ${whereClause}`;
 
-    if (tipo_ticket_id) {
-      query += ` AND t.tipo_ticket_id = $${paramIndex++}`;
-      params.push(Number(tipo_ticket_id));
-    }
-    if (estatus_id) {
-      query += ` AND t.estatus_id = $${paramIndex++}`;
-      params.push(Number(estatus_id));
-    }
-    if (prioridad_id) {
-      query += ` AND t.prioridad_id = $${paramIndex++}`;
-      params.push(Number(prioridad_id));
-    }
-    if (canal_id) {
-      query += ` AND t.canal_id = $${paramIndex++}`;
-      params.push(Number(canal_id));
-    }
-    if (departamento_id) {
-      query += ` AND t.departamento_id = $${paramIndex++}`;
-      params.push(Number(departamento_id));
-    }
-    if (categoria_id) {
-      query += ` AND t.categoria_id = $${paramIndex++}`;
-      params.push(Number(categoria_id));
-    }
+    // 3. Determinamos el índice del siguiente parámetro basado en los que ya usó construirFiltrosDashboard
+    let paramIndex = params.length + 1;
+
+    // 4. Añadimos el filtro exclusivo de búsqueda por texto si viene en la query
     if (buscar) {
       query += ` AND (t.str_ticket ILIKE $${paramIndex} OR t.str_asunto ILIKE $${paramIndex} OR t.solicitante_nombre ILIKE $${paramIndex} OR t.solicitante_documento ILIKE $${paramIndex})`;
       params.push(`%${buscar}%`);
@@ -686,9 +684,11 @@ router.get("/listar", async (req, res) => {
     }
 
     query += ` ORDER BY t.created_at DESC;`;
+
     const resultado = await pool.query(query, params);
     res.status(200).json({ success: true, tickets: resultado.rows });
   } catch (err) {
+    console.error("Error al listar tickets:", err);
     res.status(500).json({ success: false, error: "Error interno." });
   }
 });
@@ -710,6 +710,159 @@ router.get("/bitacora/:ticket_id", async (req, res) => {
   }
 });
 
+/* router.put("/actualizar/:id", upload.any(), async (req, res) => {
+  const { id } = req.params;
+  const {
+    estatus_id,
+    usuario_asignado_id,
+    departamento_id,
+    prioridad_id,
+    str_descripcion_respuesta,
+  } = req.body;
+  const usuarioIdSesion = req.user?.id;
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    // 1. Consultar estado anterior del ticket
+    const ticketAnteriorRes = await client.query(
+      `SELECT usuario_asignado_id, str_ticket, str_asunto FROM tickets.tbl_tickets WHERE id = $1`,
+      [Number(id)],
+    );
+    const asignadoAnterior = ticketAnteriorRes.rows[0]?.usuario_asignado_id;
+
+    // 2. Verificar si el nuevo estatus_id pertenece a un cierre (ID 22 o catálogo maestro)
+    let esCierre = false;
+    let nuevoEstatusIdNum = estatus_id ? Number(estatus_id) : null;
+
+    if (nuevoEstatusIdNum) {
+      const estatusCatRes = await client.query(
+        `SELECT id, str_nombre FROM public.cat_datos_maestros WHERE id = $1 AND str_tipo = 'ESTATUSTICKET'`,
+        [nuevoEstatusIdNum],
+      );
+
+      if (estatusCatRes.rows.length > 0) {
+        const nombreEstatus = (
+          estatusCatRes.rows[0].str_nombre || ""
+        ).toLowerCase();
+        if (
+          nuevoEstatusIdNum === 22 ||
+          nombreEstatus.includes("cerrado") ||
+          nombreEstatus.includes("cancelado")
+        ) {
+          esCierre = true;
+        }
+      }
+    }
+
+    // 3. Registrar respuesta en bitácora si existe
+    if (str_descripcion_respuesta && str_descripcion_respuesta.trim() !== "") {
+      await client.query(
+        `INSERT INTO tickets.tbl_tickets_bitacora (ticket_id, usuario_id, str_comentario, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
+        [
+          Number(id),
+          usuarioIdSesion ? Number(usuarioIdSesion) : null,
+          str_descripcion_respuesta.trim(),
+        ],
+      );
+    }
+
+    // 4. Ejecutar el UPDATE calculando la duración exacta (dmt_fecha_cierre - created_at)
+    const updateRes = await client.query(
+      `UPDATE tickets.tbl_tickets
+       SET estatus_id = COALESCE($1, estatus_id),
+           usuario_asignado_id = COALESCE($2, usuario_asignado_id),
+           departamento_id = COALESCE($3, departamento_id),
+           prioridad_id = COALESCE($4, prioridad_id),
+           dmt_fecha_cierre = CASE
+               WHEN $5 = TRUE THEN COALESCE(dmt_fecha_cierre, CURRENT_TIMESTAMP)
+               ELSE dmt_fecha_cierre
+           END,
+           cierre_agente_id = CASE
+               WHEN $5 = TRUE THEN COALESCE(cierre_agente_id, $6)
+               ELSE cierre_agente_id
+           END,
+           tiempo_resolucion = CASE
+               WHEN $5 = TRUE THEN
+                   TRIM(
+                       COALESCE(NULLIF(EXTRACT(DAY FROM (COALESCE(dmt_fecha_cierre, CURRENT_TIMESTAMP) - created_at)) || 'd ', '0d '), '') ||
+                       COALESCE(NULLIF(EXTRACT(HOUR FROM (COALESCE(dmt_fecha_cierre, CURRENT_TIMESTAMP) - created_at)) || 'h ', '0h '), '') ||
+                       COALESCE(EXTRACT(MINUTE FROM (COALESCE(dmt_fecha_cierre, CURRENT_TIMESTAMP) - created_at)) || 'm', '0m')
+                   )
+               ELSE tiempo_resolucion
+           END,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $7
+       RETURNING *;`,
+      [
+        nuevoEstatusIdNum,
+        usuario_asignado_id !== undefined && usuario_asignado_id !== ""
+          ? Number(usuario_asignado_id)
+          : null,
+        departamento_id ? Number(departamento_id) : null,
+        prioridad_id ? Number(prioridad_id) : null,
+        esCierre, // $5: Booleano de cierre
+        usuarioIdSesion ? Number(usuarioIdSesion) : null, // $6: ID del agente que cierra
+        Number(id), // $7
+      ],
+    );
+    const ticketActualizado = updateRes.rows[0];
+
+    // 5. INSERTAR ALERTA EN BD SI CAMBIÓ EL RESPONSABLE / ASIGNADO
+    let nuevaAlertaActualizacion = null;
+    const nuevoResponsableId = ticketActualizado.usuario_asignado_id;
+
+    if (nuevoResponsableId && nuevoResponsableId !== asignadoAnterior) {
+      const mensajeAlerta = `Se te ha reasignado el ticket: [${ticketActualizado.str_ticket}] ${ticketActualizado.str_asunto || "Sin asunto"}`;
+      const queryAlerta = `
+        INSERT INTO tickets.tbl_alertas (caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido)
+        VALUES ($1, $2, $3, $4, FALSE)
+        RETURNING *;
+      `;
+      const alertaRes = await client.query(queryAlerta, [
+        ticketActualizado.id,
+        nuevoResponsableId,
+        "ASIGNACION",
+        mensajeAlerta,
+      ]);
+      nuevaAlertaActualizacion = alertaRes.rows[0];
+    }
+
+    await client.query("COMMIT");
+
+    // 6. EMITIR SOCKET.IO AL ACTUALIZAR / REASIGNAR
+    if (
+      nuevoResponsableId &&
+      nuevoResponsableId !== asignadoAnterior &&
+      nuevaAlertaActualizacion
+    ) {
+      const io = req.app.get("io");
+      if (io && Number(nuevoResponsableId) !== Number(usuarioIdSesion)) {
+        io.to(`user_${nuevoResponsableId}`).emit(
+          "nueva_alerta",
+          nuevaAlertaActualizacion,
+        );
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Actualizado exitosamente.",
+      ticket: ticketActualizado,
+    });
+  } catch (err) {
+    await client.query("ROLLBACK");
+    console.error("Error al actualizar ticket:", err);
+    res
+      .status(500)
+      .json({ success: false, error: "Error interno al actualizar." });
+  } finally {
+    client.release();
+  }
+});
+ */
+
 router.put("/actualizar/:id", upload.any(), async (req, res) => {
   const { id } = req.params;
   const {
@@ -724,6 +877,92 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
 
   try {
     await client.query("BEGIN");
+
+    // 1. Consultar estado anterior del ticket
+    const ticketAnteriorRes = await client.query(
+      `SELECT usuario_asignado_id, estatus_id, dmt_fecha_inicio_pausa, int_minutos_pausa, created_at, dmt_fecha_cierre, str_ticket, str_asunto FROM tickets.tbl_tickets WHERE id = $1`,
+      [Number(id)],
+    );
+    const ticketAnt = ticketAnteriorRes.rows[0];
+    const asignadoAnterior = ticketAnt?.usuario_asignado_id;
+    const estatusAnteriorId = ticketAnt?.estatus_id ? Number(ticketAnt.estatus_id) : null;
+    const fechaInicioPausaAnt = ticketAnt?.dmt_fecha_inicio_pausa;
+    let minutosPausaAcumulados = parseFloat(ticketAnt?.int_minutos_pausa) || 0;
+    const fechaCreacionTicket = ticketAnt?.created_at;
+
+    // 2. Definir estatus de pausa (IDs 18 y 19)
+    let nuevoEstatusIdNum = estatus_id ? Number(estatus_id) : null;
+    
+    const esPausa = (estId) => estId === 18 || estId === 19;
+    const eraPausa = esPausa(estatusAnteriorId);
+    const seraPausa = nuevoEstatusIdNum ? esPausa(nuevoEstatusIdNum) : eraPausa;
+
+    // 3. Lógica en JS para pausa y fechas de inicio/fin
+    let nuevaFechaInicioPausa = fechaInicioPausaAnt;
+
+    if (!eraPausa && seraPausa) {
+      nuevaFechaInicioPausa = new Date();
+    } else if (eraPausa && !seraPausa) {
+      if (fechaInicioPausaAnt) {
+        const inicio = new Date(fechaInicioPausaAnt);
+        const ahora = new Date();
+        const diffMs = ahora - inicio;
+        if (diffMs > 0) {
+          minutosPausaAcumulados += diffMs / (1000 * 60);
+        }
+      }
+      nuevaFechaInicioPausa = null;
+    }
+
+    const totalMinutosPausaStr = minutosPausaAcumulados.toFixed(2);
+
+    // 4. Verificar si el nuevo estatus es Cierre (ID 22 o catálogo maestro)
+    let esCierre = false;
+    if (nuevoEstatusIdNum) {
+      const estatusCatRes = await client.query(
+        `SELECT id, str_nombre FROM public.cat_datos_maestros WHERE id = $1 AND str_tipo = 'ESTATUSTICKET'`,
+        [nuevoEstatusIdNum],
+      );
+
+      if (estatusCatRes.rows.length > 0) {
+        const nombreEstatus = (
+          estatusCatRes.rows[0].str_nombre || ""
+        ).toLowerCase();
+        if (
+          nuevoEstatusIdNum === 22 ||
+          nombreEstatus.includes("cerrado") ||
+          nombreEstatus.includes("cancelado")
+        ) {
+          esCierre = true;
+        }
+      }
+    }
+
+    // 5. Calcular tiempo de resolución en Node.js si se va a cerrar
+    let tiempoResolucionCalculado = null;
+    let fechaCierreFinal = null;
+
+    if (esCierre) {
+      fechaCierreFinal = ticketAnt?.dmt_fecha_cierre || new Date();
+      if (fechaCreacionTicket) {
+        const inicio = new Date(fechaCreacionTicket);
+        const fin = new Date(fechaCierreFinal);
+        const diffMs = fin - inicio;
+        if (diffMs > 0) {
+          const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+          const diffHrs = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+          
+          let resText = "";
+          if (diffDays > 0) resText += `${diffDays}d `;
+          if (diffHrs > 0 || diffDays > 0) resText += `${diffHrs}h `;
+          resText += `${diffMins}m`;
+          tiempoResolucionCalculado = resText.trim();
+        }
+      }
+    }
+
+    // 6. Registrar respuesta en bitácora si existe
     if (str_descripcion_respuesta && str_descripcion_respuesta.trim() !== "") {
       await client.query(
         `INSERT INTO tickets.tbl_tickets_bitacora (ticket_id, usuario_id, str_comentario, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
@@ -734,24 +973,82 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         ],
       );
     }
+
+    // 7. Ejecutar el UPDATE de forma limpia y directa (sin CASE complejos conflictivos)
     const updateRes = await client.query(
-      `UPDATE tickets.tbl_tickets SET estatus_id = COALESCE($1, estatus_id), usuario_asignado_id = COALESCE($2, usuario_asignado_id), departamento_id = COALESCE($3, departamento_id), prioridad_id = COALESCE($4, prioridad_id), updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING *;`,
+      `UPDATE tickets.tbl_tickets
+       SET estatus_id = COALESCE($1, estatus_id),
+           usuario_asignado_id = COALESCE($2, usuario_asignado_id),
+           departamento_id = COALESCE($3, departamento_id),
+           prioridad_id = COALESCE($4, prioridad_id),
+           dmt_fecha_cierre = COALESCE($5, dmt_fecha_cierre),
+           cierre_agente_id = COALESCE($6, cierre_agente_id),
+           dmt_fecha_inicio_pausa = $7,
+           int_minutos_pausa = $8,
+           tiempo_resolucion = COALESCE($9, tiempo_resolucion),
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $10
+       RETURNING *;`,
       [
-        estatus_id ? Number(estatus_id) : null,
-        usuario_asignado_id ? Number(usuario_asignado_id) : null,
+        nuevoEstatusIdNum,
+        usuario_asignado_id !== undefined && usuario_asignado_id !== "" ? Number(usuario_asignado_id) : null,
         departamento_id ? Number(departamento_id) : null,
         prioridad_id ? Number(prioridad_id) : null,
-        Number(id),
+        esCierre ? (ticketAnt?.dmt_fecha_cierre || new Date()) : null, // $5
+        esCierre ? (usuarioIdSesion ? Number(usuarioIdSesion) : null) : null, // $6
+        nuevaFechaInicioPausa,       // $7
+        totalMinutosPausaStr,        // $8
+        tiempoResolucionCalculado,   // $9
+        Number(id),                  // $10
       ],
     );
+    const ticketActualizado = updateRes.rows[0];
+
+    // 8. Alerta de reasignación
+    let nuevaAlertaActualizacion = null;
+    const nuevoResponsableId = ticketActualizado.usuario_asignado_id;
+
+    if (nuevoResponsableId && nuevoResponsableId !== asignadoAnterior) {
+      const mensajeAlerta = `Se te ha reasignado el ticket: [${ticketActualizado.str_ticket}] ${ticketActualizado.str_asunto || "Sin asunto"}`;
+      const queryAlerta = `
+        INSERT INTO tickets.tbl_alertas (caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido)
+        VALUES ($1, $2, $3, $4, FALSE)
+        RETURNING *;
+      `;
+      const alertaRes = await client.query(queryAlerta, [
+        ticketActualizado.id,
+        nuevoResponsableId,
+        "ASIGNACION",
+        mensajeAlerta,
+      ]);
+      nuevaAlertaActualizacion = alertaRes.rows[0];
+    }
+
     await client.query("COMMIT");
+
+    // 9. Socket.io
+    if (
+      nuevoResponsableId &&
+      nuevoResponsableId !== asignadoAnterior &&
+      nuevaAlertaActualizacion
+    ) {
+      const io = req.app.get("io");
+      if (io && Number(nuevoResponsableId) !== Number(usuarioIdSesion)) {
+        io.to(`user_${nuevoResponsableId}`).emit(
+          "nueva_alerta",
+          nuevaAlertaActualizacion,
+        );
+      }
+    }
+
     res.status(200).json({
       success: true,
       message: "Actualizado exitosamente.",
-      ticket: updateRes.rows[0],
+      ticket: ticketActualizado,
     });
   } catch (err) {
     await client.query("ROLLBACK");
+    console.error("Error al actualizar ticket:", err);
     res
       .status(500)
       .json({ success: false, error: "Error interno al actualizar." });

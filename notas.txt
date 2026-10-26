@@ -229,11 +229,13 @@ SELECT * FROM cron.job_run_details ORDER BY start_time DESC LIMIT 10;
 SELECT cron.unschedule('actualizar-tickets-vencidos-job');
 
 
--- Inicializar las tablas de tickets
-TRUNCATE TABLE tickets.tbl_tickets RESTART IDENTITY CASCADE;
+	-- Inicializar las tablas de tickets
 TRUNCATE TABLE tickets.tbl_alertas RESTART IDENTITY CASCADE;
-TRUNCATE TABLE tickets.tbl_secuencias_tickets RESTART IDENTITY CASCADE;
 TRUNCATE TABLE tickets.tbl_clientes RESTART IDENTITY CASCADE;
 TRUNCATE TABLE tickets.tbl_clientes_juridicos RESTART IDENTITY CASCADE;
 TRUNCATE TABLE tickets.tbl_clientes_naturales RESTART IDENTITY CASCADE;
+TRUNCATE TABLE tickets.tbl_secuencias_tickets RESTART IDENTITY CASCADE;
+TRUNCATE TABLE tickets.tbl_tickets RESTART IDENTITY CASCADE;
 TRUNCATE TABLE tickets.tbl_tickets_bitacora RESTART IDENTITY CASCADE;
+TRUNCATE TABLE drive.tbl_enlaces RESTART IDENTITY CASCADE;
+TRUNCATE TABLE drive.tbl_enlaces_archivos RESTART IDENTITY CASCADE;

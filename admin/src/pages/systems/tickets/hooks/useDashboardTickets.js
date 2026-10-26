@@ -7,7 +7,10 @@ import { es } from "@blocknote/core/locales";
 export function useDashboardTickets() {
   const currentUserId = useSelector((state) => state.auth?.user?.id);
   const currentUserRole = useSelector(
-    (state) => state.auth?.user?.sistemasOpciones[0]?.rol,
+    (state) =>
+      state.auth?.user?.sistemasOpciones?.find(
+        (sys) => sys.sistema === "Tickets",
+      )?.rol,
   );
 
   const [loading, setLoading] = useState(true);

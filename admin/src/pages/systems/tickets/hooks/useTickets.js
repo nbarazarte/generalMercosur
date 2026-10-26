@@ -9,8 +9,13 @@ import { es } from "@blocknote/core/locales";
 export function useTickets() {
   const currentUserId = useSelector((state) => state.auth?.user?.id);
   const currentUserRole = useSelector(
-    (state) => state.auth?.user?.sistemasOpciones[0]?.rol,
+    (state) =>
+      state.auth?.user?.sistemasOpciones?.find(
+        (sys) => sys.sistema === "Tickets",
+      )?.rol,
   );
+
+  //console.log(currentUserRole)
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [tickets, setTickets] = useState([]);
@@ -582,6 +587,7 @@ export function useTickets() {
       "Cierre",
       "Vencimiento SLA",
       "SLA (hrs)",
+      "Minutos Pausa",
       "Departamento",
       "Asignado A",
       "Duración",
@@ -626,6 +632,9 @@ export function useTickets() {
           ? formatearTextoFecha(t.dmt_fecha_vencimiento_sla)
           : "",
         t.int_sla ? `${t.int_sla} hrs` : "",
+
+        t.int_minutos_pausa,
+        
         t.departamento_nombre || "",
         asignado,
         t.tiempo_resolucion || "En curso",

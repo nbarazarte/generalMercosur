@@ -117,7 +117,7 @@ export default function NotificationPanel({ alertas, setAlertas, theme }) {
                     onClick={() => {
                       if (ticketId) {
                         navigate(
-                          `/tickets/casos-tickets?abrirTicket=${ticketId}`,
+                          `/tickets/tickets?abrirTicket=${ticketId}`,
                         );
                         setMostrarAlertas(false);
                       }

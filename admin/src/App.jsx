@@ -31,16 +31,20 @@ import CrearTicket from "./pages/systems/tickets/crearTicket";
 //kcs:
 import DashboardKcs from "./pages/systems/kcs/dashboard";
 
+//drive:
+import CrearEnlace from "./pages/systems/drive/crearEnlace";
+import MisEnlaces from "./pages/systems/drive/misEnlaces";
+
 // Rastreador de navegación para todos los sistemas
 const RouteTracker = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Obtenemos el prefijo de la ruta actual (ej: "/admin", "/rrhh", "/tickets", "/kcs")
+    // Obtenemos el prefijo de la ruta actual (ej: "/admin", "/rrhh", "/tickets", "/kcs","/drive")
     const currentPath = location.pathname;
 
     // Si el usuario está fuera de un sistema (ej: /home), limpiamos la bandera de 'dentro del sistema'
-    const systemPaths = ["/admin", "/rrhh", "/tickets", "/kcs"];
+    const systemPaths = ["/admin", "/rrhh", "/tickets", "/kcs", "/drive"];
     const activeSystem = systemPaths.find((path) =>
       currentPath.startsWith(path),
     );
@@ -344,6 +348,28 @@ function App() {
 
             {/* Redirección por defecto al entrar solo a /tickets */}
             <Route index element={<Navigate to="dashboard" replace />} />
+          </Route>
+
+          {/* Sistema de Merco Drive */}
+          <Route
+            path="/drive"
+            element={
+              <SystemLoaderWrapper
+                systemName="Merco Drive"
+                systemKey="/drive"
+              >
+                <Outlet /> {/* Permite renderizar las subrutas hijas */}
+              </SystemLoaderWrapper>
+            }
+          >
+            {/* Subruta 0: Crear Enlace */}
+            <Route path="crear-enlace" element={<CrearEnlace />} />
+
+            {/* Subruta 1: Mis enlaces */}
+            <Route path="mis-enlaces" element={<MisEnlaces />} />
+
+            {/* Redirección por defecto al entrar solo a /merco-drive */}
+            <Route index element={<Navigate to="crear-enlace" replace />} />
           </Route>
 
           {/* Sistema de Base de Conocimiento (KCS) */}

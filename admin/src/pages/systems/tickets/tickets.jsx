@@ -582,7 +582,15 @@ export default function Tickets() {
                             className="tag"
                             style={{ fontSize: 11, fontWeight: 600 }}
                           >
-                            {t.tiempo_resolucion || "En curso"}
+                            {(() => {
+                                  const estName = (t.estatus_nombre || "").toLowerCase();
+                                  // Si está vencido, mostramos '--'
+                                  if (estName.includes("vencido")) return "--";
+                                  // Si ya tiene tiempo de resolución guardado de la BD, lo usamos
+                                  if (t.tiempo_resolucion && t.tiempo_resolucion.trim() !== "") return t.tiempo_resolucion;
+                                  
+                                  return "En curso";
+                                })()}
                           </span>
                         </td>
                       </tr>

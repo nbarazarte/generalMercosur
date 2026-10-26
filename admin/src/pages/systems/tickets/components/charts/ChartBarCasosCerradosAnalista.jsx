@@ -18,7 +18,7 @@ export function ChartBarCasosCerradosAnalista({ data, isDark, loading }) {
         labels,
         datasets: [
           {
-            label: "Casos Cerrados",
+            label: "Tickets Cerrados",
             data: values,
             backgroundColor: "#059669",
             borderRadius: 4,

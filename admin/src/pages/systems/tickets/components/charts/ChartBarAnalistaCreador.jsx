@@ -18,7 +18,7 @@ export function ChartBarAnalistaCreador({ data, isDark, loading }) {
         labels,
         datasets: [
           {
-            label: "Casos Creados",
+            label: "Tickets Creados",
             data: values,
             backgroundColor: "#2f6fed",
             borderRadius: 4,

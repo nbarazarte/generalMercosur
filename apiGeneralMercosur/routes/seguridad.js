@@ -140,13 +140,13 @@ router.post("/request-register", async (req, res) => {
                 <div class="content">
                     <p>Estimado/a usuario/a,</p>
                     <p>Has solicitado iniciar el proceso de registro como nuevo cliente en nuestra plataforma digital. Para continuar con la verificación de tu correo electrónico, por favor haz clic en el siguiente botón:</p>
-                    
+
                     <div class="btn-container">
                         <a href="${verificationLink}" class="btn" target="_blank">Completar Registro</a>
                     </div>
-                    
+
                     <p>Este enlace de seguridad tiene una validez de <strong>15 minutos</strong>. Si no solicitaste este registro, puedes ignorar este mensaje de manera segura.</p>
-                    
+
                     <p style="margin-top: 30px; font-size: 13px; color: #555;">
                         Si el botón no funciona, copia y pega el siguiente enlace en tu navegador web:
                     </p>
@@ -233,9 +233,9 @@ router.post("/login", async (req, res) => {
     await pool.query(
       `INSERT INTO tbl_auth_tokens (user_id, str_device_id, str_device_name, token, used, expires_at)
        VALUES ($1, $2, $3, $4, false, NOW() + INTERVAL '1 hour')
-       ON CONFLICT (user_id, str_device_id) 
-       DO UPDATE SET 
-         token = EXCLUDED.token, 
+       ON CONFLICT (user_id, str_device_id)
+       DO UPDATE SET
+         token = EXCLUDED.token,
          used = false,
          created_at = NOW(),
          expires_at = EXCLUDED.expires_at,
@@ -252,6 +252,8 @@ router.post("/login", async (req, res) => {
     if (!sistemasOpciones) {
       return res.status(404).send("Usuario sin sistemas asignados");
     }
+
+    //console.log(sistemasOpciones)
 
     res.json({
       id: user.id,
@@ -340,12 +342,10 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-
 // ==========================================
 // --- APLICACIÓN DEL MIDDLEWARE DE TOKEN ---
 // ==========================================
 router.use(verificarClienteFrontend);
-
 
 // ==========================================
 // --- RUTAS PROTEGIDAS (EXIGEN TOKEN) ---
@@ -447,8 +447,8 @@ router.post("/refresh-token", async (req, res) => {
 
     // PRUEBA: Actualizar token activo en BD por 1 hora
     await pool.query(
-      `UPDATE tbl_auth_tokens 
-       SET token = $1, expires_at = NOW() + INTERVAL '1 hour' 
+      `UPDATE tbl_auth_tokens
+       SET token = $1, expires_at = NOW() + INTERVAL '1 hour'
        WHERE user_id = $2`,
       [newAccessToken, decoded.id],
     );

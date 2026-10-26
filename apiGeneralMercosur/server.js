@@ -76,6 +76,7 @@ app.use("/seguridad", require("./routes/seguridad.js"));
 app.use("/admin", require("./routes/admin.js"));
 app.use("/tickets", require("./routes/tickets.js"));
 app.use("/rrhh", require("./routes/rrhh.js"));
+app.use("/drive", require("./routes/mercoDrive.js"));
 
 app.get("/", (req, res) => {
   res.send("API Mercosur Enterprise Portal!");
@@ -83,15 +84,15 @@ app.get("/", (req, res) => {
 
 // Configuración de eventos de Socket.io
 io.on("connection", (socket) => {
-  console.log(`Usuario conectado a WebSockets: ${socket.id}`);
+  //console.log(`Usuario conectado a WebSockets: ${socket.id}`);
 
   socket.on("join_user_room", (userId) => {
     socket.join(`user_${userId}`);
-    console.log(`Usuario con ID ${userId} se unió a su sala privada`);
+    //console.log(`Usuario con ID ${userId} se unió a su sala privada`);
   });
 
   socket.on("disconnect", () => {
-    console.log(`Usuario desconectado: ${socket.id}`);
+    //console.log(`Usuario desconectado: ${socket.id}`);
   });
 });
 

@@ -37,6 +37,7 @@ export function useCrearTicket() {
 
   const [correoInvalido, setCorreoInvalido] = useState(false);
   const correoInputRef = useRef(null);
+  const toastTimerRef = useRef(null);
 
   const [listaDepartamentos, setListaDepartamentos] = useState([]);
   const [listaUsuarios, setListaUsuarios] = useState([]);
@@ -58,10 +59,23 @@ export function useCrearTicket() {
   const apellido = user?.apellido || "";
 
   const showToast = (message, type = "success") => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+
     setToast({ message, type });
+
+    toastTimerRef.current = setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+    }, 3000);
   };
 
   const handleCloseToast = () => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+      toastTimerRef.current = null;
+    }
     setToast(null);
   };
 
@@ -575,7 +589,7 @@ REGLAS ABSOLUTAS:
     if (esTipoExterno()) {
       if (canalId) formData.append("canal_id", Number(canalId));
       if (tipoPersonaCliente === "natural") {
-        formData.append("tipo_solicitante_ext", "natural"); // <-- Opcional pero recomendado para simetría
+        formData.append("tipo_solicitante_ext", "natural");
         if (clienteId) formData.append("cliente_id", Number(clienteId));
         formData.append("str_cedula_cliente", strCedulaCliente.trim());
         formData.append("str_nombre_cliente", strNombreCliente.trim());
@@ -583,7 +597,7 @@ REGLAS ABSOLUTAS:
         formData.append("str_telefono_cliente", strTelefonoCliente.trim());
         formData.append("str_correo_cliente", strCorreoCliente.trim());
       } else {
-        formData.append("tipo_solicitante_ext", "juridico"); // <--- ¡Esta línea faltaba!
+        formData.append("tipo_solicitante_ext", "juridico");
         if (clienteJuridicoId)
           formData.append("cliente_juridico_id", Number(clienteJuridicoId));
         formData.append("str_rif_cliente", strRifCliente.trim());
