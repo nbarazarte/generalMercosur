@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict 2AaRj1xG9d1Bka4MdKlwX0KH1i6wzJzIvjTpeCEInGS4fvS9zswFyTg8Va77phX
+\restrict Aq0oupxWCQHePnZ9C5aRTRXSqmhUhEaBEY56m9UvgBfOVe9X5sEUkAwF74dVUS6
 
 -- Dumped from database version 17.11 (Ubuntu 17.11-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.6 (Ubuntu 18.6-1.pgdg24.04+2)
 
--- Started on 2026-10-26 19:13:24 -04
+-- Started on 2026-10-27 07:18:44 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -11464,6 +11464,7 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 1	9089	99957	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 18:39:00.008948-04	2026-10-26 18:39:00.010421-04
 1	9090	102276	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 18:40:00.007941-04	2026-10-26 18:40:00.009436-04
 1	9112	106830	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 19:02:00.006075-04	2026-10-26 19:02:00.007278-04
+1	9126	109958	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 19:16:00.019505-04	2026-10-26 19:16:00.022931-04
 1	9091	102432	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 18:41:00.009649-04	2026-10-26 18:41:00.011143-04
 1	9100	103932	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 18:50:00.006541-04	2026-10-26 18:50:00.0078-04
 1	9107	105657	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 18:57:00.007632-04	2026-10-26 18:57:00.008903-04
@@ -11495,7 +11496,10 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 1	9121	108713	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 19:11:00.008825-04	2026-10-26 19:11:00.009959-04
 1	9116	107580	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 19:06:00.009655-04	2026-10-26 19:06:00.010765-04
 1	9119	108068	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 19:09:00.006876-04	2026-10-26 19:09:00.008188-04
+1	9125	109767	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 19:15:00.006874-04	2026-10-26 19:15:00.008053-04
 1	9122	108855	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 19:12:00.009806-04	2026-10-26 19:12:00.011467-04
+1	9124	109548	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 19:14:00.009226-04	2026-10-26 19:14:00.010754-04
+1	9127	110139	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-10-26 19:17:00.008617-04	2026-10-26 19:17:00.009655-04
 \.
 
 
@@ -62017,7 +62021,7 @@ SELECT pg_catalog.setval('cron.jobid_seq', 1, true);
 -- Name: runid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
 
-SELECT pg_catalog.setval('cron.runid_seq', 9123, true);
+SELECT pg_catalog.setval('cron.runid_seq', 9127, true);
 
 
 --
@@ -62997,11 +63001,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT tbl_tickets_tipo_ticket_id_fkey FOREIGN KEY (tipo_ticket_id) REFERENCES public.cat_datos_maestros(id);
 
 
--- Completed on 2026-10-26 19:13:24 -04
+-- Completed on 2026-10-27 07:18:44 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 2AaRj1xG9d1Bka4MdKlwX0KH1i6wzJzIvjTpeCEInGS4fvS9zswFyTg8Va77phX
+\unrestrict Aq0oupxWCQHePnZ9C5aRTRXSqmhUhEaBEY56m9UvgBfOVe9X5sEUkAwF74dVUS6
 
