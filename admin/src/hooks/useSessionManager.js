@@ -80,6 +80,17 @@ export function useSessionManager(locationPathname) {
   };
 
   useEffect(() => {
+    // Excluimos las rutas públicas para que no ejecuten validaciones ni expulsen al login
+    const isPublicRoute =
+      locationPathname?.includes("/resetear-contrasena") ||
+      locationPathname?.includes("/login") ||
+      locationPathname?.includes("/forgot-password");
+
+    if (isPublicRoute) {
+      clearSessionTimers();
+      return;
+    }
+
     const initSessionCheck = async () => {
       if (refreshToken) {
         try {
