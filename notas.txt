@@ -239,3 +239,21 @@ TRUNCATE TABLE tickets.tbl_tickets RESTART IDENTITY CASCADE;
 TRUNCATE TABLE tickets.tbl_tickets_bitacora RESTART IDENTITY CASCADE;
 TRUNCATE TABLE drive.tbl_enlaces RESTART IDENTITY CASCADE;
 TRUNCATE TABLE drive.tbl_enlaces_archivos RESTART IDENTITY CASCADE;
+
+
+# Para limpiar la caché de pip y npm
+pip cache purge
+npm cache clean --force
+sudo journalctl --vacuum-time=3d
+sudo apt clean
+
+# Para ampliar la mv
+sudo apt update && sudo apt install -y cloud-guest-utils
+sudo growpart /dev/sda 3
+sudo resize2fs /dev/sda3
+df -h
+
+
+
+
+
