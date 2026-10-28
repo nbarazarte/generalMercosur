@@ -15,8 +15,10 @@ export default function Sidebar({
     <aside
       className={`ma-side ${sidebarOpen ? "open" : "collapsed"}`}
       style={{
-        height: "100vh",
-        maxHeight: "100vh",
+        //height: "100vh",
+        //maxHeight: "100vh",
+        height: "100dvh",
+        maxHeight: "100dvh",
         display: "flex",
         flexDirection: "column",
         flexShrink: 0,

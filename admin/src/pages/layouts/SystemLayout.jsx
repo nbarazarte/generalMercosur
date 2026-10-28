@@ -130,8 +130,10 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
       onClick={desbloquearAudio}
       style={{
         display: "flex",
-        height: "100vh",
-        maxHeight: "100vh",
+        //height: "100vh",
+        //maxHeight: "100vh",
+        height: "100dvh",
+        maxHeight: "100dvh",
         overflow: "hidden",
         position: "relative",
       }}
@@ -167,7 +169,8 @@ export default function SystemLayout({ children, identificacion, opcionMenu }) {
           display: "flex",
           flexDirection: "column",
           flex: 1,
-          height: "100vh",
+          //height: "100vh",
+          height: "100dvh",
           overflowY: "auto", // El scroll ocurre aquí y nunca afecta al sidebar
         }}
       >
