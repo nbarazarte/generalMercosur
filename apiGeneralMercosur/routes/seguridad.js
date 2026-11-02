@@ -8,6 +8,7 @@ const verificarSesion = require("../middlewares/verificarSesion");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const transporter = require("../mailer");
+const ActiveDirectory = require("activedirectory2");
 
 // --- MIDDLEWARE DE MANTENIMIENTO ---
 const verificarMantenimiento = (req, res, next) => {
@@ -170,7 +171,7 @@ router.post("/request-register", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
+/* router.post("/login", async (req, res) => {
   try {
     const { email, password, device_id, device_name } = req.body;
 
@@ -254,6 +255,136 @@ router.post("/login", async (req, res) => {
     }
 
     //console.log(sistemasOpciones)
+
+    res.json({
+      id: user.id,
+      username: user.str_usuario,
+      email: user.str_email,
+      nombre: user.str_nombre,
+      apellido: user.str_apellido,
+      token: token,
+      refreshToken: refreshToken,
+      sistemasOpciones: sistemasOpciones,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Error en el servidor");
+  }
+});
+ */
+
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password, device_id, device_name } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).send("Email y contraseña son requeridos");
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // 1. Verificar si el usuario existe en la base de datos local y está activo
+    const result = await pool.query(
+      "SELECT * FROM tbl_usuarios WHERE str_email = $1",
+      [normalizedEmail],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Usuario no encontrado");
+    }
+
+    const user = result.rows[0];
+
+    if (user.bol_activo === false) {
+      return res
+        .status(403)
+        .send("Su cuenta se encuentra inactiva. Contacte al administrador.");
+    }
+
+    // 2. AUTENTICACIÓN CON ACTIVE DIRECTORY USANDO ACTIVEDIRECTORY2 (PUERTO 389)
+    const usernameAccount = user.str_usuario || normalizedEmail;
+    const userPrincipal = usernameAccount.includes("@")
+      ? usernameAccount
+      : `${usernameAccount}@mercosurcdb.local`;
+
+    const adConfig = {
+      url: process.env.LDAP_URL, // Asegúrate de que en .env sea ldap://mscbdcidc.MERCOSURCDB.local:389
+      baseDN: process.env.LDAP_BASE_DN,
+    };
+
+    const ad = new ActiveDirectory(adConfig);
+
+    // Verificación de credenciales mediante authenticate
+    const isAuthenticatedAD = await new Promise((resolve) => {
+      ad.authenticate(userPrincipal, password, (err, auth) => {
+        if (err) {
+          console.error(
+            "Fallo de autenticación con Active Directory:",
+            err.message,
+          );
+          return resolve(false);
+        }
+        resolve(auth);
+      });
+    });
+
+    // Si falla Active Directory, intentamos con la contraseña local de respaldo (bcrypt)
+    if (!isAuthenticatedAD) {
+      const validPassword = await bcrypt.compare(password, user.str_password);
+      if (!validPassword) {
+        return res.status(401).send("Credenciales incorrectas");
+      }
+    }
+
+    // --- LÓGICA DE TOKENS Y SESIÓN ---
+    const secretKey = process.env.JWT_SECRET;
+
+    const token = jwt.sign(
+      { id: user.id, username: user.str_usuario },
+      secretKey,
+      { expiresIn: "1h" },
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user.id, username: user.str_usuario, type: "refresh" },
+      secretKey,
+      { expiresIn: "12h" },
+    );
+
+    pool
+      .query(
+        "DELETE FROM tbl_auth_tokens WHERE user_id = $1 AND expires_at < NOW()",
+        [user.id],
+      )
+      .catch((err) =>
+        console.error("Error al limpiar tokens expirados:", err.message),
+      );
+
+    const deviceId = device_id || "default_device";
+    const deviceName = device_name || "Dispositivo Desconocido";
+
+    await pool.query(
+      `INSERT INTO tbl_auth_tokens (user_id, str_device_id, str_device_name, token, used, expires_at)
+       VALUES ($1, $2, $3, $4, false, NOW() + INTERVAL '1 hour')
+       ON CONFLICT (user_id, str_device_id)
+       DO UPDATE SET
+         token = EXCLUDED.token,
+         used = false,
+         created_at = NOW(),
+         expires_at = EXCLUDED.expires_at,
+         str_device_name = EXCLUDED.str_device_name`,
+      [user.id, deviceId, deviceName, token],
+    );
+
+    await pool.query(
+      `UPDATE public.tbl_usuarios SET fec_ultimo_acceso = CURRENT_TIMESTAMP WHERE id = $1`,
+      [user.id],
+    );
+
+    const sistemasOpciones = await obtenerSistemasYOpciones(user.id);
+    if (!sistemasOpciones) {
+      return res.status(404).send("Usuario sin sistemas asignados");
+    }
 
     res.json({
       id: user.id,
