@@ -10,19 +10,22 @@ const server = http.createServer(app);
 const port = process.env.PORT || 3000;
 
 // Validador único de CORS globalizado y optimizado
+// Validador único de CORS globalizado y optimizado para ambos entornos
 const corsValidator = (origin, callback) => {
   if (!origin) return callback(null, true);
 
-  // 1. Cualquier subdominio, protocolo y puerto de mercosur.com.ve
+  // 1. Cualquier subdominio, protocolo y puerto de mercosur.com.ve o mercosurcdb.local
   const isMercosurDomain =
-    /^https?:\/\/([a-zA-Z0-9_-]+\.)*mercosur\.com\.ve(:\d+)?$/.test(origin);
+    /^https?:\/\/([a-zA-Z0-9_-]+\.)*(mercosur\.com\.ve|mercosurcdb\.local)(:\d+)?$/.test(
+      origin,
+    );
 
   // 2. Cualquier IP 192.168.x.x con puerto opcional
   const isLocalNetwork = /^https?:\/\/192\.168\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(
     origin,
   );
 
-  // 3. Localhost o 127.0.0.1 con cualquier puerto (incluyendo http://127.0.0.1:3000, :5173, etc.)
+  // 3. Localhost o 127.0.0.1 con cualquier puerto
   const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(
     origin,
   );
