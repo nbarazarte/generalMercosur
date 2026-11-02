@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import HomeLayout from "./pages/layouts/HomeLayout";
-import Login, { LoginAside } from "./pages/auth/login";
+import Login from "./pages/auth/login";
+import LoginAside from "./pages/auth/components/LoginAside";
 import Home, { HomeAside } from "./pages/systems/home/home";
 import ResetearContrasena, {
   ResetPasswordAside,
@@ -245,7 +246,7 @@ function App() {
         <Route element={<PublicOnlyRoute />}>
           <Route
             element={
-              <HomeLayout asideContent={LoginAside} showLogout={false} />
+              <HomeLayout asideContent={<LoginAside />} showLogout={false} />
             }
           >
             <Route path="/login" element={<Login />} />
@@ -354,10 +355,7 @@ function App() {
           <Route
             path="/drive"
             element={
-              <SystemLoaderWrapper
-                systemName="Merco Drive"
-                systemKey="/drive"
-              >
+              <SystemLoaderWrapper systemName="Merco Drive" systemKey="/drive">
                 <Outlet /> {/* Permite renderizar las subrutas hijas */}
               </SystemLoaderWrapper>
             }
