@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import HomeLayout from "./pages/layouts/HomeLayout";
 import Login from "./pages/auth/login";
+import AuthCallback from "./pages/auth/components/AuthCallback"; // <--- Agrega esta importación
 import LoginAside from "./pages/auth/components/LoginAside";
 import Home, { HomeAside } from "./pages/systems/home/home";
 import ResetearContrasena, {
@@ -250,6 +251,7 @@ function App() {
             }
           >
             <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
           </Route>
         </Route>
 

@@ -1,25 +1,7 @@
 import { useState } from "react";
-import axiosSeguridad from "../../../api/axiosSeguridad";
-import getDeviceInfo from "../../../helper/getDeviceInfo";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser } from "../../../store/authSlice";
 
-/**
- * Custom Hook para gestionar la lógica de autenticación y recuperación de clave.
- */
 export const useLogin = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
   const [toasts, setToasts] = useState([]);
-  const [loginEmail, setLoginEmail] = useState("");
-  const [loginPassword, setLoginPassword] = useState("");
-  const [showLoginPassword, setShowLoginPassword] = useState(false);
-  const [loginErrors, setLoginErrors] = useState({
-    email: false,
-    password: false,
-  });
   const [isLoginLoading, setIsLoginLoading] = useState(false);
 
   const showToast = (message, type = "info") => {
@@ -30,115 +12,24 @@ export const useLogin = () => {
     }, 3300);
   };
 
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    let valid = true;
-    const errors = { email: false, password: false };
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!loginEmail || !emailRegex.test(loginEmail.trim())) {
-      errors.email = true;
-      valid = false;
-    }
-    if (!loginPassword) {
-      errors.password = true;
-      valid = false;
-    }
-
-    setLoginErrors(errors);
-    if (!valid) return;
-
+  const handleMicrosoftLogin = () => {
     setIsLoginLoading(true);
+    const tenantId = import.meta.env.VITE_AZURE_TENANT_ID;
+    const clientId = import.meta.env.VITE_AZURE_CLIENT_ID;
+    const redirectUri = encodeURIComponent(import.meta.env.VITE_AZURE_REDIRECT_URI);
+    
+    // Construir la URL de autorización OIDC de Microsoft
+    const microsoftLoginUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=openid%20profile%20email%20User.Read&response_mode=query`;
 
-    try {
-      const { deviceId, deviceName } = await getDeviceInfo();
-
-      const response = await axiosSeguridad.post(`/login`, {
-        email: loginEmail.trim().toLowerCase(),
-        password: loginPassword,
-        device_id: deviceId,
-        device_name: deviceName,
-      });
-
-      dispatch(setUser(response.data));
-
-      showToast("¡Sesión iniciada correctamente!", "success");
-      navigate("/home");
-    } catch (error) {
-      const isNetworkError =
-        error.message === "Network Error" || !error.response;
-
-      const errorMessage =
-        (typeof error.response?.data === "string"
-          ? error.response.data
-          : error.response?.data?.message) ||
-        (isNetworkError && error.message !== "Faltan variables de entorno."
-          ? "No hay conexión con la API."
-          : error.message);
-
-      showToast(errorMessage, "error");
-    } finally {
-      setIsLoginLoading(false);
-    }
-  };
-
-  const handleRecoverPassword = async (e) => {
-    e.preventDefault();
-    let valid = true;
-    const errors = { email: false, password: loginErrors.password };
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!loginEmail || !emailRegex.test(loginEmail.trim())) {
-      errors.email = true;
-      valid = false;
-    }
-
-    setLoginErrors(errors);
-    if (!valid) return;
-
-    setIsLoginLoading(true);
-
-    try {
-      const response = await axiosSeguridad.post(`/forgot-password`, {
-        email: loginEmail.trim(),
-      });
-
-      showToast(
-        response.data.message ||
-          "Si el correo está registrado, recibirás un enlace.",
-        "success",
-      );
-    } catch (error) {
-      const isNetworkError =
-        error.message === "Network Error" || !error.response;
-
-      const errorMessage =
-        (typeof error.response?.data === "string"
-          ? error.response.data
-          : error.response?.data?.message) ||
-        (isNetworkError && error.message !== "Faltan variables de entorno."
-          ? "No hay conexión con la API."
-          : error.message);
-
-      showToast(errorMessage, "error");
-    } finally {
-      setIsLoginLoading(false);
-    }
+    // Redirigir al usuario al portal de Microsoft
+    window.location.href = microsoftLoginUrl;
   };
 
   return {
     toasts,
-    loginEmail,
-    setLoginEmail,
-    loginPassword,
-    setLoginPassword,
-    showLoginPassword,
-    setShowLoginPassword,
-    loginErrors,
-    setLoginErrors,
+    showToast,
     isLoginLoading,
-    handleLoginSubmit,
-    handleRecoverPassword,
+    handleMicrosoftLogin,
   };
 };
 

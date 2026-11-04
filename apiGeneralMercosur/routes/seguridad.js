@@ -9,6 +9,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const transporter = require("../mailer");
 const ActiveDirectory = require("activedirectory2");
+const msal = require('@azure/msal-node');
 
 // --- MIDDLEWARE DE MANTENIMIENTO ---
 const verificarMantenimiento = (req, res, next) => {
@@ -609,5 +610,107 @@ router.post("/logout", async (req, res) => {
     res.status(500).send("Error al cerrar sesión");
   }
 });
+
+
+
+
+const msalConfig = {
+  auth: {
+    clientId: process.env.AZURE_CLIENT_ID,
+    authority: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}`,
+    clientSecret: process.env.AZURE_CLIENT_SECRET,
+  }
+};
+
+const cca = new msal.ConfidentialClientApplication(msalConfig);
+
+// Nuevo endpoint para procesar el código de Entra ID desde el frontend
+router.post("/auth/entra-callback", async (req, res) => {
+  try {
+    const { code, device_id, device_name } = req.body;
+
+    if (!code) {
+      return res.status(400).send("Código de autorización requerido");
+    }
+
+    const tokenRequest = {
+      code: code,
+      scopes: ["user.read"],
+      redirectUri: process.env.AZURE_REDIRECT_URI,
+    };
+
+    // 1. Intercambiar el código por tokens en Microsoft
+    const response = await cca.acquireTokenByCode(tokenRequest);
+    const userEmail = response.account.username.trim().toLowerCase();
+
+    // 2. Verificar si el usuario existe en tu PostgreSQL local y está activo
+    const result = await pool.query(
+      "SELECT * FROM tbl_usuarios WHERE LOWER(str_email) = $1",
+      [userEmail]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Usuario autenticado en Entra ID pero no registrado en el sistema local.");
+    }
+
+    const user = result.rows[0];
+
+    if (user.bol_activo === false) {
+      return res.status(403).send("Su cuenta se encuentra inactiva. Contacte al administrador.");
+    }
+
+    // 3. Generar tus tokens internos de sesión (igual que tu lógica actual)
+    const secretKey = process.env.JWT_SECRET;
+    const token = jwt.sign(
+      { id: user.id, username: user.str_usuario },
+      secretKey,
+      { expiresIn: "1h" }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user.id, username: user.str_usuario, type: "refresh" },
+      secretKey,
+      { expiresIn: "12h" }
+    );
+
+    const deviceId = device_id || "default_device";
+    const deviceName = device_name || "Dispositivo Desconocido";
+
+    await pool.query(
+      `INSERT INTO tbl_auth_tokens (user_id, str_device_id, str_device_name, token, used, expires_at)
+       VALUES ($1, $2, $3, $4, false, NOW() + INTERVAL '1 hour')
+       ON CONFLICT (user_id, str_device_id)
+       DO UPDATE SET token = EXCLUDED.token, used = false, expires_at = EXCLUDED.expires_at`,
+      [user.id, deviceId, deviceName, token]
+    );
+
+    await pool.query(
+      `UPDATE public.tbl_usuarios SET fec_ultimo_acceso = CURRENT_TIMESTAMP WHERE id = $1`,
+      [user.id]
+    );
+
+    const sistemasOpciones = await obtenerSistemasYOpciones(user.id);
+    if (!sistemasOpciones) {
+      return res.status(404).send("Usuario sin sistemas asignados");
+    }
+
+    res.json({
+      id: user.id,
+      username: user.str_usuario,
+      email: user.str_email,
+      nombre: user.str_nombre,
+      apellido: user.str_apellido,
+      token: token,
+      refreshToken: refreshToken,
+      sistemasOpciones: sistemasOpciones,
+    });
+
+  } catch (err) {
+    console.error("Error en callback de Entra ID:", err.message);
+    res.status(500).send("Error en la autenticación con Microsoft Entra ID");
+  }
+});
+
+
 
 module.exports = router;
