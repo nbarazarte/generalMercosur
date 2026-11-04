@@ -1,4 +1,3 @@
-import React from "react";
 import { DynamicIcon } from "../../../../components/IconCatalog";
 
 export function TicketsFiltros({
@@ -38,7 +37,21 @@ export function TicketsFiltros({
   esFiltroInterno,
   limpiarFiltros,
   exportarExcel,
+  exportarExcelTicketsAdminYMep,
   filtroStyle,
+
+  fBuscarAdmin,
+  setFBuscarAdmin,
+  fEstadoAdmin,
+  setFEstadoAdmin,
+  fPrioridadAdmin,
+  setFPrioridadAdmin,
+  fCanalAdmin,
+  setFCanalAdmin,
+  fCategoriaAdmin,
+  setFCategoriaAdmin,
+  fAgenteAdmin,
+  setFAgenteAdmin,
 }) {
   const tipoTicketSeleccionadoObj = tiposTicket.find(
     (t) => String(t.id) === String(fTipoTicket),
@@ -104,7 +117,12 @@ export function TicketsFiltros({
         {/* SELECT DE CATEGORÍA DINÁMICA */}
         <select
           value={fCategoria}
-          onChange={(e) => setFCategoria(e.target.value)}
+          onChange={(e) => {
+            setFCategoria(e.target.value);
+            const textoSeleccionado =
+              e.target.options[e.target.selectedIndex].text;
+            setFCategoriaAdmin(textoSeleccionado);
+          }}
           style={filtroStyle}
         >
           <option value="">Todas las categorías</option>
@@ -117,7 +135,12 @@ export function TicketsFiltros({
 
         <select
           value={fEstado}
-          onChange={(e) => setFEstado(e.target.value)}
+          onChange={(e) => {
+            setFEstado(e.target.value);
+            const textoSeleccionado =
+              e.target.options[e.target.selectedIndex].text;
+            setFEstadoAdmin(textoSeleccionado);
+          }}
           style={filtroStyle}
         >
           <option value="">Todos los estatus</option>
@@ -143,7 +166,12 @@ export function TicketsFiltros({
 
         <select
           value={fAgente}
-          onChange={(e) => setFAgente(e.target.value)}
+          onChange={(e) => {
+            setFAgente(e.target.value);
+            const textoSeleccionado =
+              e.target.options[e.target.selectedIndex].text;
+            setFAgenteAdmin(textoSeleccionado);
+          }}
           style={filtroStyle}
         >
           <option value="">Asignado a</option>
@@ -156,7 +184,12 @@ export function TicketsFiltros({
 
         <select
           value={fPrioridad}
-          onChange={(e) => setFPrioridad(e.target.value)}
+          onChange={(e) => {
+            setFPrioridad(e.target.value);
+            const textoSeleccionado =
+              e.target.options[e.target.selectedIndex].text;
+            setFPrioridadAdmin(textoSeleccionado);
+          }}
           style={filtroStyle}
         >
           <option value="">Todas las prioridades</option>
@@ -170,7 +203,12 @@ export function TicketsFiltros({
         {!esFiltroInterno && (
           <select
             value={fCanal}
-            onChange={(e) => setFCanal(e.target.value)}
+            onChange={(e) => {
+              setFCanal(e.target.value);
+              const textoSeleccionado =
+                e.target.options[e.target.selectedIndex].text;
+              setFCanalAdmin(textoSeleccionado);
+            }}
             style={filtroStyle}
           >
             <option value="">Todos los canales</option>
@@ -286,7 +324,12 @@ export function TicketsFiltros({
             type="text"
             placeholder="Buscar por N° Ticket, creador, cédula, RIF, nombre o asunto"
             value={fBuscar}
-            onChange={(e) => setFBuscar(e.target.value)}
+            onChange={(e) => {
+              setFBuscar(e.target.value);
+              const textoSeleccionado =
+                e.target.options[e.target.selectedIndex].text;
+              setFBuscarAdmin(textoSeleccionado);
+            }}
             style={{ ...filtroStyle, width: "100%", paddingLeft: "36px" }}
           />
         </div>
@@ -302,7 +345,7 @@ export function TicketsFiltros({
           <button
             className="btn-icon"
             onClick={exportarExcel}
-            title="Exportar a Excel"
+            title="Exportar Tickets MEP"
             style={{
               color: "#10b981",
               padding: "6px",
@@ -313,6 +356,24 @@ export function TicketsFiltros({
           >
             <DynamicIcon name="RiFileExcel2Line" style={{ fontSize: 22 }} />
           </button>
+
+          {/* Con esto habilito el boton de exportar solo cuando los tickets sean de tipo externos (que sean del admin y la persona sea natural) */}
+          {fTipoTicket === "25" && fTipoPersona === "natural" && (
+            <button
+              className="btn-icon"
+              onClick={exportarExcelTicketsAdminYMep}
+              title={`Exportar Tickets MEP + Admin`}
+              style={{
+                color: "orange",
+                padding: "6px",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <DynamicIcon name="RiFileExcel2Line" style={{ fontSize: 22 }} />
+            </button>
+          )}
         </div>
       </div>
     </div>

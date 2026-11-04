@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import copy from "copy-to-clipboard";
+import axios from "axios";
 import axiosTickets from "../../../../api/axiosTickets";
 import { useSelector } from "react-redux";
 import { useCreateBlockNote } from "@blocknote/react";
@@ -18,6 +19,7 @@ export function useTickets() {
   //console.log(currentUserRole)
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const [ticketsAdmin, setTicketsAdmin] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +34,7 @@ export function useTickets() {
   const [categoriaExterna, setCategoriaExterna] = useState([]);
   const [categoriaInterna, setCategoriaInterna] = useState([]);
 
-  // Estados de Filtros
+  // Estados de Filtros (MEP)
   const [fBuscar, setFBuscar] = useState("");
   const [fTipoTicket, setFTipoTicket] = useState("");
   const [fEstado, setFEstado] = useState("");
@@ -42,6 +44,14 @@ export function useTickets() {
   const [fCategoria, setFCategoria] = useState("");
   const [fAgente, setFAgente] = useState("");
   const [fTipoPersona, setFTipoPersona] = useState(""); // Nuevo estado para tipo de persona
+
+  // Estados de Filtros (ADMIN)
+  const [fBuscarAdmin, setFBuscarAdmin] = useState("");
+  const [fEstadoAdmin, setFEstadoAdmin] = useState("");
+  const [fPrioridadAdmin, setFPrioridadAdmin] = useState("");
+  const [fCanalAdmin, setFCanalAdmin] = useState("");
+  const [fCategoriaAdmin, setFCategoriaAdmin] = useState("");
+  const [fAgenteAdmin, setFAgenteAdmin] = useState("");
 
   const [fTipoFecha, setFTipoFecha] = useState("");
   const [fFechaCalendario, setFFechaCalendario] = useState("");
@@ -129,10 +139,26 @@ export function useTickets() {
   const fetchCatalogosYTickets = async () => {
     try {
       setLoading(true);
-
       let listaTickets = [];
       let deptosTemp = [];
       let usuariosTemp = [];
+
+      try {
+        const resTicketsAdmin = await axios.get(
+          "https://cm.mercosur.com.ve/consulta_tickets",
+        );
+
+        if (resTicketsAdmin.data) {
+          setTicketsAdmin(resTicketsAdmin.data.registros);
+        }
+
+        /* console.log(
+          "Respuesta de tickets admin:",
+          resTicketsAdmin.data.registros,
+        ); */
+      } catch (err) {
+        console.error("Error al cargar consulta_tickets:", err);
+      }
 
       try {
         const resTickets = await axiosTickets.get("/listar", {
@@ -141,8 +167,10 @@ export function useTickets() {
 
         if (resTickets.data && resTickets.data.success) {
           listaTickets = resTickets.data.tickets || [];
-          setTickets(listaTickets);
+          setTickets(resTickets.data.tickets);
         }
+
+        //console.log("Respuesta de tickets:", listaTickets);
       } catch (err) {
         console.error("Error al cargar /listar:", err);
       }
@@ -536,6 +564,65 @@ export function useTickets() {
     esFiltroInterno,
   ]);
 
+  /* const ticketsFiltradosMep = useMemo(() => {
+    return ticketsAdmin.filter((t) => {
+      console.log("Viene de Filtro: ", fCategoriaAdmin);
+      console.log("Viene de Ticket: ", t.categoria.nombre);
+
+      if (
+        fCategoriaAdmin &&
+        fCategoriaAdmin !== "" &&
+        t.categoria.nombre !== fCategoriaAdmin
+      )
+        return false;
+      if (fEstadoAdmin && t.estatus !== fEstadoAdmin) return false;
+      if (fPrioridadAdmin && t.prioridad !== fPrioridadAdmin) return false;
+
+      if (fAgenteAdmin && t.usuario_asignado !== fAgenteAdmin) return false;
+
+      if (fTipoFecha && fFechaCalendario) {
+        let fechaTarget = null;
+        if (fTipoFecha === "creacion") fechaTarget = t.created_at;
+        if (fTipoFecha === "vencimiento")
+          fechaTarget = t.dmt_fecha_vencimiento_sla;
+        if (fTipoFecha === "cierre") fechaTarget = t.dmt_fecha_cierre;
+        if (!fechaTarget) return false;
+
+        const dTicket = new Date(fechaTarget);
+        const [anio, mes, dia] = fFechaCalendario.split("-").map(Number);
+        if (
+          dTicket.getFullYear() !== anio ||
+          dTicket.getMonth() + 1 !== mes ||
+          dTicket.getDate() !== dia
+        )
+          return false;
+        if (fHora !== "" && dTicket.getHours() !== Number(fHora)) return false;
+        if (fMinuto !== "" && dTicket.getMinutes() !== Number(fMinuto))
+          return false;
+      }
+
+      if (fBuscarAdmin) {
+        const q = fBuscarAdmin.toLowerCase().trim();
+        const texto =
+          `${t.str_ticket || ""} ${t.creador_nombre || ""} ${t.creador_apellido || ""} ${t.solicitante_nombre || ""} ${t.solicitante_documento || ""} ${t.str_asunto || ""}`.toLowerCase();
+        if (!texto.includes(q)) return false;
+      }
+
+      return true;
+    });
+  }, [
+    ticketsAdmin,
+    fBuscarAdmin,
+    fCategoriaAdmin,
+    fEstadoAdmin,
+    fPrioridadAdmin,
+    fAgenteAdmin,
+    fTipoFecha,
+    fFechaCalendario,
+    fHora,
+    fMinuto,
+  ]); */
+
   const totalPaginas = Math.ceil(ticketsFiltrados.length / porPagina) || 1;
   const ticketsPaginados = useMemo(() => {
     const inicio = (paginaActual - 1) * porPagina;
@@ -550,6 +637,7 @@ export function useTickets() {
   );
 
   const exportarExcel = () => {
+    console.log(tickets);
     if (ticketsFiltrados.length === 0) {
       showToast(
         "No hay registros para exportar con los filtros actuales.",
@@ -577,8 +665,8 @@ export function useTickets() {
       "Estado",
       "Prioridad",
       "Canal",
-      "Documento / RIF",
-      "Cliente / Empresa",
+      "RIF",
+      "Cliente",
       "Operador",
       "Categoria",
       "Creado",
@@ -634,7 +722,7 @@ export function useTickets() {
         t.int_sla ? `${t.int_sla} hrs` : "",
 
         t.int_minutos_pausa,
-        
+
         t.departamento_nombre || "",
         asignado,
         t.tiempo_resolucion || "En curso",
@@ -656,10 +744,111 @@ export function useTickets() {
 
     const fechaActual = new Date().toISOString().slice(0, 10);
     link.setAttribute("href", url);
-    link.setAttribute("download", `mep-tickets-${fechaActual}.csv`);
+    link.setAttribute("download", `mep-${fechaActual}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    showToast("Exportación de tickets exitosa.", "success");
+  };
+
+  const exportarExcelTicketsAdminYMep = () => {
+    //console.log(ticketsAdmin);
+
+    /* if (ticketsFiltradosMep.length === 0) {
+      showToast(
+        "No hay registros para exportar con los filtros actuales.",
+        "error",
+      );
+      return;
+    }
+
+    const formatearTextoFecha = (fechaStr) => {
+      if (!fechaStr) return "";
+      try {
+        const fecha = new Date(fechaStr);
+        if (isNaN(fecha.getTime())) return String(fechaStr);
+        return fecha.toISOString().replace("T", " ").substring(0, 19);
+      } catch {
+        return String(fechaStr);
+      }
+    };
+
+    const filasCsv = [];
+
+    filasCsv.push([
+      "Código",
+      "Asunto",
+      "Estado",
+      "Prioridad",
+      "Canal",
+      "RIF",
+      "Cliente",
+      "Operador",
+      "Categoria",
+      "Creado",
+      "Primera Respuesta",
+      "Resolucion",
+      "Cierre",
+      "Mensajes",
+    ]);
+
+    ticketsFiltradosMep.forEach((t) => {
+      const tipoLower = (t.tipo_ticket || "").toLowerCase();
+      const esExterno =
+        tipoLower.includes("externo") || tipoLower.includes("app");
+      const clienteNombre =
+        esExterno && (t.solicitante_nombre || t.cliente_nombre)
+          ? (
+              t.solicitante_nombre ||
+              `${t.cliente_nombre} ${t.cliente_apellido || ""}`
+            ).trim()
+          : esExterno
+            ? "Cliente Externo"
+            : "N/A";
+      const clienteDoc = esExterno
+        ? t.solicitante_documento || t.cliente_cedula || t.cliente_rif || "—"
+        : "N/A";
+      const asignado = t.asignado_nombre
+        ? `${t.asignado_nombre} ${t.asignado_apellido || ""}`.trim()
+        : "Sin asignar";
+
+      filasCsv.push([
+        t.str_ticket || "",
+        t.str_asunto || "",
+        t.estatus_nombre || "",
+        t.prioridad_nombre || "",
+        t.canal_nombre || "",
+        clienteDoc,
+        clienteNombre,
+        `${t.creador_nombre || ""} ${t.creador_apellido || ""}`.trim() || "",
+        t.nombre_categoria || "",
+        formatearTextoFecha(t.created_at),
+        formatearTextoFecha(t.created_at),
+        t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-",
+        t.dmt_fecha_cierre ? formatearTextoFecha(t.dmt_fecha_cierre) : "-",
+        "-",
+      ]);
+    });
+
+    const contenidoCsv = filasCsv
+      .map((e) =>
+        e.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(";"),
+      )
+      .join("\n");
+
+    const blob = new Blob(["\ufeff" + contenidoCsv], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    const fechaActual = new Date().toISOString().slice(0, 10);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `mep-tickets-${fechaActual}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link); */
 
     showToast("Exportación de tickets exitosa.", "success");
   };
@@ -764,6 +953,7 @@ export function useTickets() {
     estatusModalDisponibles,
     limpiarFiltros,
     exportarExcel,
+    exportarExcelTicketsAdminYMep,
     abrirDetalle,
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
@@ -773,5 +963,18 @@ export function useTickets() {
     isDarkMode,
     currentUserId,
     currentUserRole,
+
+    fBuscarAdmin,
+    setFBuscarAdmin,
+    fEstadoAdmin,
+    setFEstadoAdmin,
+    fPrioridadAdmin,
+    setFPrioridadAdmin,
+    fCanalAdmin,
+    setFCanalAdmin,
+    fCategoriaAdmin,
+    setFCategoriaAdmin,
+    fAgenteAdmin,
+    setFAgenteAdmin,
   };
 }

@@ -73,6 +73,7 @@ export default function Tickets() {
     estatusModalDisponibles,
     limpiarFiltros,
     exportarExcel,
+    exportarExcelTicketsAdminYMep,
     abrirDetalle,
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
@@ -82,6 +83,19 @@ export default function Tickets() {
     isDarkMode,
     currentUserId,
     currentUserRole,
+
+    fBuscarAdmin,
+    setFBuscarAdmin,
+    fEstadoAdmin,
+    setFEstadoAdmin,
+    fPrioridadAdmin,
+    setFPrioridadAdmin,
+    fCanalAdmin,
+    setFCanalAdmin,
+    fCategoriaAdmin,
+    setFCategoriaAdmin,
+    fAgenteAdmin,
+    setFAgenteAdmin,
   } = useTickets();
 
   const tarjetasEstatus = [
@@ -249,7 +263,21 @@ export default function Tickets() {
           esFiltroInterno={esFiltroInterno}
           limpiarFiltros={limpiarFiltros}
           exportarExcel={exportarExcel}
+          exportarExcelTicketsAdminYMep={exportarExcelTicketsAdminYMep}
           filtroStyle={filtroStyle}
+
+          fBuscarAdmin={fBuscarAdmin}
+          setFBuscarAdmin={setFBuscarAdmin}
+          fEstadoAdmin={fEstadoAdmin}
+          setFEstadoAdmin={setFEstadoAdmin}
+          fPrioridadAdmin={fPrioridadAdmin}
+          setFPrioridadAdmin={setFPrioridadAdmin}
+          fCanalAdmin={fCanalAdmin}
+          setFCanalAdmin={setFCanalAdmin}
+          fCategoriaAdmin={fCategoriaAdmin}
+          setFCategoriaAdmin={setFCategoriaAdmin}
+          fAgenteAdmin={fAgenteAdmin}
+          setFAgenteAdmin={setFAgenteAdmin}
         />
 
         {/* TABLA DE CASOS */}
@@ -583,14 +611,20 @@ export default function Tickets() {
                             style={{ fontSize: 11, fontWeight: 600 }}
                           >
                             {(() => {
-                                  const estName = (t.estatus_nombre || "").toLowerCase();
-                                  // Si está vencido, mostramos '--'
-                                  if (estName.includes("vencido")) return "--";
-                                  // Si ya tiene tiempo de resolución guardado de la BD, lo usamos
-                                  if (t.tiempo_resolucion && t.tiempo_resolucion.trim() !== "") return t.tiempo_resolucion;
-                                  
-                                  return "En curso";
-                                })()}
+                              const estName = (
+                                t.estatus_nombre || ""
+                              ).toLowerCase();
+                              // Si está vencido, mostramos '--'
+                              if (estName.includes("vencido")) return "--";
+                              // Si ya tiene tiempo de resolución guardado de la BD, lo usamos
+                              if (
+                                t.tiempo_resolucion &&
+                                t.tiempo_resolucion.trim() !== ""
+                              )
+                                return t.tiempo_resolucion;
+
+                              return "En curso";
+                            })()}
                           </span>
                         </td>
                       </tr>
