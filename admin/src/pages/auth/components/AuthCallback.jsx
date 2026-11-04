@@ -32,7 +32,12 @@ export const AuthCallback = () => {
           dispatch(setUser(response.data));
           navigate("/home");
         } catch (error) {
-          console.error("Error al autenticar con Entra ID:", error);
+          // --- MODO DEPURACIÓN VISIBLE ---
+          console.error("DETALLE DEL ERROR EN CALLBACK:", error.response || error);
+          const errorMsg = error.response?.data?.message || error.response?.data || error.message;
+          alert("Error de autenticación con Entra ID: " + errorMsg);
+          
+          // Te devuelve al login solo después de que cierres la alerta para que puedas leerla
           navigate("/");
         }
       };
