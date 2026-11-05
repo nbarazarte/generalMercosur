@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import HomeLayout from "./pages/layouts/HomeLayout";
 import Login from "./pages/auth/login";
-
+import Mantenimiento from "./pages/systems/Mantenimiento"; // o la ubicación según tu estructura de carpetas
 
 import LoginAdmin from "./pages/auth/loginAdmin";
 
@@ -279,6 +279,9 @@ function App() {
           >
             <Route path="/home" element={<Home />} />
           </Route>
+
+          {/* RUTA DE MANTENIMIENTO */}
+          <Route path="/mantenimiento" element={<Mantenimiento />} />
 
           {/* Páginas de los sistemas con pantalla de carga */}
 
