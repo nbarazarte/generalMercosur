@@ -16,6 +16,7 @@ export function CrearTicketParametros({
   inputStyle,
   labelStyle,
   debeBloquearEmpleado,
+  currentUserRole,
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -35,12 +36,22 @@ export function CrearTicketParametros({
             required
             style={inputStyle}
           >
-            <option value="">Seleccione tipo...</option>
-            {listaTipoTicket.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.str_nombre}
-              </option>
-            ))}
+            <option value="">Seleccione tipo... </option>
+
+            {listaTipoTicket
+              .filter((t) => {
+                // Si el rol es 'usuario', solo dejamos pasar el que sea "interno"
+                if (currentUserRole === "usuario") {
+                  return t.str_nombre.toLowerCase().includes("interno");
+                }
+                // Para otros roles, mostramos todos
+                return true;
+              })
+              .map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.str_nombre}
+                </option>
+              ))}
           </select>
         </div>
 
@@ -61,7 +72,7 @@ export function CrearTicketParametros({
           <input
             value={strAsunto}
             onChange={(e) => setStrAsunto(e.target.value)}
-            placeholder="Resumen del requerimiento..."
+            placeholder="Asunto del requerimiento..."
             maxLength={100}
             required
             style={inputStyle}

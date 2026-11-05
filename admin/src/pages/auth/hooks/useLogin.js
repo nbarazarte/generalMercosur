@@ -17,17 +17,20 @@ export const useLogin = () => {
     const clientId = import.meta.env.VITE_AZURE_CLIENT_ID;
     const redirectUri = import.meta.env.VITE_AZURE_REDIRECT_URI;
 
-    console.log("Tenant ID:", tenantId);
+    /* console.log("Tenant ID:", tenantId);
     console.log("Client ID:", clientId);
-    console.log("Redirect URI:", redirectUri);
+    console.log("Redirect URI:", redirectUri); */
 
     if (!tenantId || !clientId) {
-      showToast("Faltan las variables de entorno de Azure en el frontend.", "error");
+      showToast(
+        "Faltan las variables de entorno de Azure en el frontend.",
+        "error",
+      );
       return;
     }
 
     setIsLoginLoading(true);
-    
+
     const encodedRedirectUri = encodeURIComponent(redirectUri);
     const microsoftLoginUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodedRedirectUri}&scope=openid%20profile%20email%20User.Read&response_mode=query`;
 

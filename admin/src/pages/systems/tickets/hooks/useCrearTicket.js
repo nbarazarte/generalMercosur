@@ -13,6 +13,14 @@ export function useCrearTicket() {
   const [departamentoId, setDepartamentoId] = useState("");
   const [usuarioId, setUsuarioId] = useState("");
 
+  const currentUserRole = useSelector(
+    (state) =>
+      state.auth?.user?.sistemasOpciones?.find(
+        (sys) => sys.sistema === "Tickets",
+      )?.rol,
+  );
+  
+
   // Selector de tipo de persona para tickets externos
   const [tipoPersonaCliente, setTipoPersonaCliente] = useState("natural");
 
@@ -792,5 +800,6 @@ REGLAS ABSOLUTAS:
     debeBloquearEmpleado,
     inputStyle,
     labelStyle,
+    currentUserRole,
   };
 }
