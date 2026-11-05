@@ -1,4 +1,4 @@
-import { useLogin } from "../auth/hooks/useLogin";
+import { useLoginAdmin } from "../auth/hooks/useLoginAdmin";
 
 const Login = () => {
   const {
@@ -14,7 +14,7 @@ const Login = () => {
     isLoginLoading,
     handleLoginSubmit,
     handleRecoverPassword,
-  } = useLogin();
+  } = useLoginAdmin();
 
   return (
     <>
