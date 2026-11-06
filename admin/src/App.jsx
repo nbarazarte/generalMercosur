@@ -225,6 +225,15 @@ const PublicOnlyRoute = () => {
 };
 
 function App() {
+  const sistemasInactivo =
+    useSelector((state) => state.auth?.user.sistemasOpciones) || [];
+
+  const Inactivos = sistemasInactivo
+    .filter((s) => !s.sistema_activo)
+    .map((i) => i.ruta_sistema);
+
+  //console.log(Inactivos);
+
   // 1. Estado inicial del tema leyendo localStorage al montar la app
   const [theme] = useState(() => {
     return localStorage.getItem("theme") || "dark";
@@ -285,7 +294,7 @@ function App() {
 
           {/* Páginas de los sistemas con pantalla de carga */}
 
-          {/* Sistema de Administración General */}
+          {/* Sistema de Administración General (Obviado de la validación de inactivos) */}
           <Route
             path="/admin"
             element={
@@ -314,9 +323,16 @@ function App() {
           <Route
             path="/rrhh"
             element={
-              <SystemLoaderWrapper systemName="Mi Expediente" systemKey="/rrhh">
-                <Outlet /> {/* Permite renderizar las subrutas hijas */}
-              </SystemLoaderWrapper>
+              Inactivos.includes("/rrhh") ? (
+                <Navigate to="/mantenimiento" replace />
+              ) : (
+                <SystemLoaderWrapper
+                  systemName="Mi Expediente"
+                  systemKey="/rrhh"
+                >
+                  <Outlet />
+                </SystemLoaderWrapper>
+              )
             }
           >
             {/* Subruta 0: Dashboard */}
@@ -336,9 +352,13 @@ function App() {
           <Route
             path="/tickets"
             element={
-              <SystemLoaderWrapper systemName="Tickets" systemKey="/tickets">
-                <Outlet /> {/* Permite renderizar las subrutas hijas */}
-              </SystemLoaderWrapper>
+              Inactivos.includes("/tickets") ? (
+                <Navigate to="/mantenimiento" replace />
+              ) : (
+                <SystemLoaderWrapper systemName="Tickets" systemKey="/tickets">
+                  <Outlet />
+                </SystemLoaderWrapper>
+              )
             }
           >
             {/* Subruta 0: Dashboard */}
@@ -365,9 +385,16 @@ function App() {
           <Route
             path="/drive"
             element={
-              <SystemLoaderWrapper systemName="Merco Drive" systemKey="/drive">
-                <Outlet /> {/* Permite renderizar las subrutas hijas */}
-              </SystemLoaderWrapper>
+              Inactivos.includes("/drive") ? (
+                <Navigate to="/mantenimiento" replace />
+              ) : (
+                <SystemLoaderWrapper
+                  systemName="Merco Drive"
+                  systemKey="/drive"
+                >
+                  <Outlet />
+                </SystemLoaderWrapper>
+              )
             }
           >
             {/* Subruta 0: Crear Enlace */}
@@ -384,12 +411,16 @@ function App() {
           <Route
             path="/kcs"
             element={
-              <SystemLoaderWrapper
-                systemName="Base de Conocimiento"
-                systemKey="/kcs"
-              >
-                <Outlet /> {/* Permite renderizar las subrutas hijas */}
-              </SystemLoaderWrapper>
+              Inactivos.includes("/kcs") ? (
+                <Navigate to="/mantenimiento" replace />
+              ) : (
+                <SystemLoaderWrapper
+                  systemName="Base de Conocimiento"
+                  systemKey="/kcs"
+                >
+                  <Outlet />
+                </SystemLoaderWrapper>
+              )
             }
           >
             {/* Subruta 0: Dashboard */}

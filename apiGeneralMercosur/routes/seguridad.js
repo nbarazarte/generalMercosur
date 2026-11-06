@@ -9,7 +9,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const transporter = require("../mailer");
 const ActiveDirectory = require("activedirectory2");
-const msal = require('@azure/msal-node');
+const msal = require("@azure/msal-node");
 
 // --- MIDDLEWARE DE MANTENIMIENTO ---
 const verificarMantenimiento = (req, res, next) => {
@@ -504,6 +504,7 @@ async function obtenerSistemasYOpciones(userId) {
         tiene_permiso,
         rol,
         opcion_icono,
+        sistema_activo,
       } = row;
 
       if (!acc[sistema]) {
@@ -515,6 +516,7 @@ async function obtenerSistemasYOpciones(userId) {
           descripcion: descripcion,
           rol: rol,
           opciones: [],
+          sistema_activo: sistema_activo,
         };
       }
 
@@ -611,15 +613,12 @@ router.post("/logout", async (req, res) => {
   }
 });
 
-
-
-
 const msalConfig = {
   auth: {
     clientId: process.env.AZURE_CLIENT_ID,
     authority: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}`,
     clientSecret: process.env.AZURE_CLIENT_SECRET,
-  }
+  },
 };
 
 const cca = new msal.ConfidentialClientApplication(msalConfig);
@@ -646,17 +645,23 @@ router.post("/auth/entra-callback", async (req, res) => {
     // 2. Verificar si el usuario existe en tu PostgreSQL local y está activo
     const result = await pool.query(
       "SELECT * FROM tbl_usuarios WHERE LOWER(str_email) = $1",
-      [userEmail]
+      [userEmail],
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).send("Usuario autenticado en Entra ID pero no registrado en el sistema local.");
+      return res
+        .status(404)
+        .send(
+          "Usuario autenticado en Entra ID pero no registrado en el sistema local.",
+        );
     }
 
     const user = result.rows[0];
 
     if (user.bol_activo === false) {
-      return res.status(403).send("Su cuenta se encuentra inactiva. Contacte al administrador.");
+      return res
+        .status(403)
+        .send("Su cuenta se encuentra inactiva. Contacte al administrador.");
     }
 
     // 3. Generar tus tokens internos de sesión (igual que tu lógica actual)
@@ -664,13 +669,13 @@ router.post("/auth/entra-callback", async (req, res) => {
     const token = jwt.sign(
       { id: user.id, username: user.str_usuario },
       secretKey,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     const refreshToken = jwt.sign(
       { id: user.id, username: user.str_usuario, type: "refresh" },
       secretKey,
-      { expiresIn: "12h" }
+      { expiresIn: "12h" },
     );
 
     const deviceId = device_id || "default_device";
@@ -681,12 +686,12 @@ router.post("/auth/entra-callback", async (req, res) => {
        VALUES ($1, $2, $3, $4, false, NOW() + INTERVAL '1 hour')
        ON CONFLICT (user_id, str_device_id)
        DO UPDATE SET token = EXCLUDED.token, used = false, expires_at = EXCLUDED.expires_at`,
-      [user.id, deviceId, deviceName, token]
+      [user.id, deviceId, deviceName, token],
     );
 
     await pool.query(
       `UPDATE public.tbl_usuarios SET fec_ultimo_acceso = CURRENT_TIMESTAMP WHERE id = $1`,
-      [user.id]
+      [user.id],
     );
 
     const sistemasOpciones = await obtenerSistemasYOpciones(user.id);
@@ -694,6 +699,8 @@ router.post("/auth/entra-callback", async (req, res) => {
       return res.status(404).send("Usuario sin sistemas asignados");
     }
 
+    //console.log(sistemasOpciones)
+    
     res.json({
       id: user.id,
       username: user.str_usuario,
@@ -704,13 +711,10 @@ router.post("/auth/entra-callback", async (req, res) => {
       refreshToken: refreshToken,
       sistemasOpciones: sistemasOpciones,
     });
-
   } catch (err) {
     console.error("Error en callback de Entra ID:", err.message);
     res.status(500).send("Error en la autenticación con Microsoft Entra ID");
   }
 });
-
-
 
 module.exports = router;

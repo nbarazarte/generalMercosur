@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import SystemLayout from "../layouts/SystemLayout";
+//import SystemLayout from "../layouts/SystemLayout";
 import { DynamicIcon } from "../../components/IconCatalog";
 
 export default function Mantenimiento() {
   const navigate = useNavigate();
 
   return (
-    <SystemLayout identificacion="Sistema" opcionMenu="Mantenimiento">
+    <div identificacion="Sistema" opcionMenu="Mantenimiento">
       <div
         style={{
           fontFamily: "var(--font-sans, system-ui, -apple-system, sans-serif)",
@@ -82,68 +82,9 @@ export default function Mantenimiento() {
                 lineHeight: "1.6",
               }}
             >
-              Estamos realizando labores de optimización y actualización en los
-              servidores de la plataforma. El servicio se reestablecerá pronto.
+              Estamos realizando labores de optimización y actualización. El
+              servicio se reestablecerá pronto.
             </p>
-          </div>
-
-          {/* Tarjeta de estado / Tiempo estimado */}
-          <div
-            style={{
-              width: "100%",
-              background: "var(--merco-bg-subtle, rgba(255, 255, 255, 0.03))",
-              border: "1px solid var(--merco-border)",
-              borderRadius: "8px",
-              padding: "16px",
-              display: "flex",
-              justifyContent: "space-around",
-              alignItems: "center",
-              marginTop: "10px",
-            }}
-          >
-            <div>
-              <small
-                style={{
-                  display: "block",
-                  color: "var(--merco-muted)",
-                  fontSize: "11px",
-                }}
-              >
-                ESTADO
-              </small>
-              <b
-                style={{
-                  color: "var(--merco-warning, #d8992a)",
-                  fontSize: "13px",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                }}
-              >
-                ● En progreso
-              </b>
-            </div>
-            <div
-              style={{
-                width: "1px",
-                height: "30px",
-                background: "var(--merco-border)",
-              }}
-            />
-            <div>
-              <small
-                style={{
-                  display: "block",
-                  color: "var(--merco-muted)",
-                  fontSize: "11px",
-                }}
-              >
-                REESTABLECIMIENTO
-              </small>
-              <b style={{ color: "var(--merco-text)", fontSize: "13px" }}>
-                En breves minutos
-              </b>
-            </div>
           </div>
 
           {/* Botón de redirección a /home */}
@@ -164,6 +105,6 @@ export default function Mantenimiento() {
           </button>
         </div>
       </div>
-    </SystemLayout>
+    </div>
   );
 }
