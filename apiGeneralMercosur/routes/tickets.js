@@ -665,25 +665,21 @@ router.post("/crear", upload.any(), async (req, res) => {
 
 router.get("/listar", async (req, res) => {
   try {
-    const { buscar } = req.query;
+    const { buscar, limit = 100, offset = 0 } = req.query; // Limitamos por defecto a los 100 más recientes para no saturar
 
-    // 1. Obtenemos el WHERE y los parámetros ya armados por la función global
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
-
-    // 2. Iniciamos la consulta usando la vista 'tickets.view_listar_tickets'
     let query = `SELECT * FROM tickets.view_listar_tickets t ${whereClause}`;
-
-    // 3. Determinamos el índice del siguiente parámetro basado en los que ya usó construirFiltrosDashboard
     let paramIndex = params.length + 1;
 
-    // 4. Añadimos el filtro exclusivo de búsqueda por texto si viene en la query
     if (buscar) {
       query += ` AND (t.str_ticket ILIKE $${paramIndex} OR t.str_asunto ILIKE $${paramIndex} OR t.solicitante_nombre ILIKE $${paramIndex} OR t.solicitante_documento ILIKE $${paramIndex})`;
       params.push(`%${buscar}%`);
       paramIndex++;
     }
 
-    query += ` ORDER BY t.created_at DESC;`;
+    // Añadimos un límite estricto de seguridad para evitar descargas masivas pesadas de golpe
+    query += ` ORDER BY t.created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1};`;
+    params.push(parseInt(limit, 10), parseInt(offset, 10));
 
     const resultado = await pool.query(query, params);
     res.status(200).json({ success: true, tickets: resultado.rows });
@@ -885,14 +881,16 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
     );
     const ticketAnt = ticketAnteriorRes.rows[0];
     const asignadoAnterior = ticketAnt?.usuario_asignado_id;
-    const estatusAnteriorId = ticketAnt?.estatus_id ? Number(ticketAnt.estatus_id) : null;
+    const estatusAnteriorId = ticketAnt?.estatus_id
+      ? Number(ticketAnt.estatus_id)
+      : null;
     const fechaInicioPausaAnt = ticketAnt?.dmt_fecha_inicio_pausa;
     let minutosPausaAcumulados = parseFloat(ticketAnt?.int_minutos_pausa) || 0;
     const fechaCreacionTicket = ticketAnt?.created_at;
 
     // 2. Definir estatus de pausa (IDs 18 y 19)
     let nuevoEstatusIdNum = estatus_id ? Number(estatus_id) : null;
-    
+
     const esPausa = (estId) => estId === 18 || estId === 19;
     const eraPausa = esPausa(estatusAnteriorId);
     const seraPausa = nuevoEstatusIdNum ? esPausa(nuevoEstatusIdNum) : eraPausa;
@@ -950,9 +948,13 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
         const diffMs = fin - inicio;
         if (diffMs > 0) {
           const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-          const diffHrs = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-          
+          const diffHrs = Math.floor(
+            (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+          );
+          const diffMins = Math.floor(
+            (diffMs % (1000 * 60 * 60)) / (1000 * 60),
+          );
+
           let resText = "";
           if (diffDays > 0) resText += `${diffDays}d `;
           if (diffHrs > 0 || diffDays > 0) resText += `${diffHrs}h `;
@@ -991,15 +993,17 @@ router.put("/actualizar/:id", upload.any(), async (req, res) => {
        RETURNING *;`,
       [
         nuevoEstatusIdNum,
-        usuario_asignado_id !== undefined && usuario_asignado_id !== "" ? Number(usuario_asignado_id) : null,
+        usuario_asignado_id !== undefined && usuario_asignado_id !== ""
+          ? Number(usuario_asignado_id)
+          : null,
         departamento_id ? Number(departamento_id) : null,
         prioridad_id ? Number(prioridad_id) : null,
-        esCierre ? (ticketAnt?.dmt_fecha_cierre || new Date()) : null, // $5
+        esCierre ? ticketAnt?.dmt_fecha_cierre || new Date() : null, // $5
         esCierre ? (usuarioIdSesion ? Number(usuarioIdSesion) : null) : null, // $6
-        nuevaFechaInicioPausa,       // $7
-        totalMinutosPausaStr,        // $8
-        tiempoResolucionCalculado,   // $9
-        Number(id),                  // $10
+        nuevaFechaInicioPausa, // $7
+        totalMinutosPausaStr, // $8
+        tiempoResolucionCalculado, // $9
+        Number(id), // $10
       ],
     );
     const ticketActualizado = updateRes.rows[0];
