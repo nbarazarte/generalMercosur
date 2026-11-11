@@ -47,7 +47,7 @@ const HomeLayout = ({ asideContent, showLogout = false }) => {
   // 4. FUNCIONES AUXILIARES
   // ==========================================
   const toggleTheme = () => {
-    setCurrentTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    setCurrentTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   // ==========================================

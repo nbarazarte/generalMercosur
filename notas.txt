@@ -119,19 +119,26 @@ PORT=3000
 DBUSER=postgres
 DBDATABASE=db_general_mercosur
 DBPORT=5432
+JWT_SECRET=Mercosur2024
 AUTHORIZATION_HEADER=3594ced6-86ce-4c66-a276-d47399bb4deb
 
 URL="http://localhost:5173"
 
-# para encriptar el token de jwt
-JWT_SECRET=3594ced6-86ce-4c66-a276-d47399bb4deb
-
 MAINTENANCE_MODE=false
+
+# LDAP_URL=ldap://mscbdcidc.MERCOSURCDB.local:389
+LDAP_URL=ldap://192.168.12.40:389
+LDAP_BASE_DN=DC=MERCOSURCDB.local,DC=com,DC=ve
 
 SMTP_SERVER = "smtp.office365.com"
 SMTP_PORT = 587
 SENDER_EMAIL = "serviciosautomaticos@mercosur.com.ve"  # Tu correo de Office 365
 PASSWORD_EMAIL = "S!146168980372oz"                 # Tu contraseña o App Password
+
+AZURE_TENANT_ID=53edff3d-313e-4b3c-8a03-feb0a735b961
+AZURE_CLIENT_ID=7531b1a0-1e21-4194-81f6-fcce6814868b
+AZURE_CLIENT_SECRET=tu-client-secret
+AZURE_REDIRECT_URI=http://localhost:5173/auth/callback
 
 
 front:
@@ -143,6 +150,7 @@ VITE_URL_API_LOCAL_SEGURIDAD=http://localhost:3000/seguridad
 VITE_URL_API_SEGURIDAD=http://localhost:3000/seguridad
 VITE_URL_API_ADMIN=http://localhost:3000/admin
 VITE_URL_API_TICKETS=http://localhost:3000/tickets
+VITE_URL_API_DRIVE=http://localhost:3000/drive
 VITE_URL_API_LOCAL_VER=http://localhost:3000
 
 # TOKEN de la api
@@ -157,6 +165,9 @@ VITE_REDUX_SECRET_KEY=3594ced6-86ce-4c66-a276-d47399bb4deb
 VITE_URL_API_OLLAMA=http://192.168.12.29:11434/api/generate
 VITE_URL_MODELO_OLLAMA=qwen2.5:7b-instruct
 
+VITE_AZURE_CLIENT_ID=7531b1a0-1e21-4194-81f6-fcce6814868b
+VITE_AZURE_TENANT_ID=53edff3d-313e-4b3c-8a03-feb0a735b961
+VITE_AZURE_REDIRECT_URI=http://localhost:5173/auth/callback
 
 
 Edita el servicio con systemd:

@@ -2,17 +2,17 @@ import { useState, useEffect } from "react";
 
 export function useThemeObserver() {
   const [theme, setTheme] = useState(
-    () => localStorage.getItem("theme") || "dark",
+    () => localStorage.getItem("theme") || "light",
   );
 
   useEffect(() => {
     const handleStorageChange = () => {
-      setTheme(localStorage.getItem("theme") || "dark");
+      setTheme(localStorage.getItem("theme") || "light");
     };
 
     const observer = new MutationObserver(() => {
-      const isDark = document.documentElement.classList.contains("light");
-      setTheme(isDark ? "light" : "dark");
+      const isDark = document.documentElement.classList.contains("dark");
+      setTheme(isDark ? "dark" : "light");
     });
 
     observer.observe(document.documentElement, {
