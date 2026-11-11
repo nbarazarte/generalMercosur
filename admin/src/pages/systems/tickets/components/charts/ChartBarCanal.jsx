@@ -16,7 +16,7 @@ export function ChartBarCanal({ data, isDark, loading }) {
       type: "bar",
       data: {
         labels,
-        datasets: [{ data: values, backgroundColor: "#c8a45c", borderRadius: 4 }],
+        datasets: [{ data: values, backgroundColor: "#800020", borderRadius: 4 }],
       },
       options: {
         responsive: true,
