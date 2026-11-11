@@ -16,6 +16,7 @@ export function useDashboardTickets() {
   const [loading, setLoading] = useState(true);
   const [kpis, setKpis] = useState({});
   const [ticketsPorCategoria, setTicketsPorCategoria] = useState([]);
+  const [ticketsPorCanal, setTicketsPorCanal] = useState([]);
   const [distribucionEstados, setDistribucionEstados] = useState([]);
   const [ultimosTickets, setUltimosTickets] = useState([]);
   const [casosPorAnalista, setCasosPorAnalista] = useState([]);
@@ -107,6 +108,7 @@ export function useDashboardTickets() {
         const [
           resKpis,
           resCat,
+          resCan,
           resEst,
           resUlt,
           resAnalista,
@@ -118,6 +120,11 @@ export function useDashboardTickets() {
           axiosTickets.get("/dashboard/tickets-por-categoria", {
             params: paramsLimpios,
           }),
+
+          axiosTickets.get("/dashboard/tickets-por-canal", {
+            params: paramsLimpios,
+          }),
+
           axiosTickets.get("/dashboard/distribucion-estados", {
             params: paramsLimpios,
           }),
@@ -136,6 +143,7 @@ export function useDashboardTickets() {
 
         if (resKpis.data.success) setKpis(resKpis.data.kpis[0] || {});
         if (resCat.data.success) setTicketsPorCategoria(resCat.data.data || []);
+        if (resCan.data.success) setTicketsPorCanal(resCan.data.data || []);
         if (resEst.data.success) setDistribucionEstados(resEst.data.data || []);
         if (resUlt.data.success) setUltimosTickets(resUlt.data.data || []);
         if (resAnalista.data.success)
@@ -389,6 +397,7 @@ export function useDashboardTickets() {
     loading,
     kpis,
     ticketsPorCategoria,
+    ticketsPorCanal,
     distribucionEstados,
     ultimosTickets,
     casosPorAnalista,

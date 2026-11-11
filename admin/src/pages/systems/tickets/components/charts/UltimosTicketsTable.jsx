@@ -43,7 +43,7 @@ export function UltimosTicketsTable({ loading, ultimosTickets, abrirDetalle }) {
             Tickets recientes
           </span>{" "}
           <small style={{ color: "var(--merco-muted)" }}>
-            últimos registros
+            últimos 8 registros
           </small>
         </div>
       </div>

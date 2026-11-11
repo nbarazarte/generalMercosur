@@ -7,6 +7,7 @@ import { KPICard } from "./components/charts/KPICard";
 import { UltimosTicketsTable } from "./components/charts/UltimosTicketsTable";
 import { ChartDoughnutEstado } from "./components/charts/ChartDoughnutEstado";
 import { ChartBarCategoria } from "./components/charts/ChartBarCategoria";
+import { ChartBarCanal } from "./components/charts/ChartBarCanal";
 import { ChartBarAnalistaCreador } from "./components/charts/ChartBarAnalistaCreador";
 import { ChartBarCasosCerradosAnalista } from "./components/charts/ChartBarCasosCerradosAnalista";
 import { TicketDetalleModal } from "../../../pages/systems/tickets/components/TicketDetalleModal";
@@ -42,6 +43,7 @@ export default function DashboardTickets() {
     loading,
     kpis,
     ticketsPorCategoria,
+    ticketsPorCanal,
     distribucionEstados,
     ultimosTickets,
     casosPorAnalista,
@@ -191,8 +193,15 @@ export default function DashboardTickets() {
           />
         </div>
 
-        {/* FILA 1 DE GRÁFICOS */}
-        <div className="dashboard-grid-2col">
+        {/* FILA 1 DE GRÁFICOS: GRID DE 3 COLUMNAS SIMÉTRICO */}
+        <div
+          className="dashboard-grid-3col"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "16px",
+          }}
+        >
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
               <span
@@ -207,6 +216,25 @@ export default function DashboardTickets() {
             </div>
             <ChartBarCategoria
               data={ticketsPorCategoria}
+              isDark={isDark}
+              loading={loading}
+            />
+          </div>
+
+          <div className="ma-card" style={{ padding: 18 }}>
+            <div style={{ marginBottom: 12 }}>
+              <span
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  color: "var(--merco-text)",
+                }}
+              >
+                Volumen de Tickets por Canal
+              </span>
+            </div>
+            <ChartBarCanal
+              data={ticketsPorCanal}
               isDark={isDark}
               loading={loading}
             />

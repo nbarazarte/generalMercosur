@@ -220,6 +220,26 @@ router.get("/dashboard/tickets-por-categoria", async (req, res) => {
   }
 });
 
+
+router.get("/dashboard/tickets-por-canal", async (req, res) => {
+  try {
+    const { whereClause, params } = construirFiltrosDashboard(req, "t");
+
+    const query = `
+      SELECT nombre_canal, COUNT(ticket_id) AS total_tickets
+      FROM tickets.view_tickets_por_canal t
+      ${whereClause}
+      GROUP BY nombre_canal
+      ORDER BY total_tickets DESC;
+    `;
+    //console.log(query);
+    const result = await pool.query(query, params);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, error: "Error interno." });
+  }
+});
+
 router.get("/dashboard/distribucion-estados", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
