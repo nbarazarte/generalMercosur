@@ -1,4 +1,5 @@
 import { useLogin } from "../auth/hooks/useLogin";
+import { DynamicIcon } from "../../components/IconCatalog";
 
 const Login = () => {
   const { toasts, handleMicrosoftLogin, isLoginLoading } = useLogin();
@@ -25,16 +26,8 @@ const Login = () => {
             className={`btn-primary flex items-center justify-center gap-3 w-full py-3 ${isLoginLoading ? "loading" : ""}`}
             disabled={isLoginLoading}
           >
-            {/* Icono opcional de Microsoft */}
-            <svg className="w-5 h-5" viewBox="0 0 23 23" fill="currentColor">
-              <path fill="#f3f3f3" d="M0 0h11v11H0z" />
-              <path fill="#f3f3f3" d="M12 0h11v11H12z" />
-              <path fill="#f3f3f3" d="M0 12h11v11H0z" />
-              <path fill="#f3f3f3" d="M12 12h11v11H12z" />
-            </svg>
-            <span className="btn-label">
-              Iniciar sesión con Microsoft Entra ID
-            </span>
+            <DynamicIcon name="BsWindows" />
+            <span className="btn-label">Microsoft Entra ID</span>
             <div className="spinner"></div>
           </button>
         </div>
