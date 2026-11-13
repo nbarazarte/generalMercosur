@@ -19,7 +19,6 @@ export function useCrearTicket() {
         (sys) => sys.sistema === "Tickets",
       )?.rol,
   );
-  
 
   // Selector de tipo de persona para tickets externos
   const [tipoPersonaCliente, setTipoPersonaCliente] = useState("natural");
@@ -55,7 +54,8 @@ export function useCrearTicket() {
   const [listaCategoriasInternas, setListaCategoriasInternas] = useState([]);
   const [listaPrioridades, setListaPrioridades] = useState([]);
   const [listaTipoTicket, setListaTipoTicket] = useState([]);
-
+  const [listaEstatus, setListaEstatus] = useState([]);
+  const [nuevoEstatusId, setNuevoEstatusId] = useState("");
   const [strAsunto, setStrAsunto] = useState("");
   const [strDescripcion, setStrDescripcion] = useState("");
   const [archivosAdjuntos, setArchivosAdjuntos] = useState([]);
@@ -65,6 +65,35 @@ export function useCrearTicket() {
   const user = useSelector((state) => state.auth?.user);
   const nombre = user?.nombre || "Analista";
   const apellido = user?.apellido || "";
+
+  const fetchCatalogos = async () => {
+    try {
+      let listaTickets = [];
+      try {
+        const resMaestros = await axiosTickets.get("/datos-maestros");
+        if (resMaestros.data && resMaestros.data.success) {
+          setListaEstatus(resMaestros.data.estatus || []);
+        }
+      } catch (err) {
+        console.error("Error al cargar /datos-maestros:", err);
+      }
+
+      return listaTickets;
+    } catch (error) {
+      console.error("Error general en fetchCatalogosYTickets:", error);
+    }
+    return [];
+  };
+
+  useEffect(() => {
+    fetchCatalogos();
+  }, []);
+
+  const estatusModalDisponibles = useMemo(() => {
+    return listaEstatus.filter(
+      (est) => !(est.str_nombre || "").toLowerCase().includes("vencido"),
+    );
+  }, [listaEstatus]);
 
   const showToast = (message, type = "success") => {
     if (toastTimerRef.current) {
@@ -507,6 +536,11 @@ REGLAS ABSOLUTAS:
       return;
     }
 
+    if (!nuevoEstatusId) {
+      showToast("Por favor seleccione el Estatus del Ticket.", "error");
+      return;
+    }
+
     const descripcionHTML = await obtenerContenidoHTML();
     const textoPlanoEditor = strDescripcion.replace(/<[^>]*>/g, "").trim();
 
@@ -591,6 +625,7 @@ REGLAS ABSOLUTAS:
 
     const formData = new FormData();
     formData.append("tipo_ticket_id", Number(tipoTicketId));
+    formData.append("estatus_id", Number(nuevoEstatusId));
     formData.append("str_asunto", strAsunto);
     formData.append("str_descripcion", descripcionHTML);
 
@@ -801,5 +836,8 @@ REGLAS ABSOLUTAS:
     inputStyle,
     labelStyle,
     currentUserRole,
+    estatusModalDisponibles,
+    nuevoEstatusId,
+    setNuevoEstatusId,
   };
 }

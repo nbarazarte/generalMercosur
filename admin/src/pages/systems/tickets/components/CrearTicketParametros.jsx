@@ -17,6 +17,9 @@ export function CrearTicketParametros({
   labelStyle,
   debeBloquearEmpleado,
   currentUserRole,
+  estatusModalDisponibles,
+  nuevoEstatusId,
+  setNuevoEstatusId,
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -24,7 +27,8 @@ export function CrearTicketParametros({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr",
+          //gridTemplateColumns: "1fr 1fr 1fr",
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
           gap: "10px",
         }}
       >
@@ -36,7 +40,7 @@ export function CrearTicketParametros({
             required
             style={inputStyle}
           >
-            <option value="">Seleccione tipo... </option>
+            <option value="">Seleccione tipo de ticket... </option>
 
             {listaTipoTicket
               .filter((t) => {
@@ -67,6 +71,42 @@ export function CrearTicketParametros({
           />
         </div>
 
+        <div>
+          <label
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              display: "block",
+              marginBottom: 4,
+            }}
+          >
+            Estatus
+          </label>
+          <select
+            value={nuevoEstatusId}
+            onChange={(e) => setNuevoEstatusId(e.target.value)}
+            style={inputStyle}
+            required
+          >
+            <option value="">Seleccione estatus...</option>
+            {estatusModalDisponibles.map((est) => (
+              <option key={est.id} value={String(est.id)}>
+                {est.str_nombre}{" "}
+                {est.str_descripcion ? `- ${est.str_descripcion}` : ""}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Fila 2: Tipo de Ticket, Remitente y Asunto */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "12fr",
+          gap: "10px",
+        }}
+      >
         <div className="field">
           <label style={labelStyle}>Asunto</label>
           <input
@@ -80,10 +120,11 @@ export function CrearTicketParametros({
         </div>
       </div>
 
-      {/* Fila 2: Departamento (Obligatorio) y Empleado Asignado (Opcional) */}
+      {/* Fila 3: Departamento (Obligatorio) y Empleado Asignado (Opcional) */}
       <div
         style={{
           display: "grid",
+          //gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
           gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
           gap: "10px",
         }}

@@ -86,6 +86,9 @@ export default function CrearTicket() {
     inputStyle,
     labelStyle,
     currentUserRole,
+    estatusModalDisponibles,
+    nuevoEstatusId,
+    setNuevoEstatusId,
   } = useCrearTicket();
 
   return (
@@ -238,6 +241,9 @@ export default function CrearTicket() {
                 labelStyle={labelStyle}
                 debeBloquearEmpleado={debeBloquearEmpleado}
                 currentUserRole={currentUserRole}
+                estatusModalDisponibles={estatusModalDisponibles}
+                nuevoEstatusId={nuevoEstatusId}
+                setNuevoEstatusId={setNuevoEstatusId}
               />
 
               {esTipoExterno() && (

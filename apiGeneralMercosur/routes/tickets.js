@@ -427,6 +427,7 @@ router.post("/crear", upload.any(), async (req, res) => {
 
     const {
       tipo_ticket_id,
+      estatus_id,
       cliente_id,
       cliente_juridico_id,
       cierre_agente_id,
@@ -588,21 +589,33 @@ router.post("/crear", upload.any(), async (req, res) => {
       await procesarArchivosConSharp(archivos, str_ticket);
 
     const queryInsert = `
-      INSERT INTO tickets.tbl_tickets (
-        str_ticket, tipo_ticket_id, cliente_id, cliente_juridico_id, creador_agente_id, cierre_agente_id,
-        departamento_id, categoria_id, prioridad_id,
-        canal_id, str_asunto, str_descripcion, int_sla,
-        str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id,
-        dmt_fecha_vencimiento_sla, created_at, updated_at
-      ) VALUES (
-        $1, $2::integer, $3::integer, $4::integer, $5::integer, $6::integer,
-        $7::integer, $8::integer, $9::integer, $10::integer,
-        $11::varchar, $12::text, $13::integer,
-        $14::text, $15::text, $16::text, $17::integer,
-        $18::timestamp, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-      )
-      RETURNING *;
-    `;
+          INSERT INTO tickets.tbl_tickets (
+            str_ticket, tipo_ticket_id, cliente_id, cliente_juridico_id, creador_agente_id, cierre_agente_id,
+            departamento_id, categoria_id, prioridad_id,
+            canal_id, str_asunto, str_descripcion, int_sla,
+            str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id,
+            dmt_fecha_vencimiento_sla, created_at, updated_at, estatus_id, dmt_fecha_cierre, tiempo_resolucion
+          ) VALUES (
+            $1, $2::integer, $3::integer, $4::integer, $5::integer, $6::integer,
+            $7::integer, $8::integer, $9::integer, $10::integer,
+            $11::varchar, $12::text, $13::integer,
+            $14::text, $15::text, $16::text, $17::integer,
+            $18::timestamp, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, $19::integer, $20::timestamp, $21
+          )
+          RETURNING *;
+        `;
+
+    const estatusIdFinal = estatus_id ? Number(estatus_id) : null;
+    const fechaCierreFinal = estatusIdFinal === 22 ? new Date() : null; // O puedes usar directamente CURRENT_TIMESTAMP en SQL si prefieres
+
+    const agente_cierre =
+      estatusIdFinal === 22 ? Number(usuarioIdSesion) : null;
+
+    let tiempoResolucionCalculado = "";
+    
+    if (estatusIdFinal === 22) {
+      tiempoResolucionCalculado = "0m";
+    }
 
     const values = [
       str_ticket,
@@ -610,7 +623,8 @@ router.post("/crear", upload.any(), async (req, res) => {
       clienteFinalId,
       clienteJuridicoFinalId,
       usuarioIdSesion ? Number(usuarioIdSesion) : null,
-      cierre_agente_id ? Number(cierre_agente_id) : null,
+      //cierre_agente_id ? Number(cierre_agente_id) : null,
+      agente_cierre,
       departamento_id ? Number(departamento_id) : null,
       categoria_id ? Number(categoria_id) : null,
       prioridad_id ? Number(prioridad_id) : null,
@@ -623,8 +637,10 @@ router.post("/crear", upload.any(), async (req, res) => {
       str_ruta_audio,
       valoresAsignado,
       fechaVencimientoSla,
+      estatusIdFinal,
+      fechaCierreFinal,
+      tiempoResolucionCalculado,
     ];
-
     const nuevoTicketRes = await client.query(queryInsert, values);
     const ticketCreado = nuevoTicketRes.rows[0];
 
