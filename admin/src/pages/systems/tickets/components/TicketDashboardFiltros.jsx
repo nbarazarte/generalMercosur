@@ -8,6 +8,7 @@ export function TicketDashboardFiltros({
   listaDepartamentos,
   prioridades,
   canales,
+  empleadosFiltrados,
 }) {
   const filtroStyle = {
     padding: "8px 12px",
@@ -21,7 +22,7 @@ export function TicketDashboardFiltros({
 
   // Verificamos si el tipo de ticket seleccionado actualmente es de tipo "interno"
   const tipoSeleccionado = tiposTicket.find(
-    (t) => Number(t.id) === Number(filtros.tipo_ticket_id)
+    (t) => Number(t.id) === Number(filtros.tipo_ticket_id),
   );
   const esInterno =
     tipoSeleccionado &&
@@ -31,7 +32,7 @@ export function TicketDashboardFiltros({
   const handleTipoTicketChange = (e) => {
     const nuevoTipoId = e.target.value;
     const seleccionado = tiposTicket.find(
-      (t) => Number(t.id) === Number(nuevoTipoId)
+      (t) => Number(t.id) === Number(nuevoTipoId),
     );
     const esNuevoInterno =
       seleccionado &&
@@ -149,6 +150,25 @@ export function TicketDashboardFiltros({
           {listaDepartamentos.map((d) => (
             <option key={d.id} value={d.id}>
               {d.str_nombre}
+            </option>
+          ))}
+        </select>
+
+        {/* Asignado */}
+        <select
+          value={filtros.usuario_asignado_id}
+          onChange={(e) =>
+            setFiltros((prev) => ({
+              ...prev,
+              usuario_asignado_id: e.target.value,
+            }))
+          }
+          style={filtroStyle}
+        >
+          <option value="">Asignado a</option>
+          {empleadosFiltrados.map((d) => (
+            <option key={d.id} value={d.id}>
+              {d.str_nombre} {d.str_apellido}
             </option>
           ))}
         </select>

@@ -706,7 +706,7 @@ REGLAS ABSOLUTAS:
   };
 
   const departamentosActuales = useMemo(() => {
-    if (esTipoExterno()) {
+    /* if (esTipoExterno()) {
       return listaDepartamentos.filter((dep) => {
         const nombreDepto = (dep.str_nombre || "").toLowerCase();
         return (
@@ -716,7 +716,7 @@ REGLAS ABSOLUTAS:
           nombreDepto.includes("atencion al cliente")
         );
       });
-    }
+    } */
     return listaDepartamentos;
   }, [listaDepartamentos, tipoTicketId]);
 

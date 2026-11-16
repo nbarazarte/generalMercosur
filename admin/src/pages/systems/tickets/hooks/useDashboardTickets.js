@@ -28,6 +28,8 @@ export function useDashboardTickets() {
   const [tiposTicket, setTiposTicket] = useState([]);
   const [listaEstatus, setListaEstatus] = useState([]);
   const [listaDepartamentos, setListaDepartamentos] = useState([]);
+  const [listaUsuarios, setListaUsuarios] = useState([]);
+  const [empleadosFiltrados, setEmpleadosFiltrados] = useState([]);
   const [categoriaExterna, setCategoriaExterna] = useState([]);
   const [categoriaInterna, setCategoriaInterna] = useState([]);
 
@@ -39,6 +41,7 @@ export function useDashboardTickets() {
     prioridad_id: "",
     canal_id: "",
     departamento_id: "",
+    usuario_asignado_id: "",
     categoria_id: "",
     tipo_persona: "",
     creacion_desde: "",
@@ -175,6 +178,49 @@ export function useDashboardTickets() {
   useEffect(() => {
     fetchDashboardData(filtros);
   }, [filtros, fetchDashboardData]);
+
+  useEffect(() => {
+    const fetchUsuariosDepartamentos = async () => {
+      let deptosTemp = [];
+      let usuariosTemp = [];
+
+      try {
+        const resDeptUsers = await axiosTickets.get("/departamentos-usuarios");
+        if (resDeptUsers.data && resDeptUsers.data.success) {
+          deptosTemp =
+            resDeptUsers.data.departamentos || resDeptUsers.data.data || [];
+          usuariosTemp =
+            resDeptUsers.data.usuarios || resDeptUsers.data.users || [];
+        }
+      } catch (err) {
+        console.warn(
+          "Endpoint /departamentos-usuarios falló, extrayendo de catálogos...",
+          err,
+        );
+      }
+      //console.log(usuariosTemp)
+      //setListaDepartamentos(deptosTemp);
+      setListaUsuarios(usuariosTemp);
+    };
+    fetchUsuariosDepartamentos();
+  }, []);
+
+  useEffect(() => {
+
+    //console.log(filtros.departamento_id)
+    if (filtros.departamento_id) {
+      setEmpleadosFiltrados(
+        listaUsuarios.filter(
+          (u) => Number(u.departamento_id) === Number(filtros.departamento_id),
+        ),
+      );
+    } else {
+      setEmpleadosFiltrados(listaUsuarios);
+    }
+    //setFAgente("");
+
+
+  }, [filtros.departamento_id, listaUsuarios]);
 
   // Cargar lista de usuarios para el modal al cargar el hook
   useEffect(() => {
@@ -386,6 +432,7 @@ export function useDashboardTickets() {
       prioridad_id: "",
       canal_id: "",
       departamento_id: "",
+      usuario_asignado_id: "",
       categoria_id: "",
       tipo_persona: "",
       creacion_desde: "",
@@ -442,5 +489,6 @@ export function useDashboardTickets() {
     abrirDetalle,
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
+    empleadosFiltrados,
   };
 }

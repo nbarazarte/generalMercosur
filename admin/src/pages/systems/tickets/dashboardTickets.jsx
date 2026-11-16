@@ -87,6 +87,7 @@ export default function DashboardTickets() {
     abrirDetalle,
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
+    empleadosFiltrados,
   } = useDashboardTickets();
 
   const filtroStyle = {
@@ -131,6 +132,7 @@ export default function DashboardTickets() {
           listaDepartamentos={listaDepartamentos}
           prioridades={prioridades}
           canales={canales}
+          empleadosFiltrados={empleadosFiltrados}
         />
 
         {/* TARJETAS KPI */}

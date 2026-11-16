@@ -128,11 +128,11 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
   let paramIndex = 1;
   const rolUsuario = (rol || "").toLowerCase();
 
-  if (rolUsuario.includes("gerente_atc")) {
+  if (rolUsuario.includes("gerente")) {
     whereClause += ` AND (${aliasTabla}.tipo_ticket_id = 25 OR (${aliasTabla}.tipo_ticket_id = 24 AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})))`;
     params.push(Number(usuarioId));
     paramIndex++;
-  } else if (rolUsuario.includes("operador_atc")) {
+  } else if (rolUsuario.includes("operador")) {
     whereClause += ` AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})`;
     params.push(Number(usuarioId));
     paramIndex++;
