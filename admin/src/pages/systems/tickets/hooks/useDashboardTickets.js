@@ -206,20 +206,17 @@ export function useDashboardTickets() {
   }, []);
 
   useEffect(() => {
-
-    //console.log(filtros.departamento_id)
-    if (filtros.departamento_id) {
-      setEmpleadosFiltrados(
-        listaUsuarios.filter(
-          (u) => Number(u.departamento_id) === Number(filtros.departamento_id),
-        ),
-      );
-    } else {
-      setEmpleadosFiltrados(listaUsuarios);
+    const deptoId = filtros.departamento_id;
+  
+    if (deptoId === "" || deptoId == null) {
+      setEmpleadosFiltrados([]);
+      return;
     }
-    //setFAgente("");
-
-
+  
+    const deptoIdNum = Number(deptoId);
+    setEmpleadosFiltrados(
+      listaUsuarios.filter((u) => Number(u.departamento_id) === deptoIdNum)
+    );
   }, [filtros.departamento_id, listaUsuarios]);
 
   // Cargar lista de usuarios para el modal al cargar el hook
