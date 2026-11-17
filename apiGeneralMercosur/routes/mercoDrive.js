@@ -159,7 +159,7 @@ router.get("/descargar", async (req, res) => {
     const { enlace_id } = decoded;
 
     const queryArchivos = `
-      SELECT ea.str_nombre_archivo, ea.str_ruta_archivo 
+      SELECT ea.str_nombre_archivo, ea.str_ruta_archivo
       FROM drive.tbl_enlaces_archivos ea
       WHERE ea.enlace_id = $1;
     `;
@@ -172,6 +172,29 @@ router.get("/descargar", async (req, res) => {
     }
 
     const archivos = resultado.rows;
+
+    // Función auxiliar para registrar el evento de descarga en base de datos
+    const registrarDescarga = async () => {
+      const userAgent = req.headers["user-agent"] || "Desconocido";
+      const ipOrigen =
+        req.headers["cf-connecting-ip"] || // Si usas Cloudflare
+        req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
+        req.socket.remoteAddress;
+
+      // Evitar contar bots de vista previa de enlaces (WhatsApp, Telegram, Slack, etc.)
+      const esBotPreview =
+        /WhatsApp|TelegramBot|Slackbot|Twitterbot|facebookexternalhit/i.test(
+          userAgent,
+        );
+
+      if (!esBotPreview) {
+        await pool.query(
+          `INSERT INTO drive.tbl_enlaces_descargas (enlace_id, ip_origen, user_agent)
+           VALUES ($1, $2, $3)`,
+          [enlace_id, ipOrigen, userAgent],
+        );
+      }
+    };
 
     if (archivos.length === 1) {
       const archivo = archivos[0];
@@ -187,6 +210,7 @@ router.get("/descargar", async (req, res) => {
           );
       }
 
+      await registrarDescarga();
       return res.download(rutaFisica, archivo.str_nombre_archivo);
     } else {
       const queryEnlaceNombre = `SELECT str_nombre_enlace FROM drive.tbl_enlaces WHERE id = $1 LIMIT 1;`;
@@ -198,6 +222,8 @@ router.get("/descargar", async (req, res) => {
           .trim()
           .replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]/g, "_");
       }
+
+      await registrarDescarga();
 
       res.attachment(`${nombreZip}.zip`);
       const archive = archiver("zip", { zlib: { level: 9 } });
@@ -239,8 +265,8 @@ router.get(
       const { usuario_id } = req.query;
 
       let queryEnlace = `
-      SELECT id, str_nombre_enlace, fecha_expiracion, usuario_id, str_nombre_usuario, created_at 
-      FROM drive.tbl_enlaces 
+      SELECT id, str_nombre_enlace, fecha_expiracion, usuario_id, str_nombre_usuario, created_at
+      FROM drive.tbl_enlaces
     `;
       const params = [];
 
@@ -259,8 +285,8 @@ router.get(
       const enlacesConDetalles = await Promise.all(
         enlaces.map(async (enlace) => {
           const queryArchivos = `
-          SELECT id, str_nombre_archivo, str_ruta_archivo, es_archivo_drive 
-          FROM drive.tbl_enlaces_archivos 
+          SELECT id, str_nombre_archivo, str_ruta_archivo, es_archivo_drive
+          FROM drive.tbl_enlaces_archivos
           WHERE enlace_id = $1;
         `;
           const resArchivos = await pool.query(queryArchivos, [enlace.id]);
@@ -324,6 +350,15 @@ router.get(
               ? `${baseURL}/drive/descargar?token=${tokenEnlace}`
               : "Enlace Expirado";
 
+          const queryDescargas = `
+            SELECT id, ip_origen, user_agent, fecha_descarga
+            FROM drive.tbl_enlaces_descargas
+            WHERE enlace_id = $1
+            ORDER BY fecha_descarga DESC;
+          `;
+          const resDescargas = await pool.query(queryDescargas, [enlace.id]);
+          const historialDescargas = resDescargas.rows;
+
           return {
             ...enlace,
             fecha_expiracion: fechaStr,
@@ -331,6 +366,9 @@ router.get(
             estaExpirado: diferenciaSegundos <= 0,
             pesoTotalMb: Number(pesoTotalMb),
             archivos: archivosConPeso,
+            totalDescargas: historialDescargas.length,
+            ultimaDescarga: historialDescargas[0]?.fecha_descarga || null,
+            historialDescargas,
           };
         }),
       );
@@ -364,9 +402,9 @@ router.put(
 
     try {
       const queryUpdate = `
-      UPDATE drive.tbl_enlaces 
-      SET fecha_expiracion = $1::date, updated_at = CURRENT_TIMESTAMP 
-      WHERE id = $2 
+      UPDATE drive.tbl_enlaces
+      SET fecha_expiracion = $1::date, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $2
       RETURNING id, fecha_expiracion;
     `;
       const resultado = await pool.query(queryUpdate, [
@@ -396,84 +434,98 @@ router.put(
 );
 
 // Ruta protegida para descarga local directa desde el panel de Mis Enlaces
-router.get("/descargar-local/:id", verificarClienteFrontend, verificarSesion, async (req, res) => {
-  const { id } = req.params;
+router.get(
+  "/descargar-local/:id",
+  verificarClienteFrontend,
+  verificarSesion,
+  async (req, res) => {
+    const { id } = req.params;
 
-  try {
-    const queryEnlace = `
-      SELECT id, str_nombre_enlace 
-      FROM drive.tbl_enlaces 
+    try {
+      const queryEnlace = `
+      SELECT id, str_nombre_enlace
+      FROM drive.tbl_enlaces
       WHERE id = $1 LIMIT 1;
     `;
-    const resEnlace = await pool.query(queryEnlace, [Number(id)]);
+      const resEnlace = await pool.query(queryEnlace, [Number(id)]);
 
-    if (resEnlace.rows.length === 0) {
-      return res.status(404).send("El enlace no existe o fue eliminado.");
-    }
+      if (resEnlace.rows.length === 0) {
+        return res.status(404).send("El enlace no existe o fue eliminado.");
+      }
 
-    const enlaceInfo = resEnlace.rows[0];
+      const enlaceInfo = resEnlace.rows[0];
 
-    const queryArchivos = `
-      SELECT ea.str_nombre_archivo, ea.str_ruta_archivo 
+      const queryArchivos = `
+      SELECT ea.str_nombre_archivo, ea.str_ruta_archivo
       FROM drive.tbl_enlaces_archivos ea
       WHERE ea.enlace_id = $1;
     `;
-    const resultado = await pool.query(queryArchivos, [Number(id)]);
+      const resultado = await pool.query(queryArchivos, [Number(id)]);
 
-    if (resultado.rows.length === 0) {
-      return res.status(404).send("El enlace no contiene archivos asociados.");
-    }
-
-    const archivos = resultado.rows;
-
-    // Si es un solo archivo, se descarga exactamente con su nombre original
-    if (archivos.length === 1) {
-      const archivo = archivos[0];
-      const rutaFisica = archivo.str_ruta_archivo.startsWith("/")
-        ? archivo.str_ruta_archivo
-        : path.join("/", archivo.str_ruta_archivo);
-
-      if (!fs.existsSync(rutaFisica)) {
-        return res.status(404).send("El archivo físico ya no se encuentra disponible en el servidor.");
+      if (resultado.rows.length === 0) {
+        return res
+          .status(404)
+          .send("El enlace no contiene archivos asociados.");
       }
 
-      return res.download(rutaFisica, archivo.str_nombre_archivo);
-    } 
-    
-    // Si son múltiples archivos, se comprimen en un ZIP usando rigurosamente el nombre del enlace
-    else {
-      let nombreZip = `Enlace_${id}`;
-      if (enlaceInfo.str_nombre_enlace && enlaceInfo.str_nombre_enlace.trim() !== "") {
-        nombreZip = enlaceInfo.str_nombre_enlace
-          .trim()
-          .replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]/g, "_");
-      }
+      const archivos = resultado.rows;
 
-      res.attachment(`${nombreZip}.zip`);
-      const archive = archiver("zip", { zlib: { level: 9 } });
-
-      archive.on("error", (err) => {
-        throw err;
-      });
-
-      archive.pipe(res);
-
-      for (const archivo of archivos) {
+      // Si es un solo archivo, se descarga exactamente con su nombre original
+      if (archivos.length === 1) {
+        const archivo = archivos[0];
         const rutaFisica = archivo.str_ruta_archivo.startsWith("/")
           ? archivo.str_ruta_archivo
           : path.join("/", archivo.str_ruta_archivo);
 
-        if (fs.existsSync(rutaFisica)) {
-          archive.file(rutaFisica, { name: archivo.str_nombre_archivo });
+        if (!fs.existsSync(rutaFisica)) {
+          return res
+            .status(404)
+            .send(
+              "El archivo físico ya no se encuentra disponible en el servidor.",
+            );
         }
+
+        return res.download(rutaFisica, archivo.str_nombre_archivo);
       }
 
-      await archive.finalize();
+      // Si son múltiples archivos, se comprimen en un ZIP usando rigurosamente el nombre del enlace
+      else {
+        let nombreZip = `Enlace_${id}`;
+        if (
+          enlaceInfo.str_nombre_enlace &&
+          enlaceInfo.str_nombre_enlace.trim() !== ""
+        ) {
+          nombreZip = enlaceInfo.str_nombre_enlace
+            .trim()
+            .replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]/g, "_");
+        }
+
+        res.attachment(`${nombreZip}.zip`);
+        const archive = archiver("zip", { zlib: { level: 9 } });
+
+        archive.on("error", (err) => {
+          throw err;
+        });
+
+        archive.pipe(res);
+
+        for (const archivo of archivos) {
+          const rutaFisica = archivo.str_ruta_archivo.startsWith("/")
+            ? archivo.str_ruta_archivo
+            : path.join("/", archivo.str_ruta_archivo);
+
+          if (fs.existsSync(rutaFisica)) {
+            archive.file(rutaFisica, { name: archivo.str_nombre_archivo });
+          }
+        }
+
+        await archive.finalize();
+      }
+    } catch (err) {
+      console.error("Error al procesar la descarga local:", err);
+      return res.status(500).send("Error interno al procesar la descarga.");
     }
-  } catch (err) {
-    console.error("Error al procesar la descarga local:", err);
-    return res.status(500).send("Error interno al procesar la descarga.");
-  }
-});
+  },
+);
 
 module.exports = router;
