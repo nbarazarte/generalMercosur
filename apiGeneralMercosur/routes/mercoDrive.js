@@ -179,13 +179,13 @@ router.get("/d/:codigo", async (req, res) => {
 
     const enlace = resEnlace.rows[0];
 
-    // Validar fecha de expiración (hasta las 23:59:59 del día indicado)
+    // Validar fecha de expiración (hasta las 23:59:59 hora de Venezuela UTC-4)
     const fechaStr =
       enlace.fecha_expiracion instanceof Date
         ? enlace.fecha_expiracion.toISOString().split("T")[0]
         : String(enlace.fecha_expiracion).split("T")[0];
 
-    const fechaVencimientoObj = new Date(fechaStr + "T23:59:59");
+    const fechaVencimientoObj = new Date(`${fechaStr}T23:59:59-04:00`);
     if (new Date() > fechaVencimientoObj) {
       return res.status(401).send("Este enlace de descarga ha expirado.");
     }
@@ -305,8 +305,11 @@ router.get(
 
       const resultadoEnlaces = await pool.query(queryEnlace, params);
       const enlaces = resultadoEnlaces.rows;
-      const baseURL =
-        process.env.URL_BACKEND_PUBLICO || "http://localhost:3000";
+
+      // CORRECCIÓN 1: Eliminar barras finales para evitar doble barra (//drive/d/...)
+      const baseURL = (
+        process.env.URL_BACKEND_PUBLICO || "http://localhost:3000"
+      ).replace(/\/+$/, "");
 
       const enlacesConDetalles = await Promise.all(
         enlaces.map(async (enlace) => {
@@ -355,7 +358,8 @@ router.get(
           }
 
           const fechaActual = new Date();
-          const fechaVencimientoObj = new Date(fechaStr + "T23:59:59");
+          // CORRECCIÓN 2: Zona horaria UTC-4 (Venezuela)
+          const fechaVencimientoObj = new Date(`${fechaStr}T23:59:59-04:00`);
           const estaExpirado = fechaActual > fechaVencimientoObj;
 
           const linkDescarga =
