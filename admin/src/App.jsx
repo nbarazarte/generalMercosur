@@ -40,6 +40,8 @@ import DashboardKcs from "./pages/systems/kcs/dashboard";
 //drive:
 import CrearEnlace from "./pages/systems/drive/crearEnlace";
 import MisEnlaces from "./pages/systems/drive/misEnlaces";
+import AcortadorUrl from "./pages/systems/drive/acortadorUrl";
+import MisUrlsCortas from "./pages/systems/drive/misUrlsCortas";
 
 // Rastreador de navegación para todos los sistemas
 const RouteTracker = () => {
@@ -402,6 +404,12 @@ function App() {
 
             {/* Subruta 1: Mis enlaces */}
             <Route path="mis-enlaces" element={<MisEnlaces />} />
+
+            {/* Subruta 2: Acortador URL */}
+            <Route path="acortar-url" element={<AcortadorUrl />} />
+
+            {/* Subruta 3: Mis URL Cortas */}
+            <Route path="mis-urls-cortas" element={<MisUrlsCortas />} />
 
             {/* Redirección por defecto al entrar solo a /merco-drive */}
             <Route index element={<Navigate to="crear-enlace" replace />} />

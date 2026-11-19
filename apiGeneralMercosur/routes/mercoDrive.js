@@ -11,13 +11,35 @@ const fs = require("fs");
 const crypto = require("crypto");
 const archiver = require("archiver");
 
-// Generador de código corto aleatorio (ej: 8 caracteres alfanuméricos)
+// Generador de código corto aleatorio URL-safe
 function generarCodigoCorto(longitud = 8) {
   return crypto
     .randomBytes(Math.ceil((longitud * 3) / 4))
     .toString("base64url")
     .slice(0, longitud);
 }
+
+// Helper para obtener URL base sin barras finales (evita //drive/...)
+function obtenerBaseUrlPublica() {
+  return (process.env.URL_BACKEND_PUBLICO || "http://localhost:3000").replace(
+    /\/+$/,
+    "",
+  );
+}
+
+// Helper para obtener IP real (Cloudflare / Proxy / Socket)
+function obtenerIpOrigen(req) {
+  return (
+    req.headers["cf-connecting-ip"] ||
+    req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
+    req.socket.remoteAddress ||
+    "N/A"
+  );
+}
+
+// ==========================================
+// MÓDULO ENLACES DE ARCHIVOS (DRIVE)
+// ==========================================
 
 // Endpoint para crear enlace de Drive, almacenar archivos/auditoría y retornar el link corto
 router.post(
@@ -127,10 +149,7 @@ router.post(
 
       await client.query("COMMIT");
 
-      const baseURL = (
-        process.env.URL_BACKEND_PUBLICO || "http://localhost:3000"
-      ).replace(/\/+$/, "");
-
+      const baseURL = obtenerBaseUrlPublica();
       const linkDescarga = `${baseURL}/drive/d/${codigoCorto}`;
 
       routerRes.status(201).json({
@@ -151,9 +170,7 @@ router.post(
   },
 );
 
-// ==========================================
-// RUTA PÚBLICA DE DESCARGA CORTA
-// ==========================================
+// RUTA PÚBLICA DE DESCARGA CORTA (SIN MIDDLEWARES DE SESIÓN)
 router.get("/d/:codigo", async (req, res) => {
   const { codigo } = req.params;
 
@@ -162,7 +179,6 @@ router.get("/d/:codigo", async (req, res) => {
   }
 
   try {
-    // 1. Buscar el enlace por su código corto y validar vigencia
     const queryEnlace = `
       SELECT id, str_nombre_enlace, fecha_expiracion
       FROM drive.tbl_enlaces
@@ -179,7 +195,6 @@ router.get("/d/:codigo", async (req, res) => {
 
     const enlace = resEnlace.rows[0];
 
-    // Validar fecha de expiración (hasta las 23:59:59 hora de Venezuela UTC-4)
     const fechaStr =
       enlace.fecha_expiracion instanceof Date
         ? enlace.fecha_expiracion.toISOString().split("T")[0]
@@ -192,7 +207,6 @@ router.get("/d/:codigo", async (req, res) => {
 
     const enlace_id = enlace.id;
 
-    // 2. Obtener archivos asociados
     const queryArchivos = `
       SELECT ea.str_nombre_archivo, ea.str_ruta_archivo
       FROM drive.tbl_enlaces_archivos ea
@@ -206,13 +220,9 @@ router.get("/d/:codigo", async (req, res) => {
 
     const archivos = resultado.rows;
 
-    // Función auxiliar para registrar el evento de descarga en base de datos
     const registrarDescarga = async () => {
       const userAgent = req.headers["user-agent"] || "Desconocido";
-      const ipOrigen =
-        req.headers["cf-connecting-ip"] ||
-        req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
-        req.socket.remoteAddress;
+      const ipOrigen = obtenerIpOrigen(req);
 
       const esBotPreview =
         /WhatsApp|TelegramBot|Slackbot|Twitterbot|facebookexternalhit/i.test(
@@ -281,7 +291,7 @@ router.get("/d/:codigo", async (req, res) => {
   }
 });
 
-// Obtener la lista de enlaces creados junto con sus archivos asociados y su link corto
+// Obtener la lista de enlaces de Drive creados
 router.get(
   "/enlaces",
   verificarClienteFrontend,
@@ -305,11 +315,7 @@ router.get(
 
       const resultadoEnlaces = await pool.query(queryEnlace, params);
       const enlaces = resultadoEnlaces.rows;
-
-      // CORRECCIÓN 1: Eliminar barras finales para evitar doble barra (//drive/d/...)
-      const baseURL = (
-        process.env.URL_BACKEND_PUBLICO || "http://localhost:3000"
-      ).replace(/\/+$/, "");
+      const baseURL = obtenerBaseUrlPublica();
 
       const enlacesConDetalles = await Promise.all(
         enlaces.map(async (enlace) => {
@@ -358,7 +364,6 @@ router.get(
           }
 
           const fechaActual = new Date();
-          // CORRECCIÓN 2: Zona horaria UTC-4 (Venezuela)
           const fechaVencimientoObj = new Date(`${fechaStr}T23:59:59-04:00`);
           const estaExpirado = fechaActual > fechaVencimientoObj;
 
@@ -401,7 +406,7 @@ router.get(
   },
 );
 
-// Extender el tiempo del link
+// Extender el tiempo del enlace de Drive
 router.put(
   "/enlaces/extender/:id",
   verificarClienteFrontend,
@@ -537,6 +542,277 @@ router.get(
     } catch (err) {
       console.error("Error al procesar la descarga local:", err);
       return res.status(500).send("Error interno al procesar la descarga.");
+    }
+  },
+);
+
+// ==========================================
+// MÓDULO ACORTADOR DE URLs GENÉRICAS (OPCIÓN B)
+// ==========================================
+
+// 1. Crear URL corta (Protegida)
+router.post(
+  "/acortar-url",
+  verificarClienteFrontend,
+  verificarSesion,
+  async (req, res) => {
+    try {
+      const {
+        str_titulo,
+        str_url_original,
+        fecha_expiracion,
+        usuario_id,
+        str_nombre_usuario,
+      } = req.body;
+
+      if (
+        !str_titulo ||
+        !str_url_original ||
+        !usuario_id ||
+        !str_nombre_usuario
+      ) {
+        return res.status(400).json({
+          success: false,
+          error: "Faltan campos obligatorios.",
+        });
+      }
+
+      let urlValidada = str_url_original.trim();
+      if (!/^https?:\/\//i.test(urlValidada)) {
+        urlValidada = `https://${urlValidada}`;
+      }
+
+      try {
+        new URL(urlValidada);
+      } catch {
+        return res.status(400).json({
+          success: false,
+          error: "La URL ingresada no tiene un formato válido.",
+        });
+      }
+
+      let codigoCorto;
+      let existe = true;
+      while (existe) {
+        codigoCorto = generarCodigoCorto(7);
+        const check = await pool.query(
+          "SELECT 1 FROM drive.tbl_urls_cortas WHERE codigo_corto = $1",
+          [codigoCorto],
+        );
+        existe = check.rows.length > 0;
+      }
+
+      const queryInsert = `
+        INSERT INTO drive.tbl_urls_cortas
+          (str_titulo, str_url_original, codigo_corto, usuario_id, str_nombre_usuario, fecha_expiracion)
+        VALUES ($1, $2, $3, $4::integer, $5, $6::date)
+        RETURNING id, codigo_corto;
+      `;
+
+      await pool.query(queryInsert, [
+        str_titulo.trim(),
+        urlValidada,
+        codigoCorto,
+        Number(usuario_id),
+        str_nombre_usuario.trim(),
+        fecha_expiracion || null,
+      ]);
+
+      const baseURL = obtenerBaseUrlPublica();
+      const linkCorto = `${baseURL}/drive/u/${codigoCorto}`;
+
+      return res.status(201).json({
+        success: true,
+        message: "URL acortada exitosamente.",
+        linkCorto,
+      });
+    } catch (err) {
+      console.error("Error al acortar URL:", err);
+      return res.status(500).json({
+        success: false,
+        error: "Error interno al generar el enlace corto.",
+      });
+    }
+  },
+);
+
+// 2. Redirección pública con registro en tbl_urls_cortas_clics (Sin sesión)
+router.get("/u/:codigo", async (req, res) => {
+  const { codigo } = req.params;
+
+  try {
+    const query = `
+      SELECT id, str_url_original, fecha_expiracion
+      FROM drive.tbl_urls_cortas
+      WHERE codigo_corto = $1
+      LIMIT 1;
+    `;
+    const resultado = await pool.query(query, [codigo]);
+
+    if (resultado.rows.length === 0) {
+      return res.status(404).send("El enlace corto no existe o fue eliminado.");
+    }
+
+    const registro = resultado.rows[0];
+
+    if (registro.fecha_expiracion) {
+      const fechaStr =
+        registro.fecha_expiracion instanceof Date
+          ? registro.fecha_expiracion.toISOString().split("T")[0]
+          : String(registro.fecha_expiracion).split("T")[0];
+
+      const fechaVencimientoObj = new Date(`${fechaStr}T23:59:59-04:00`);
+      if (new Date() > fechaVencimientoObj) {
+        return res.status(410).send("Este enlace ha expirado.");
+      }
+    }
+
+    const userAgent = req.headers["user-agent"] || "Desconocido";
+    const esBotPreview =
+      /WhatsApp|TelegramBot|Slackbot|Twitterbot|facebookexternalhit/i.test(
+        userAgent,
+      );
+
+    if (!esBotPreview) {
+      const ipOrigen = obtenerIpOrigen(req);
+
+      await pool.query(
+        "UPDATE drive.tbl_urls_cortas SET total_clics = total_clics + 1 WHERE id = $1",
+        [registro.id],
+      );
+
+      await pool.query(
+        `INSERT INTO drive.tbl_urls_cortas_clics (url_corta_id, ip_origen, user_agent)
+         VALUES ($1, $2, $3)`,
+        [registro.id, ipOrigen, userAgent],
+      );
+    }
+
+    return res.redirect(302, registro.str_url_original);
+  } catch (err) {
+    console.error("Error al redirigir URL corta:", err);
+    return res.status(500).send("Error interno al procesar la redirección.");
+  }
+});
+
+// 3. Listar URLs acortadas con estado e historial de clics (Protegida)
+router.get(
+  "/urls-cortas",
+  verificarClienteFrontend,
+  verificarSesion,
+  async (req, res) => {
+    try {
+      const { usuario_id } = req.query;
+      let query = `
+        SELECT id, str_titulo, str_url_original, codigo_corto, usuario_id, str_nombre_usuario, fecha_expiracion, total_clics, created_at
+        FROM drive.tbl_urls_cortas
+      `;
+      const params = [];
+
+      if (usuario_id) {
+        query += ` WHERE usuario_id = $1 `;
+        params.push(Number(usuario_id));
+      }
+
+      query += ` ORDER BY created_at DESC;`;
+
+      const resultado = await pool.query(query, params);
+      const baseURL = obtenerBaseUrlPublica();
+
+      const urlsConDetalles = await Promise.all(
+        resultado.rows.map(async (item) => {
+          let fechaStr = "";
+          let estaExpirado = false;
+
+          if (item.fecha_expiracion) {
+            fechaStr =
+              item.fecha_expiracion instanceof Date
+                ? item.fecha_expiracion.toISOString().split("T")[0]
+                : String(item.fecha_expiracion).split("T")[0];
+
+            const fechaVencimientoObj = new Date(`${fechaStr}T23:59:59-04:00`);
+            estaExpirado = new Date() > fechaVencimientoObj;
+          }
+
+          const resClics = await pool.query(
+            `SELECT id, ip_origen, user_agent, fecha_clic
+             FROM drive.tbl_urls_cortas_clics
+             WHERE url_corta_id = $1
+             ORDER BY fecha_clic DESC`,
+            [item.id],
+          );
+          const historialClics = resClics.rows;
+
+          const totalClics =
+            historialClics.length > 0
+              ? historialClics.length
+              : item.total_clics || 0;
+
+          return {
+            ...item,
+            fecha_expiracion: fechaStr || null,
+            linkCorto: `${baseURL}/drive/u/${item.codigo_corto}`,
+            estaExpirado,
+            totalClics,
+            ultimoClic: historialClics[0]?.fecha_clic || null,
+            historialClics,
+          };
+        }),
+      );
+
+      return res.status(200).json({ success: true, urls: urlsConDetalles });
+    } catch (err) {
+      console.error("Error al listar URLs cortas:", err);
+      return res.status(500).json({
+        success: false,
+        error: "Error interno al obtener las URLs.",
+      });
+    }
+  },
+);
+
+// 4. Extender vigencia de una URL corta (Protegida)
+router.put(
+  "/urls-cortas/extender/:id",
+  verificarClienteFrontend,
+  verificarSesion,
+  async (req, res) => {
+    const { id } = req.params;
+    const { nueva_fecha_expiracion } = req.body;
+
+    if (!nueva_fecha_expiracion) {
+      return res.status(400).json({
+        success: false,
+        error: "Debe proporcionar una nueva fecha de expiración.",
+      });
+    }
+
+    try {
+      const resultado = await pool.query(
+        `UPDATE drive.tbl_urls_cortas
+         SET fecha_expiracion = $1::date
+         WHERE id = $2
+         RETURNING id, fecha_expiracion`,
+        [nueva_fecha_expiracion, Number(id)],
+      );
+
+      if (resultado.rows.length === 0) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Enlace no encontrado." });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Vigencia actualizada exitosamente.",
+        enlace: resultado.rows[0],
+      });
+    } catch (err) {
+      console.error("Error al extender vigencia de URL corta:", err);
+      return res.status(500).json({
+        success: false,
+        error: "Error interno al actualizar la vigencia.",
+      });
     }
   },
 );
