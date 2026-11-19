@@ -127,8 +127,10 @@ router.post(
 
       await client.query("COMMIT");
 
-      const baseURL =
-        process.env.URL_BACKEND_PUBLICO || "http://localhost:3000";
+      const baseURL = (
+        process.env.URL_BACKEND_PUBLICO || "http://localhost:3000"
+      ).replace(/\/+$/, "");
+
       const linkDescarga = `${baseURL}/drive/d/${codigoCorto}`;
 
       routerRes.status(201).json({
