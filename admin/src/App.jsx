@@ -37,7 +37,7 @@ import CrearTicket from "./pages/systems/tickets/crearTicket";
 //kcs:
 import DashboardKcs from "./pages/systems/kcs/dashboard";
 
-//drive:
+//link:
 import CrearEnlace from "./pages/systems/drive/crearEnlace";
 import MisEnlaces from "./pages/systems/drive/misEnlaces";
 import AcortadorUrl from "./pages/systems/drive/acortadorUrl";
@@ -383,16 +383,16 @@ function App() {
             <Route index element={<Navigate to="dashboard" replace />} />
           </Route>
 
-          {/* Sistema de Merco Drive */}
+          {/* Sistema de Merco Link */}
           <Route
-            path="/drive"
+            path="/link"
             element={
-              Inactivos.includes("/drive") ? (
+              Inactivos.includes("/link") ? (
                 <Navigate to="/mantenimiento" replace />
               ) : (
                 <SystemLoaderWrapper
-                  systemName="Merco Drive"
-                  systemKey="/drive"
+                  systemName="Merco link"
+                  systemKey="/link"
                 >
                   <Outlet />
                 </SystemLoaderWrapper>

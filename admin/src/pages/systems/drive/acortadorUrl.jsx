@@ -39,7 +39,7 @@ export default function AcortadorUrl() {
   };
 
   return (
-    <SystemLayout identificacion="Merco Drive" opcionMenu="Acortar URL">
+    <SystemLayout identificacion="Merco Link" opcionMenu="Acortar URL">
       {/* Toast de error o notificación simple */}
       {toast && !toast.message.includes("|||") && (
         <div

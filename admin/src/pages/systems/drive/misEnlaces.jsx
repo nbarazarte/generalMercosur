@@ -52,7 +52,7 @@ export default function MisEnlaces() {
   } = useListarEnlaces();
 
   return (
-    <SystemLayout identificacion="Merco Drive" opcionMenu="Mis Enlaces">
+    <SystemLayout identificacion="Merco Link" opcionMenu="Mis Enlaces">
       {toast && (
         <div
           style={{

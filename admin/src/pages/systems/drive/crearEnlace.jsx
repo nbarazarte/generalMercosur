@@ -30,7 +30,7 @@ export default function CrearEnlace() {
   const [copiado, setCopiado] = useState(false);
 
   return (
-    <SystemLayout identificacion="Merco Drive" opcionMenu="Crear Enlace">
+    <SystemLayout identificacion="Merco Link" opcionMenu="Crear Enlace">
       {/* Toast tradicional solo para alertas y errores cortos */}
       {toast && !toast.message.includes("|||") && (
         <div

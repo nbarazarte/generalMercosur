@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict eKaX66G3tKEfB0fmADdOs22iihZuSuWbBztYQP33lBEb2Ys4DTMGHqoxs8vety0
+\restrict tndYEEBRcrANI3YbsCFNVw9uSWAKR9KStlAqTotvOArc2ctgidfv8mLSVtdiddE
 
 -- Dumped from database version 18.7 (Ubuntu 18.7-1.pgdg24.04+2)
 -- Dumped by pg_dump version 18.7 (Ubuntu 18.7-1.pgdg24.04+2)
 
--- Started on 2026-11-19 11:10:08 -04
+-- Started on 2026-11-19 11:23:45 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -36610,6 +36610,7 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 1	34157	27604	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 10:35:00.01043-04	2026-11-19 10:35:00.012767-04
 1	34158	27816	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 10:36:00.009972-04	2026-11-19 10:36:00.012357-04
 1	34180	31014	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 10:58:00.010381-04	2026-11-19 10:58:00.012837-04
+1	34194	33292	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:12:00.009747-04	2026-11-19 11:12:00.01204-04
 1	34159	27908	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 10:37:00.010711-04	2026-11-19 10:37:00.012957-04
 1	34168	29458	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 10:46:00.007102-04	2026-11-19 10:46:00.009441-04
 1	34175	30128	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 10:53:00.00811-04	2026-11-19 10:53:00.010029-04
@@ -36633,6 +36634,7 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 1	34167	29339	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 10:45:00.009837-04	2026-11-19 10:45:00.012094-04
 1	34173	29897	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 10:51:00.009946-04	2026-11-19 10:51:00.012771-04
 1	34178	30758	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 10:56:00.010344-04	2026-11-19 10:56:00.012614-04
+1	34198	33898	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:16:00.012039-04	2026-11-19 11:16:00.014515-04
 1	34174	30058	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 10:52:00.008647-04	2026-11-19 10:52:00.011332-04
 1	34191	32610	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:09:00.010057-04	2026-11-19 11:09:00.012632-04
 1	34186	32008	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:04:00.010357-04	2026-11-19 11:04:00.012662-04
@@ -36641,8 +36643,19 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 1	34189	32444	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:07:00.009512-04	2026-11-19 11:07:00.01226-04
 1	34184	31739	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:02:00.010732-04	2026-11-19 11:02:00.013023-04
 1	34187	32086	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:05:00.00946-04	2026-11-19 11:05:00.011776-04
+1	34193	33092	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:11:00.009701-04	2026-11-19 11:11:00.012039-04
 1	34190	32538	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:08:00.009175-04	2026-11-19 11:08:00.012059-04
 1	34192	32874	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:10:00.009757-04	2026-11-19 11:10:00.012257-04
+1	34196	33657	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:14:00.008528-04	2026-11-19 11:14:00.010765-04
+1	34195	33449	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:13:00.009918-04	2026-11-19 11:13:00.0124-04
+1	34197	33791	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:15:00.01519-04	2026-11-19 11:15:00.017495-04
+1	34199	34131	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:17:00.010566-04	2026-11-19 11:17:00.013507-04
+1	34200	34317	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:18:00.015459-04	2026-11-19 11:18:00.017976-04
+1	34201	34365	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:19:00.009941-04	2026-11-19 11:19:00.012215-04
+1	34202	34541	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:20:00.00807-04	2026-11-19 11:20:00.010823-04
+1	34203	34641	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:21:00.014681-04	2026-11-19 11:21:00.016932-04
+1	34204	34744	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:22:00.009332-04	2026-11-19 11:22:00.011565-04
+1	34205	34966	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-19 11:23:00.010523-04	2026-11-19 11:23:00.01238-04
 \.
 
 
@@ -36797,10 +36810,10 @@ COPY public.cat_opciones (id, str_nombre, bol_eliminado, fecha_creacion, str_rut
 46	Crear	f	09:07:57.721577-04	/tickets/crear	IoTicketOutline	2
 7	Clientes	f	11:32:35.611285-04	/tickets/clientes	FaPeopleRoof	5
 5	Tickets	f	11:32:35.611285-04	/tickets/tickets	HiTicket	3
-48	Crear enlace	f	17:53:48.889116-04	/drive/crear-enlace	AiOutlineLink	1
-49	Mis enlaces	f	23:07:15.198861-04	/drive/mis-enlaces	LiaExternalLinkSquareAltSolid	2
-51	Acortar URL	f	10:38:08.421934-04	/drive/acortar-url	MdSwitchAccessShortcutAdd	3
-52	Mis Urls Cortas	f	10:59:58.336369-04	/drive/mis-urls-cortas	GoProjectSymlink	4
+48	Crear enlace	f	17:53:48.889116-04	/link/crear-enlace	AiOutlineLink	1
+49	Mis enlaces	f	23:07:15.198861-04	/link/mis-enlaces	LiaExternalLinkSquareAltSolid	2
+51	Acortar URL	f	10:38:08.421934-04	/link/acortar-url	MdSwitchAccessShortcutAdd	3
+52	Mis Urls Cortas	f	10:59:58.336369-04	/link/mis-urls-cortas	GoProjectSymlink	4
 \.
 
 
@@ -36828,9 +36841,9 @@ COPY public.cat_roles (id, str_nombre, str_descripcion, created_at, updated_at) 
 COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_at, updated_at, str_ruta_sistema, str_icono, str_color) FROM stdin;
 2	Tickets	Sistema central de tickets de Mercosur	t	2026-09-25 11:27:26.784012-04	2026-10-08 08:17:33.123132-04	/tickets	HiTicket	#d68324
 1	Administración General	Administra todos los sistemas, opciones roles y usuarios de Mercosur	t	2026-09-09 11:32:38.520464-04	2026-10-08 08:39:30.636033-04	/admin	VscServerProcess	#2f6fed
-35	Merco Drive	Comparte documentos con facilidad	t	2026-10-25 17:52:02.838773-04	2026-10-26 19:09:56.092985-04	/drive	BsDropbox	#19acf5
 29	Mi Expediente	Portal de ficha de empleados de Mercosur	t	2026-09-29 11:41:47.813769-04	2026-11-05 12:58:08.055286-04	/rrhh	FiBookOpen	#ee176d
 31	Base de Conocimiento	Base conocimiento bursátil y financiero de Mercosur	t	2026-09-29 11:50:56.831542-04	2026-11-05 12:58:14.601517-04	/kcs	PiBrainDuotone	#6ded35
+35	Merco Link	Comparte enlaces con facilidad	t	2026-10-25 17:52:02.838773-04	2026-11-19 11:18:47.149852-04	/link	PiLinkSimpleBold	#19acf5
 \.
 
 
@@ -36849,7 +36862,7 @@ COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, s
 685	3	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJtbWlsbGFuIiwiaWF0IjoxNzkzODg5MTkwLCJleHAiOjE3OTM4OTI3OTB9.e_x68cyMOB4EL9BiZ6pS_GOnEYuo9y1ey5LcvQF9xLY	2026-11-05 10:33:07.960011-04	2026-11-05 11:33:10.567039-04	f	287f2c7c-fcc2-42ef-aee3-e443351ae567	Chrome en Windows PC
 679	94	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTQsInVzZXJuYW1lIjoiaXRhcmF6b25hIiwiaWF0IjoxNzkzODIzNzQ4LCJleHAiOjE3OTM4MjczNDh9.3Po1tHtxiJu7OUaL7e_aLDKUJ3n1So-xzAXiujF5Q6I	2026-11-04 15:48:06.882367-04	2026-11-04 17:22:28.363274-04	f	e77750df-4466-4dfe-92d3-06fb2f40db9d	Edge en macOS
 700	65	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjUsInVzZXJuYW1lIjoibWNoYWNvbiIsImlhdCI6MTc5Mzg5NTcwMywiZXhwIjoxNzkzODk5MzAzfQ.gTbnCf2NbK8AHUJfhWyD_nK8_NbSaHfZGzlcdw7RyIQ	2026-11-05 12:17:38.881292-04	2026-11-05 13:21:43.484785-04	f	dcb06358-8e29-4d8b-9b6e-a03b130dae15	Edge en Windows PC
-735	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzk1MTAwOTUyLCJleHAiOjE3OTUxMDQ1NTJ9.yf1R0VfBwiByiTXtn7sqoDF4NLmIgoOW2HFf_1ATWQw	2026-11-19 09:47:05.189239-04	2026-11-19 12:09:12.579446-04	f	1324c2c9-54e9-422e-9ce7-e7584d36918e	Chrome en Linux PC
+735	4	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJuYmFyYXphcnRlIiwiaWF0IjoxNzk1MTAxODAyLCJleHAiOjE3OTUxMDU0MDJ9.BzodV6u4XSR8zyiJRKzfCoqR7a2k5keugUN_ekPNb5k	2026-11-19 09:47:05.189239-04	2026-11-19 12:23:22.999252-04	f	1324c2c9-54e9-422e-9ce7-e7584d36918e	Chrome en Linux PC
 \.
 
 
@@ -37027,7 +37040,6 @@ COPY public.tbl_usuarios_roles_sistemas (id, usuario_id, rol_sistema_id, bol_act
 106	3	29	t	2026-10-26 00:00:00-04	2026-10-26 00:00:00-04
 107	3	31	t	2026-10-26 00:00:00-04	2026-10-26 00:00:00-04
 108	3	47	t	2026-10-26 00:00:00-04	2026-10-26 00:00:00-04
-78	1	47	t	2026-10-25 00:00:00-04	2026-10-26 00:00:00-04
 110	81	40	t	2026-11-03 00:00:00-04	2026-11-03 00:00:00-04
 111	88	40	t	2026-11-03 00:00:00-04	2026-11-03 00:00:00-04
 113	68	45	t	2026-11-05 00:00:00-04	2026-11-05 00:00:00-04
@@ -37129,6 +37141,7 @@ COPY public.tbl_usuarios_roles_sistemas (id, usuario_id, rol_sistema_id, bol_act
 209	89	49	t	2026-11-05 00:00:00-04	2026-11-05 00:00:00-04
 210	89	48	t	2026-11-05 00:00:00-04	2026-11-05 00:00:00-04
 211	99	45	t	2026-11-05 00:00:00-04	2026-11-05 00:00:00-04
+78	1	47	t	2026-10-25 00:00:00-04	2026-11-19 00:00:00-04
 212	99	49	t	2026-11-05 00:00:00-04	2026-11-05 00:00:00-04
 213	99	48	t	2026-11-05 00:00:00-04	2026-11-05 00:00:00-04
 214	105	45	t	2026-11-05 00:00:00-04	2026-11-05 00:00:00-04
@@ -37346,7 +37359,7 @@ SELECT pg_catalog.setval('cron.jobid_seq', 1, true);
 -- Name: runid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
 
-SELECT pg_catalog.setval('cron.runid_seq', 34192, true);
+SELECT pg_catalog.setval('cron.runid_seq', 34205, true);
 
 
 --
@@ -37490,7 +37503,7 @@ SELECT pg_catalog.setval('public.tbl_usuarios_opciones_excepciones_id_seq', 1, f
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_usuarios_roles_sistemas_id_seq', 290, true);
+SELECT pg_catalog.setval('public.tbl_usuarios_roles_sistemas_id_seq', 291, true);
 
 
 --
@@ -38412,11 +38425,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT tbl_tickets_tipo_ticket_id_fkey FOREIGN KEY (tipo_ticket_id) REFERENCES public.cat_datos_maestros(id);
 
 
--- Completed on 2026-11-19 11:10:08 -04
+-- Completed on 2026-11-19 11:23:46 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict eKaX66G3tKEfB0fmADdOs22iihZuSuWbBztYQP33lBEb2Ys4DTMGHqoxs8vety0
+\unrestrict tndYEEBRcrANI3YbsCFNVw9uSWAKR9KStlAqTotvOArc2ctgidfv8mLSVtdiddE
 
