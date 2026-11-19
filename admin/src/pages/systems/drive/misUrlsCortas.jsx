@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import SystemLayout from "../../layouts/SystemLayout";
 import { DynamicIcon } from "../../../components/IconCatalog";
 import { useListarUrlsCortas } from "./hooks/useListarUrlCortas";
+import { ModalQrEnlace } from "../../../components/ModalQrEnlace";
 
 const formatearDispositivo = (ua = "") => {
   if (!ua) return "Desconocido";
@@ -49,6 +50,36 @@ export default function MisUrlsCortas() {
     tarjetasKpi,
     filtroStyle,
   } = useListarUrlsCortas();
+
+  const [qrModal, setQrModal] = useState({
+    abierto: false,
+    titulo: "",
+    urlCorta: "",
+  });
+
+  const [isDarkMode, setIsDarkMode] = useState(
+    () =>
+      document.documentElement.classList.contains("dark") ||
+      document.body.classList.contains("dark"),
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDarkMode(
+        document.documentElement.classList.contains("dark") ||
+          document.body.classList.contains("dark"),
+      );
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <SystemLayout identificacion="Merco Link" opcionMenu="Mis URLs Cortas">
@@ -430,7 +461,7 @@ export default function MisUrlsCortas() {
                                   </div>
                                 )}
 
-                                {/* Controles superiores: Abrir destino y Extender Vigencia */}
+                                {/* Controles superiores: Abrir destino, Generar QR y Extender Vigencia */}
                                 <div
                                   style={{
                                     marginBottom: 16,
@@ -441,34 +472,81 @@ export default function MisUrlsCortas() {
                                     gap: 8,
                                   }}
                                 >
-                                  <a
-                                    href={item.str_url_original}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-ghost"
+                                  <div
                                     style={{
-                                      padding: "5px 10px",
-                                      fontSize: 11,
-                                      fontWeight: 600,
-                                      display: "inline-flex",
+                                      display: "flex",
                                       alignItems: "center",
-                                      gap: 6,
-                                      border: "1px solid var(--merco-border)",
-                                      borderRadius: 6,
-                                      background: "var(--merco-surface)",
-                                      color: "inherit",
-                                      textDecoration: "none",
+                                      gap: 8,
+                                      flexWrap: "wrap",
                                     }}
                                   >
-                                    <DynamicIcon
-                                      name="FiExternalLink"
+                                    <a
+                                      href={item.str_url_original}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="btn btn-ghost"
                                       style={{
-                                        fontSize: 13,
-                                        color: "var(--merco-accent, #f95700)",
+                                        padding: "5px 10px",
+                                        fontSize: 11,
+                                        fontWeight: 600,
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: 6,
+                                        border: "1px solid var(--merco-border)",
+                                        borderRadius: 6,
+                                        background: "var(--merco-surface)",
+                                        color: "inherit",
+                                        textDecoration: "none",
                                       }}
-                                    />
-                                    Abrir URL Destino
-                                  </a>
+                                    >
+                                      <DynamicIcon
+                                        name="FiExternalLink"
+                                        style={{
+                                          fontSize: 13,
+                                          color: "var(--merco-accent, #f95700)",
+                                        }}
+                                      />
+                                      Abrir URL Destino
+                                    </a>
+
+                                    {!item.estaExpirado && (
+                                      <button
+                                        type="button"
+                                        className="btn btn-ghost"
+                                        onClick={() =>
+                                          setQrModal({
+                                            abierto: true,
+                                            titulo: item.str_titulo,
+                                            urlCorta: item.linkCorto,
+                                          })
+                                        }
+                                        style={{
+                                          padding: "5px 10px",
+                                          fontSize: 11,
+                                          fontWeight: 600,
+                                          display: "inline-flex",
+                                          alignItems: "center",
+                                          gap: 6,
+                                          border:
+                                            "1px solid var(--merco-border)",
+                                          borderRadius: 6,
+                                          background: "var(--merco-surface)",
+                                          color: "inherit",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <DynamicIcon
+                                          name="FiMaximize2"
+                                          style={{
+                                            fontSize: 13,
+                                            color:
+                                              "var(--merco-accent, #f95700)",
+                                          }}
+                                        />
+                                        Generar QR
+                                      </button>
+                                    )}
+                                  </div>
 
                                   {/* Sección de Extender Vigencia */}
                                   <div>
@@ -820,6 +898,14 @@ export default function MisUrlsCortas() {
           </div>
         </div>
       </div>
+
+      <ModalQrEnlace
+        abierto={qrModal.abierto}
+        onClose={() => setQrModal({ abierto: false, titulo: "", urlCorta: "" })}
+        titulo={qrModal.titulo}
+        urlCorta={qrModal.urlCorta}
+        isDarkMode={isDarkMode}
+      />
     </SystemLayout>
   );
 }
