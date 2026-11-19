@@ -8,10 +8,18 @@ const verificarSesion = require("../middlewares/verificarSesion");
 const upload = require("../middlewares/multerConfig");
 const path = require("path");
 const fs = require("fs");
-const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const archiver = require("archiver");
 
-// Endpoint para crear enlace de Drive, almacenar archivos/auditoría y retornar el link con JWT (Requiere autenticación)
+// Generador de código corto aleatorio (ej: 8 caracteres alfanuméricos)
+function generarCodigoCorto(longitud = 8) {
+  return crypto
+    .randomBytes(Math.ceil((longitud * 3) / 4))
+    .toString("base64url")
+    .slice(0, longitud);
+}
+
+// Endpoint para crear enlace de Drive, almacenar archivos/auditoría y retornar el link corto
 router.post(
   "/crear-enlace",
   verificarClienteFrontend,
@@ -69,16 +77,29 @@ router.post(
         fs.mkdirSync(carpetaUsuarioPath, { recursive: true });
       }
 
+      // Generar código corto garantizando que no exista colisión en BD
+      let codigoCorto;
+      let existe = true;
+      while (existe) {
+        codigoCorto = generarCodigoCorto(8);
+        const check = await client.query(
+          "SELECT 1 FROM drive.tbl_enlaces WHERE codigo_corto = $1",
+          [codigoCorto],
+        );
+        existe = check.rows.length > 0;
+      }
+
       const queryEnlace = `
-        INSERT INTO drive.tbl_enlaces (str_nombre_enlace, fecha_expiracion, usuario_id, str_nombre_usuario, created_at)
-        VALUES ($1, $2::date, $3::integer, $4, CURRENT_TIMESTAMP)
-        RETURNING id;
+        INSERT INTO drive.tbl_enlaces (str_nombre_enlace, fecha_expiracion, usuario_id, str_nombre_usuario, codigo_corto, created_at)
+        VALUES ($1, $2::date, $3::integer, $4, $5, CURRENT_TIMESTAMP)
+        RETURNING id, codigo_corto;
       `;
       const enlaceRes = await client.query(queryEnlace, [
         str_nombre_enlace.trim(),
         fecha_expiracion,
         Number(usuario_id),
         str_nombre_usuario.trim(),
+        codigoCorto,
       ]);
       const enlaceId = enlaceRes.rows[0].id;
 
@@ -106,23 +127,9 @@ router.post(
 
       await client.query("COMMIT");
 
-      const fechaActual = new Date();
-      const fechaVencimientoObj = new Date(fecha_expiracion + "T23:59:59");
-      const diferenciaSegundos = Math.floor(
-        (fechaVencimientoObj - fechaActual) / 1000,
-      );
-      const tiempoExpiracionJwt =
-        diferenciaSegundos > 0 ? diferenciaSegundos : 86400;
-
-      const tokenEnlace = jwt.sign(
-        { enlace_id: enlaceId },
-        process.env.JWT_SECRET,
-        { expiresIn: `${tiempoExpiracionJwt}s` },
-      );
-
       const baseURL =
         process.env.URL_BACKEND_PUBLICO || "http://localhost:3000";
-      const linkDescarga = `${baseURL}/drive/descargar?token=${tokenEnlace}`;
+      const linkDescarga = `${baseURL}/drive/d/${codigoCorto}`;
 
       routerRes.status(201).json({
         success: true,
@@ -143,21 +150,47 @@ router.post(
 );
 
 // ==========================================
-// RUTA PÚBLICA DE DESCARGA (SIN MIDDLEWARES DE SESIÓN)
+// RUTA PÚBLICA DE DESCARGA CORTA
 // ==========================================
-router.get("/descargar", async (req, res) => {
-  const { token } = req.query;
+router.get("/d/:codigo", async (req, res) => {
+  const { codigo } = req.params;
 
-  if (!token) {
-    return res
-      .status(400)
-      .send("Token de descarga no proporcionado o inválido.");
+  if (!codigo) {
+    return res.status(400).send("Código de descarga no proporcionado.");
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const { enlace_id } = decoded;
+    // 1. Buscar el enlace por su código corto y validar vigencia
+    const queryEnlace = `
+      SELECT id, str_nombre_enlace, fecha_expiracion
+      FROM drive.tbl_enlaces
+      WHERE codigo_corto = $1
+      LIMIT 1;
+    `;
+    const resEnlace = await pool.query(queryEnlace, [codigo]);
 
+    if (resEnlace.rows.length === 0) {
+      return res
+        .status(404)
+        .send("El enlace de descarga no existe o es inválido.");
+    }
+
+    const enlace = resEnlace.rows[0];
+
+    // Validar fecha de expiración (hasta las 23:59:59 del día indicado)
+    const fechaStr =
+      enlace.fecha_expiracion instanceof Date
+        ? enlace.fecha_expiracion.toISOString().split("T")[0]
+        : String(enlace.fecha_expiracion).split("T")[0];
+
+    const fechaVencimientoObj = new Date(fechaStr + "T23:59:59");
+    if (new Date() > fechaVencimientoObj) {
+      return res.status(401).send("Este enlace de descarga ha expirado.");
+    }
+
+    const enlace_id = enlace.id;
+
+    // 2. Obtener archivos asociados
     const queryArchivos = `
       SELECT ea.str_nombre_archivo, ea.str_ruta_archivo
       FROM drive.tbl_enlaces_archivos ea
@@ -166,9 +199,7 @@ router.get("/descargar", async (req, res) => {
     const resultado = await pool.query(queryArchivos, [enlace_id]);
 
     if (resultado.rows.length === 0) {
-      return res
-        .status(404)
-        .send("El enlace no contiene archivos o ha expirado.");
+      return res.status(404).send("El enlace no contiene archivos.");
     }
 
     const archivos = resultado.rows;
@@ -177,11 +208,10 @@ router.get("/descargar", async (req, res) => {
     const registrarDescarga = async () => {
       const userAgent = req.headers["user-agent"] || "Desconocido";
       const ipOrigen =
-        req.headers["cf-connecting-ip"] || // Si usas Cloudflare
+        req.headers["cf-connecting-ip"] ||
         req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
         req.socket.remoteAddress;
 
-      // Evitar contar bots de vista previa de enlaces (WhatsApp, Telegram, Slack, etc.)
       const esBotPreview =
         /WhatsApp|TelegramBot|Slackbot|Twitterbot|facebookexternalhit/i.test(
           userAgent,
@@ -213,12 +243,9 @@ router.get("/descargar", async (req, res) => {
       await registrarDescarga();
       return res.download(rutaFisica, archivo.str_nombre_archivo);
     } else {
-      const queryEnlaceNombre = `SELECT str_nombre_enlace FROM drive.tbl_enlaces WHERE id = $1 LIMIT 1;`;
-      const resEnlace = await pool.query(queryEnlaceNombre, [enlace_id]);
-
       let nombreZip = `archivos-drive-${enlace_id}`;
-      if (resEnlace.rows.length > 0 && resEnlace.rows[0].str_nombre_enlace) {
-        nombreZip = resEnlace.rows[0].str_nombre_enlace
+      if (enlace.str_nombre_enlace) {
+        nombreZip = enlace.str_nombre_enlace
           .trim()
           .replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]/g, "_");
       }
@@ -248,14 +275,11 @@ router.get("/descargar", async (req, res) => {
     }
   } catch (err) {
     console.error("Error al procesar la descarga pública:", err);
-    if (err.name === "TokenExpiredError") {
-      return res.status(401).send("Este enlace de descarga ha expirado.");
-    }
-    return res.status(400).send("Enlace de descarga inválido o corrupto.");
+    return res.status(500).send("Error interno al procesar la descarga.");
   }
 });
 
-// Obtener la lista de enlaces creados junto con sus archivos asociados y su link de descarga
+// Obtener la lista de enlaces creados junto con sus archivos asociados y su link corto
 router.get(
   "/enlaces",
   verificarClienteFrontend,
@@ -265,7 +289,7 @@ router.get(
       const { usuario_id } = req.query;
 
       let queryEnlace = `
-      SELECT id, str_nombre_enlace, fecha_expiracion, usuario_id, str_nombre_usuario, created_at
+      SELECT id, str_nombre_enlace, fecha_expiracion, usuario_id, str_nombre_usuario, codigo_corto, created_at
       FROM drive.tbl_enlaces
     `;
       const params = [];
@@ -330,24 +354,11 @@ router.get(
 
           const fechaActual = new Date();
           const fechaVencimientoObj = new Date(fechaStr + "T23:59:59");
-          const diferenciaSegundos = Math.floor(
-            (fechaVencimientoObj - fechaActual) / 1000,
-          );
-          const tiempoExpiracionJwt =
-            diferenciaSegundos > 0 ? diferenciaSegundos : 1;
-
-          let tokenEnlace = "";
-          if (diferenciaSegundos > 0) {
-            tokenEnlace = jwt.sign(
-              { enlace_id: enlace.id },
-              process.env.JWT_SECRET,
-              { expiresIn: `${tiempoExpiracionJwt}s` },
-            );
-          }
+          const estaExpirado = fechaActual > fechaVencimientoObj;
 
           const linkDescarga =
-            diferenciaSegundos > 0
-              ? `${baseURL}/drive/descargar?token=${tokenEnlace}`
+            !estaExpirado && enlace.codigo_corto
+              ? `${baseURL}/drive/d/${enlace.codigo_corto}`
               : "Enlace Expirado";
 
           const queryDescargas = `
@@ -363,7 +374,7 @@ router.get(
             ...enlace,
             fecha_expiracion: fechaStr,
             linkDescarga,
-            estaExpirado: diferenciaSegundos <= 0,
+            estaExpirado,
             pesoTotalMb: Number(pesoTotalMb),
             archivos: archivosConPeso,
             totalDescargas: historialDescargas.length,
@@ -470,7 +481,6 @@ router.get(
 
       const archivos = resultado.rows;
 
-      // Si es un solo archivo, se descarga exactamente con su nombre original
       if (archivos.length === 1) {
         const archivo = archivos[0];
         const rutaFisica = archivo.str_ruta_archivo.startsWith("/")
@@ -486,10 +496,7 @@ router.get(
         }
 
         return res.download(rutaFisica, archivo.str_nombre_archivo);
-      }
-
-      // Si son múltiples archivos, se comprimen en un ZIP usando rigurosamente el nombre del enlace
-      else {
+      } else {
         let nombreZip = `Enlace_${id}`;
         if (
           enlaceInfo.str_nombre_enlace &&
