@@ -20,6 +20,12 @@ export function useCrearTicket() {
       )?.rol,
   );
 
+  const currentUserDepartamento = useSelector(
+    (state) => state.auth?.user?.departamento,
+  );
+
+  //console.log(currentUserDepartamento)
+
   // Selector de tipo de persona para tickets externos
   const [tipoPersonaCliente, setTipoPersonaCliente] = useState("natural");
 
@@ -170,15 +176,26 @@ export function useCrearTicket() {
             setListaPrioridades(resMaestros.data.prioridades || []);
             setListaTipoTicket(resMaestros.data.tipoTicket || []);
 
+            let DefaultTipoTicket = null;
+
             if (resMaestros.data.tipoTicket?.length > 0) {
-              const externoDefault = resMaestros.data.tipoTicket.find(
-                (t) =>
-                  t.str_nombre.toLowerCase().includes("externo") ||
-                  t.str_nombre.toLowerCase().includes("app"),
-              );
+              if (currentUserDepartamento == "Atención al cliente") {
+                DefaultTipoTicket = resMaestros.data.tipoTicket.find(
+                  (t) =>
+                    t.str_nombre.toLowerCase().includes("externo") ||
+                    t.str_nombre.toLowerCase().includes("app"),
+                );
+              } else {
+                DefaultTipoTicket = resMaestros.data.tipoTicket.find(
+                  (t) =>
+                    t.str_nombre.toLowerCase().includes("interno") ||
+                    t.str_nombre.toLowerCase().includes("app"),
+                );
+              }
+
               setTipoTicketId(
-                externoDefault
-                  ? String(externoDefault.id)
+                DefaultTipoTicket
+                  ? String(DefaultTipoTicket.id)
                   : String(resMaestros.data.tipoTicket[0].id),
               );
             }
@@ -226,6 +243,8 @@ export function useCrearTicket() {
   }, [departamentoId, listaUsuarios]);
 
   const handleTipoTicketChange = (idSeleccionado) => {
+    console.log(idSeleccionado);
+
     setTipoTicketId(idSeleccionado);
     setCategoriaId("");
     setCorreoInvalido(false);

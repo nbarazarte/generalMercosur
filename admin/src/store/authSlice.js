@@ -8,6 +8,7 @@ const initialState = {
     nombre: null,
     apellido: null,
     sistemasOpciones: [],
+    departamento: null,
   },
   token: null,
   refreshToken: null, // 1. Añadido para almacenar el token de renovación
@@ -28,9 +29,18 @@ export const authSlice = createSlice({
         nombre,
         apellido,
         sistemasOpciones,
+        departamento,
       } = action.payload;
 
-      state.user = { id, email, username, nombre, apellido, sistemasOpciones };
+      state.user = {
+        id,
+        email,
+        username,
+        nombre,
+        apellido,
+        sistemasOpciones,
+        departamento,
+      };
       state.token = token;
       state.refreshToken = refreshToken; // 2. Guardamos el refreshToken al iniciar sesión
       state.isAuthenticated = true;
@@ -53,6 +63,7 @@ export const authSlice = createSlice({
         nombre: null,
         apellido: null,
         sistemasOpciones: [],
+        departamento: null,
       };
       state.token = null;
       state.refreshToken = null; // 4. Limpiamos también el refreshToken al cerrar sesión
@@ -62,6 +73,11 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setUser, updateAccessToken, setSistemasOpciones, logout } =
-  authSlice.actions;
+export const {
+  setUser,
+  updateAccessToken,
+  setSistemasOpciones,
+  departamento,
+  logout,
+} = authSlice.actions;
 export default authSlice.reducer;

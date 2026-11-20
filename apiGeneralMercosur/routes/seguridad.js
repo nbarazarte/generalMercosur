@@ -285,8 +285,16 @@ router.post("/login", async (req, res) => {
     const normalizedEmail = email.trim().toLowerCase();
 
     // 1. Verificar si el usuario existe en la base de datos local y está activo
-    const result = await pool.query(
+    /* const result = await pool.query(
       "SELECT * FROM tbl_usuarios WHERE str_email = $1",
+      [normalizedEmail],
+    ); */
+
+    const result = await pool.query(
+      `SELECT u.*, dep.str_nombre as departamento
+      FROM tbl_usuarios u
+      join public.cat_departamentos dep on dep.id = u.departamento_id
+      WHERE LOWER(str_email) = $1`,
       [normalizedEmail],
     );
 
@@ -396,6 +404,7 @@ router.post("/login", async (req, res) => {
       token: token,
       refreshToken: refreshToken,
       sistemasOpciones: sistemasOpciones,
+      departamento: user.departamento,
     });
   } catch (err) {
     console.error(err.message);
@@ -643,8 +652,16 @@ router.post("/auth/entra-callback", async (req, res) => {
     const userEmail = response.account.username.trim().toLowerCase();
 
     // 2. Verificar si el usuario existe en tu PostgreSQL local y está activo
-    const result = await pool.query(
+    /* const result = await pool.query(
       "SELECT * FROM tbl_usuarios WHERE LOWER(str_email) = $1",
+      [userEmail],
+    ); */
+
+    const result = await pool.query(
+      `SELECT u.*, dep.str_nombre as departamento
+      FROM tbl_usuarios u
+      join public.cat_departamentos dep on dep.id = u.departamento_id
+      WHERE LOWER(str_email) = $1`,
       [userEmail],
     );
 
@@ -700,7 +717,7 @@ router.post("/auth/entra-callback", async (req, res) => {
     }
 
     //console.log(sistemasOpciones)
-    
+
     res.json({
       id: user.id,
       username: user.str_usuario,
@@ -710,6 +727,7 @@ router.post("/auth/entra-callback", async (req, res) => {
       token: token,
       refreshToken: refreshToken,
       sistemasOpciones: sistemasOpciones,
+      departamento: user.departamento,
     });
   } catch (err) {
     console.error("Error en callback de Entra ID:", err.message);
