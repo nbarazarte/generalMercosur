@@ -115,6 +115,7 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
     prioridad_id,
     canal_id,
     departamento_id,
+    usuario_asignado_id,
     categoria_id,
     tipo_persona,
     creacion_desde,
@@ -157,6 +158,10 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
   if (departamento_id) {
     whereClause += ` AND ${aliasTabla}.departamento_id = $${paramIndex++}`;
     params.push(Number(departamento_id));
+  }
+  if (usuario_asignado_id) {
+    whereClause += ` AND ${aliasTabla}.usuario_asignado_id = $${paramIndex++}`;
+    params.push(Number(usuario_asignado_id));
   }
   if (categoria_id) {
     whereClause += ` AND ${aliasTabla}.categoria_id = $${paramIndex++}`;
@@ -612,7 +617,7 @@ router.post("/crear", upload.any(), async (req, res) => {
       estatusIdFinal === 22 ? Number(usuarioIdSesion) : null;
 
     let tiempoResolucionCalculado = "";
-    
+
     if (estatusIdFinal === 22) {
       tiempoResolucionCalculado = "0m";
     }
