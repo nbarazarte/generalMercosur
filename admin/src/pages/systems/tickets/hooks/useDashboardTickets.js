@@ -108,6 +108,9 @@ export function useDashboardTickets() {
           }).filter(([_, v]) => v !== "" && v != null),
         );
 
+
+        console.log(paramsFiltros);
+        
         const [
           resKpis,
           resCat,

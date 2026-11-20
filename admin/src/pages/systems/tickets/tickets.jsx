@@ -295,8 +295,8 @@ export default function Tickets() {
                   <th>CREADO POR</th>
                   <th>CLIENTE / AFECTADO</th>
                   <th>ASUNTO</th>
-                  <th>DEPARTAMENTO</th>
                   <th>PRIORIDAD</th>
+                  <th>DEPARTAMENTO</th>
                   <th>ASIGNADO A</th>
                   <th>CREACIÓN</th>
                   <th>VENCIMIENTO</th>
@@ -495,8 +495,8 @@ export default function Tickets() {
                             {t.str_asunto}
                           </div>
                         </td>
-                        <td>{t.departamento_nombre || "—"}</td>
                         <td>{t.prioridad_nombre || "—"}</td>
+                        <td>{t.departamento_nombre || "—"}</td>
                         <td>
                           {t.asignado_nombre
                             ? `${t.asignado_nombre} ${t.asignado_apellido || ""}`
