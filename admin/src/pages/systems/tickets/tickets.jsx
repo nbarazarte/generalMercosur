@@ -279,6 +279,7 @@ export default function Tickets() {
           setFCategoriaAdmin={setFCategoriaAdmin}
           fAgenteAdmin={fAgenteAdmin}
           setFAgenteAdmin={setFAgenteAdmin}
+          currentUserRole={currentUserRole}
         />
 
         {/* TABLA DE CASOS */}
@@ -291,10 +292,18 @@ export default function Tickets() {
               <thead>
                 <tr>
                   <th>TICKET</th>
-                  <th>TIPO</th>
-                  <th>CANAL</th>
+                  {currentUserRole?.includes("operador") && (
+                    <>
+                      <th>TIPO</th>
+                      <th>CANAL</th>
+                    </>
+                  )}
                   <th>CREADO POR</th>
-                  <th>CLIENTE / AFECTADO</th>
+
+                  {currentUserRole?.includes("operador") && (
+                    <th>CLIENTE / AFECTADO</th>
+                  )}
+
                   <th>ASUNTO</th>
                   <th>PRIORIDAD</th>
                   <th>DEPARTAMENTO</th>
@@ -383,108 +392,119 @@ export default function Tickets() {
                             </button>
                           </div>
                         </td>
-                        <td>
-                          <span className="tag" style={{ fontSize: 11 }}>
-                            {t.tipo_ticket || "—"}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="tag" style={{ fontSize: 11 }}>
-                            {t.canal_nombre || "—"}
-                          </span>
-                        </td>
+
+                        {currentUserRole?.includes("operador") && (
+                          <>
+                            <td>
+                              <span className="tag" style={{ fontSize: 11 }}>
+                                {t.tipo_ticket || "—"}
+                              </span>
+                            </td>
+
+                            <td>
+                              <span className="tag" style={{ fontSize: 11 }}>
+                                {t.canal_nombre || "—"}
+                              </span>
+                            </td>
+                          </>
+                        )}
+
                         <td>
                           <b>
                             {`${t.creador_nombre || ""} ${t.creador_apellido || ""}`.trim() ||
                               "—"}
                           </b>
                         </td>
-                        <td>
-                          {esExterno ? (
-                            (() => {
-                              const cJuridico =
-                                t.cliente_juridico || t.clienteJuridico || {};
-                              const cNatural =
-                                t.cliente_natural || t.clienteNatural || {};
 
-                              const razonSocial =
-                                t.cliente_razon_social ||
-                                cJuridico.str_razon_social ||
-                                cJuridico.razon_social ||
-                                t.solicitante_nombre;
+                        {currentUserRole?.includes("operador") && (
+                          <td>
+                            {esExterno ? (
+                              (() => {
+                                const cJuridico =
+                                  t.cliente_juridico || t.clienteJuridico || {};
+                                const cNatural =
+                                  t.cliente_natural || t.clienteNatural || {};
 
-                              const rifEmpresa =
-                                t.cliente_rif ||
-                                cJuridico.str_rif ||
-                                cJuridico.rif ||
-                                t.solicitante_documento;
+                                const razonSocial =
+                                  t.cliente_razon_social ||
+                                  cJuridico.str_razon_social ||
+                                  cJuridico.razon_social ||
+                                  t.solicitante_nombre;
 
-                              const nombreNatural =
-                                t.cliente_nombre ||
-                                cNatural.str_nombre ||
-                                cNatural.nombre ||
-                                t.solicitante_nombre;
+                                const rifEmpresa =
+                                  t.cliente_rif ||
+                                  cJuridico.str_rif ||
+                                  cJuridico.rif ||
+                                  t.solicitante_documento;
 
-                              const apellidoNatural =
-                                t.cliente_apellido ||
-                                cNatural.str_apellido ||
-                                cNatural.apellido ||
-                                "";
+                                const nombreNatural =
+                                  t.cliente_nombre ||
+                                  cNatural.str_nombre ||
+                                  cNatural.nombre ||
+                                  t.solicitante_nombre;
 
-                              const cedulaNatural =
-                                t.cliente_cedula ||
-                                cNatural.str_cedula ||
-                                cNatural.cedula ||
-                                t.solicitante_documento;
+                                const apellidoNatural =
+                                  t.cliente_apellido ||
+                                  cNatural.str_apellido ||
+                                  cNatural.apellido ||
+                                  "";
 
-                              const esJuridicoReal = Boolean(
-                                t.cliente_juridico_id ||
-                                rifEmpresa ||
-                                razonSocial ||
-                                (t.tipo_solicitante &&
-                                  t.tipo_solicitante
-                                    .toLowerCase()
-                                    .includes("jurídico")) ||
-                                (rifEmpresa &&
-                                  String(rifEmpresa)
-                                    .toLowerCase()
-                                    .startsWith("j")),
-                              );
+                                const cedulaNatural =
+                                  t.cliente_cedula ||
+                                  cNatural.str_cedula ||
+                                  cNatural.cedula ||
+                                  t.solicitante_documento;
 
-                              return (
-                                <div>
-                                  <b
-                                    style={{
-                                      color: "var(--merco-accent, #f95700)",
-                                    }}
-                                  >
-                                    {esJuridicoReal
-                                      ? razonSocial || "Empresa sin nombre"
-                                      : nombreNatural
-                                        ? `${nombreNatural} ${apellidoNatural}`.trim()
-                                        : "Cliente"}
-                                  </b>
-                                  <small
-                                    style={{
-                                      display: "block",
-                                      color: "var(--merco-muted)",
-                                      fontSize: "11px",
-                                    }}
-                                  >
-                                    {esJuridicoReal ? "RIF: " : "Cédula: "}
-                                    {esJuridicoReal
-                                      ? rifEmpresa || "—"
-                                      : cedulaNatural || "—"}
-                                  </small>
-                                </div>
-                              );
-                            })()
-                          ) : (
-                            <span style={{ color: "var(--merco-muted)" }}>
-                              N/A
-                            </span>
-                          )}
-                        </td>
+                                const esJuridicoReal = Boolean(
+                                  t.cliente_juridico_id ||
+                                  rifEmpresa ||
+                                  razonSocial ||
+                                  (t.tipo_solicitante &&
+                                    t.tipo_solicitante
+                                      .toLowerCase()
+                                      .includes("jurídico")) ||
+                                  (rifEmpresa &&
+                                    String(rifEmpresa)
+                                      .toLowerCase()
+                                      .startsWith("j")),
+                                );
+
+                                return (
+                                  <div>
+                                    <b
+                                      style={{
+                                        color: "var(--merco-accent, #f95700)",
+                                      }}
+                                    >
+                                      {esJuridicoReal
+                                        ? razonSocial || "Empresa sin nombre"
+                                        : nombreNatural
+                                          ? `${nombreNatural} ${apellidoNatural}`.trim()
+                                          : "Cliente"}
+                                    </b>
+                                    <small
+                                      style={{
+                                        display: "block",
+                                        color: "var(--merco-muted)",
+                                        fontSize: "11px",
+                                      }}
+                                    >
+                                      {esJuridicoReal ? "RIF: " : "Cédula: "}
+                                      {esJuridicoReal
+                                        ? rifEmpresa || "—"
+                                        : cedulaNatural || "—"}
+                                    </small>
+                                  </div>
+                                );
+                              })()
+                            ) : (
+                              <span style={{ color: "var(--merco-muted)" }}>
+                                N/A
+                              </span>
+                            )}
+                          </td>
+                        )}
+
                         <td style={{ maxWidth: 180 }}>
                           <div
                             style={{

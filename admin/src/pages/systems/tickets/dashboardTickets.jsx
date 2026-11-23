@@ -134,6 +134,7 @@ export default function DashboardTickets() {
           prioridades={prioridades}
           canales={canales}
           empleadosFiltrados={empleadosFiltrados}
+          currentUserRole={currentUserRole}
         />
 
         {/* TARJETAS KPI */}

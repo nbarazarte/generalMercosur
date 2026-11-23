@@ -555,9 +555,11 @@ REGLAS ABSOLUTAS:
       return;
     }
 
-    if (!nuevoEstatusId) {
-      showToast("Por favor seleccione el Estatus del Ticket.", "error");
-      return;
+    if (currentUserRole?.includes("operador")) {
+      if (!nuevoEstatusId) {
+        showToast("Por favor seleccione el Estatus del Ticket.", "error");
+        return;
+      }
     }
 
     const descripcionHTML = await obtenerContenidoHTML();
@@ -644,7 +646,10 @@ REGLAS ABSOLUTAS:
 
     const formData = new FormData();
     formData.append("tipo_ticket_id", Number(tipoTicketId));
-    formData.append("estatus_id", Number(nuevoEstatusId));
+    formData.append(
+      "estatus_id",
+      currentUserRole?.includes("operador") ? Number(nuevoEstatusId) : 17, // nace En Progreso si es un usuario y no un operador de ATC
+    );
     formData.append("str_asunto", strAsunto);
     formData.append("str_descripcion", descripcionHTML);
 

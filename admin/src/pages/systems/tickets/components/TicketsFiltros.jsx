@@ -52,6 +52,7 @@ export function TicketsFiltros({
   setFCategoriaAdmin,
   fAgenteAdmin,
   setFAgenteAdmin,
+  currentUserRole,
 }) {
   const tipoTicketSeleccionadoObj = tiposTicket.find(
     (t) => String(t.id) === String(fTipoTicket),
@@ -80,26 +81,28 @@ export function TicketsFiltros({
           alignItems: "center",
         }}
       >
-        <select
-          value={fTipoTicket}
-          onChange={(e) => {
-            setFTipoTicket(e.target.value);
-            const selectedObj = tiposTicket.find(
-              (t) => String(t.id) === String(e.target.value),
-            );
-            if (!selectedObj?.str_nombre.toLowerCase().includes("externo")) {
-              setFTipoPersona("");
-            }
-          }}
-          style={filtroStyle}
-        >
-          <option value="">Todos los tickets</option>
-          {tiposTicket.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.str_nombre}
-            </option>
-          ))}
-        </select>
+        {currentUserRole?.includes("operador") && (
+          <select
+            value={fTipoTicket}
+            onChange={(e) => {
+              setFTipoTicket(e.target.value);
+              const selectedObj = tiposTicket.find(
+                (t) => String(t.id) === String(e.target.value),
+              );
+              if (!selectedObj?.str_nombre.toLowerCase().includes("externo")) {
+                setFTipoPersona("");
+              }
+            }}
+            style={filtroStyle}
+          >
+            <option value="">Todos los tickets</option>
+            {tiposTicket.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.str_nombre}
+              </option>
+            ))}
+          </select>
+        )}
 
         {/* SELECT DE TIPO DE PERSONA (USANDO EL ESTILO ESTÁNDAR SIN BORDE NARANJA) */}
         {esExternoSeleccionado && (
@@ -200,7 +203,7 @@ export function TicketsFiltros({
           ))}
         </select>
 
-        {!esFiltroInterno && (
+        {!esFiltroInterno && currentUserRole?.includes("operador") && (
           <select
             value={fCanal}
             onChange={(e) => {

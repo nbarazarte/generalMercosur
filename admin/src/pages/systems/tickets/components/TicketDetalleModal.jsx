@@ -238,7 +238,7 @@ export function TicketDetalleModal({
                 {correoCreadorModal && (
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <div>
-                      <b>Correo operador:</b> {correoCreadorModal}{" "}
+                      <b>Correo:</b> {correoCreadorModal}{" "}
                       <button
                         style={btnCopyStyle}
                         onClick={(e) => copiarTextoClipboard(e, correoCreadorModal)}

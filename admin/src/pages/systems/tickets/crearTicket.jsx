@@ -176,37 +176,41 @@ export default function CrearTicket() {
         <div className="ma-card" style={{ padding: 0, overflow: "hidden" }}>
           <form onSubmit={handleSubmit} style={{ padding: "16px" }}>
             {/* Banner Informativo */}
-            <div
-              style={{
-                marginBottom: "16px",
-                padding: "10px 14px",
-                borderRadius: "6px",
-                background: isDarkMode
-                  ? "rgba(249, 87, 0, 0.15)"
-                  : "rgba(249, 87, 0, 0.08)",
-                border: "1px solid var(--merco-accent, #f95700)",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                color: "var(--merco-text)",
-                fontSize: "13px",
-                fontWeight: "500",
-              }}
-            >
-              <DynamicIcon
-                name={esTipoInterno() ? "FiInfo" : "FiExternalLink"}
-                style={{
-                  color: "var(--merco-accent, #f95700)",
-                  fontSize: "16px",
-                }}
-              />
-              <span>
-                {esTipoInterno()
-                  ? "Para crear Tickets internos entre departamentos de Mercosur"
-                  : "Para crear tickets externos referentes a la APP de Mercosur y sus clientes (Naturales o Jurídicos)"}
-              </span>
-            </div>
 
+            {currentUserRole?.includes("operador") && (
+              <div
+                style={{
+                  marginBottom: "16px",
+                  padding: "10px 14px",
+                  borderRadius: "6px",
+                  background: isDarkMode
+                    ? "rgba(249, 87, 0, 0.15)"
+                    : "rgba(249, 87, 0, 0.08)",
+                  border: "1px solid var(--merco-accent, #f95700)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  color: "var(--merco-text)",
+                  fontSize: "13px",
+                  fontWeight: "500",
+                }}
+              >
+                <DynamicIcon
+                  name={"FiInfo"}
+                  style={{
+                    color: "var(--merco-accent, #f95700)",
+                    fontSize: "16px",
+                  }}
+                />
+
+                <span>
+                  Nota:{" "}
+                  {esTipoInterno()
+                    ? "Los tickets internos son las peticiones entre los departamentos de Mercosur"
+                    : "Los tickets externos son las peticiones relacionados a la APP de Mercosur y sus clientes (Naturales o Jurídicos)"}
+                </span>
+              </div>
+            )}
             {/* Formulario unificado */}
             <div
               style={{

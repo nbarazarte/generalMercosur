@@ -32,32 +32,34 @@ export function CrearTicketParametros({
           gap: "10px",
         }}
       >
-        <div className="field">
-          <label style={labelStyle}>Tipo de Ticket</label>
-          <select
-            value={tipoTicketId}
-            onChange={(e) => handleTipoTicketChange(e.target.value)}
-            required
-            style={inputStyle}
-          >
-            <option value="">Seleccione tipo de ticket... </option>
+        {currentUserRole?.includes("operador") && (
+          <div className="field">
+            <label style={labelStyle}>Tipo de Ticket</label>
+            <select
+              value={tipoTicketId}
+              onChange={(e) => handleTipoTicketChange(e.target.value)}
+              required
+              style={inputStyle}
+            >
+              <option value="">Seleccione tipo de ticket... </option>
 
-            {listaTipoTicket
-              .filter((t) => {
-                // Si el rol es 'usuario', solo dejamos pasar el que sea "interno"
-                if (currentUserRole === "usuario") {
-                  return t.str_nombre.toLowerCase().includes("interno");
-                }
-                // Para otros roles, mostramos todos
-                return true;
-              })
-              .map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.str_nombre}
-                </option>
-              ))}
-          </select>
-        </div>
+              {listaTipoTicket
+                .filter((t) => {
+                  // Si el rol es 'usuario', solo dejamos pasar el que sea "interno"
+                  if (currentUserRole === "usuario") {
+                    return t.str_nombre.toLowerCase().includes("interno");
+                  }
+                  // Para otros roles, mostramos todos
+                  return true;
+                })
+                .map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.str_nombre}
+                  </option>
+                ))}
+            </select>
+          </div>
+        )}
 
         <div className="field">
           <label style={labelStyle}>De (Remitente)</label>
@@ -71,32 +73,35 @@ export function CrearTicketParametros({
           />
         </div>
 
-        <div>
-          <label
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              display: "block",
-              marginBottom: 4,
-            }}
-          >
-            Estatus
-          </label>
-          <select
-            value={nuevoEstatusId}
-            onChange={(e) => setNuevoEstatusId(e.target.value)}
-            style={inputStyle}
-            required
-          >
-            <option value="">Seleccione estatus...</option>
-            {estatusModalDisponibles.map((est) => (
-              <option key={est.id} value={String(est.id)}>
-                {est.str_nombre}{" "}
-                {est.str_descripcion ? `- ${est.str_descripcion}` : ""}
-              </option>
-            ))}
-          </select>
-        </div>
+        {currentUserRole?.includes("operador") && (
+          <div>
+            <label
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                display: "block",
+                marginBottom: 4,
+              }}
+            >
+              Estatus
+            </label>
+            <select
+              value={tipoTicketId == 25 ? nuevoEstatusId : 17}
+              onChange={(e) => setNuevoEstatusId(e.target.value)}
+              style={inputStyle}
+              required
+              disabled={tipoTicketId == 24 ? true : false}
+            >
+              <option value="">Seleccione estatus...</option>
+              {estatusModalDisponibles.map((est) => (
+                <option key={est.id} value={String(est.id)}>
+                  {est.str_nombre}{" "}
+                  {est.str_descripcion ? `- ${est.str_descripcion}` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Fila 2: Tipo de Ticket, Remitente y Asunto */}

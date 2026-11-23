@@ -9,6 +9,7 @@ export function TicketDashboardFiltros({
   prioridades,
   canales,
   empleadosFiltrados,
+  currentUserRole,
 }) {
   const filtroStyle = {
     padding: "8px 12px",
@@ -69,18 +70,21 @@ export function TicketDashboardFiltros({
         }}
       >
         {/* Tipo de Ticket */}
-        <select
-          value={filtros.tipo_ticket_id}
-          onChange={handleTipoTicketChange}
-          style={filtroStyle}
-        >
-          <option value="">Todos los tipos</option>
-          {tiposTicket.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.str_nombre}
-            </option>
-          ))}
-        </select>
+
+        {currentUserRole?.includes("operador") && (
+          <select
+            value={filtros.tipo_ticket_id}
+            onChange={handleTipoTicketChange}
+            style={filtroStyle}
+          >
+            <option value="">Todos los tipos</option>
+            {tiposTicket.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.str_nombre}
+              </option>
+            ))}
+          </select>
+        )}
 
         {/* Tipo de Persona / Solicitante (Se muestra SOLO si NO es interno) */}
         {!esInterno && (
@@ -193,20 +197,23 @@ export function TicketDashboardFiltros({
         </select>
 
         {/* Canal */}
-        <select
-          value={filtros.canal_id}
-          onChange={(e) =>
-            setFiltros((prev) => ({ ...prev, canal_id: e.target.value }))
-          }
-          style={filtroStyle}
-        >
-          <option value="">Todos los canales</option>
-          {canales.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.str_nombre}
-            </option>
-          ))}
-        </select>
+
+        {currentUserRole?.includes("operador") && (
+          <select
+            value={filtros.canal_id}
+            onChange={(e) =>
+              setFiltros((prev) => ({ ...prev, canal_id: e.target.value }))
+            }
+            style={filtroStyle}
+          >
+            <option value="">Todos los canales</option>
+            {canales.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.str_nombre}
+              </option>
+            ))}
+          </select>
+        )}
 
         {/* Fechas */}
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
