@@ -13,6 +13,10 @@ export function useDashboardTickets() {
       )?.rol,
   );
 
+  const currentUserDepartamento_id = useSelector(
+    (state) => state.auth?.user?.departamento_id,
+  );
+
   const [loading, setLoading] = useState(true);
   const [kpis, setKpis] = useState({});
   const [ticketsPorCategoria, setTicketsPorCategoria] = useState([]);
@@ -105,12 +109,12 @@ export function useDashboardTickets() {
           Object.entries({
             ...paramsFiltros,
             rol: currentUserRole,
+            departamento: currentUserDepartamento_id,
           }).filter(([_, v]) => v !== "" && v != null),
         );
 
+        //console.log(paramsFiltros);
 
-        console.log(paramsFiltros);
-        
         const [
           resKpis,
           resCat,
@@ -210,15 +214,15 @@ export function useDashboardTickets() {
 
   useEffect(() => {
     const deptoId = filtros.departamento_id;
-  
+
     if (deptoId === "" || deptoId == null) {
       setEmpleadosFiltrados([]);
       return;
     }
-  
+
     const deptoIdNum = Number(deptoId);
     setEmpleadosFiltrados(
-      listaUsuarios.filter((u) => Number(u.departamento_id) === deptoIdNum)
+      listaUsuarios.filter((u) => Number(u.departamento_id) === deptoIdNum),
     );
   }, [filtros.departamento_id, listaUsuarios]);
 

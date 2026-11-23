@@ -83,6 +83,7 @@ export default function Tickets() {
     isDarkMode,
     currentUserId,
     currentUserRole,
+    currentUserDepartamento_id,
 
     fBuscarAdmin,
     setFBuscarAdmin,

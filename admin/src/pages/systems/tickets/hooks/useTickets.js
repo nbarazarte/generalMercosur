@@ -16,6 +16,10 @@ export function useTickets() {
       )?.rol,
   );
 
+  const currentUserDepartamento_id = useSelector(
+    (state) => state.auth?.user?.departamento_id,
+  );
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [ticketsAdmin, setTicketsAdmin] = useState([]);
   const [tickets, setTickets] = useState([]);

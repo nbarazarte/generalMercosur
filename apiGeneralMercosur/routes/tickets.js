@@ -108,6 +108,93 @@ async function procesarArchivosConSharp(archivos, prefijoTicket) {
   };
 }
 
+/* function construirFiltrosDashboard(req, aliasTabla = "t") {
+  const {
+    tipo_ticket_id,
+    estatus_id,
+    prioridad_id,
+    canal_id,
+    departamento_id,
+    usuario_asignado_id,
+    categoria_id,
+    tipo_persona,
+    creacion_desde,
+    creacion_hasta,
+    rol,
+    departamento, //id del departamento al que pertenece el usuario logueado
+  } = req.query;
+
+  const usuarioId = req.user?.id;
+  let whereClause = `WHERE 1=1`;
+  const params = [];
+  let paramIndex = 1;
+  const rolUsuario = (rol || "").toLowerCase();
+
+  if (rolUsuario.includes("administrador")) {
+    whereClause += ` AND (${aliasTabla}.tipo_ticket_id = 25 OR (${aliasTabla}.tipo_ticket_id = 24 AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})))`;
+    params.push(Number(usuarioId));
+    paramIndex++;
+  } else if (rolUsuario.includes("gerente")) {
+    whereClause += ` AND (${aliasTabla}.tipo_ticket_id = 25 OR (${aliasTabla}.tipo_ticket_id = 24
+
+
+
+
+    AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})))`;
+    params.push(Number(usuarioId));
+    paramIndex++;
+  } else if (rolUsuario.includes("usuario")) {
+    whereClause += ` AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})`;
+    params.push(Number(usuarioId));
+    paramIndex++;
+  }
+
+  if (tipo_ticket_id) {
+    whereClause += ` AND ${aliasTabla}.tipo_ticket_id = $${paramIndex++}`;
+    params.push(Number(tipo_ticket_id));
+  }
+  if (estatus_id) {
+    whereClause += ` AND ${aliasTabla}.estatus_id = $${paramIndex++}`;
+    params.push(Number(estatus_id));
+  }
+  if (prioridad_id) {
+    whereClause += ` AND ${aliasTabla}.prioridad_id = $${paramIndex++}`;
+    params.push(Number(prioridad_id));
+  }
+  if (canal_id) {
+    whereClause += ` AND ${aliasTabla}.canal_id = $${paramIndex++}`;
+    params.push(Number(canal_id));
+  }
+  if (departamento_id) {
+    whereClause += ` AND ${aliasTabla}.departamento_id = $${paramIndex++}`;
+    params.push(Number(departamento_id));
+  }
+  if (usuario_asignado_id) {
+    whereClause += ` AND ${aliasTabla}.usuario_asignado_id = $${paramIndex++}`;
+    params.push(Number(usuario_asignado_id));
+  }
+  if (categoria_id) {
+    whereClause += ` AND ${aliasTabla}.categoria_id = $${paramIndex++}`;
+    params.push(Number(categoria_id));
+  }
+  if (tipo_persona === "natural") {
+    whereClause += ` AND ${aliasTabla}.cliente_id IS NOT NULL`;
+  } else if (tipo_persona === "juridico") {
+    whereClause += ` AND ${aliasTabla}.cliente_juridico_id IS NOT NULL`;
+  }
+  if (creacion_desde) {
+    whereClause += ` AND ${aliasTabla}.created_at >= $${paramIndex++}::timestamp`;
+    params.push(creacion_desde);
+  }
+  if (creacion_hasta) {
+    whereClause += ` AND ${aliasTabla}.created_at <= ($${paramIndex++}::timestamp + INTERVAL '1 day' - INTERVAL '1 second')`;
+    params.push(creacion_hasta);
+  }
+
+  return { whereClause, params };
+}
+ */
+
 function construirFiltrosDashboard(req, aliasTabla = "t") {
   const {
     tipo_ticket_id,
@@ -121,6 +208,7 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
     creacion_desde,
     creacion_hasta,
     rol,
+    departamento, // id del departamento al que pertenece el usuario logueado
   } = req.query;
 
   const usuarioId = req.user?.id;
@@ -129,11 +217,18 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
   let paramIndex = 1;
   const rolUsuario = (rol || "").toLowerCase();
 
-  if (rolUsuario.includes("gerente")) {
-    whereClause += ` AND (${aliasTabla}.tipo_ticket_id = 25 OR (${aliasTabla}.tipo_ticket_id = 24 AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})))`;
-    params.push(Number(usuarioId));
-    paramIndex++;
-  } else if (rolUsuario.includes("operador")) {
+  if (rolUsuario.includes("administrador")) {
+    // Ve todos los tickets (internos y externos) sin restricción base de rol
+  } else if (rolUsuario.includes("gerente")) {
+    if (departamento) {
+      whereClause += ` AND ${aliasTabla}.departamento_id = $${paramIndex}`;
+      params.push(Number(departamento));
+      paramIndex++;
+    }
+  } else if (
+    rolUsuario.includes("usuario") ||
+    rolUsuario.includes("operador")
+  ) {
     whereClause += ` AND (${aliasTabla}.usuario_asignado_id = $${paramIndex} OR ${aliasTabla}.creador_agente_id = $${paramIndex})`;
     params.push(Number(usuarioId));
     paramIndex++;
@@ -337,6 +432,8 @@ router.get("/dashboard/ultimos-tickets", async (req, res) => {
       ORDER BY t.created_at DESC
       LIMIT 10;
     `;
+
+    //console.log(query);
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {

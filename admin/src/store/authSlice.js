@@ -9,6 +9,7 @@ const initialState = {
     apellido: null,
     sistemasOpciones: [],
     departamento: null,
+    departamento_id: null,
   },
   token: null,
   refreshToken: null, // 1. Añadido para almacenar el token de renovación
@@ -30,6 +31,7 @@ export const authSlice = createSlice({
         apellido,
         sistemasOpciones,
         departamento,
+        departamento_id,
       } = action.payload;
 
       state.user = {
@@ -40,6 +42,7 @@ export const authSlice = createSlice({
         apellido,
         sistemasOpciones,
         departamento,
+        departamento_id,
       };
       state.token = token;
       state.refreshToken = refreshToken; // 2. Guardamos el refreshToken al iniciar sesión
@@ -64,6 +67,7 @@ export const authSlice = createSlice({
         apellido: null,
         sistemasOpciones: [],
         departamento: null,
+        departamento_id:null,
       };
       state.token = null;
       state.refreshToken = null; // 4. Limpiamos también el refreshToken al cerrar sesión
@@ -78,6 +82,7 @@ export const {
   updateAccessToken,
   setSistemasOpciones,
   departamento,
+  departamento_id,
   logout,
 } = authSlice.actions;
 export default authSlice.reducer;

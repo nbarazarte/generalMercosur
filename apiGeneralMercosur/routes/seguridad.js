@@ -291,7 +291,7 @@ router.post("/login", async (req, res) => {
     ); */
 
     const result = await pool.query(
-      `SELECT u.*, dep.str_nombre as departamento
+      `SELECT u.*, dep.id as departamento_id, dep.str_nombre as departamento
       FROM tbl_usuarios u
       join public.cat_departamentos dep on dep.id = u.departamento_id
       WHERE LOWER(str_email) = $1`,
@@ -405,6 +405,7 @@ router.post("/login", async (req, res) => {
       refreshToken: refreshToken,
       sistemasOpciones: sistemasOpciones,
       departamento: user.departamento,
+      departamento_id: user.departamento_id,
     });
   } catch (err) {
     console.error(err.message);
@@ -658,7 +659,7 @@ router.post("/auth/entra-callback", async (req, res) => {
     ); */
 
     const result = await pool.query(
-      `SELECT u.*, dep.str_nombre as departamento
+      `SELECT u.*, dep.id as departamento_id, dep.str_nombre as departamento
       FROM tbl_usuarios u
       join public.cat_departamentos dep on dep.id = u.departamento_id
       WHERE LOWER(str_email) = $1`,
@@ -728,6 +729,7 @@ router.post("/auth/entra-callback", async (req, res) => {
       refreshToken: refreshToken,
       sistemasOpciones: sistemasOpciones,
       departamento: user.departamento,
+      departamento_id: user.departamento_id,
     });
   } catch (err) {
     console.error("Error en callback de Entra ID:", err.message);

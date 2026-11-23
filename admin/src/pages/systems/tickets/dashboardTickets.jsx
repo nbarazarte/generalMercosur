@@ -60,6 +60,7 @@ export default function DashboardTickets() {
     toast,
     currentUserId,
     currentUserRole,
+    currentUserDepartamento_id,
 
     // Métodos y estados expuestos desde el hook para el Modal
     ticketSeleccionado,
