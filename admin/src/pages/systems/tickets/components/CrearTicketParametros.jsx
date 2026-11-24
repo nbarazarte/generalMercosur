@@ -20,7 +20,13 @@ export function CrearTicketParametros({
   estatusModalDisponibles,
   nuevoEstatusId,
   setNuevoEstatusId,
+  currentUserDepartamento,
 }) {
+  const depNormalizado = currentUserDepartamento
+    ?.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
       {/* Fila 1: Tipo de Ticket, Remitente y Asunto */}
@@ -32,7 +38,10 @@ export function CrearTicketParametros({
           gap: "10px",
         }}
       >
-        {currentUserRole?.includes("operador") && (
+        {(currentUserRole?.includes("administrador") ||
+          (currentUserRole?.includes("gerente") &&
+            depNormalizado?.includes("atencion al cliente")) ||
+          currentUserRole?.includes("operador")) && (
           <div className="field">
             <label style={labelStyle}>Tipo de Ticket</label>
             <select
@@ -73,7 +82,10 @@ export function CrearTicketParametros({
           />
         </div>
 
-        {currentUserRole?.includes("operador") && (
+        {(currentUserRole?.includes("administrador") ||
+          (currentUserRole?.includes("gerente") &&
+            depNormalizado?.includes("atencion al cliente")) ||
+          currentUserRole?.includes("operador")) && (
           <div>
             <label
               style={{

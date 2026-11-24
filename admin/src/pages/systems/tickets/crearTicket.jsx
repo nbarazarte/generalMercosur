@@ -89,7 +89,13 @@ export default function CrearTicket() {
     estatusModalDisponibles,
     nuevoEstatusId,
     setNuevoEstatusId,
+    currentUserDepartamento,
   } = useCrearTicket();
+
+  const depNormalizado = currentUserDepartamento
+    ?.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Crear">
@@ -177,7 +183,10 @@ export default function CrearTicket() {
           <form onSubmit={handleSubmit} style={{ padding: "16px" }}>
             {/* Banner Informativo */}
 
-            {currentUserRole?.includes("operador") && (
+            {(currentUserRole?.includes("administrador") ||
+              (currentUserRole?.includes("gerente") &&
+                depNormalizado?.includes("atencion al cliente")) ||
+              currentUserRole?.includes("operador")) && (
               <div
                 style={{
                   marginBottom: "16px",
@@ -207,7 +216,7 @@ export default function CrearTicket() {
                   Nota:{" "}
                   {esTipoInterno()
                     ? "Los tickets internos son las peticiones entre los departamentos de Mercosur"
-                    : "Los tickets externos son las peticiones relacionados a la APP de Mercosur y sus clientes (Naturales o Jurídicos)"}
+                    : "Los tickets externos son aquellos que tienen que ver directamente con los clientes de Mercosur"}
                 </span>
               </div>
             )}
@@ -248,6 +257,7 @@ export default function CrearTicket() {
                 estatusModalDisponibles={estatusModalDisponibles}
                 nuevoEstatusId={nuevoEstatusId}
                 setNuevoEstatusId={setNuevoEstatusId}
+                currentUserDepartamento={currentUserDepartamento}
               />
 
               {esTipoExterno() && (

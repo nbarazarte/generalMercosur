@@ -863,5 +863,6 @@ REGLAS ABSOLUTAS:
     estatusModalDisponibles,
     nuevoEstatusId,
     setNuevoEstatusId,
+    currentUserDepartamento,
   };
 }

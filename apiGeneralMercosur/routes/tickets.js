@@ -130,11 +130,14 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
   let paramIndex = 1;
   const rolUsuario = (rol || "").toLowerCase();
 
+  //console.log(rolUsuario)
+  //console.log(departamento)
+
   if (rolUsuario.includes("administrador")) {
     // Ve todos los tickets (internos y externos) sin restricción base de rol
   } else if (rolUsuario.includes("gerente")) {
     if (departamento) {
-      whereClause += ` AND ${aliasTabla}.departamento_id = $${paramIndex}`;
+      whereClause += ` AND ${aliasTabla}.departamento_creador_id = $${paramIndex}`;
       params.push(Number(departamento));
       paramIndex++;
     }
@@ -197,15 +200,18 @@ router.get("/dashboard/kpis", async (req, res) => {
     const { whereClause, params } = construirFiltrosDashboard(req);
     const queryKpis = `
       SELECT
-        (SELECT count(*) FROM tickets.tbl_tickets t ${whereClause}) AS total_tickets,
-        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Progreso') AS en_progreso,
-        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Aprobación') AS en_aprobacion,
-        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Pendiente de Usuario') AS pendiente_usuario,
-        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Espera Proveedor') AS espera_proveedor,
-        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Vencido') AS vencido,
-        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Cancelado') AS cancelado,
-        (SELECT count(*) FROM tickets.tbl_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Cerrado') AS cerrado
+        (SELECT count(*) FROM tickets.view_listar_tickets t ${whereClause}) AS total_tickets,
+        (SELECT count(*) FROM tickets.view_listar_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Progreso') AS en_progreso,
+        (SELECT count(*) FROM tickets.view_listar_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Aprobación') AS en_aprobacion,
+        (SELECT count(*) FROM tickets.view_listar_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Pendiente de Usuario') AS pendiente_usuario,
+        (SELECT count(*) FROM tickets.view_listar_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'En Espera Proveedor') AS espera_proveedor,
+        (SELECT count(*) FROM tickets.view_listar_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Vencido') AS vencido,
+        (SELECT count(*) FROM tickets.view_listar_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Cancelado') AS cancelado,
+        (SELECT count(*) FROM tickets.view_listar_tickets t LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Cerrado') AS cerrado
     `;
+
+    //console.log(queryKpis)
+
     const result = await pool.query(queryKpis, params);
     res.status(200).json({ success: true, kpis: result.rows });
   } catch (err) {
@@ -219,13 +225,14 @@ router.get("/dashboard/tickets-por-categoria", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
 
-    const query = `
-      SELECT nombre_categoria, COUNT(ticket_id) AS total_tickets
-      FROM tickets.view_tickets_por_categoria t
-      ${whereClause}
-      GROUP BY nombre_categoria
-      ORDER BY total_tickets DESC;
-    `;
+    const query = `SELECT nombre_categoria, COUNT(id) AS total_tickets
+        FROM tickets.view_listar_tickets t
+       ${whereClause}
+        GROUP BY nombre_categoria
+        ORDER BY total_tickets DESC;`;
+
+    //console.log(query);
+
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
@@ -237,13 +244,11 @@ router.get("/dashboard/tickets-por-canal", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
 
-    const query = `
-      SELECT nombre_canal, COUNT(ticket_id) AS total_tickets
-      FROM tickets.view_tickets_por_canal t
-      ${whereClause} and tipo_ticket_id = 25
-      GROUP BY nombre_canal
-      ORDER BY total_tickets DESC;
-    `;
+    const query = `SELECT canal_nombre as nombre_canal, COUNT(id) AS total_tickets
+            FROM tickets.view_listar_tickets t
+            ${whereClause} and tipo_ticket_id = 25
+            GROUP BY canal_nombre
+            ORDER BY total_tickets DESC;`;
     //console.log(query);
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
@@ -255,13 +260,14 @@ router.get("/dashboard/tickets-por-canal", async (req, res) => {
 router.get("/dashboard/distribucion-estados", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
-    const query = `
-      SELECT estado, COUNT(ticket_id) AS total
-      FROM tickets.view_distribucion_estados t
-      ${whereClause}
-      GROUP BY estado
-      ORDER BY total DESC;
+    const query = `SELECT estatus_nombre as estado, COUNT(id) AS total
+            FROM tickets.view_listar_tickets t
+            ${whereClause}
+            GROUP BY estado
+            ORDER BY total DESC;
     `;
+
+    //console.log(query);
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
@@ -272,18 +278,14 @@ router.get("/dashboard/distribucion-estados", async (req, res) => {
 router.get("/dashboard/casos-por-analista", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
-    const query = `
-      SELECT
-        COALESCE(u.str_nombre || ' ' || u.str_apellido, 'Sin Asignar') AS nombre_analista,
-        COUNT(t.id) AS total_tickets
-      FROM tickets.tbl_tickets t
-      LEFT JOIN public.tbl_usuarios u ON t.creador_agente_id = u.id
-      ${whereClause}
-      GROUP BY u.id, u.str_nombre, u.str_apellido
-      ORDER BY total_tickets DESC
-      LIMIT 10;
-    `;
 
+    let query = `SELECT  COALESCE(creador_nombre || ' ' || creador_apellido, 'Sin Asignar') AS nombre_analista,
+          COUNT(t.id) AS total_tickets
+          FROM tickets.view_listar_tickets t ${whereClause}
+          GROUP BY t.creador_agente_id, creador_nombre, creador_apellido
+          ORDER BY total_tickets DESC`;
+
+    //console.log(query);
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
@@ -294,18 +296,17 @@ router.get("/dashboard/casos-por-analista", async (req, res) => {
 router.get("/dashboard/casos-cerrados-por-analista", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
-    const query = `
-      SELECT
-        COALESCE(u.str_nombre || ' ' || u.str_apellido, 'Sin Asignar') AS nombre_analista,
-        COUNT(t.id) AS tickets_cerrados
-      FROM tickets.tbl_tickets t
-      LEFT JOIN public.tbl_usuarios u ON COALESCE(t.cierre_agente_id, t.usuario_asignado_id) = u.id
-      LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
-      ${whereClause} AND e.str_tipo = 'ESTATUSTICKET' AND e.str_nombre = 'Cerrado'
-      GROUP BY u.id, u.str_nombre, u.str_apellido
-      ORDER BY tickets_cerrados DESC
-      LIMIT 10;
-    `;
+
+    const query = `SELECT  COALESCE(creador_nombre || ' ' || creador_apellido, 'Sin Asignar') AS nombre_analista,
+              COUNT(t.id) AS total_tickets
+              FROM tickets.view_listar_tickets t
+        		  ${whereClause}
+        		  AND estatus_nombre = 'Cerrado'
+              GROUP BY t.creador_agente_id, creador_nombre, creador_apellido
+              ORDER BY total_tickets DESC;`;
+
+    //console.log(query);
+
     const result = await pool.query(query, params);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
@@ -328,23 +329,20 @@ router.get("/clientes-con-tickets", async (req, res) => {
 router.get("/dashboard/ultimos-tickets", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req);
-    const query = `
-      SELECT
-        t.id,
-        t.str_ticket AS codigo,
-        t.str_asunto AS asunto,
-        e.str_nombre AS estado,
-        COALESCE(c_nat.str_nombre || ' ' || c_nat.str_apellido, c_jur.str_razon_social, 'Cliente / Usuario') AS solicitante,
-        TO_CHAR(t.created_at, 'DD/MM/YYYY HH24:MI') AS tiempo,
-        TO_CHAR(t.dmt_fecha_cierre, 'DD/MM/YYYY HH24:MI') AS fecha_cierre
-      FROM tickets.tbl_tickets t
-      LEFT JOIN public.cat_datos_maestros e ON t.estatus_id = e.id
-      LEFT JOIN tickets.tbl_clientes_naturales c_nat ON t.cliente_id = c_nat.id
-      LEFT JOIN tickets.tbl_clientes_juridicos c_jur ON t.cliente_juridico_id = c_jur.id
-      ${whereClause}
-      ORDER BY t.created_at DESC
-      LIMIT 10;
-    `;
+    const query = `SELECT
+             t.id,
+             t.str_ticket AS codigo,
+             t.str_asunto AS asunto,
+             t.estatus_nombre as estado,
+             COALESCE(c_nat.str_nombre || ' ' || c_nat.str_apellido, c_jur.str_razon_social, 'Cliente / Usuario') AS solicitante,
+             TO_CHAR(t.created_at, 'DD/MM/YYYY HH24:MI') AS tiempo,
+             TO_CHAR(t.dmt_fecha_cierre, 'DD/MM/YYYY HH24:MI') AS fecha_cierre
+           FROM tickets.view_listar_tickets t
+           LEFT JOIN tickets.tbl_clientes_naturales c_nat ON t.cliente_id = c_nat.id
+           LEFT JOIN tickets.tbl_clientes_juridicos c_jur ON t.cliente_juridico_id = c_jur.id
+           ${whereClause}
+           ORDER BY t.created_at DESC
+           LIMIT 10;`;
 
     //console.log(query);
     const result = await pool.query(query, params);
@@ -716,6 +714,8 @@ router.get("/listar", async (req, res) => {
 
     query += ` ORDER BY t.created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1};`;
     params.push(parseInt(limit, 10), parseInt(offset, 10));
+
+    //console.log(query)
 
     const resultado = await pool.query(query, params);
     res.status(200).json({ success: true, tickets: resultado.rows });

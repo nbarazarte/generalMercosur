@@ -10,7 +10,7 @@ export function ChartBarCasosCerradosAnalista({ data, isDark, loading }) {
     const textColor = isDark ? "#94A3B8" : "#64748B";
     const gridColor = isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)";
     const labels = data.map((d) => d.nombre_analista);
-    const values = data.map((d) => d.tickets_cerrados);
+    const values = data.map((d) => d.total_tickets);
 
     const chart = new Chart(ctx, {
       type: "bar",

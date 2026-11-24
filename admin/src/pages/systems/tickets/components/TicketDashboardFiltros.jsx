@@ -10,6 +10,7 @@ export function TicketDashboardFiltros({
   canales,
   empleadosFiltrados,
   currentUserRole,
+  currentUserDepartamento,
 }) {
   const filtroStyle = {
     padding: "8px 12px",
@@ -47,6 +48,11 @@ export function TicketDashboardFiltros({
     }));
   };
 
+  const depNormalizado = currentUserDepartamento
+    ?.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
   return (
     <div
       className="ma-card"
@@ -70,8 +76,10 @@ export function TicketDashboardFiltros({
         }}
       >
         {/* Tipo de Ticket */}
-
-        {currentUserRole?.includes("operador") && (
+        {(currentUserRole?.includes("administrador") ||
+          (currentUserRole?.includes("gerente") &&
+            depNormalizado?.includes("atencion al cliente")) ||
+          currentUserRole?.includes("operador")) && (
           <select
             value={filtros.tipo_ticket_id}
             onChange={handleTipoTicketChange}
@@ -86,23 +94,27 @@ export function TicketDashboardFiltros({
           </select>
         )}
 
-        {/* Tipo de Persona / Solicitante (Se muestra SOLO si NO es interno) */}
-        {!esInterno && (
-          <select
-            value={filtros.tipo_persona}
-            onChange={(e) =>
-              setFiltros((prev) => ({
-                ...prev,
-                tipo_persona: e.target.value,
-              }))
-            }
-            style={filtroStyle}
-          >
-            <option value="">Todos los solicitantes</option>
-            <option value="natural">Persona Natural</option>
-            <option value="juridico">Persona Jurídica</option>
-          </select>
-        )}
+        {/* Tipo de Persona */}
+        {(currentUserRole?.includes("administrador") ||
+          (currentUserRole?.includes("gerente") &&
+            depNormalizado?.includes("atencion al cliente")) ||
+          currentUserRole?.includes("operador")) &&
+          !esInterno && (
+            <select
+              value={filtros.tipo_persona}
+              onChange={(e) =>
+                setFiltros((prev) => ({
+                  ...prev,
+                  tipo_persona: e.target.value,
+                }))
+              }
+              style={filtroStyle}
+            >
+              <option value="">Todos los solicitantes</option>
+              <option value="natural">Persona Natural</option>
+              <option value="juridico">Persona Jurídica</option>
+            </select>
+          )}
 
         {/* Categoría */}
         <select
@@ -197,8 +209,10 @@ export function TicketDashboardFiltros({
         </select>
 
         {/* Canal */}
-
-        {currentUserRole?.includes("operador") && (
+        {(currentUserRole?.includes("administrador") ||
+          (currentUserRole?.includes("gerente") &&
+            depNormalizado?.includes("atencion al cliente")) ||
+          currentUserRole?.includes("operador")) && (
           <select
             value={filtros.canal_id}
             onChange={(e) =>

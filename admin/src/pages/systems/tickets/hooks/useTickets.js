@@ -16,6 +16,10 @@ export function useTickets() {
       )?.rol,
   );
 
+  const currentUserDepartamento = useSelector(
+    (state) => state.auth?.user?.departamento,
+  );
+
   const currentUserDepartamento_id = useSelector(
     (state) => state.auth?.user?.departamento_id,
   );
@@ -159,7 +163,12 @@ export function useTickets() {
       try {
         // Solicitud con límite de 100 registros recientes para evitar saturar
         const resTickets = await axiosTickets.get("/listar", {
-          params: { rol: currentUserRole, limit: 100, offset: 0 },
+          params: {
+            rol: currentUserRole,
+            departamento: currentUserDepartamento_id,
+            limit: 100,
+            offset: 0,
+          },
         });
 
         if (resTickets.data && resTickets.data.success) {
@@ -811,5 +820,6 @@ export function useTickets() {
     setFCategoriaAdmin,
     fAgenteAdmin,
     setFAgenteAdmin,
+    currentUserDepartamento,
   };
 }

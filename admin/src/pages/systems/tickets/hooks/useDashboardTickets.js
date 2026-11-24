@@ -13,6 +13,10 @@ export function useDashboardTickets() {
       )?.rol,
   );
 
+  const currentUserDepartamento = useSelector(
+    (state) => state.auth?.user?.departamento,
+  );
+
   const currentUserDepartamento_id = useSelector(
     (state) => state.auth?.user?.departamento_id,
   );
@@ -109,7 +113,7 @@ export function useDashboardTickets() {
           Object.entries({
             ...paramsFiltros,
             rol: currentUserRole,
-            departamento: currentUserDepartamento_id,
+            departamento: currentUserDepartamento_id, // vale 5 pero me da error
           }).filter(([_, v]) => v !== "" && v != null),
         );
 
@@ -179,7 +183,7 @@ export function useDashboardTickets() {
         setLoading(false);
       }
     },
-    [currentUserRole],
+    [currentUserRole, currentUserDepartamento_id],
   );
 
   useEffect(() => {
@@ -319,7 +323,10 @@ export function useDashboardTickets() {
 
     try {
       const res = await axiosTickets.get("/listar", {
-        params: { rol: currentUserRole },
+        params: {
+          rol: currentUserRole,
+          departamento: currentUserDepartamento_id,
+        },
       });
       if (res.data && res.data.success) {
         const ticketCompleto = (res.data.tickets || []).find(
@@ -494,5 +501,6 @@ export function useDashboardTickets() {
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
     empleadosFiltrados,
+    currentUserDepartamento,
   };
 }

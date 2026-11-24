@@ -89,6 +89,7 @@ export default function DashboardTickets() {
     handleGuardarCambiosTicket,
     copiarTextoClipboard,
     empleadosFiltrados,
+    currentUserDepartamento,
   } = useDashboardTickets();
 
   const filtroStyle = {
@@ -100,6 +101,11 @@ export default function DashboardTickets() {
     color: "inherit",
     outline: "none",
   };
+
+  const depNormalizado = currentUserDepartamento
+    ?.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Dashboard">
@@ -135,6 +141,7 @@ export default function DashboardTickets() {
           canales={canales}
           empleadosFiltrados={empleadosFiltrados}
           currentUserRole={currentUserRole}
+          currentUserDepartamento={currentUserDepartamento}
         />
 
         {/* TARJETAS KPI */}
@@ -225,24 +232,29 @@ export default function DashboardTickets() {
             />
           </div>
 
-          <div className="ma-card" style={{ padding: 18 }}>
-            <div style={{ marginBottom: 12 }}>
-              <span
-                style={{
-                  fontWeight: "bold",
-                  fontSize: 15,
-                  color: "var(--merco-text)",
-                }}
-              >
-                Volumen de Tickets por Canal
-              </span>
+          {(currentUserRole?.includes("administrador") ||
+            (currentUserRole?.includes("gerente") &&
+              depNormalizado?.includes("atencion al cliente")) ||
+            currentUserRole?.includes("operador")) && (
+            <div className="ma-card" style={{ padding: 18 }}>
+              <div style={{ marginBottom: 12 }}>
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: 15,
+                    color: "var(--merco-text)",
+                  }}
+                >
+                  Volumen de Tickets por Canal
+                </span>
+              </div>
+              <ChartBarCanal
+                data={ticketsPorCanal}
+                isDark={isDark}
+                loading={loading}
+              />
             </div>
-            <ChartBarCanal
-              data={ticketsPorCanal}
-              isDark={isDark}
-              loading={loading}
-            />
-          </div>
+          )}
 
           <div className="ma-card" style={{ padding: 18 }}>
             <div style={{ marginBottom: 12 }}>
@@ -268,7 +280,17 @@ export default function DashboardTickets() {
         </div>
 
         {/* FILA 2: Tickets recientes y gráficos de analistas */}
-        <div className="dashboard-grid-2col" style={{ marginTop: 16 }}>
+        <div
+          /* className={
+            currentUserRole?.includes("administrador") ||
+            currentUserRole?.includes("gerente") ||
+            currentUserRole?.includes("operador")
+              ? "dashboard-grid-2col"
+              : "dashboard-grid-1col"
+          } */
+          className="dashboard-grid-2col"
+          style={{ marginTop: 16 }}
+        >
           <UltimosTicketsTable
             loading={loading}
             ultimosTickets={ultimosTickets}

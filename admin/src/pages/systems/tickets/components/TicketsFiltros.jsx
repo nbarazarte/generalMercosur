@@ -53,6 +53,7 @@ export function TicketsFiltros({
   fAgenteAdmin,
   setFAgenteAdmin,
   currentUserRole,
+  currentUserDepartamento,
 }) {
   const tipoTicketSeleccionadoObj = tiposTicket.find(
     (t) => String(t.id) === String(fTipoTicket),
@@ -61,6 +62,11 @@ export function TicketsFiltros({
   const esExternoSeleccionado = nombreTipoTicket
     .toLowerCase()
     .includes("externo");
+
+  const depNormalizado = currentUserDepartamento
+    ?.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
   return (
     <div
@@ -81,7 +87,10 @@ export function TicketsFiltros({
           alignItems: "center",
         }}
       >
-        {currentUserRole?.includes("operador") && (
+        {(currentUserRole?.includes("administrador") ||
+          (currentUserRole?.includes("gerente") &&
+            depNormalizado?.includes("atencion al cliente")) ||
+          currentUserRole?.includes("operador")) && (
           <select
             value={fTipoTicket}
             onChange={(e) => {
@@ -203,25 +212,29 @@ export function TicketsFiltros({
           ))}
         </select>
 
-        {!esFiltroInterno && currentUserRole?.includes("operador") && (
-          <select
-            value={fCanal}
-            onChange={(e) => {
-              setFCanal(e.target.value);
-              const textoSeleccionado =
-                e.target.options[e.target.selectedIndex].text;
-              setFCanalAdmin(textoSeleccionado);
-            }}
-            style={filtroStyle}
-          >
-            <option value="">Todos los canales</option>
-            {canales.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.str_nombre}
-              </option>
-            ))}
-          </select>
-        )}
+        {(currentUserRole?.includes("administrador") ||
+          (currentUserRole?.includes("gerente") &&
+            depNormalizado?.includes("atencion al cliente")) ||
+          currentUserRole?.includes("operador")) &&
+          !esFiltroInterno && (
+            <select
+              value={fCanal}
+              onChange={(e) => {
+                setFCanal(e.target.value);
+                const textoSeleccionado =
+                  e.target.options[e.target.selectedIndex].text;
+                setFCanalAdmin(textoSeleccionado);
+              }}
+              style={filtroStyle}
+            >
+              <option value="">Todos los canales</option>
+              {canales.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.str_nombre}
+                </option>
+              ))}
+            </select>
+          )}
 
         <div
           style={{
@@ -325,7 +338,14 @@ export function TicketsFiltros({
           />
           <input
             type="text"
-            placeholder="Buscar por N° Ticket, creador, cédula, RIF, nombre o asunto"
+            placeholder={
+              currentUserRole?.includes("administrador") ||
+              currentUserRole?.includes("gerente")
+                ? "Buscar por N° Ticket, creado por, cliente / afectado, asunto"
+                : currentUserRole?.includes("operador")
+                  ? "Buscar por N° Ticket, cliente / afectado, asunto"
+                  : "Buscar por N° Ticket, asunto"
+            }
             value={fBuscar}
             onChange={(e) => {
               setFBuscar(e.target.value);

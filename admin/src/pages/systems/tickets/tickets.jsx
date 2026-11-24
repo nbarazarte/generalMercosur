@@ -84,7 +84,7 @@ export default function Tickets() {
     currentUserId,
     currentUserRole,
     currentUserDepartamento_id,
-
+    currentUserDepartamento,
     fBuscarAdmin,
     setFBuscarAdmin,
     fEstadoAdmin,
@@ -165,6 +165,11 @@ export default function Tickets() {
     setPorPagina(nuevoValor);
     setPaginaActual(1);
   };
+
+  const depNormalizado = currentUserDepartamento
+    ?.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
   return (
     <SystemLayout identificacion="Tickets" opcionMenu="Tickets">
@@ -280,6 +285,7 @@ export default function Tickets() {
           fAgenteAdmin={fAgenteAdmin}
           setFAgenteAdmin={setFAgenteAdmin}
           currentUserRole={currentUserRole}
+          currentUserDepartamento={currentUserDepartamento}
         />
 
         {/* TABLA DE CASOS */}
@@ -298,12 +304,13 @@ export default function Tickets() {
                       <th>CANAL</th>
                     </>
                   )}
-                  <th>CREADO POR</th>
-
+                  {currentUserRole?.includes("administrador") ||
+                    (currentUserRole?.includes("gerente") && (
+                      <th>CREADO POR</th>
+                    ))}
                   {currentUserRole?.includes("operador") && (
                     <th>CLIENTE / AFECTADO</th>
                   )}
-
                   <th>ASUNTO</th>
                   <th>PRIORIDAD</th>
                   <th>DEPARTAMENTO</th>
@@ -409,12 +416,15 @@ export default function Tickets() {
                           </>
                         )}
 
-                        <td>
-                          <b>
-                            {`${t.creador_nombre || ""} ${t.creador_apellido || ""}`.trim() ||
-                              "—"}
-                          </b>
-                        </td>
+                        {currentUserRole?.includes("administrador") ||
+                          (currentUserRole?.includes("gerente") && (
+                            <td>
+                              <b>
+                                {`${t.creador_nombre || ""} ${t.creador_apellido || ""}`.trim() ||
+                                  "—"}
+                              </b>
+                            </td>
+                          ))}
 
                         {currentUserRole?.includes("operador") && (
                           <td>
