@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict IdGfC3kCX3IWrFE2tnePiIFiPrge1LB0zXJp9caPbIZloL8sbF0AZW3mfiheAss
+\restrict XW8ZtZMr0WVUbRR4g1wqpIFYhVD5VAq8o8AmJT2chSo8UwNq04JIDgCjzITKj3P
 
 -- Dumped from database version 17.12 (Ubuntu 17.12-1.pgdg24.04+1)
 -- Dumped by pg_dump version 18.7 (Ubuntu 18.7-1.pgdg24.04+5)
 
--- Started on 2026-11-23 23:37:35 -04
+-- Started on 2026-11-23 23:44:04 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -39041,6 +39041,13 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 1	36608	282742	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:33:00.008977-04	2026-11-23 23:33:00.010383-04
 1	36610	283614	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:35:00.009065-04	2026-11-23 23:35:00.010282-04
 1	36612	284721	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:37:00.010495-04	2026-11-23 23:37:00.011922-04
+1	36613	284992	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:38:00.007978-04	2026-11-23 23:38:00.009138-04
+1	36614	285238	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:39:00.03672-04	2026-11-23 23:39:00.038222-04
+1	36615	285585	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:40:00.008422-04	2026-11-23 23:40:00.009537-04
+1	36616	286184	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:41:00.007466-04	2026-11-23 23:41:00.008596-04
+1	36617	286490	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:42:00.008706-04	2026-11-23 23:42:00.00977-04
+1	36618	286766	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:43:00.009026-04	2026-11-23 23:43:00.010524-04
+1	36619	287116	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:44:00.007999-04	2026-11-23 23:44:00.009237-04
 \.
 
 
@@ -39255,7 +39262,6 @@ COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, s
 678	3	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJtbWlsbGFuIiwiaWF0IjoxNzkzODg5MTkwLCJleHAiOjE3OTM4OTI3OTB9.e_x68cyMOB4EL9BiZ6pS_GOnEYuo9y1ey5LcvQF9xLY	2026-11-04 15:41:17.442524-04	2026-11-05 11:33:10.567039-04	f	92aaa56c-8ce1-4abc-8080-d9cb32e2df1d	Edge en Windows PC
 685	3	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJtbWlsbGFuIiwiaWF0IjoxNzkzODg5MTkwLCJleHAiOjE3OTM4OTI3OTB9.e_x68cyMOB4EL9BiZ6pS_GOnEYuo9y1ey5LcvQF9xLY	2026-11-05 10:33:07.960011-04	2026-11-05 11:33:10.567039-04	f	287f2c7c-fcc2-42ef-aee3-e443351ae567	Chrome en Windows PC
 679	94	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OTQsInVzZXJuYW1lIjoiaXRhcmF6b25hIiwiaWF0IjoxNzkzODIzNzQ4LCJleHAiOjE3OTM4MjczNDh9.3Po1tHtxiJu7OUaL7e_aLDKUJ3n1So-xzAXiujF5Q6I	2026-11-04 15:48:06.882367-04	2026-11-04 17:22:28.363274-04	f	e77750df-4466-4dfe-92d3-06fb2f40db9d	Edge en macOS
-805	1	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImlhdCI6MTc5NTQ5MTQxOCwiZXhwIjoxNzk1NDk1MDE4fQ.L80Vn10YCwxdeXRtRgKx3Jrs7wnzK7Try9IzbZbRsa0	2026-11-23 22:49:57.833943-04	2026-11-24 00:36:58.080503-04	f	0ea4b270-45d4-4c1d-8700-b3f774b3c540	Chrome en Linux PC
 \.
 
 
@@ -39330,57 +39336,57 @@ COPY public.tbl_roles_sistemas_opciones (id, rol_sistema_id, opcion_id) FROM std
 --
 
 COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apellido, str_email, str_password, bol_activo, created_at, updated_at, dmt_fecha_nacimiento, str_direccion, str_usuario, str_telefono, str_contacto_emergencia, fec_ultimo_acceso) FROM stdin;
-62	5	29571871	Albert	Campos	acampos@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:40:29.984515-04	\N	\N	acampos	\N	\N	\N
-102	5	32061634	Cladimar	Zambrano	czambrano@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-11 16:00:09.841711-04	\N	\N	czambrano	\N	\N	2026-11-03 09:47:30.221438
-81	5	29637599	Dayerling	Manrique	dmanrique@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-11-03 09:43:05.809756-04	\N	\N	dmanrique	\N	\N	2026-11-03 09:44:10.034971
-64	5	32560280	Yarbelis	Cervantes	ycervantes@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-09 21:11:34.545712-04	\N	\N	ycervantes	\N	\N	2026-11-03 09:39:38.601499
-78	8	32740636	Dayana Isabel	Ibañez Carracedo	dibañez@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:37:49.925881-04	\N	\N	dibañez	\N	\N	\N
-59	3	13894108	Mario Fernando	Bedoya Ringuinson	mbedoya@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:39:42.294717-04	\N	\N	mbedoya	\N	\N	\N
-60	4	26078018	Genesis Vanessa	Bencomo Briceño	gbencomo@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:39:59.287755-04	\N	\N	gbencomo	\N	\N	\N
-3	1	28099437	Miguel	Millan	mmillan@mercosur.com.ve		t	2026-10-01 13:14:55.835451-04	2026-10-14 13:33:59.501217-04	\N	\N	mmillan	\N	\N	2026-11-05 10:33:07.962011
-70	7	21070944	Elvis Alexis	Duran Kroger	eduran@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:42:34.193966-04	\N	\N	eduran	\N	\N	\N
-89	7	29518389	Andrea Darisbel	Nuñez Marquez	anuñez@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:43:37.666961-04	\N	\N	anuñez	\N	\N	\N
-73	3	82223552	Catherine Angelica	Galvez Jimenez	cgalvez@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:44:05.02792-04	\N	\N	cgalvez	\N	\N	\N
-75	8	32896936	Brenda Noemi	Gonzalez Hurtado	bgonzalez@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:44:34.172761-04	\N	\N	bgonzalez	\N	\N	\N
-76	7	15482814	Enyi Mileidy	Gonzalez Rodriguez	egonzalez@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:44:48.453166-04	\N	\N	egonzalez	\N	\N	\N
-79	6	27796460	Carlos Enrique	Level Duran	clevel@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:45:36.372544-04	\N	\N	clevel	\N	\N	\N
-83	8	15327214	Yuhaney Del Carmen	Marin Santana	hmarin@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:46:41.799327-04	\N	\N	hmarin	\N	\N	\N
-84	7	31082497	Deikerlyn Paola	Mendez Guevara	dmendez@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:47:00.479624-04	\N	\N	dmendez	\N	\N	\N
-90	8	31539979	Mitsel Paola	Palencia Perez	mpalencia@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:47:34.639418-04	\N	\N	mpalencia	\N	\N	\N
-85	3	24896125	Cindy Kisbel	Millan Canache	cmillan@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:48:09.063461-04	\N	\N	cmillan	\N	\N	\N
-86	4	27451524	Neileska Maile	Mora Valera	nmora@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:48:20.583297-04	\N	\N	nmora	\N	\N	\N
-87	9	23681821	Krisbell Andreina	Mujica Sandia	kmujica@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:48:36.408476-04	\N	\N	kmujica	\N	\N	\N
-71	5	32784457	Andrea	Fernandez	afernandez@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-15 14:24:30.693956-04	\N	\N	afernandez	\N	\N	2026-11-09 18:13:11.823998
-91	8	13124921	Jackelin Coromoto	Palma Serrano	jpalma@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:12.000716-04	\N	\N	jpalma	\N	\N	\N
-92	8	16575563	Rosalia	Roa Marquez	rroa@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:23.064406-04	\N	\N	rroa	\N	\N	\N
-95	6	25327464	Samuel Josue	Tapias Ramirez	stapias@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:02.176906-04	\N	\N	stapias	\N	\N	\N
-96	8	6249886	Jose Vicente	Toro Dias	jtoro@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:13.553797-04	\N	\N	jtoro	\N	\N	\N
-98	9	22504244	Cynthia Deysi	Valdospin Yontomo	cvaldospin@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:40.857542-04	\N	\N	cvaldospin	\N	\N	\N
-99	7	27793131	Gabriela Alexandra	Valera Gamboa	gvalera@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:56.289728-04	\N	\N	gvalera	\N	\N	\N
-100	9	32227070	Willianyelis Sarait	Vasquez Villamizar	wvasquez@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:10.842593-04	\N	\N	wvasquez	\N	\N	\N
-101	3	21436685	Zaidi Raida	Zambrano Aranguren	zzambrano@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:27.482944-04	\N	\N	zzambrano	\N	\N	\N
-57	1	30646620	Cesar Augusto	Acosta Guerrero	cacosta@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-14 13:34:33.807087-04	\N	\N	cacosta	\N	\N	2026-11-02 15:08:44.986061
-94	1	17369732	Ivan Enrique	Tarazona Caceres	itarazona@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:50.657557-04	\N	\N	itarazona	\N	\N	2026-11-04 15:48:06.886559
-93	10	17286981	Maria Emperatriz	Salazar	hsalazar@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:38.041131-04	\N	\N	hsalazar	\N	\N	\N
-97	5	32695846	Maria Jose	Urbina	murbina@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:26.650035-04	\N	\N	murbina	\N	\N	\N
-88	5	28441002	Vanessa	Niño	vnino@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-11-03 09:42:38.126719-04	\N	\N	vniño	\N	\N	2026-11-04 13:51:15.83515
-72	5	31269090	Yetsimar	Ferrer	yferrer@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:43:50.827516-04	\N	\N	yferrer	\N	\N	\N
-80	5	27661857	Zulmar	Linares	zlinares@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-15 16:02:53.217239-04	\N	\N	zlinares	\N	\N	2026-10-15 16:04:54.687279
+1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$0N9CZGs3cq1pMUMt/vOa7e0/TdWyd1ziWgs3zMQC4BvC4PykCLoDW	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-11-23 23:43:29.936719
+62	5	29571871	Albert	Campos	acampos@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:40:29.984515-04	\N	\N	acampos	\N	\N	\N
+102	5	32061634	Cladimar	Zambrano	czambrano@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-11 16:00:09.841711-04	\N	\N	czambrano	\N	\N	2026-11-03 09:47:30.221438
+81	5	29637599	Dayerling	Manrique	dmanrique@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-11-03 09:43:05.809756-04	\N	\N	dmanrique	\N	\N	2026-11-03 09:44:10.034971
+64	5	32560280	Yarbelis	Cervantes	ycervantes@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-09 21:11:34.545712-04	\N	\N	ycervantes	\N	\N	2026-11-03 09:39:38.601499
+78	8	32740636	Dayana Isabel	Ibañez Carracedo	dibañez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:37:49.925881-04	\N	\N	dibañez	\N	\N	\N
+59	3	13894108	Mario Fernando	Bedoya Ringuinson	mbedoya@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:39:42.294717-04	\N	\N	mbedoya	\N	\N	\N
+60	4	26078018	Genesis Vanessa	Bencomo Briceño	gbencomo@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:39:59.287755-04	\N	\N	gbencomo	\N	\N	\N
+3	1	28099437	Miguel	Millan	mmillan@mercosur.com.ve	\N	t	2026-10-01 13:14:55.835451-04	2026-10-14 13:33:59.501217-04	\N	\N	mmillan	\N	\N	2026-11-05 10:33:07.962011
+70	7	21070944	Elvis Alexis	Duran Kroger	eduran@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:42:34.193966-04	\N	\N	eduran	\N	\N	\N
+89	7	29518389	Andrea Darisbel	Nuñez Marquez	anuñez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:43:37.666961-04	\N	\N	anuñez	\N	\N	\N
+73	3	82223552	Catherine Angelica	Galvez Jimenez	cgalvez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:44:05.02792-04	\N	\N	cgalvez	\N	\N	\N
+75	8	32896936	Brenda Noemi	Gonzalez Hurtado	bgonzalez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:44:34.172761-04	\N	\N	bgonzalez	\N	\N	\N
+76	7	15482814	Enyi Mileidy	Gonzalez Rodriguez	egonzalez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:44:48.453166-04	\N	\N	egonzalez	\N	\N	\N
+79	6	27796460	Carlos Enrique	Level Duran	clevel@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:45:36.372544-04	\N	\N	clevel	\N	\N	\N
+83	8	15327214	Yuhaney Del Carmen	Marin Santana	hmarin@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:46:41.799327-04	\N	\N	hmarin	\N	\N	\N
+84	7	31082497	Deikerlyn Paola	Mendez Guevara	dmendez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:47:00.479624-04	\N	\N	dmendez	\N	\N	\N
+90	8	31539979	Mitsel Paola	Palencia Perez	mpalencia@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:47:34.639418-04	\N	\N	mpalencia	\N	\N	\N
+85	3	24896125	Cindy Kisbel	Millan Canache	cmillan@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:48:09.063461-04	\N	\N	cmillan	\N	\N	\N
+86	4	27451524	Neileska Maile	Mora Valera	nmora@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:48:20.583297-04	\N	\N	nmora	\N	\N	\N
+87	9	23681821	Krisbell Andreina	Mujica Sandia	kmujica@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:48:36.408476-04	\N	\N	kmujica	\N	\N	\N
+71	5	32784457	Andrea	Fernandez	afernandez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-15 14:24:30.693956-04	\N	\N	afernandez	\N	\N	2026-11-09 18:13:11.823998
+91	8	13124921	Jackelin Coromoto	Palma Serrano	jpalma@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:12.000716-04	\N	\N	jpalma	\N	\N	\N
+92	8	16575563	Rosalia	Roa Marquez	rroa@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:23.064406-04	\N	\N	rroa	\N	\N	\N
+95	6	25327464	Samuel Josue	Tapias Ramirez	stapias@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:02.176906-04	\N	\N	stapias	\N	\N	\N
+96	8	6249886	Jose Vicente	Toro Dias	jtoro@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:13.553797-04	\N	\N	jtoro	\N	\N	\N
+98	9	22504244	Cynthia Deysi	Valdospin Yontomo	cvaldospin@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:40.857542-04	\N	\N	cvaldospin	\N	\N	\N
+99	7	27793131	Gabriela Alexandra	Valera Gamboa	gvalera@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:56.289728-04	\N	\N	gvalera	\N	\N	\N
+100	9	32227070	Willianyelis Sarait	Vasquez Villamizar	wvasquez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:10.842593-04	\N	\N	wvasquez	\N	\N	\N
+101	3	21436685	Zaidi Raida	Zambrano Aranguren	zzambrano@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:51:27.482944-04	\N	\N	zzambrano	\N	\N	\N
+57	1	30646620	Cesar Augusto	Acosta Guerrero	cacosta@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-14 13:34:33.807087-04	\N	\N	cacosta	\N	\N	2026-11-02 15:08:44.986061
+94	1	17369732	Ivan Enrique	Tarazona Caceres	itarazona@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:50.657557-04	\N	\N	itarazona	\N	\N	2026-11-04 15:48:06.886559
+93	10	17286981	Maria Emperatriz	Salazar	hsalazar@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:49:38.041131-04	\N	\N	hsalazar	\N	\N	\N
+97	5	32695846	Maria Jose	Urbina	murbina@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:50:26.650035-04	\N	\N	murbina	\N	\N	\N
+88	5	28441002	Vanessa	Niño	vnino@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-11-03 09:42:38.126719-04	\N	\N	vniño	\N	\N	2026-11-04 13:51:15.83515
+72	5	31269090	Yetsimar	Ferrer	yferrer@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:43:50.827516-04	\N	\N	yferrer	\N	\N	\N
+80	5	27661857	Zulmar	Linares	zlinares@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-15 16:02:53.217239-04	\N	\N	zlinares	\N	\N	2026-10-15 16:04:54.687279
 105	7	V-12345678	Andreina	Calderon	acalderon@mercosur.com.ve	\N	t	2026-11-04 15:56:01.529084-04	2026-11-04 15:56:01.529084-04	\N	\N	acalderon	\N	\N	\N
-58	2	18935045	Felneyry Coromoto	Barreto Bastidas	fbarrteto@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-19 12:52:06.613889-04	\N	\N	fbarrteto	\N	\N	2026-10-19 12:54:49.857255
-2	1	27474427	Yineska	Jaramillo	yjaramillo@mercosur.com.ve		t	2026-10-01 11:51:44.544172-04	2026-10-10 21:15:44.108154-04	\N	\N	yjaramillo	\N	\N	2026-11-19 11:28:55.283057
-106	11	20303001	Carolaine	Noguera	cnoguera@mercosur.com.ve	$2a$10$zukUoUrqnR3Rb46nngQDOuE4oSYybrwBqw5tjXC8llv0v67QLH1NO	t	2026-11-20 09:24:10.013662-04	2026-11-20 11:22:34.648222-04	\N	\N	cnoguera	\N	\N	2026-11-20 11:22:48.959278
-4	1	16379712	Neel Ezequiel	Barazarte Aché	nbarazarte@mercosur.com.ve	$2a$10$0N9CZGs3cq1pMUMt/vOa7e0/TdWyd1ziWgs3zMQC4BvC4PykCLoDW	t	2026-10-01 14:51:25.418478-04	2026-10-09 21:12:50.402422-04	\N	\N	nbarazarte	\N	\N	2026-11-20 11:20:52.928867
-74	5	32227026	Eleany	Gil	egil@mercosur.com.ve	$2a$10$zukUoUrqnR3Rb46nngQDOuE4oSYybrwBqw5tjXC8llv0v67QLH1NO	t	2026-10-01 16:41:00.998101-04	2026-10-15 14:20:44.27114-04	\N	\N	egil	\N	\N	2026-11-23 22:54:33.695084
-61	5	13409801	Helianta	Blanco	hblanco@mercosur.com.ve	$2a$10$zukUoUrqnR3Rb46nngQDOuE4oSYybrwBqw5tjXC8llv0v67QLH1NO	t	2026-10-01 16:41:00.998101-04	2026-10-18 20:13:17.191674-04	\N	\N	hblanco	\N	\N	2026-11-23 22:47:54.419341
-69	6	27653272	Georgia Nazareth	Dominguez Hernandez	gdominguez@mercosur.com.ve	$2a$10$zukUoUrqnR3Rb46nngQDOuE4oSYybrwBqw5tjXC8llv0v67QLH1NO	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:42:20.690565-04	\N	\N	gdominguez	\N	\N	2026-11-23 22:55:26.324157
-65	5	31758735	Moises	Chacon	mchacon@mercosur.com.ve	$2a$10$zukUoUrqnR3Rb46nngQDOuE4oSYybrwBqw5tjXC8llv0v67QLH1NO	t	2026-10-01 16:41:00.998101-04	2026-10-18 16:44:48.041433-04	\N	\N	mchacon	\N	\N	2026-11-23 21:07:37.277751
-67	11	29596432	Daniel Alejandro	De luca Davila	hde@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:41:50.794967-04	\N	\N	hde	\N	\N	\N
-82	11	30330499	Angel Daniel	Marchan Granda	amarchan@mercosur.com.ve		t	2026-10-01 16:41:00.998101-04	2026-10-01 18:46:25.190987-04	\N	\N	amarchan	\N	\N	\N
-1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$0N9CZGs3cq1pMUMt/vOa7e0/TdWyd1ziWgs3zMQC4BvC4PykCLoDW	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-11-23 22:49:57.836385
-63	6	20674807	Luis Enrique	Castillo Marquez	lcastillo@mercosur.com.ve	$2a$10$QYAXL977nger/34c7xTPDuf6z7i/YKaSEvomhXVb.elvOOdADtnXi	t	2026-10-01 16:41:00.998101-04	2026-11-23 19:39:20.680409-04	\N	\N	lcastillo	\N	\N	2026-11-23 22:46:30.713766
-77	2	17962449	Adys Maria	Gonzalez Velasquez	agonzalez@mercosur.com.ve	$2a$10$eIku6zDkK7A1vGlo0LxGau4iJzu6cH02AP.CqBlktAeCvVJk8RYb6	t	2026-10-01 16:41:00.998101-04	2026-11-23 20:41:21.599068-04	\N	\N	agonzalez	\N	\N	2026-11-23 20:41:29.923584
-68	2	30180999	Mariangel Fara	Delgado Salazar	mdelgado@mercosur.com.ve	$2a$10$Fc4tPH39l4xo7pivV4lJk.RSTKddG0.rkeWwpGJNStk0GzC5MkB5O	t	2026-10-01 16:41:00.998101-04	2026-11-23 20:42:13.374346-04	\N	\N	mdelgado	\N	\N	2026-11-23 20:42:52.166569
+58	2	18935045	Felneyry Coromoto	Barreto Bastidas	fbarrteto@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-19 12:52:06.613889-04	\N	\N	fbarrteto	\N	\N	2026-10-19 12:54:49.857255
+2	1	27474427	Yineska	Jaramillo	yjaramillo@mercosur.com.ve	\N	t	2026-10-01 11:51:44.544172-04	2026-10-10 21:15:44.108154-04	\N	\N	yjaramillo	\N	\N	2026-11-19 11:28:55.283057
+106	11	20303001	Carolaine	Noguera	cnoguera@mercosur.com.ve	\N	t	2026-11-20 09:24:10.013662-04	2026-11-20 11:22:34.648222-04	\N	\N	cnoguera	\N	\N	2026-11-20 11:22:48.959278
+4	1	16379712	Neel Ezequiel	Barazarte Aché	nbarazarte@mercosur.com.ve	\N	t	2026-10-01 14:51:25.418478-04	2026-10-09 21:12:50.402422-04	\N	\N	nbarazarte	\N	\N	2026-11-20 11:20:52.928867
+74	5	32227026	Eleany	Gil	egil@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-15 14:20:44.27114-04	\N	\N	egil	\N	\N	2026-11-23 22:54:33.695084
+61	5	13409801	Helianta	Blanco	hblanco@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-18 20:13:17.191674-04	\N	\N	hblanco	\N	\N	2026-11-23 22:47:54.419341
+69	6	27653272	Georgia Nazareth	Dominguez Hernandez	gdominguez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:42:20.690565-04	\N	\N	gdominguez	\N	\N	2026-11-23 22:55:26.324157
+65	5	31758735	Moises	Chacon	mchacon@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-18 16:44:48.041433-04	\N	\N	mchacon	\N	\N	2026-11-23 21:07:37.277751
+67	11	29596432	Daniel Alejandro	De luca Davila	hde@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:41:50.794967-04	\N	\N	hde	\N	\N	\N
+82	11	30330499	Angel Daniel	Marchan Granda	amarchan@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:46:25.190987-04	\N	\N	amarchan	\N	\N	\N
+63	6	20674807	Luis Enrique	Castillo Marquez	lcastillo@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-11-23 19:39:20.680409-04	\N	\N	lcastillo	\N	\N	2026-11-23 22:46:30.713766
+77	2	17962449	Adys Maria	Gonzalez Velasquez	agonzalez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-11-23 20:41:21.599068-04	\N	\N	agonzalez	\N	\N	2026-11-23 20:41:29.923584
+68	2	30180999	Mariangel Fara	Delgado Salazar	mdelgado@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-11-23 20:42:13.374346-04	\N	\N	mdelgado	\N	\N	2026-11-23 20:42:52.166569
 \.
 
 
@@ -39689,19 +39695,6 @@ COPY tickets.cat_sla_configuracion (id, prioridad_id, tiempo_maximo, activo) FRO
 --
 
 COPY tickets.tbl_alertas (id, caso_id, usuario_id, str_tipo_alerta, str_mensaje, bol_leido, fecha_generacion, fecha_lectura) FROM stdin;
-1	1	105	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-001] Prueba 1	f	2026-11-23 09:39:36.807151-04	\N
-2	2	4	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-002] Prueba2	f	2026-11-23 09:45:33.366803-04	\N
-3	3	74	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-003] Prueba 3	f	2026-11-23 09:46:47.328043-04	\N
-4	4	82	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-004] Prueba 4	f	2026-11-23 10:02:54.221793-04	\N
-5	5	87	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-005] Prueba 5	f	2026-11-23 10:03:44.518233-04	\N
-6	6	4	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-006] Prueba 6	f	2026-11-23 10:05:50.470451-04	\N
-7	7	4	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-007] prueba 6	f	2026-11-23 10:12:41.210502-04	\N
-8	8	74	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-008] prueba 7	f	2026-11-23 10:13:52.923584-04	\N
-9	9	73	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-009] Prueba 8	f	2026-11-23 10:14:59.235508-04	\N
-10	10	4	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-010] prueba 10	f	2026-11-23 10:17:08.900624-04	\N
-11	11	106	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-011] prueba 10	f	2026-11-23 12:40:10.165426-04	\N
-12	12	4	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-012] test	f	2026-11-23 20:43:33.654258-04	\N
-13	13	65	ASIGNACION	Se te ha asignado el ticket: [MEPTK-20261123-013] test2	f	2026-11-23 21:08:24.275695-04	\N
 \.
 
 
@@ -41027,7 +41020,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 384	v10184918	nayroby del carmen	cordero	+584127583299	grandota2234@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 385	v10186028	jose leandro	casanova hernandez	+584241405214	josecasanova1969@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 386	v10186041	argenis jose	villamizar blanco	04263186821	arjoviblan@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-387	v10186426	ruvi harley	graterol saya	+584129397807	harleyruvi@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 388	v10186987	isabel carolina	sanchez	04241720077	isacarsan2017@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 389	v10187347	liliana josefina	rodriguez millan	04241624500	lilianarodriguez.180372@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 390	v10187696	jose manuel	gayo  de la fuente	04142483603	josegayo3603@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -43567,7 +43559,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 2915	v11674611	liliana	vizcaya moreno	04122880268	artemorenoca@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 2916	v11675030	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 2917	v11675180	eninger jose	ascanio leal	04125993046	ascanioeni@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-2918	v11675581	amelys  del carmen	garcia  hidalgo	04148127677	amelysg20@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 2919	v11675717	katiuska nathaly	rivero reyes	04241813139	wuildaniu@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 2920	v11675737	eulogio ramon	rodriguez fagundez	04241046343	graphycs0@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 2921	v11676606	samuel gregorio	duarte sanchez	04242574428	smldrt@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -44242,7 +44233,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 3589	v11994935	nestor  antonio	ram rez  medoris	04122207941	nesramirezolga@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 3590	v11996987	jessika de jesus	martinez barrios	04161146877	jessikasucre72@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 3591	v11997310	ana eufemia	valerio valdez	04249743941	anavalerio236@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-3592	v11997518	joaquin federico	eckstein  abdala	04124286921	jfeckstein27@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 3593	v11998042	juan carlos	pino bermudez	04120859501	juancarlos.pb73@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 3594	v11998447	odesa josefina	blanco viamonte	04121944213	odesablanco@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 3595	v11998525	rolando jose	matson ruiz	+584148691702	matsonrolando@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -44733,7 +44723,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 4076	v12174754	samuel antonio	farias alfonzo	04123990025	andresgarcias010@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4077	v12178067	herant antonio	fuentes hernandez	04246049827	herant.fuentesw1@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4078	v12180256	nelson alexander	fonseca sosa	04127154972	gabynel032@gmail.com	["gestion", "v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-4079	v12180539	juan vicente	egurrola ollarves	+584161689726	jvegurrolaollarves@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4080	v12181152	marlen carolina	tua ollarves	+584120739764	carolinatua@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4081	v12181851	ver nica andrelina	quero de l pez	04146579659	vandrelina30@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4082	v12182052	julio  cesar	jimenez  camacho	04260628652	julio1010_3@hotmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -45203,7 +45192,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 4545	v12390314	ernesto hylcar	perez	+584143169790	multiserviciosesenciales21@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4546	v12390765	luis ernesto	garcia bastidas	04126025902	occyluis@hotmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4547	v12391211	jose  luis	figuera sojo	04129164732	roxjosroxjlfs@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-4548	v12391452	luis ramon	betancourt lopez	+584241922007	luourt@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4549	v12391655	jean carlos	barrera barrera	04126319595	jeancbarrera@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4550	v12391799	leonardo antonio	chacon ramirez	+584122114663	serviciosvdm@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4551	v12391814	david antonio	parra mendoza	04242127823	davidparram76@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -47203,7 +47191,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 6543	v13272419	sonia josefina	bolivar paez	04129379546	sbolivar.105@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6544	v13272525	adriana eloyza	gonzalez pacheco	04124654185	aegp.miel@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6545	v13272987	korelys helena	calderon rodriguez	04263347506	calderonk477@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-6546	v13273085	luis asdrubal	mayz luna	+584122807831	mayzluis05@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6547	v13273931	larry jose	martinez  andarcia	04143956874	larryjoselj01@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6548	v13274649	jesus  rafael	martinez marcano	04249661709	jesusrmartinezm@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6549	v13274658	dakar jose	bravo alfonzo	04125441480	dbravo.ducolsa@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -47407,7 +47394,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 6746	v13368040	jose alfredo	larez herrera	+584145066677	lareza547@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6747	v13368132	ronny javier	ayala rodriguez	04248786242	ronnyjayalar@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6748	v13368581	melvin  alfredo	algara rios	04248551155	melvin.andrea27@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-6749	v13369288	yamile del carmen	landaeta de moreno	04121183747	landaetayamile9@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6750	v13369501	carleny carolina	ramirez aragort	04248831781	ccra1979@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6751	v13370499	victor manuel	cantillo pino	\N	victormcantillo22@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6752	v13370591	javier jose	morales mancilla	04168674992	javierjmoralesm@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -48376,7 +48362,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 7712	v1373530	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 7713	v13735876	leonardo rafael	estrada sanchez	04149373137	leonardo5942@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 7714	v13736362	douglas  ricardo	casta eda garcia	04144001006	dcgven@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-7715	v13736614	achille	marino	+584141612222	ventuto@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 7716	v13736841	miguel angel	de freitas vieira	04141281923	mafv33@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 7717	v13737198	mariangela de la pastora	gutierrez peña	04123750944	mpastoragutierrez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 7718	v13737320	richard moises	virhuez torres	04141130544	cpto.virhuez13@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -49050,7 +49035,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 8386	v13996689	ana  elisa	castellano molina	04128226779	castellanoanae@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8387	v13996811	gilber antonio	barreto gonzalez	04247132913	gilberbarreto2014@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8388	v13997118	joan jose	moreno	04120651230	joanjm007@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-8389	v13997256	franklin  jose	graterol  estanislao	04121377024	dylandamiangraterol@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8390	v13997889	tomas jose	torres  osorio	04160630785	tomastorresosorio1979@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8391	v13999296	sandra  yamile	acevedo  velazco	04167045869	acevsandra79@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8392	v13999947	juan  carlos	moreno vera	04260625951	jucamove29@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -51421,7 +51405,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 10756	v14952738	dayreth	delgado  bastidas	04125421223	dayrethdelgado819@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 10757	v14952749	jose gregorio	pinto cedeño	04120432140	josegregoriopintocedeno@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 10758	v14953025	adriana gabriela	quintero esquivel	04142873272	adrianita2104@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-10759	v14953214	lisally del valle	briceño bracho	+584125884496	lisdelly18@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 10760	v14953523	myrsi	sosa urbina	04129243597	sosamyrsi@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 10761	v14953547	yanelit estefania	castro borges	04263982679	yanelitcastro09@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 10762	v14953721	alexis alfonzo	chirinos moros	04142484974	alexischirinos80@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -51793,7 +51776,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 11128	v15105435	orlando  miguel	pernalete  luquez	04163356152	miguelluquez42@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 11129	v15105454	vielsi carolina	arias peraza	04124171230	vielsiariasp@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 11130	v15106115	jose maria	correia germany	04127000258	24gercor80@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-11131	v15106260	lesther pascual	diaz alsina	+584242729749	lpda1982@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 11132	v15106304	yeisy rosario	guerra padovani	04161934280	yeisyrosario@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 11133	v15106479	edisson moises	galindo	04125815872	eg.inversion@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 11134	v15106586	jose julian	larez rojas	04122754822	jose.j.larez.r@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -53981,7 +53963,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 13317	v16022756	valeska coromoto	luna bastidas	04242445241	valeska.luna@hotmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13318	v16022858	jonathan enrique	palenzuela arellano	04125858935	jonathanpalenzuela8@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13319	v16023138	andony  yoranny	gomez  paez	04123077941	agomez_2903@hotmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-13320	v1602317	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13321	v16023196	adolfo	barrios  solorzano	04162085284	adolfogestionambiental@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13322	v16023357	yeny  andreina	morales  andrade	04242765529	yennymorales357@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13323	v16023390	gustavo jose	salcedo salazar	04242994112	gustavojosesalcedo43@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -56195,7 +56176,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 15530	v16895077	gerardo jose	carrillo guevara	04241018064	dinerogjcarrillo@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 15531	v16895199	harriso alberto	vasquez  albujas	04244951635	suministrosharki@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 15532	v16895455	carla maria	cumare prieto	04244261770	carlamcumarep@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-15533	v16896087	marcel jose	milano ojeda	+584121983811	mm6463791@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 15534	v16896107	laura senobia	silva flores	04124071328	lauritaagatha@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 15535	v16896110	maikel ramon	nieves guerra	04127487203	maikeln60@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 15536	v16896270	alejandro jose	gonzález martínez	+584246654538	alejandrojangel@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -56295,7 +56275,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 15630	v16931867	carlos eduardo	rodriguez	04223500061	carloseduardorodriguezv@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 15631	v16932073	carlos hilario	velasquez gonzalez	04120925604	karluchon@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 15632	v16932342	jose antonio	hernandez	04149805635	josehz2030@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-15633	v16932812	jose antonio	guilarte velasquez	04123548812	joseguilarte24@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 15634	v16933507	vilmer arison	rodriguez oviedo	04129484803	vilmerrodriguez324@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 15635	v16934046	leidy karina	gutierrez sanchez	04262216316	kariamny009@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 15636	v16934913	wuilmer  jose	rangel  parra	04129846232	josberjose2009@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -58144,7 +58123,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 17479	v17636373	osmary del carmen	blanco arbelaez	04246117155	marketingbyos13@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 17480	v17636567	osman enrique	rodriguez salazar	04248263327	oerod25@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 17481	v17637126	an bal  enrique	colmenarez  roa	04245997969	dr.anibalcolmenarez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-17482	v17637873	gonzalo  jesus	hernandez  gallones	04123486577	todobien091@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 17483	v17638059	mario johan	briceno mendoza	04245973136	mariojohan16@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 17484	v17638088	raquel maria	guedez de espinoza	+584162186835	racesh84@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 17485	v17638358	maria belisa	moreno perez	04248611929	mariabmoreno1511@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -67944,7 +67922,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 27281	v22354930	darwin johao	pereira	04242932070	dextromania26@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 27282	v22355043	jesus  javier	angulo  rivera	04124955433	j4350646@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 27283	v22355374	dairiline del valle	alcantara herrera	04129328171	dairilinealcantara.01@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-27284	v22356393	carlos eduardo	pantaleon pabon	+51982651859	kameroonp@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 27285	v22356617	brigitte betsabe	cisneros meza	04164297731	brigitte303@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 27286	v22356878	arianyer jose	lopez vera	04242391294	tacticaljoseobd@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 27287	v22357130	yonaiker jose	peralta  mora	04262699059	contactingperalta@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -69323,7 +69300,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 28660	v23701758	costanza carolina	lopez bastardo	04248239413	costanzalopez01@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 28661	v23705341	carmen  cirila	martinez infante	04269513554	carmencmartinezi@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 28662	v23705371	jesus maria	gonzalez rojas	04165772911	jmjeesus_001@hotmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-28663	v23705489	maria gabriela	hernandez salcedo	+584160175263	margahersal@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 28664	v23706722	jefferson ruben	hernandez  villareal	04245668977	jhv2322@outlook.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 28665	v23707172	julmar enrique	moron  vasquez	02128709772	moronenrique1@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 28666	v23707184	carlos adolfo	barrera castillo	04142070489	kira234carlos@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -70526,7 +70502,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 29863	v24523558	gabriel alexander	gonzalez cano	04126051325	gabrielgonzalez24523@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29864	v24523570	yaniska yonibeth	ramírez rangel	+584143389760	yaniskaramirez@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29865	v24523698	nilroeg jose	pantaleon lira	04242938546	nilroeg18@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-29866	v24523702	desiree carolina	ramirez  gomez	04242806948	contadorpublico.desiramirez@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29867	v24523858	jhoyver  isaac	lovera  heredia	04129775528	isaaclovera2015@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29868	v24524022	jesus antonio	ortiz villegas	04242861066	anto.ortiz1913@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29869	v24524439	laudy del valle	castro magallanes	+584243078284	laudycastro1@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -73208,7 +73183,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 32545	v25955630	anthony eduardo	mora barrueta	04126737006	anthonyemb24@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 32546	v25955974	duvan alfredo	benavides mendoza	04125861597	duvanbenavides199817@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 32547	v25955986	albany del valle	rangel edemburgo	04244053212	rangeledemburgo@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-32548	v25956641	juan  leon	gallardo  gutierrez	04126917370	juan.gallardo249@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 32549	v25956856	jonathan francisco	velasquez hernandez	+584245847937	jonathanhvelasquez@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 32550	v25957148	jose daniel	vasquez saez	04241816794	josevasquez28d@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 32551	v25957268	dioseiris	fontalvo leon	04125477292	wdioseiris@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -76494,7 +76468,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 35831	v27349982	leonardo jesus	lopez figueroa	04120495074	leonardo.lopez.figueroa@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 35832	v27350510	anyerson jose	castellanos silva	04121481324	anyersonjcs@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 35833	v27351390	jesus rafael de nazaret	russian longar	+584221465545	russianjesus29@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-35834	v27352233	gustavo alejandro	ramos rios	+584126565166	tavoalejandroramos@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 35835	v27352651	raul  enrique	padilla cayone	04123184685	raulpadilla.prevaler@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 35836	v27352657	andres alejandro	franquiz rivas	04248691888	afranquiz19@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 35837	v27352918	rashid mahmuod	sleiman ismail	04126010015	rashidsi654@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -78915,7 +78888,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 38251	v28322168	osmel mariano	rosales gonzalez	+584125785727	osmer.mariano@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38252	v28323725	naryulis daniela	bandres sosa	04126276882	naryulisbandres@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38253	v28323788	rony alejandro	monroy correa	04227740461	monroyr1614@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-38254	v28323808	gabriel  del valle	garcia alvarez	04123743471	gabogarcia200114@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38255	v28324412	karol dahiana	prada brice o	04142594515	dahianapb310@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38256	v28324525	andres  leonardo	perez  da silva	04143231579	andresperez0401@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38257	v28324746	henser	ospino  gutierrez	04128028995	henserospino@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -81878,7 +81850,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 41217	v30210063	angel eduardo	mujica marcano	+584126075792	marcanoaem@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 41218	v30210770	victor alejandro	miranda acevedo	04144173250	peterpunkvict.vama@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 41219	v30211123	sebastian  jesus	bordonez  silva	04243570559	sebastianbordonez@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-41220	v30211189	amyelim michell	villegas nieves	+584128655890	amyelimvillegas96@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 41221	v30211541	esteban  jesus	lobo  vargas	04122532290	loboesteban62@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 41222	v30211763	yoiberth andres	milano juarez	04120230345	yoiberthmil22@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 41223	v30212340	kevin alejandro	patiño idrogo	04129446453	patinok69@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -82750,7 +82721,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 42091	v3052613	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42092	v30526196	\N	\N	04246135476	ricardojoserojasb@gmail.com	["portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42093	v30526562	angel david	gotopo oduber	+56976608165	davioduber2004@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-42094	v30526626	carlos javier	velasquez abreu	+584129218115	javierabrev205@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42095	v30526700	moises  david	gonzalez  bello	04126472123	bellomdgb17@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42096	v30526760	yelfrank jesus	medina ruiz	+584121759905	medinayelfrank@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42097	v30526926	jose angel	sánchez ramírez	\N	angelox.1000.80@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -83105,7 +83075,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 42446	v30651120	rebeca nohemi	chacon marquez	04247670661	rebecacmarquez20@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42447	v30651150	david  armando	rojas calles	04140772067	rojascalledd@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42448	v30651603	frehiklerson efrey	mora mendez	04242926195	mendezgod94@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-42449	v30651717	shairain atanai	perez ramirez	+584144057802	shairainiphone13pm@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42450	v30652370	christopher adrian	porras lubo	04123091113	thaislubo22@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42451	v30652956	dharma alexandra	pena jimenez	04120759005	dharmaalex0481@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42452	v30653032	jose gregorio	ramirez martinez	04225556129	gregorioelprofeduran0130@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -84030,7 +83999,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 43371	v31025528	anmary sijan	arias leon	04241263591	sijanarias@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 43372	v31025538	kenderly zamed	barrios peña	04121621154	kenderly550@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 43373	v31025601	javier eduardo	seijas rivero	04122055119	javierseijas07@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-43374	v31026050	ricardo jose	guevara castillo	+584248228227	guevaracj8@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 43375	v31026449	cesar  eduardo	serrano arevalo	04269144959	cs814581@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 43376	v31026529	daniela carolina	urbina  infante	04262152345	cu817777@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 43377	v31028009	genesis paola	peña pereira	04129027397	gene05092005@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -86023,7 +85991,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 45363	v32074652	darwin  miller	quiroz  garcia	04122166331	quirozdarwin578@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 45364	v32074774	jatniel jose	araque molina	04129872088	araquejatniel0@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 45365	v32075411	royen david	alcala tovar	04220480566	royenalcala14.32@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-45366	v32075776	karla nazareth	tovar morillo	+584121737724	tovarkarla813@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 45367	v3207630	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 45368	v32076555	beilimar estefania	vergara rivera	04121320349	beilimarvergara4@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 45369	v32076602	juan josé	colmenarez daza	+584125457662	juanjosecd18@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -93211,6 +93178,104 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 52571	v9999689	eusebio	desousa de vasconcelos	04129753299	sephoraestilos@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 52572	v9999997	mireya del valle	rada cedeno	04248251315	mireyarada.mgta@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 24142	v20299553	ildemar  joseline	poveda medina	04242708087	ildemarjpm@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 21:08:24.275695
+52573	v10121750	josefa maria	angulo gil	+584128292042	alsuje11@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52574	v10341068	jose rafael	jimenez colmenares	04221200016	col54jj@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52575	v11119899	pedro jose	leon blanco	04243716981	peleon7586@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52576	v11191619	jose dionisio	villarroel arroyo	04123053064	jvillarroel8888@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52577	v11306215	edson guillermo	joves martinez	04143343717	edsonjoves@yahoo.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52578	v11359927	jose alexander	pirela ledezma	+584244347584	pirelazos@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52579	v11368294	henry jose	rodriguez delgado	04127347867	henrod3071@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52580	v11682538	ana carolina	bianchi cotua	04249094539	anacabian@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52581	v11978032	osdilmar belen	mendez luzon	04243672032	triptoriches@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52582	v12056554	nelson	ochoa borges	04241434824	nochoa.sumex.vic@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52583	v12152502	yrima josefina	morgado gallardo	+584242199555	yrimamorgadog@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52584	v12561461	miguel angel	villasana blanco	04123622236	mglvillasana@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52585	v12650877	ricci marielis	rodriguez perez	04148849004	riccimrodriguez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52586	v12772192	narven eliana	alvarez garces	04244224362	narvenalvarez22@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52587	v12914721	bellaliz trinidad	rattia olivares	+584224772464	bellaliz.rattia@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52588	v12983796	ankel saul	aponte pirela	04143995566	ankelaponte@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52589	v13678926	pablo jose	alvarado escalona	+584125081025	alvarapa.7@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52590	v13691259	gilma norelkis	hernandez silva	+584125953679	gilma.hernandez.consultora@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52591	v14061297	williams jose	urdaneta quintero	+584122580195	urdanetaq.williamsjose@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52592	v14446918	jean carlos	rangel sanchez	+584241785550	jcrangels@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52593	v14483523	marcos alberto	jara galvis	+584146388238	m.jara.g10@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52594	v14640857	edgar alexander	zamora rosal	04248231528	edzamora80@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52595	v14775941	nancy guillermina rubith	vasquez becerra	04242672992	nancyvasquezbecerra@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52596	v15349343	randy antonio	barazarte barazarte	04145722205	randybarazarte@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52597	v15437330	jesus yadhir	parra ortiz	04241704323	cryptojesus3203@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52598	v15682357	jose luis	castillo	+584243297263	joseluiscastillo278@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52599	v16263192	esther maria	hernandez	04147077229	mthely@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52600	v16613195	johann jose	avila bravo	+584148630702	avila.johann5@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52601	v16648983	ronald leonardo	gonzalez vallez	04249219083	ronaldgonzz85@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52602	v16665033	robert jose	mejias laderas	04248899475	rmejias1984@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52603	v17366084	victor jose	arteaga pildain	+584145890932	arteagavictor46@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52604	v20497355	robert jose	perez ochoa	+584124764530	robertperez586@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52605	v20604967	luisa yudeini	rebolledo martinez	04164247026	rebolledowisa@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52606	v21032643	luis miguel	hernandez colon	+584128660605	luismiguelhernandezcolon@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52607	v21374717	marlen saray	diaz romero	04128025107	diaz.marlen270@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52608	v24753625	anthony enrique	jimenez boada	04248030907	boadaanthony796@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52609	v25024314	jonathan alfonso	delgado jimenez	04247254318	chiquiglam.2024@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52610	v25268616	sandra estefania	morales cano	04121097963	sestefaniamc0811@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52611	v25697308	daniela magdalena	mayora mujica	04145462898	geymaryora@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52612	v25846825	luis daniel	mosquera pinzon	04241444515	mosqueraluisdaniel@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52613	v26482768	isaias jose	contreras manzanilla	+584165853210	isaiascontreras60@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52614	v27916282	vanessa elizabeth	gobeo pacheco	04242343145	vanessagobeo@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52615	v28136085	maria paola	albornoz rosal	+584241558410	paolaalbornozdegobeo@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52616	v28276333	ruben ascanio	leal caceres	573103343917	ruben22ascanio@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52617	v29765961	oriana gabriela	cerrada arias	+584226150875	oriana0710cerrada@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52618	v29831324	elian jesus	torrealba flores	+584225502051	torrelbaelian@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52619	v29887702	omarlys alexandra	urbina blanco	04127185343	blancooma248@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52620	v29985691	marco antonio	roldan guerra	04122889750	marcoantonioroldan57@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52621	v30043087	angello isaac	padron velasquez	04143703905	angellopadron2001@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52622	v30577849	jhonny jesus	linares serrano	04122447203	jhonnylinares091@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52623	v31142934	daniel alejandro	rouffet carrillo	04143500825	danielrouffet@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52624	v31460372	yuretzidel del valle	larez cadamo	+584126444088	yuretzicadamo25@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52625	v31460449	ivanna cristina	guerra piñate	+584124421049	ivannaguerrap@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52626	v31699200	juan jose	guaramato hernandez	04125652994	juanguaramato7@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52627	v31747737	moises rafael	morillo pinto	+584127925774	morimoises06@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52628	v31784490	samuel jesus	mendoza fermin	+584126027834	samuelmf0909@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52629	v32235508	daniel alejandro	chirinos silva	04264199331	danielchirinos177@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52630	v32299828	aleyberson jesus	canelon hernandez	04143655439	aleyberson1@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52631	v32549772	juan gilberto	cesar rodriguez	+584245618223	jpjuanrodriguez9@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52632	v32626919	thomas enrique	sanchez marcano	04248819701	sanchezthomasenrique@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52633	v32872005	ricardo antonio	negron de fries	04242021647	ricardoanegrond@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52634	v3899810	victor miguel	perez gainza	+584148693794	vimipega@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52635	v6239273	carlos omar	colmenares colmenares	+584227004654	omarcolmenares6219@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52636	v6267038	argenis antonio	leon guerra	+584141166898	argenisprimero1@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52637	v6347894	kalil	kalil abdel	+584127414424	kalilkalil1966@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52638	v6824173	hebe carolina	apitz sardi	+584242130440	evecarmin@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52639	v6868045	olivier rafael	schael gomez	+584142710365	olivierschael@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52640	v7894866	ricardo alfonso	cardenas villalobos	+584124737794	alfonsovillalobos49@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52641	v8712148	angela custodia	velazquez martinez	+584120616672	angelavelazquez65@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52642	v8826748	roberto rene	guillen rodriguez	+584144517801	eljuanki2008@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52643	v9279291	marina del valle	morales mayz	04248210450	marina.morales.mayz@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52644	v9656053	juan sebastian	arias gonzalez	+584121898011	juansarias2929@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+387	v10186426	ruvi harley	graterol saya	04129397807	harleyruvi@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+2918	v11675581	amelys  del carmen	garcia  hidalgo	04148127677	amelysg20@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+3592	v11997518	joaquin federico	eckstein  abdala	04247377771	jfeckstein27@gmail.com	["gestion", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+4079	v12180539	juan vicente	egurrola ollarves	04161689726	jvegurrolaollarves@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+4548	v12391452	luis ramon	betancourt lopez	04241922007	luourt@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+6546	v13273085	luis asdrubal	mayz luna	04122807831	mayzluis05@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+6749	v13369288	yamile del carmen	landaeta de moreno	04121183747	landaetayamile9@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+7715	v13736614	achille	marino	04141612222	ventuto@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+8389	v13997256	franklin  jose	graterol  estanislao	4125021705	dylandamiangraterol@gmail.com	["gestion", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+10759	v14953214	lisally del valle	briceño bracho	04125884496	lisdelly18@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+11131	v15106260	lesther pascual	diaz alsina	04242729749	lpda1982@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+13320	v1602317	carmen eden	rivas de yepez	04220378080	rivasdeyepezcarmeneden@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+15533	v16896087	marcel jose	milano ojeda	04121983811	mm6463791@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+15633	v16932812	jose antonio	guilarte velasquez	04123548812	joseguilarte24@gmail.com	["gestion", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+17482	v17637873	gonzalo  jesus	hernandez  gallones	04123486577	todobien091@gmail.com	["gestion", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+27284	v22356393	carlos eduardo	pantaleon pabon	51982651859	kameroonp@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+28663	v23705489	maria gabriela	hernandez salcedo	04160175263	margahersal@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+29866	v24523702	desiree carolina	ramirez  gomez	04242806948	contadorpublico.desiramirez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+32548	v25956641	juan  leon	gallardo  gutierrez	04126917370	juan.gallardo249@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+35834	v27352233	gustavo alejandro	ramos rios	04126565166	tavoalejandroramos@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+38254	v28323808	gabriel  del valle	garcia alvarez	04241291785	gabogarcia200114@gmail.com	["gestion", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+41220	v30211189	amyelim michell	villegas nieves	04128655890	amyelimvillegas96@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+42094	v30526626	carlos javier	velasquez abreu	04129218115	javierabrev205@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+42449	v30651717	shairain atanai	perez ramirez	04144057802	shairainiphone13pm@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+43374	v31026050	ricardo jose	guevara castillo	04248228227	guevaracj8@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+45366	v32075776	karla nazareth	tovar morillo	04121737724	tovarkarla813@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
 \.
 
 
@@ -93221,7 +93286,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 --
 
 COPY tickets.tbl_secuencias_tickets (int_anio, int_mes, int_dia, int_ultimo_secuencial) FROM stdin;
-2026	11	23	13
 \.
 
 
@@ -93232,19 +93296,6 @@ COPY tickets.tbl_secuencias_tickets (int_anio, int_mes, int_dia, int_ultimo_secu
 --
 
 COPY tickets.tbl_tickets (id, str_ticket, cliente_id, creador_agente_id, cierre_agente_id, departamento_id, categoria_id, prioridad_id, estatus_id, canal_id, str_asunto, str_descripcion, int_sla, dmt_fecha_cierre, created_at, updated_at, str_ruta_imagen, str_ruta_video, str_ruta_audio, usuario_asignado_id, tipo_ticket_id, dmt_fecha_vencimiento_sla, bool_cumplio_sla, int_minutos_pausa, dmt_fecha_inicio_pausa, cliente_juridico_id, tiempo_resolucion) FROM stdin;
-2	MEPTK-20261123-002	\N	74	\N	1	28	14	17	\N	Prueba2	<p>Prueba</p>	72	\N	2026-11-23 09:45:33.366803-04	2026-11-23 09:45:33.366803-04	\N	\N	\N	4	24	2026-11-26 09:45:33.367-04	\N	0	\N	\N	
-3	MEPTK-20261123-003	24142	74	74	5	10	14	22	3	Prueba 3	<p>Prueba</p>	72	2026-11-23 09:46:47.329-04	2026-11-23 09:46:47.328043-04	2026-11-23 09:46:47.328043-04	\N	\N	\N	74	25	2026-11-26 09:46:47.329-04	\N	0	\N	\N	0m
-4	MEPTK-20261123-004	\N	69	\N	11	49	14	17	\N	Prueba 4	<p>￼</p>	72	\N	2026-11-23 10:02:54.221793-04	2026-11-23 10:02:54.221793-04	\N	\N	\N	82	24	2026-11-26 10:02:54.222-04	\N	0	\N	\N	
-5	MEPTK-20261123-005	\N	69	\N	9	49	15	17	\N	Prueba 5	<p>Prueba 5</p>	24	\N	2026-11-23 10:03:44.518233-04	2026-11-23 10:03:44.518233-04	\N	\N	\N	87	24	2026-11-24 10:03:44.519-04	\N	0	\N	\N	
-6	MEPTK-20261123-006	\N	74	\N	1	34	14	17	\N	Prueba 6	<p>Prueba 6</p>	72	\N	2026-11-23 10:05:50.470451-04	2026-11-23 10:05:50.470451-04	\N	\N	\N	4	24	2026-11-26 10:05:50.47-04	\N	0	\N	\N	
-7	MEPTK-20261123-007	\N	74	74	1	35	14	22	\N	prueba 6	<p>prueba 6</p>	72	2026-11-23 10:12:41.211-04	2026-11-23 10:12:41.210502-04	2026-11-23 10:12:41.210502-04	\N	\N	\N	4	24	2026-11-26 10:12:41.211-04	\N	0	\N	\N	0m
-8	MEPTK-20261123-008	24142	74	74	5	48	39	22	3	prueba 7	<p>prueba 7</p>	2	2026-11-23 10:13:52.925-04	2026-11-23 10:13:52.923584-04	2026-11-23 10:13:52.923584-04	\N	\N	\N	74	25	2026-11-23 12:13:52.925-04	\N	0	\N	\N	0m
-9	MEPTK-20261123-009	\N	69	\N	3	49	14	17	\N	Prueba 8	<p>prueba 8</p>	72	\N	2026-11-23 10:14:59.235508-04	2026-11-23 10:14:59.235508-04	\N	\N	\N	73	24	2026-11-26 10:14:59.236-04	\N	0	\N	\N	
-10	MEPTK-20261123-010	\N	69	\N	1	49	15	17	\N	prueba 10	<p>Prueba 10</p>	24	\N	2026-11-23 10:17:08.900624-04	2026-11-23 10:17:08.900624-04	\N	\N	\N	4	24	2026-11-24 10:17:08.901-04	\N	0	\N	\N	
-1	MEPTK-20261123-001	\N	69	\N	7	27	39	37	\N	Prueba 1	<p>Es una prueba</p>	2	\N	2026-11-23 09:39:36.807151-04	2026-11-23 11:40:00.009349-04	\N	\N	\N	105	24	2026-11-23 11:39:36.809-04	\N	0	\N	\N	
-11	MEPTK-20261123-011	\N	69	\N	11	49	14	17	\N	prueba 10	<p>prueba 10</p>	72	\N	2026-11-23 12:40:10.165426-04	2026-11-23 12:40:10.165426-04	\N	\N	\N	106	24	2026-11-26 12:40:10.166-04	\N	0	\N	\N	
-12	MEPTK-20261123-012	\N	68	\N	1	49	14	17	\N	test	<p>test</p>	72	\N	2026-11-23 20:43:33.654258-04	2026-11-23 20:43:33.654258-04	\N	\N	\N	4	24	2026-11-26 20:43:33.655-04	\N	0	\N	\N	
-13	MEPTK-20261123-013	24142	65	65	5	48	14	22	2	test2	<p>test2</p>	72	2026-11-23 21:08:24.277-04	2026-11-23 21:08:24.275695-04	2026-11-23 21:08:24.275695-04	\N	\N	\N	65	25	2026-11-26 21:08:24.276-04	\N	0	\N	\N	0m
 \.
 
 
@@ -93273,7 +93324,7 @@ SELECT pg_catalog.setval('cron.jobid_seq', 1, true);
 -- Name: runid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
 
-SELECT pg_catalog.setval('cron.runid_seq', 36612, true);
+SELECT pg_catalog.setval('cron.runid_seq', 36619, true);
 
 
 --
@@ -93354,7 +93405,7 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 11, true);
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 808, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 809, true);
 
 
 --
@@ -93498,7 +93549,7 @@ SELECT pg_catalog.setval('tickets.cat_sla_configuracion_id_seq', 4, true);
 -- Name: tbl_alertas_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_alertas_id_seq', 13, true);
+SELECT pg_catalog.setval('tickets.tbl_alertas_id_seq', 1, false);
 
 
 --
@@ -93516,7 +93567,7 @@ SELECT pg_catalog.setval('tickets.tbl_clientes_juridicos_id_seq', 917, true);
 -- Name: tbl_clientes_naturales_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_clientes_naturales_id_seq', 52572, true);
+SELECT pg_catalog.setval('tickets.tbl_clientes_naturales_id_seq', 52644, true);
 
 
 --
@@ -93534,7 +93585,7 @@ SELECT pg_catalog.setval('tickets.tbl_tickets_bitacora_id_seq', 1, false);
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 13, true);
+SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 1, false);
 
 
 --
@@ -94339,11 +94390,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT tbl_tickets_tipo_ticket_id_fkey FOREIGN KEY (tipo_ticket_id) REFERENCES public.cat_datos_maestros(id);
 
 
--- Completed on 2026-11-23 23:37:35 -04
+-- Completed on 2026-11-23 23:44:04 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict IdGfC3kCX3IWrFE2tnePiIFiPrge1LB0zXJp9caPbIZloL8sbF0AZW3mfiheAss
+\unrestrict XW8ZtZMr0WVUbRR4g1wqpIFYhVD5VAq8o8AmJT2chSo8UwNq04JIDgCjzITKj3P
 
