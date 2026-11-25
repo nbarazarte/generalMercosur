@@ -20,17 +20,24 @@ const corsValidator = (origin, callback) => {
       origin,
     );
 
+  let isLocalNetwork = ""
+
   // 2. Cualquier IP 192.168.x.x con puerto opcional
-  const isLocalNetwork = /^https?:\/\/192\.168\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(
+  isLocalNetwork = /^https?:\/\/192\.168\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(
     origin,
   );
 
-  // 3. Localhost o 127.0.0.1 con cualquier puerto
+  // 3. Cualquier IP 172.24.x.x con puerto opcional
+  isLocalNetwork = /^https?:\/\/172\.24\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(
+    origin,
+  );
+
+  // 4. Localhost o 127.0.0.1 con cualquier puerto
   const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(
     origin,
   );
 
-  // 4. Túneles de desarrollo (Cloudflare / Localtunnel)
+  // 5. Túneles de desarrollo (Cloudflare / Localtunnel)
   const isTunnel =
     origin.endsWith(".trycloudflare.com") || origin.endsWith(".loca.lt");
 
@@ -74,7 +81,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use("/uploads", express.static("/var/www/uploads"));
 
-// 5. Definición de Rutas
+// 6. Definición de Rutas
 app.use("/seguridad", require("./routes/seguridad.js"));
 app.use("/admin", require("./routes/admin.js"));
 app.use("/tickets", require("./routes/tickets.js"));
