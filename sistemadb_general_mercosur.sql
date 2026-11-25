@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict XW8ZtZMr0WVUbRR4g1wqpIFYhVD5VAq8o8AmJT2chSo8UwNq04JIDgCjzITKj3P
+\restrict EfjxaVStDuWRwx9AlGnY2EYCF07w3Y4GKhba3acTYMRavabxntA5nBKi632uLvd
 
--- Dumped from database version 17.12 (Ubuntu 17.12-1.pgdg24.04+1)
+-- Dumped from database version 18.7 (Ubuntu 18.7-1.pgdg24.04+5)
 -- Dumped by pg_dump version 18.7 (Ubuntu 18.7-1.pgdg24.04+5)
 
--- Started on 2026-11-23 23:44:04 -04
+-- Started on 2026-11-25 14:56:20 -04
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 2 (class 3079 OID 73341)
+-- TOC entry 2 (class 3079 OID 191992)
 -- Name: pg_cron; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -30,7 +30,7 @@ CREATE EXTENSION IF NOT EXISTS pg_cron WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 3978 (class 0 OID 0)
+-- TOC entry 3995 (class 0 OID 0)
 -- Dependencies: 2
 -- Name: EXTENSION pg_cron; Type: COMMENT; Schema: -; Owner: 
 --
@@ -39,7 +39,7 @@ COMMENT ON EXTENSION pg_cron IS 'Job scheduler for PostgreSQL';
 
 
 --
--- TOC entry 8 (class 2615 OID 73389)
+-- TOC entry 8 (class 2615 OID 192049)
 -- Name: drive; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -49,7 +49,7 @@ CREATE SCHEMA drive;
 ALTER SCHEMA drive OWNER TO postgres;
 
 --
--- TOC entry 9 (class 2615 OID 73390)
+-- TOC entry 9 (class 2615 OID 192050)
 -- Name: kcs; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -59,7 +59,7 @@ CREATE SCHEMA kcs;
 ALTER SCHEMA kcs OWNER TO postgres;
 
 --
--- TOC entry 3979 (class 0 OID 0)
+-- TOC entry 3996 (class 0 OID 0)
 -- Dependencies: 9
 -- Name: SCHEMA kcs; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -68,7 +68,7 @@ COMMENT ON SCHEMA kcs IS 'Esquema del sistema de la base de datos de conocimient
 
 
 --
--- TOC entry 10 (class 2615 OID 73391)
+-- TOC entry 10 (class 2615 OID 192051)
 -- Name: rrhh; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -78,7 +78,7 @@ CREATE SCHEMA rrhh;
 ALTER SCHEMA rrhh OWNER TO postgres;
 
 --
--- TOC entry 3980 (class 0 OID 0)
+-- TOC entry 3997 (class 0 OID 0)
 -- Dependencies: 10
 -- Name: SCHEMA rrhh; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -87,7 +87,7 @@ COMMENT ON SCHEMA rrhh IS 'Esquema que almacena las tablas del sistema de RRHH';
 
 
 --
--- TOC entry 11 (class 2615 OID 73392)
+-- TOC entry 11 (class 2615 OID 192052)
 -- Name: tickets; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -97,7 +97,7 @@ CREATE SCHEMA tickets;
 ALTER SCHEMA tickets OWNER TO postgres;
 
 --
--- TOC entry 3981 (class 0 OID 0)
+-- TOC entry 3998 (class 0 OID 0)
 -- Dependencies: 11
 -- Name: SCHEMA tickets; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -114,7 +114,7 @@ TRUNCATE TABLE tickets.tbl_tickets_bitacora RESTART IDENTITY CASCADE;';
 
 
 --
--- TOC entry 320 (class 1255 OID 73393)
+-- TOC entry 322 (class 1255 OID 192053)
 -- Name: crear_datos_tablas_public(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -183,7 +183,7 @@ $_$;
 ALTER FUNCTION public.crear_datos_tablas_public() OWNER TO postgres;
 
 --
--- TOC entry 321 (class 1255 OID 73394)
+-- TOC entry 323 (class 1255 OID 192054)
 -- Name: limpiar_tablas_public(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -213,7 +213,7 @@ $$;
 ALTER FUNCTION public.limpiar_tablas_public() OWNER TO postgres;
 
 --
--- TOC entry 322 (class 1255 OID 73395)
+-- TOC entry 324 (class 1255 OID 192055)
 -- Name: fn_verificar_y_actualizar_tickets_vencidos(); Type: FUNCTION; Schema: tickets; Owner: postgres
 --
 
@@ -236,8 +236,8 @@ $$;
 ALTER FUNCTION tickets.fn_verificar_y_actualizar_tickets_vencidos() OWNER TO postgres;
 
 --
--- TOC entry 3982 (class 0 OID 0)
--- Dependencies: 322
+-- TOC entry 3999 (class 0 OID 0)
+-- Dependencies: 324
 -- Name: FUNCTION fn_verificar_y_actualizar_tickets_vencidos(); Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
@@ -263,7 +263,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 227 (class 1259 OID 73396)
+-- TOC entry 229 (class 1259 OID 192056)
 -- Name: tbl_enlaces; Type: TABLE; Schema: drive; Owner: postgres
 --
 
@@ -282,7 +282,7 @@ CREATE TABLE drive.tbl_enlaces (
 ALTER TABLE drive.tbl_enlaces OWNER TO postgres;
 
 --
--- TOC entry 228 (class 1259 OID 73400)
+-- TOC entry 230 (class 1259 OID 192065)
 -- Name: tbl_enlaces_archivos; Type: TABLE; Schema: drive; Owner: postgres
 --
 
@@ -299,7 +299,7 @@ CREATE TABLE drive.tbl_enlaces_archivos (
 ALTER TABLE drive.tbl_enlaces_archivos OWNER TO postgres;
 
 --
--- TOC entry 229 (class 1259 OID 73407)
+-- TOC entry 231 (class 1259 OID 192076)
 -- Name: tbl_enlaces_archivos_id_seq; Type: SEQUENCE; Schema: drive; Owner: postgres
 --
 
@@ -315,8 +315,8 @@ CREATE SEQUENCE drive.tbl_enlaces_archivos_id_seq
 ALTER SEQUENCE drive.tbl_enlaces_archivos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3983 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 4000 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: tbl_enlaces_archivos_id_seq; Type: SEQUENCE OWNED BY; Schema: drive; Owner: postgres
 --
 
@@ -324,7 +324,7 @@ ALTER SEQUENCE drive.tbl_enlaces_archivos_id_seq OWNED BY drive.tbl_enlaces_arch
 
 
 --
--- TOC entry 230 (class 1259 OID 73408)
+-- TOC entry 232 (class 1259 OID 192077)
 -- Name: tbl_enlaces_descargas; Type: TABLE; Schema: drive; Owner: postgres
 --
 
@@ -340,7 +340,7 @@ CREATE TABLE drive.tbl_enlaces_descargas (
 ALTER TABLE drive.tbl_enlaces_descargas OWNER TO postgres;
 
 --
--- TOC entry 231 (class 1259 OID 73414)
+-- TOC entry 233 (class 1259 OID 192085)
 -- Name: tbl_enlaces_descargas_id_seq; Type: SEQUENCE; Schema: drive; Owner: postgres
 --
 
@@ -356,8 +356,8 @@ CREATE SEQUENCE drive.tbl_enlaces_descargas_id_seq
 ALTER SEQUENCE drive.tbl_enlaces_descargas_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3984 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 4001 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: tbl_enlaces_descargas_id_seq; Type: SEQUENCE OWNED BY; Schema: drive; Owner: postgres
 --
 
@@ -365,7 +365,7 @@ ALTER SEQUENCE drive.tbl_enlaces_descargas_id_seq OWNED BY drive.tbl_enlaces_des
 
 
 --
--- TOC entry 232 (class 1259 OID 73415)
+-- TOC entry 234 (class 1259 OID 192086)
 -- Name: tbl_enlaces_id_seq; Type: SEQUENCE; Schema: drive; Owner: postgres
 --
 
@@ -381,8 +381,8 @@ CREATE SEQUENCE drive.tbl_enlaces_id_seq
 ALTER SEQUENCE drive.tbl_enlaces_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3985 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 4002 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: tbl_enlaces_id_seq; Type: SEQUENCE OWNED BY; Schema: drive; Owner: postgres
 --
 
@@ -390,7 +390,7 @@ ALTER SEQUENCE drive.tbl_enlaces_id_seq OWNED BY drive.tbl_enlaces.id;
 
 
 --
--- TOC entry 233 (class 1259 OID 73416)
+-- TOC entry 235 (class 1259 OID 192087)
 -- Name: tbl_urls_cortas; Type: TABLE; Schema: drive; Owner: postgres
 --
 
@@ -410,7 +410,7 @@ CREATE TABLE drive.tbl_urls_cortas (
 ALTER TABLE drive.tbl_urls_cortas OWNER TO postgres;
 
 --
--- TOC entry 234 (class 1259 OID 73423)
+-- TOC entry 236 (class 1259 OID 192100)
 -- Name: tbl_urls_cortas_clics; Type: TABLE; Schema: drive; Owner: postgres
 --
 
@@ -426,7 +426,7 @@ CREATE TABLE drive.tbl_urls_cortas_clics (
 ALTER TABLE drive.tbl_urls_cortas_clics OWNER TO postgres;
 
 --
--- TOC entry 235 (class 1259 OID 73429)
+-- TOC entry 237 (class 1259 OID 192108)
 -- Name: tbl_urls_cortas_clics_id_seq; Type: SEQUENCE; Schema: drive; Owner: postgres
 --
 
@@ -442,8 +442,8 @@ CREATE SEQUENCE drive.tbl_urls_cortas_clics_id_seq
 ALTER SEQUENCE drive.tbl_urls_cortas_clics_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3986 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 4003 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: tbl_urls_cortas_clics_id_seq; Type: SEQUENCE OWNED BY; Schema: drive; Owner: postgres
 --
 
@@ -451,7 +451,7 @@ ALTER SEQUENCE drive.tbl_urls_cortas_clics_id_seq OWNED BY drive.tbl_urls_cortas
 
 
 --
--- TOC entry 236 (class 1259 OID 73430)
+-- TOC entry 238 (class 1259 OID 192109)
 -- Name: tbl_urls_cortas_id_seq; Type: SEQUENCE; Schema: drive; Owner: postgres
 --
 
@@ -467,8 +467,8 @@ CREATE SEQUENCE drive.tbl_urls_cortas_id_seq
 ALTER SEQUENCE drive.tbl_urls_cortas_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3987 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 4004 (class 0 OID 0)
+-- Dependencies: 238
 -- Name: tbl_urls_cortas_id_seq; Type: SEQUENCE OWNED BY; Schema: drive; Owner: postgres
 --
 
@@ -476,7 +476,7 @@ ALTER SEQUENCE drive.tbl_urls_cortas_id_seq OWNED BY drive.tbl_urls_cortas.id;
 
 
 --
--- TOC entry 237 (class 1259 OID 73431)
+-- TOC entry 239 (class 1259 OID 192110)
 -- Name: tbl_kcs_articulos_id_seq; Type: SEQUENCE; Schema: kcs; Owner: postgres
 --
 
@@ -492,7 +492,7 @@ CREATE SEQUENCE kcs.tbl_kcs_articulos_id_seq
 ALTER SEQUENCE kcs.tbl_kcs_articulos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 238 (class 1259 OID 73432)
+-- TOC entry 240 (class 1259 OID 192111)
 -- Name: cat_datos_maestros; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -510,8 +510,8 @@ CREATE TABLE public.cat_datos_maestros (
 ALTER TABLE public.cat_datos_maestros OWNER TO postgres;
 
 --
--- TOC entry 3988 (class 0 OID 0)
--- Dependencies: 238
+-- TOC entry 4005 (class 0 OID 0)
+-- Dependencies: 240
 -- Name: TABLE cat_datos_maestros; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -519,7 +519,7 @@ COMMENT ON TABLE public.cat_datos_maestros IS 'Esta tabla es el catalogo general
 
 
 --
--- TOC entry 239 (class 1259 OID 73440)
+-- TOC entry 241 (class 1259 OID 192126)
 -- Name: cat_datos_maestros_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -535,8 +535,8 @@ CREATE SEQUENCE public.cat_datos_maestros_id_seq
 ALTER SEQUENCE public.cat_datos_maestros_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3989 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 4006 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: cat_datos_maestros_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -544,7 +544,7 @@ ALTER SEQUENCE public.cat_datos_maestros_id_seq OWNED BY public.cat_datos_maestr
 
 
 --
--- TOC entry 240 (class 1259 OID 73441)
+-- TOC entry 242 (class 1259 OID 192127)
 -- Name: cat_departamentos; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -560,8 +560,8 @@ CREATE TABLE public.cat_departamentos (
 ALTER TABLE public.cat_departamentos OWNER TO postgres;
 
 --
--- TOC entry 3990 (class 0 OID 0)
--- Dependencies: 240
+-- TOC entry 4007 (class 0 OID 0)
+-- Dependencies: 242
 -- Name: TABLE cat_departamentos; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -569,7 +569,7 @@ COMMENT ON TABLE public.cat_departamentos IS 'Esta tabla contiene el listado de 
 
 
 --
--- TOC entry 241 (class 1259 OID 73446)
+-- TOC entry 243 (class 1259 OID 192136)
 -- Name: cat_departamentos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -585,8 +585,8 @@ CREATE SEQUENCE public.cat_departamentos_id_seq
 ALTER SEQUENCE public.cat_departamentos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3991 (class 0 OID 0)
--- Dependencies: 241
+-- TOC entry 4008 (class 0 OID 0)
+-- Dependencies: 243
 -- Name: cat_departamentos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -594,7 +594,7 @@ ALTER SEQUENCE public.cat_departamentos_id_seq OWNED BY public.cat_departamentos
 
 
 --
--- TOC entry 242 (class 1259 OID 73447)
+-- TOC entry 244 (class 1259 OID 192137)
 -- Name: cat_opciones; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -612,8 +612,8 @@ CREATE TABLE public.cat_opciones (
 ALTER TABLE public.cat_opciones OWNER TO postgres;
 
 --
--- TOC entry 3992 (class 0 OID 0)
--- Dependencies: 242
+-- TOC entry 4009 (class 0 OID 0)
+-- Dependencies: 244
 -- Name: TABLE cat_opciones; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -621,7 +621,7 @@ COMMENT ON TABLE public.cat_opciones IS 'Esta tabla contiene las opciones de los
 
 
 --
--- TOC entry 243 (class 1259 OID 73454)
+-- TOC entry 245 (class 1259 OID 192148)
 -- Name: cat_roles; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -637,8 +637,8 @@ CREATE TABLE public.cat_roles (
 ALTER TABLE public.cat_roles OWNER TO postgres;
 
 --
--- TOC entry 3993 (class 0 OID 0)
--- Dependencies: 243
+-- TOC entry 4010 (class 0 OID 0)
+-- Dependencies: 245
 -- Name: TABLE cat_roles; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -646,7 +646,7 @@ COMMENT ON TABLE public.cat_roles IS 'Esta tabla contiene el listado de roles qu
 
 
 --
--- TOC entry 244 (class 1259 OID 73459)
+-- TOC entry 246 (class 1259 OID 192157)
 -- Name: cat_sistemas; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -666,8 +666,8 @@ CREATE TABLE public.cat_sistemas (
 ALTER TABLE public.cat_sistemas OWNER TO postgres;
 
 --
--- TOC entry 3994 (class 0 OID 0)
--- Dependencies: 244
+-- TOC entry 4011 (class 0 OID 0)
+-- Dependencies: 246
 -- Name: TABLE cat_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -675,7 +675,7 @@ COMMENT ON TABLE public.cat_sistemas IS 'Contiene los nombres de los Sistemas In
 
 
 --
--- TOC entry 245 (class 1259 OID 73467)
+-- TOC entry 247 (class 1259 OID 192171)
 -- Name: tbl_auth_tokens; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -694,8 +694,8 @@ CREATE TABLE public.tbl_auth_tokens (
 ALTER TABLE public.tbl_auth_tokens OWNER TO postgres;
 
 --
--- TOC entry 3995 (class 0 OID 0)
--- Dependencies: 245
+-- TOC entry 4012 (class 0 OID 0)
+-- Dependencies: 247
 -- Name: TABLE tbl_auth_tokens; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -703,7 +703,7 @@ COMMENT ON TABLE public.tbl_auth_tokens IS 'Esta tabla contiene los tokens de se
 
 
 --
--- TOC entry 246 (class 1259 OID 73474)
+-- TOC entry 248 (class 1259 OID 192184)
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -719,8 +719,8 @@ CREATE SEQUENCE public.tbl_auth_tokens_id_seq
 ALTER SEQUENCE public.tbl_auth_tokens_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3996 (class 0 OID 0)
--- Dependencies: 246
+-- TOC entry 4013 (class 0 OID 0)
+-- Dependencies: 248
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -728,7 +728,7 @@ ALTER SEQUENCE public.tbl_auth_tokens_id_seq OWNED BY public.tbl_auth_tokens.id;
 
 
 --
--- TOC entry 247 (class 1259 OID 73475)
+-- TOC entry 249 (class 1259 OID 192185)
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -744,8 +744,8 @@ CREATE SEQUENCE public.tbl_opciones_id_seq
 ALTER SEQUENCE public.tbl_opciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3997 (class 0 OID 0)
--- Dependencies: 247
+-- TOC entry 4014 (class 0 OID 0)
+-- Dependencies: 249
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -753,7 +753,7 @@ ALTER SEQUENCE public.tbl_opciones_id_seq OWNED BY public.cat_opciones.id;
 
 
 --
--- TOC entry 248 (class 1259 OID 73476)
+-- TOC entry 250 (class 1259 OID 192186)
 -- Name: tbl_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -769,8 +769,8 @@ CREATE SEQUENCE public.tbl_roles_id_seq
 ALTER SEQUENCE public.tbl_roles_id_seq OWNER TO postgres;
 
 --
--- TOC entry 3998 (class 0 OID 0)
--- Dependencies: 248
+-- TOC entry 4015 (class 0 OID 0)
+-- Dependencies: 250
 -- Name: tbl_roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -778,7 +778,7 @@ ALTER SEQUENCE public.tbl_roles_id_seq OWNED BY public.cat_roles.id;
 
 
 --
--- TOC entry 249 (class 1259 OID 73477)
+-- TOC entry 251 (class 1259 OID 192187)
 -- Name: tbl_roles_sistemas; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -795,8 +795,8 @@ CREATE TABLE public.tbl_roles_sistemas (
 ALTER TABLE public.tbl_roles_sistemas OWNER TO postgres;
 
 --
--- TOC entry 3999 (class 0 OID 0)
--- Dependencies: 249
+-- TOC entry 4016 (class 0 OID 0)
+-- Dependencies: 251
 -- Name: TABLE tbl_roles_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -804,7 +804,7 @@ COMMENT ON TABLE public.tbl_roles_sistemas IS 'Esta tabla contiene el catalogo d
 
 
 --
--- TOC entry 250 (class 1259 OID 73483)
+-- TOC entry 252 (class 1259 OID 192199)
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -820,8 +820,8 @@ CREATE SEQUENCE public.tbl_roles_opciones_id_seq
 ALTER SEQUENCE public.tbl_roles_opciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4000 (class 0 OID 0)
--- Dependencies: 250
+-- TOC entry 4017 (class 0 OID 0)
+-- Dependencies: 252
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -829,7 +829,7 @@ ALTER SEQUENCE public.tbl_roles_opciones_id_seq OWNED BY public.tbl_roles_sistem
 
 
 --
--- TOC entry 251 (class 1259 OID 73484)
+-- TOC entry 253 (class 1259 OID 192200)
 -- Name: tbl_roles_sistemas_opciones; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -843,8 +843,8 @@ CREATE TABLE public.tbl_roles_sistemas_opciones (
 ALTER TABLE public.tbl_roles_sistemas_opciones OWNER TO postgres;
 
 --
--- TOC entry 4001 (class 0 OID 0)
--- Dependencies: 251
+-- TOC entry 4018 (class 0 OID 0)
+-- Dependencies: 253
 -- Name: TABLE tbl_roles_sistemas_opciones; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -852,7 +852,7 @@ COMMENT ON TABLE public.tbl_roles_sistemas_opciones IS 'Esta tabla contiene las 
 
 
 --
--- TOC entry 252 (class 1259 OID 73487)
+-- TOC entry 254 (class 1259 OID 192206)
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -868,8 +868,8 @@ CREATE SEQUENCE public.tbl_roles_sistemas_opciones_id_seq
 ALTER SEQUENCE public.tbl_roles_sistemas_opciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4002 (class 0 OID 0)
--- Dependencies: 252
+-- TOC entry 4019 (class 0 OID 0)
+-- Dependencies: 254
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -877,7 +877,7 @@ ALTER SEQUENCE public.tbl_roles_sistemas_opciones_id_seq OWNED BY public.tbl_rol
 
 
 --
--- TOC entry 253 (class 1259 OID 73488)
+-- TOC entry 255 (class 1259 OID 192207)
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -893,8 +893,8 @@ CREATE SEQUENCE public.tbl_sistemas_id_seq
 ALTER SEQUENCE public.tbl_sistemas_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4003 (class 0 OID 0)
--- Dependencies: 253
+-- TOC entry 4020 (class 0 OID 0)
+-- Dependencies: 255
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -902,7 +902,7 @@ ALTER SEQUENCE public.tbl_sistemas_id_seq OWNED BY public.cat_sistemas.id;
 
 
 --
--- TOC entry 254 (class 1259 OID 73489)
+-- TOC entry 256 (class 1259 OID 192208)
 -- Name: tbl_usuarios; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -929,8 +929,8 @@ CREATE TABLE public.tbl_usuarios (
 ALTER TABLE public.tbl_usuarios OWNER TO postgres;
 
 --
--- TOC entry 4004 (class 0 OID 0)
--- Dependencies: 254
+-- TOC entry 4021 (class 0 OID 0)
+-- Dependencies: 256
 -- Name: TABLE tbl_usuarios; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -938,7 +938,7 @@ COMMENT ON TABLE public.tbl_usuarios IS 'Esta tabla contiene el listado global d
 
 
 --
--- TOC entry 255 (class 1259 OID 73497)
+-- TOC entry 257 (class 1259 OID 192225)
 -- Name: tbl_usuarios_opciones_excepciones; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -955,8 +955,8 @@ CREATE TABLE public.tbl_usuarios_opciones_excepciones (
 ALTER TABLE public.tbl_usuarios_opciones_excepciones OWNER TO postgres;
 
 --
--- TOC entry 4005 (class 0 OID 0)
--- Dependencies: 255
+-- TOC entry 4022 (class 0 OID 0)
+-- Dependencies: 257
 -- Name: TABLE tbl_usuarios_opciones_excepciones; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -964,7 +964,7 @@ COMMENT ON TABLE public.tbl_usuarios_opciones_excepciones IS 'Esta tabla es para
 
 
 --
--- TOC entry 256 (class 1259 OID 73503)
+-- TOC entry 258 (class 1259 OID 192237)
 -- Name: tbl_usuarios_opciones_excepciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -980,8 +980,8 @@ CREATE SEQUENCE public.tbl_usuarios_opciones_excepciones_id_seq
 ALTER SEQUENCE public.tbl_usuarios_opciones_excepciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4006 (class 0 OID 0)
--- Dependencies: 256
+-- TOC entry 4023 (class 0 OID 0)
+-- Dependencies: 258
 -- Name: tbl_usuarios_opciones_excepciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -989,7 +989,7 @@ ALTER SEQUENCE public.tbl_usuarios_opciones_excepciones_id_seq OWNED BY public.t
 
 
 --
--- TOC entry 257 (class 1259 OID 73504)
+-- TOC entry 259 (class 1259 OID 192238)
 -- Name: tbl_usuarios_roles_sistemas; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1006,8 +1006,8 @@ CREATE TABLE public.tbl_usuarios_roles_sistemas (
 ALTER TABLE public.tbl_usuarios_roles_sistemas OWNER TO postgres;
 
 --
--- TOC entry 4007 (class 0 OID 0)
--- Dependencies: 257
+-- TOC entry 4024 (class 0 OID 0)
+-- Dependencies: 259
 -- Name: TABLE tbl_usuarios_roles_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -1015,7 +1015,7 @@ COMMENT ON TABLE public.tbl_usuarios_roles_sistemas IS 'Esta tabla contiene el r
 
 
 --
--- TOC entry 258 (class 1259 OID 73510)
+-- TOC entry 260 (class 1259 OID 192250)
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1031,8 +1031,8 @@ CREATE SEQUENCE public.tbl_usuarios_roles_sistemas_id_seq
 ALTER SEQUENCE public.tbl_usuarios_roles_sistemas_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4008 (class 0 OID 0)
--- Dependencies: 258
+-- TOC entry 4025 (class 0 OID 0)
+-- Dependencies: 260
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1040,7 +1040,7 @@ ALTER SEQUENCE public.tbl_usuarios_roles_sistemas_id_seq OWNED BY public.tbl_usu
 
 
 --
--- TOC entry 259 (class 1259 OID 73511)
+-- TOC entry 261 (class 1259 OID 192251)
 -- Name: usuarios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -1056,8 +1056,8 @@ CREATE SEQUENCE public.usuarios_id_seq
 ALTER SEQUENCE public.usuarios_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4009 (class 0 OID 0)
--- Dependencies: 259
+-- TOC entry 4026 (class 0 OID 0)
+-- Dependencies: 261
 -- Name: usuarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -1065,7 +1065,7 @@ ALTER SEQUENCE public.usuarios_id_seq OWNED BY public.tbl_usuarios.id;
 
 
 --
--- TOC entry 260 (class 1259 OID 73512)
+-- TOC entry 262 (class 1259 OID 192252)
 -- Name: tbl_alertas; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1084,7 +1084,7 @@ CREATE TABLE tickets.tbl_alertas (
 ALTER TABLE tickets.tbl_alertas OWNER TO postgres;
 
 --
--- TOC entry 261 (class 1259 OID 73519)
+-- TOC entry 263 (class 1259 OID 192266)
 -- Name: view_dashboard_alertas_seguridad; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1116,7 +1116,7 @@ UNION ALL
 ALTER VIEW public.view_dashboard_alertas_seguridad OWNER TO postgres;
 
 --
--- TOC entry 262 (class 1259 OID 73524)
+-- TOC entry 264 (class 1259 OID 192271)
 -- Name: view_dashboard_distribucion_roles; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1135,7 +1135,7 @@ CREATE VIEW public.view_dashboard_distribucion_roles AS
 ALTER VIEW public.view_dashboard_distribucion_roles OWNER TO postgres;
 
 --
--- TOC entry 263 (class 1259 OID 73529)
+-- TOC entry 265 (class 1259 OID 192276)
 -- Name: view_dashboard_kpis; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1161,7 +1161,7 @@ CREATE VIEW public.view_dashboard_kpis AS
 ALTER VIEW public.view_dashboard_kpis OWNER TO postgres;
 
 --
--- TOC entry 264 (class 1259 OID 73534)
+-- TOC entry 266 (class 1259 OID 192281)
 -- Name: view_dashboard_ultimos_accesos; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1181,7 +1181,7 @@ CREATE VIEW public.view_dashboard_ultimos_accesos AS
 ALTER VIEW public.view_dashboard_ultimos_accesos OWNER TO postgres;
 
 --
--- TOC entry 265 (class 1259 OID 73538)
+-- TOC entry 267 (class 1259 OID 192286)
 -- Name: view_dashboard_usuarios_por_sistema; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1202,7 +1202,7 @@ CREATE VIEW public.view_dashboard_usuarios_por_sistema AS
 ALTER VIEW public.view_dashboard_usuarios_por_sistema OWNER TO postgres;
 
 --
--- TOC entry 266 (class 1259 OID 73543)
+-- TOC entry 268 (class 1259 OID 192291)
 -- Name: view_matriz_roles_opciones; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1222,7 +1222,7 @@ SELECT
 ALTER VIEW public.view_matriz_roles_opciones OWNER TO postgres;
 
 --
--- TOC entry 267 (class 1259 OID 73547)
+-- TOC entry 269 (class 1259 OID 192295)
 -- Name: view_sistemas_opciones; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1251,7 +1251,7 @@ CREATE VIEW public.view_sistemas_opciones AS
 ALTER VIEW public.view_sistemas_opciones OWNER TO postgres;
 
 --
--- TOC entry 268 (class 1259 OID 73552)
+-- TOC entry 270 (class 1259 OID 192300)
 -- Name: view_usuarios_opciones_sistemas; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1291,8 +1291,8 @@ CREATE VIEW public.view_usuarios_opciones_sistemas AS
 ALTER VIEW public.view_usuarios_opciones_sistemas OWNER TO postgres;
 
 --
--- TOC entry 4010 (class 0 OID 0)
--- Dependencies: 268
+-- TOC entry 4027 (class 0 OID 0)
+-- Dependencies: 270
 -- Name: VIEW view_usuarios_opciones_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -1300,7 +1300,7 @@ COMMENT ON VIEW public.view_usuarios_opciones_sistemas IS 'Muestra que opciones 
 
 
 --
--- TOC entry 269 (class 1259 OID 73557)
+-- TOC entry 271 (class 1259 OID 192305)
 -- Name: view_usuarios_permisos_detallados; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1326,7 +1326,7 @@ CREATE VIEW public.view_usuarios_permisos_detallados AS
 ALTER VIEW public.view_usuarios_permisos_detallados OWNER TO postgres;
 
 --
--- TOC entry 270 (class 1259 OID 73562)
+-- TOC entry 272 (class 1259 OID 192310)
 -- Name: view_usuarios_roles_sistemas; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -1356,7 +1356,7 @@ CREATE VIEW public.view_usuarios_roles_sistemas AS
 ALTER VIEW public.view_usuarios_roles_sistemas OWNER TO postgres;
 
 --
--- TOC entry 271 (class 1259 OID 73567)
+-- TOC entry 273 (class 1259 OID 192315)
 -- Name: tbl_amonestaciones; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1374,7 +1374,7 @@ CREATE TABLE rrhh.tbl_amonestaciones (
 ALTER TABLE rrhh.tbl_amonestaciones OWNER TO postgres;
 
 --
--- TOC entry 272 (class 1259 OID 73574)
+-- TOC entry 274 (class 1259 OID 192325)
 -- Name: tbl_amonestaciones_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1390,8 +1390,8 @@ CREATE SEQUENCE rrhh.tbl_amonestaciones_id_seq
 ALTER SEQUENCE rrhh.tbl_amonestaciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4011 (class 0 OID 0)
--- Dependencies: 272
+-- TOC entry 4028 (class 0 OID 0)
+-- Dependencies: 274
 -- Name: tbl_amonestaciones_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1399,7 +1399,7 @@ ALTER SEQUENCE rrhh.tbl_amonestaciones_id_seq OWNED BY rrhh.tbl_amonestaciones.i
 
 
 --
--- TOC entry 273 (class 1259 OID 73575)
+-- TOC entry 275 (class 1259 OID 192326)
 -- Name: tbl_carga_familiar; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1417,7 +1417,7 @@ CREATE TABLE rrhh.tbl_carga_familiar (
 ALTER TABLE rrhh.tbl_carga_familiar OWNER TO postgres;
 
 --
--- TOC entry 274 (class 1259 OID 73580)
+-- TOC entry 276 (class 1259 OID 192337)
 -- Name: tbl_carga_familiar_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1433,8 +1433,8 @@ CREATE SEQUENCE rrhh.tbl_carga_familiar_id_seq
 ALTER SEQUENCE rrhh.tbl_carga_familiar_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4012 (class 0 OID 0)
--- Dependencies: 274
+-- TOC entry 4029 (class 0 OID 0)
+-- Dependencies: 276
 -- Name: tbl_carga_familiar_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1442,7 +1442,7 @@ ALTER SEQUENCE rrhh.tbl_carga_familiar_id_seq OWNED BY rrhh.tbl_carga_familiar.i
 
 
 --
--- TOC entry 275 (class 1259 OID 73581)
+-- TOC entry 277 (class 1259 OID 192338)
 -- Name: tbl_expediente; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1470,7 +1470,7 @@ CREATE TABLE rrhh.tbl_expediente (
 ALTER TABLE rrhh.tbl_expediente OWNER TO postgres;
 
 --
--- TOC entry 276 (class 1259 OID 73586)
+-- TOC entry 278 (class 1259 OID 192346)
 -- Name: tbl_expediente_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1486,8 +1486,8 @@ CREATE SEQUENCE rrhh.tbl_expediente_id_seq
 ALTER SEQUENCE rrhh.tbl_expediente_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4013 (class 0 OID 0)
--- Dependencies: 276
+-- TOC entry 4030 (class 0 OID 0)
+-- Dependencies: 278
 -- Name: tbl_expediente_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1495,7 +1495,7 @@ ALTER SEQUENCE rrhh.tbl_expediente_id_seq OWNED BY rrhh.tbl_expediente.id;
 
 
 --
--- TOC entry 277 (class 1259 OID 73587)
+-- TOC entry 279 (class 1259 OID 192347)
 -- Name: tbl_permisos; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1513,7 +1513,7 @@ CREATE TABLE rrhh.tbl_permisos (
 ALTER TABLE rrhh.tbl_permisos OWNER TO postgres;
 
 --
--- TOC entry 278 (class 1259 OID 73594)
+-- TOC entry 280 (class 1259 OID 192357)
 -- Name: tbl_permisos_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1529,8 +1529,8 @@ CREATE SEQUENCE rrhh.tbl_permisos_id_seq
 ALTER SEQUENCE rrhh.tbl_permisos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4014 (class 0 OID 0)
--- Dependencies: 278
+-- TOC entry 4031 (class 0 OID 0)
+-- Dependencies: 280
 -- Name: tbl_permisos_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1538,7 +1538,7 @@ ALTER SEQUENCE rrhh.tbl_permisos_id_seq OWNED BY rrhh.tbl_permisos.id;
 
 
 --
--- TOC entry 279 (class 1259 OID 73595)
+-- TOC entry 281 (class 1259 OID 192358)
 -- Name: tbl_reposos; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1556,7 +1556,7 @@ CREATE TABLE rrhh.tbl_reposos (
 ALTER TABLE rrhh.tbl_reposos OWNER TO postgres;
 
 --
--- TOC entry 280 (class 1259 OID 73602)
+-- TOC entry 282 (class 1259 OID 192368)
 -- Name: tbl_reposos_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1572,8 +1572,8 @@ CREATE SEQUENCE rrhh.tbl_reposos_id_seq
 ALTER SEQUENCE rrhh.tbl_reposos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4015 (class 0 OID 0)
--- Dependencies: 280
+-- TOC entry 4032 (class 0 OID 0)
+-- Dependencies: 282
 -- Name: tbl_reposos_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1581,7 +1581,7 @@ ALTER SEQUENCE rrhh.tbl_reposos_id_seq OWNED BY rrhh.tbl_reposos.id;
 
 
 --
--- TOC entry 281 (class 1259 OID 73603)
+-- TOC entry 283 (class 1259 OID 192369)
 -- Name: tbl_vacaciones; Type: TABLE; Schema: rrhh; Owner: postgres
 --
 
@@ -1602,7 +1602,7 @@ CREATE TABLE rrhh.tbl_vacaciones (
 ALTER TABLE rrhh.tbl_vacaciones OWNER TO postgres;
 
 --
--- TOC entry 282 (class 1259 OID 73608)
+-- TOC entry 284 (class 1259 OID 192377)
 -- Name: tbl_vacaciones_id_seq; Type: SEQUENCE; Schema: rrhh; Owner: postgres
 --
 
@@ -1618,8 +1618,8 @@ CREATE SEQUENCE rrhh.tbl_vacaciones_id_seq
 ALTER SEQUENCE rrhh.tbl_vacaciones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4016 (class 0 OID 0)
--- Dependencies: 282
+-- TOC entry 4033 (class 0 OID 0)
+-- Dependencies: 284
 -- Name: tbl_vacaciones_id_seq; Type: SEQUENCE OWNED BY; Schema: rrhh; Owner: postgres
 --
 
@@ -1627,7 +1627,7 @@ ALTER SEQUENCE rrhh.tbl_vacaciones_id_seq OWNED BY rrhh.tbl_vacaciones.id;
 
 
 --
--- TOC entry 283 (class 1259 OID 73609)
+-- TOC entry 285 (class 1259 OID 192378)
 -- Name: cat_sla_configuracion; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1642,7 +1642,7 @@ CREATE TABLE tickets.cat_sla_configuracion (
 ALTER TABLE tickets.cat_sla_configuracion OWNER TO postgres;
 
 --
--- TOC entry 284 (class 1259 OID 73613)
+-- TOC entry 286 (class 1259 OID 192386)
 -- Name: cat_sla_configuracion_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1658,8 +1658,8 @@ CREATE SEQUENCE tickets.cat_sla_configuracion_id_seq
 ALTER SEQUENCE tickets.cat_sla_configuracion_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4017 (class 0 OID 0)
--- Dependencies: 284
+-- TOC entry 4034 (class 0 OID 0)
+-- Dependencies: 286
 -- Name: cat_sla_configuracion_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1667,7 +1667,7 @@ ALTER SEQUENCE tickets.cat_sla_configuracion_id_seq OWNED BY tickets.cat_sla_con
 
 
 --
--- TOC entry 285 (class 1259 OID 73614)
+-- TOC entry 287 (class 1259 OID 192387)
 -- Name: tbl_alertas_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1683,8 +1683,8 @@ CREATE SEQUENCE tickets.tbl_alertas_id_seq
 ALTER SEQUENCE tickets.tbl_alertas_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4018 (class 0 OID 0)
--- Dependencies: 285
+-- TOC entry 4035 (class 0 OID 0)
+-- Dependencies: 287
 -- Name: tbl_alertas_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1692,7 +1692,7 @@ ALTER SEQUENCE tickets.tbl_alertas_id_seq OWNED BY tickets.tbl_alertas.id;
 
 
 --
--- TOC entry 286 (class 1259 OID 73615)
+-- TOC entry 288 (class 1259 OID 192388)
 -- Name: tbl_clientes_juridicos; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1712,7 +1712,7 @@ CREATE TABLE tickets.tbl_clientes_juridicos (
 ALTER TABLE tickets.tbl_clientes_juridicos OWNER TO postgres;
 
 --
--- TOC entry 287 (class 1259 OID 73623)
+-- TOC entry 289 (class 1259 OID 192397)
 -- Name: tbl_clientes_juridicos_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1728,8 +1728,8 @@ CREATE SEQUENCE tickets.tbl_clientes_juridicos_id_seq
 ALTER SEQUENCE tickets.tbl_clientes_juridicos_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4019 (class 0 OID 0)
--- Dependencies: 287
+-- TOC entry 4036 (class 0 OID 0)
+-- Dependencies: 289
 -- Name: tbl_clientes_juridicos_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1737,7 +1737,7 @@ ALTER SEQUENCE tickets.tbl_clientes_juridicos_id_seq OWNED BY tickets.tbl_client
 
 
 --
--- TOC entry 288 (class 1259 OID 73624)
+-- TOC entry 290 (class 1259 OID 192398)
 -- Name: tbl_clientes_naturales; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1758,7 +1758,7 @@ CREATE TABLE tickets.tbl_clientes_naturales (
 ALTER TABLE tickets.tbl_clientes_naturales OWNER TO postgres;
 
 --
--- TOC entry 289 (class 1259 OID 73632)
+-- TOC entry 291 (class 1259 OID 192407)
 -- Name: tbl_clientes_naturales_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1774,8 +1774,8 @@ CREATE SEQUENCE tickets.tbl_clientes_naturales_id_seq
 ALTER SEQUENCE tickets.tbl_clientes_naturales_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4020 (class 0 OID 0)
--- Dependencies: 289
+-- TOC entry 4037 (class 0 OID 0)
+-- Dependencies: 291
 -- Name: tbl_clientes_naturales_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1783,7 +1783,7 @@ ALTER SEQUENCE tickets.tbl_clientes_naturales_id_seq OWNED BY tickets.tbl_client
 
 
 --
--- TOC entry 290 (class 1259 OID 73633)
+-- TOC entry 292 (class 1259 OID 192408)
 -- Name: tbl_secuencias_tickets; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1798,7 +1798,7 @@ CREATE TABLE tickets.tbl_secuencias_tickets (
 ALTER TABLE tickets.tbl_secuencias_tickets OWNER TO postgres;
 
 --
--- TOC entry 291 (class 1259 OID 73637)
+-- TOC entry 293 (class 1259 OID 192416)
 -- Name: tbl_tickets; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1836,8 +1836,8 @@ CREATE TABLE tickets.tbl_tickets (
 ALTER TABLE tickets.tbl_tickets OWNER TO postgres;
 
 --
--- TOC entry 4021 (class 0 OID 0)
--- Dependencies: 291
+-- TOC entry 4038 (class 0 OID 0)
+-- Dependencies: 293
 -- Name: TABLE tbl_tickets; Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
@@ -1845,7 +1845,7 @@ COMMENT ON TABLE tickets.tbl_tickets IS 'Tabla transaccional principal que manej
 
 
 --
--- TOC entry 292 (class 1259 OID 73647)
+-- TOC entry 294 (class 1259 OID 192437)
 -- Name: tbl_tickets_bitacora; Type: TABLE; Schema: tickets; Owner: postgres
 --
 
@@ -1861,8 +1861,8 @@ CREATE TABLE tickets.tbl_tickets_bitacora (
 ALTER TABLE tickets.tbl_tickets_bitacora OWNER TO postgres;
 
 --
--- TOC entry 4022 (class 0 OID 0)
--- Dependencies: 292
+-- TOC entry 4039 (class 0 OID 0)
+-- Dependencies: 294
 -- Name: TABLE tbl_tickets_bitacora; Type: COMMENT; Schema: tickets; Owner: postgres
 --
 
@@ -1870,7 +1870,7 @@ COMMENT ON TABLE tickets.tbl_tickets_bitacora IS 'Almacena el historial de respu
 
 
 --
--- TOC entry 293 (class 1259 OID 73653)
+-- TOC entry 295 (class 1259 OID 192447)
 -- Name: tbl_tickets_bitacora_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1886,8 +1886,8 @@ CREATE SEQUENCE tickets.tbl_tickets_bitacora_id_seq
 ALTER SEQUENCE tickets.tbl_tickets_bitacora_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4023 (class 0 OID 0)
--- Dependencies: 293
+-- TOC entry 4040 (class 0 OID 0)
+-- Dependencies: 295
 -- Name: tbl_tickets_bitacora_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1895,7 +1895,7 @@ ALTER SEQUENCE tickets.tbl_tickets_bitacora_id_seq OWNED BY tickets.tbl_tickets_
 
 
 --
--- TOC entry 294 (class 1259 OID 73654)
+-- TOC entry 296 (class 1259 OID 192448)
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE; Schema: tickets; Owner: postgres
 --
 
@@ -1911,8 +1911,8 @@ CREATE SEQUENCE tickets.tbl_tickets_id_seq
 ALTER SEQUENCE tickets.tbl_tickets_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4024 (class 0 OID 0)
--- Dependencies: 294
+-- TOC entry 4041 (class 0 OID 0)
+-- Dependencies: 296
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE OWNED BY; Schema: tickets; Owner: postgres
 --
 
@@ -1920,7 +1920,7 @@ ALTER SEQUENCE tickets.tbl_tickets_id_seq OWNED BY tickets.tbl_tickets.id;
 
 
 --
--- TOC entry 295 (class 1259 OID 73655)
+-- TOC entry 297 (class 1259 OID 192449)
 -- Name: view_clientes_con_tickets; Type: VIEW; Schema: tickets; Owner: postgres
 --
 
@@ -2008,7 +2008,7 @@ CREATE VIEW tickets.view_clientes_con_tickets AS
 ALTER VIEW tickets.view_clientes_con_tickets OWNER TO postgres;
 
 --
--- TOC entry 296 (class 1259 OID 73660)
+-- TOC entry 298 (class 1259 OID 192454)
 -- Name: view_dashboard_casos_por_analista; Type: VIEW; Schema: tickets; Owner: postgres
 --
 
@@ -2026,7 +2026,7 @@ CREATE VIEW tickets.view_dashboard_casos_por_analista AS
 ALTER VIEW tickets.view_dashboard_casos_por_analista OWNER TO postgres;
 
 --
--- TOC entry 297 (class 1259 OID 73665)
+-- TOC entry 299 (class 1259 OID 192459)
 -- Name: view_dashboard_distribucion_estados; Type: VIEW; Schema: tickets; Owner: postgres
 --
 
@@ -2044,7 +2044,7 @@ CREATE VIEW tickets.view_dashboard_distribucion_estados AS
 ALTER VIEW tickets.view_dashboard_distribucion_estados OWNER TO postgres;
 
 --
--- TOC entry 298 (class 1259 OID 73670)
+-- TOC entry 300 (class 1259 OID 192464)
 -- Name: view_dashboard_tickets_por_categoria; Type: VIEW; Schema: tickets; Owner: postgres
 --
 
@@ -2062,7 +2062,7 @@ CREATE VIEW tickets.view_dashboard_tickets_por_categoria AS
 ALTER VIEW tickets.view_dashboard_tickets_por_categoria OWNER TO postgres;
 
 --
--- TOC entry 299 (class 1259 OID 73675)
+-- TOC entry 301 (class 1259 OID 192469)
 -- Name: view_distribucion_estados; Type: VIEW; Schema: tickets; Owner: postgres
 --
 
@@ -2087,7 +2087,7 @@ CREATE VIEW tickets.view_distribucion_estados AS
 ALTER VIEW tickets.view_distribucion_estados OWNER TO postgres;
 
 --
--- TOC entry 301 (class 1259 OID 74015)
+-- TOC entry 302 (class 1259 OID 192474)
 -- Name: view_listar_tickets; Type: VIEW; Schema: tickets; Owner: postgres
 --
 
@@ -2163,7 +2163,7 @@ CREATE VIEW tickets.view_listar_tickets AS
 ALTER VIEW tickets.view_listar_tickets OWNER TO postgres;
 
 --
--- TOC entry 300 (class 1259 OID 73685)
+-- TOC entry 303 (class 1259 OID 192479)
 -- Name: view_tickets_por_canal; Type: VIEW; Schema: tickets; Owner: postgres
 --
 
@@ -2188,7 +2188,7 @@ CREATE VIEW tickets.view_tickets_por_canal AS
 ALTER VIEW tickets.view_tickets_por_canal OWNER TO postgres;
 
 --
--- TOC entry 3539 (class 2604 OID 73695)
+-- TOC entry 3554 (class 2604 OID 192484)
 -- Name: tbl_enlaces id; Type: DEFAULT; Schema: drive; Owner: postgres
 --
 
@@ -2196,7 +2196,7 @@ ALTER TABLE ONLY drive.tbl_enlaces ALTER COLUMN id SET DEFAULT nextval('drive.tb
 
 
 --
--- TOC entry 3541 (class 2604 OID 73696)
+-- TOC entry 3556 (class 2604 OID 192485)
 -- Name: tbl_enlaces_archivos id; Type: DEFAULT; Schema: drive; Owner: postgres
 --
 
@@ -2204,7 +2204,7 @@ ALTER TABLE ONLY drive.tbl_enlaces_archivos ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
--- TOC entry 3544 (class 2604 OID 73697)
+-- TOC entry 3559 (class 2604 OID 192486)
 -- Name: tbl_enlaces_descargas id; Type: DEFAULT; Schema: drive; Owner: postgres
 --
 
@@ -2212,7 +2212,7 @@ ALTER TABLE ONLY drive.tbl_enlaces_descargas ALTER COLUMN id SET DEFAULT nextval
 
 
 --
--- TOC entry 3546 (class 2604 OID 73698)
+-- TOC entry 3561 (class 2604 OID 192487)
 -- Name: tbl_urls_cortas id; Type: DEFAULT; Schema: drive; Owner: postgres
 --
 
@@ -2220,7 +2220,7 @@ ALTER TABLE ONLY drive.tbl_urls_cortas ALTER COLUMN id SET DEFAULT nextval('driv
 
 
 --
--- TOC entry 3549 (class 2604 OID 73699)
+-- TOC entry 3564 (class 2604 OID 192488)
 -- Name: tbl_urls_cortas_clics id; Type: DEFAULT; Schema: drive; Owner: postgres
 --
 
@@ -2228,7 +2228,7 @@ ALTER TABLE ONLY drive.tbl_urls_cortas_clics ALTER COLUMN id SET DEFAULT nextval
 
 
 --
--- TOC entry 3551 (class 2604 OID 73700)
+-- TOC entry 3566 (class 2604 OID 192489)
 -- Name: cat_datos_maestros id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2236,7 +2236,7 @@ ALTER TABLE ONLY public.cat_datos_maestros ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3555 (class 2604 OID 73701)
+-- TOC entry 3570 (class 2604 OID 192490)
 -- Name: cat_departamentos id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2244,7 +2244,7 @@ ALTER TABLE ONLY public.cat_departamentos ALTER COLUMN id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 3558 (class 2604 OID 73702)
+-- TOC entry 3573 (class 2604 OID 192491)
 -- Name: cat_opciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2252,7 +2252,7 @@ ALTER TABLE ONLY public.cat_opciones ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3561 (class 2604 OID 73703)
+-- TOC entry 3576 (class 2604 OID 192492)
 -- Name: cat_roles id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2260,7 +2260,7 @@ ALTER TABLE ONLY public.cat_roles ALTER COLUMN id SET DEFAULT nextval('public.tb
 
 
 --
--- TOC entry 3564 (class 2604 OID 73704)
+-- TOC entry 3579 (class 2604 OID 192493)
 -- Name: cat_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2268,7 +2268,7 @@ ALTER TABLE ONLY public.cat_sistemas ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3568 (class 2604 OID 73705)
+-- TOC entry 3583 (class 2604 OID 192494)
 -- Name: tbl_auth_tokens id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2276,7 +2276,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens ALTER COLUMN id SET DEFAULT nextval('pub
 
 
 --
--- TOC entry 3571 (class 2604 OID 73706)
+-- TOC entry 3586 (class 2604 OID 192495)
 -- Name: tbl_roles_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2284,7 +2284,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- TOC entry 3575 (class 2604 OID 73707)
+-- TOC entry 3590 (class 2604 OID 192496)
 -- Name: tbl_roles_sistemas_opciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2292,7 +2292,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones ALTER COLUMN id SET DEFAULT 
 
 
 --
--- TOC entry 3576 (class 2604 OID 73708)
+-- TOC entry 3591 (class 2604 OID 192497)
 -- Name: tbl_usuarios id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2300,7 +2300,7 @@ ALTER TABLE ONLY public.tbl_usuarios ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3580 (class 2604 OID 73709)
+-- TOC entry 3595 (class 2604 OID 192498)
 -- Name: tbl_usuarios_opciones_excepciones id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2308,7 +2308,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones ALTER COLUMN id SET DE
 
 
 --
--- TOC entry 3584 (class 2604 OID 73710)
+-- TOC entry 3599 (class 2604 OID 192499)
 -- Name: tbl_usuarios_roles_sistemas id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2316,7 +2316,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas ALTER COLUMN id SET DEFAULT 
 
 
 --
--- TOC entry 3591 (class 2604 OID 73711)
+-- TOC entry 3606 (class 2604 OID 192500)
 -- Name: tbl_amonestaciones id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -2324,7 +2324,7 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones ALTER COLUMN id SET DEFAULT nextval('rr
 
 
 --
--- TOC entry 3594 (class 2604 OID 73712)
+-- TOC entry 3609 (class 2604 OID 192501)
 -- Name: tbl_carga_familiar id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -2332,7 +2332,7 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar ALTER COLUMN id SET DEFAULT nextval('rr
 
 
 --
--- TOC entry 3597 (class 2604 OID 73713)
+-- TOC entry 3612 (class 2604 OID 192502)
 -- Name: tbl_expediente id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -2340,7 +2340,7 @@ ALTER TABLE ONLY rrhh.tbl_expediente ALTER COLUMN id SET DEFAULT nextval('rrhh.t
 
 
 --
--- TOC entry 3600 (class 2604 OID 73714)
+-- TOC entry 3615 (class 2604 OID 192503)
 -- Name: tbl_permisos id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -2348,7 +2348,7 @@ ALTER TABLE ONLY rrhh.tbl_permisos ALTER COLUMN id SET DEFAULT nextval('rrhh.tbl
 
 
 --
--- TOC entry 3603 (class 2604 OID 73715)
+-- TOC entry 3618 (class 2604 OID 192504)
 -- Name: tbl_reposos id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -2356,7 +2356,7 @@ ALTER TABLE ONLY rrhh.tbl_reposos ALTER COLUMN id SET DEFAULT nextval('rrhh.tbl_
 
 
 --
--- TOC entry 3606 (class 2604 OID 73716)
+-- TOC entry 3621 (class 2604 OID 192505)
 -- Name: tbl_vacaciones id; Type: DEFAULT; Schema: rrhh; Owner: postgres
 --
 
@@ -2364,7 +2364,7 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones ALTER COLUMN id SET DEFAULT nextval('rrhh.t
 
 
 --
--- TOC entry 3609 (class 2604 OID 73717)
+-- TOC entry 3624 (class 2604 OID 192506)
 -- Name: cat_sla_configuracion id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -2372,7 +2372,7 @@ ALTER TABLE ONLY tickets.cat_sla_configuracion ALTER COLUMN id SET DEFAULT nextv
 
 
 --
--- TOC entry 3588 (class 2604 OID 73718)
+-- TOC entry 3603 (class 2604 OID 192507)
 -- Name: tbl_alertas id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -2380,7 +2380,7 @@ ALTER TABLE ONLY tickets.tbl_alertas ALTER COLUMN id SET DEFAULT nextval('ticket
 
 
 --
--- TOC entry 3611 (class 2604 OID 73719)
+-- TOC entry 3626 (class 2604 OID 192508)
 -- Name: tbl_clientes_juridicos id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -2388,7 +2388,7 @@ ALTER TABLE ONLY tickets.tbl_clientes_juridicos ALTER COLUMN id SET DEFAULT next
 
 
 --
--- TOC entry 3615 (class 2604 OID 73720)
+-- TOC entry 3630 (class 2604 OID 192509)
 -- Name: tbl_clientes_naturales id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -2396,7 +2396,7 @@ ALTER TABLE ONLY tickets.tbl_clientes_naturales ALTER COLUMN id SET DEFAULT next
 
 
 --
--- TOC entry 3620 (class 2604 OID 73721)
+-- TOC entry 3635 (class 2604 OID 192510)
 -- Name: tbl_tickets id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -2404,7 +2404,7 @@ ALTER TABLE ONLY tickets.tbl_tickets ALTER COLUMN id SET DEFAULT nextval('ticket
 
 
 --
--- TOC entry 3626 (class 2604 OID 73722)
+-- TOC entry 3641 (class 2604 OID 192511)
 -- Name: tbl_tickets_bitacora id; Type: DEFAULT; Schema: tickets; Owner: postgres
 --
 
@@ -2412,8 +2412,8 @@ ALTER TABLE ONLY tickets.tbl_tickets_bitacora ALTER COLUMN id SET DEFAULT nextva
 
 
 --
--- TOC entry 3528 (class 0 OID 73344)
--- Dependencies: 224
+-- TOC entry 3543 (class 0 OID 191995)
+-- Dependencies: 226
 -- Data for Name: job; Type: TABLE DATA; Schema: cron; Owner: postgres
 --
 
@@ -2423,8 +2423,8 @@ COPY cron.job (jobid, schedule, command, nodename, nodeport, database, username,
 
 
 --
--- TOC entry 3530 (class 0 OID 73363)
--- Dependencies: 226
+-- TOC entry 3545 (class 0 OID 192022)
+-- Dependencies: 228
 -- Data for Name: job_run_details; Type: TABLE DATA; Schema: cron; Owner: postgres
 --
 
@@ -39048,12 +39048,97 @@ COPY cron.job_run_details (jobid, runid, job_pid, database, username, command, s
 1	36617	286490	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:42:00.008706-04	2026-11-23 23:42:00.00977-04
 1	36618	286766	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:43:00.009026-04	2026-11-23 23:43:00.010524-04
 1	36619	287116	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-23 23:44:00.007999-04	2026-11-23 23:44:00.009237-04
+1	36628	29219	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:40:00.009291-04	2026-11-25 13:40:00.011909-04
+1	36620	27618	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:32:00.013282-04	2026-11-25 13:32:00.015312-04
+1	36634	29966	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:46:00.009578-04	2026-11-25 13:46:00.011938-04
+1	36621	27958	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:33:00.010338-04	2026-11-25 13:33:00.013206-04
+1	36649	31630	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:01:00.009816-04	2026-11-25 14:01:00.012178-04
+1	36629	29317	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:41:00.007434-04	2026-11-25 13:41:00.009711-04
+1	36622	28258	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:34:00.014671-04	2026-11-25 13:34:00.017061-04
+1	36639	30831	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:51:00.009302-04	2026-11-25 13:51:00.011857-04
+1	36623	28335	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:35:00.009904-04	2026-11-25 13:35:00.012607-04
+1	36635	30114	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:47:00.0103-04	2026-11-25 13:47:00.01284-04
+1	36630	29519	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:42:00.010706-04	2026-11-25 13:42:00.01367-04
+1	36624	28432	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:36:00.009953-04	2026-11-25 13:36:00.012711-04
+1	36653	31886	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:05:00.00988-04	2026-11-25 14:05:00.012306-04
+1	36625	28743	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:37:00.010371-04	2026-11-25 13:37:00.012711-04
+1	36631	29643	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:43:00.014942-04	2026-11-25 13:43:00.017623-04
+1	36643	31276	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:55:00.009902-04	2026-11-25 13:55:00.012594-04
+1	36626	28824	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:38:00.008914-04	2026-11-25 13:38:00.011167-04
+1	36636	30177	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:48:00.009842-04	2026-11-25 13:48:00.01219-04
+1	36632	29772	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:44:00.014967-04	2026-11-25 13:44:00.017372-04
+1	36627	29052	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:39:00.010122-04	2026-11-25 13:39:00.013411-04
+1	36640	30976	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:52:00.008005-04	2026-11-25 13:52:00.009797-04
+1	36637	30246	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:49:00.008897-04	2026-11-25 13:49:00.01146-04
+1	36633	29854	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:45:00.009232-04	2026-11-25 13:45:00.011945-04
+1	36646	31447	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:58:00.009904-04	2026-11-25 13:58:00.012374-04
+1	36648	31573	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:00:00.009971-04	2026-11-25 14:00:00.012363-04
+1	36641	31109	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:53:00.009703-04	2026-11-25 13:53:00.012002-04
+1	36638	30354	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:50:00.008145-04	2026-11-25 13:50:00.009849-04
+1	36644	31353	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:56:00.009958-04	2026-11-25 13:56:00.012336-04
+1	36642	31229	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:54:00.010208-04	2026-11-25 13:54:00.012614-04
+1	36647	31503	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:59:00.01005-04	2026-11-25 13:59:00.012506-04
+1	36645	31385	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 13:57:00.009556-04	2026-11-25 13:57:00.012167-04
+1	36654	31958	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:06:00.010212-04	2026-11-25 14:06:00.012707-04
+1	36651	31742	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:03:00.009925-04	2026-11-25 14:03:00.012302-04
+1	36650	31698	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:02:00.01045-04	2026-11-25 14:02:00.012914-04
+1	36652	31825	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:04:00.009879-04	2026-11-25 14:04:00.012223-04
+1	36655	32011	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:07:00.00981-04	2026-11-25 14:07:00.012221-04
+1	36656	32089	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:08:00.009702-04	2026-11-25 14:08:00.012187-04
+1	36657	32163	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:09:00.009053-04	2026-11-25 14:09:00.011434-04
+1	36658	32235	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:10:00.010238-04	2026-11-25 14:10:00.01261-04
+1	36680	33525	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:32:00.008378-04	2026-11-25 14:32:00.010129-04
+1	36694	36415	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:46:00.009876-04	2026-11-25 14:46:00.012531-04
+1	36659	32300	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:11:00.01024-04	2026-11-25 14:11:00.012784-04
+1	36668	32838	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:20:00.009039-04	2026-11-25 14:20:00.011868-04
+1	36675	33244	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:27:00.010184-04	2026-11-25 14:27:00.012581-04
+1	36660	32367	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:12:00.010196-04	2026-11-25 14:12:00.012617-04
+1	36688	34987	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:40:00.008965-04	2026-11-25 14:40:00.011719-04
+1	36669	32905	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:21:00.00831-04	2026-11-25 14:21:00.010536-04
+1	36661	32439	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:13:00.010426-04	2026-11-25 14:13:00.012877-04
+1	36681	33556	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:33:00.015179-04	2026-11-25 14:33:00.017574-04
+1	36662	32496	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:14:00.008887-04	2026-11-25 14:14:00.011213-04
+1	36676	33286	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:28:00.010118-04	2026-11-25 14:28:00.0125-04
+1	36670	32955	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:22:00.010025-04	2026-11-25 14:22:00.012347-04
+1	36663	32549	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:15:00.01007-04	2026-11-25 14:15:00.012518-04
+1	36685	34130	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:37:00.009913-04	2026-11-25 14:37:00.012618-04
+1	36664	32622	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:16:00.009855-04	2026-11-25 14:16:00.012476-04
+1	36671	32997	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:23:00.009467-04	2026-11-25 14:23:00.011884-04
+1	36665	32666	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:17:00.010078-04	2026-11-25 14:17:00.01249-04
+1	36677	33337	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:29:00.008837-04	2026-11-25 14:29:00.011231-04
+1	36672	33081	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:24:00.009181-04	2026-11-25 14:24:00.011594-04
+1	36666	32728	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:18:00.009891-04	2026-11-25 14:18:00.012255-04
+1	36682	33625	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:34:00.009573-04	2026-11-25 14:34:00.012041-04
+1	36667	32783	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:19:00.009555-04	2026-11-25 14:19:00.011898-04
+1	36673	33134	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:25:00.00945-04	2026-11-25 14:25:00.01139-04
+1	36678	33391	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:30:00.009592-04	2026-11-25 14:30:00.01227-04
+1	36698	37603	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:50:00.009829-04	2026-11-25 14:50:00.012291-04
+1	36674	33189	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:26:00.010335-04	2026-11-25 14:26:00.012843-04
+1	36691	35417	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:43:00.011439-04	2026-11-25 14:43:00.015295-04
+1	36686	34386	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:38:00.00894-04	2026-11-25 14:38:00.011386-04
+1	36679	33466	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:31:00.008845-04	2026-11-25 14:31:00.010837-04
+1	36683	33845	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:35:00.009311-04	2026-11-25 14:35:00.011644-04
+1	36689	35070	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:41:00.010768-04	2026-11-25 14:41:00.0136-04
+1	36684	33981	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:36:00.010019-04	2026-11-25 14:36:00.012395-04
+1	36687	34705	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:39:00.009329-04	2026-11-25 14:39:00.011635-04
+1	36693	36134	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:45:00.009534-04	2026-11-25 14:45:00.011925-04
+1	36690	35155	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:42:00.008234-04	2026-11-25 14:42:00.01081-04
+1	36692	35708	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:44:00.008797-04	2026-11-25 14:44:00.011441-04
+1	36696	37190	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:48:00.009758-04	2026-11-25 14:48:00.012476-04
+1	36695	36765	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:47:00.010477-04	2026-11-25 14:47:00.013039-04
+1	36697	37353	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:49:00.00975-04	2026-11-25 14:49:00.012069-04
+1	36699	37745	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:51:00.010084-04	2026-11-25 14:51:00.012567-04
+1	36700	38103	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:52:00.009032-04	2026-11-25 14:52:00.011601-04
+1	36701	38354	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:53:00.009284-04	2026-11-25 14:53:00.012003-04
+1	36702	38468	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:54:00.009465-04	2026-11-25 14:54:00.012366-04
+1	36703	38615	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:55:00.009277-04	2026-11-25 14:55:00.011789-04
+1	36704	38739	db_general_mercosur	postgres	SELECT tickets.fn_verificar_y_actualizar_tickets_vencidos();	succeeded	1 row	2026-11-25 14:56:00.00937-04	2026-11-25 14:56:00.0121-04
 \.
 
 
 --
--- TOC entry 3915 (class 0 OID 73396)
--- Dependencies: 227
+-- TOC entry 3932 (class 0 OID 192056)
+-- Dependencies: 229
 -- Data for Name: tbl_enlaces; Type: TABLE DATA; Schema: drive; Owner: postgres
 --
 
@@ -39062,8 +39147,8 @@ COPY drive.tbl_enlaces (id, str_nombre_enlace, fecha_expiracion, usuario_id, str
 
 
 --
--- TOC entry 3916 (class 0 OID 73400)
--- Dependencies: 228
+-- TOC entry 3933 (class 0 OID 192065)
+-- Dependencies: 230
 -- Data for Name: tbl_enlaces_archivos; Type: TABLE DATA; Schema: drive; Owner: postgres
 --
 
@@ -39072,8 +39157,8 @@ COPY drive.tbl_enlaces_archivos (id, enlace_id, str_nombre_archivo, str_ruta_arc
 
 
 --
--- TOC entry 3918 (class 0 OID 73408)
--- Dependencies: 230
+-- TOC entry 3935 (class 0 OID 192077)
+-- Dependencies: 232
 -- Data for Name: tbl_enlaces_descargas; Type: TABLE DATA; Schema: drive; Owner: postgres
 --
 
@@ -39082,8 +39167,8 @@ COPY drive.tbl_enlaces_descargas (id, enlace_id, ip_origen, user_agent, fecha_de
 
 
 --
--- TOC entry 3921 (class 0 OID 73416)
--- Dependencies: 233
+-- TOC entry 3938 (class 0 OID 192087)
+-- Dependencies: 235
 -- Data for Name: tbl_urls_cortas; Type: TABLE DATA; Schema: drive; Owner: postgres
 --
 
@@ -39098,8 +39183,8 @@ COPY drive.tbl_urls_cortas (id, str_titulo, str_url_original, codigo_corto, usua
 
 
 --
--- TOC entry 3922 (class 0 OID 73423)
--- Dependencies: 234
+-- TOC entry 3939 (class 0 OID 192100)
+-- Dependencies: 236
 -- Data for Name: tbl_urls_cortas_clics; Type: TABLE DATA; Schema: drive; Owner: postgres
 --
 
@@ -39115,8 +39200,8 @@ COPY drive.tbl_urls_cortas_clics (id, url_corta_id, ip_origen, user_agent, fecha
 
 
 --
--- TOC entry 3926 (class 0 OID 73432)
--- Dependencies: 238
+-- TOC entry 3943 (class 0 OID 192111)
+-- Dependencies: 240
 -- Data for Name: cat_datos_maestros; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -39172,8 +39257,8 @@ COPY public.cat_datos_maestros (id, str_tipo, str_nombre, str_descripcion, bol_a
 
 
 --
--- TOC entry 3928 (class 0 OID 73441)
--- Dependencies: 240
+-- TOC entry 3945 (class 0 OID 192127)
+-- Dependencies: 242
 -- Data for Name: cat_departamentos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -39193,8 +39278,8 @@ COPY public.cat_departamentos (id, str_nombre, str_descripcion, created_at, upda
 
 
 --
--- TOC entry 3930 (class 0 OID 73447)
--- Dependencies: 242
+-- TOC entry 3947 (class 0 OID 192137)
+-- Dependencies: 244
 -- Data for Name: cat_opciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -39219,8 +39304,8 @@ COPY public.cat_opciones (id, str_nombre, bol_eliminado, fecha_creacion, str_rut
 
 
 --
--- TOC entry 3931 (class 0 OID 73454)
--- Dependencies: 243
+-- TOC entry 3948 (class 0 OID 192148)
+-- Dependencies: 245
 -- Data for Name: cat_roles; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -39234,8 +39319,8 @@ COPY public.cat_roles (id, str_nombre, str_descripcion, created_at, updated_at) 
 
 
 --
--- TOC entry 3932 (class 0 OID 73459)
--- Dependencies: 244
+-- TOC entry 3949 (class 0 OID 192157)
+-- Dependencies: 246
 -- Data for Name: cat_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -39249,8 +39334,8 @@ COPY public.cat_sistemas (id, str_sistema, str_descripcion, bol_activo, created_
 
 
 --
--- TOC entry 3933 (class 0 OID 73467)
--- Dependencies: 245
+-- TOC entry 3950 (class 0 OID 192171)
+-- Dependencies: 247
 -- Data for Name: tbl_auth_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -39266,8 +39351,8 @@ COPY public.tbl_auth_tokens (id, user_id, token, created_at, expires_at, used, s
 
 
 --
--- TOC entry 3937 (class 0 OID 73477)
--- Dependencies: 249
+-- TOC entry 3954 (class 0 OID 192187)
+-- Dependencies: 251
 -- Data for Name: tbl_roles_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -39287,8 +39372,8 @@ COPY public.tbl_roles_sistemas (id, rol_id, sistema_id, created_at, updated_at, 
 
 
 --
--- TOC entry 3939 (class 0 OID 73484)
--- Dependencies: 251
+-- TOC entry 3956 (class 0 OID 192200)
+-- Dependencies: 253
 -- Data for Name: tbl_roles_sistemas_opciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -39330,13 +39415,12 @@ COPY public.tbl_roles_sistemas_opciones (id, rol_sistema_id, opcion_id) FROM std
 
 
 --
--- TOC entry 3942 (class 0 OID 73489)
--- Dependencies: 254
+-- TOC entry 3959 (class 0 OID 192208)
+-- Dependencies: 256
 -- Data for Name: tbl_usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apellido, str_email, str_password, bol_activo, created_at, updated_at, dmt_fecha_nacimiento, str_direccion, str_usuario, str_telefono, str_contacto_emergencia, fec_ultimo_acceso) FROM stdin;
-1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$0N9CZGs3cq1pMUMt/vOa7e0/TdWyd1ziWgs3zMQC4BvC4PykCLoDW	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-11-23 23:43:29.936719
 62	5	29571871	Albert	Campos	acampos@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:40:29.984515-04	\N	\N	acampos	\N	\N	\N
 102	5	32061634	Cladimar	Zambrano	czambrano@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-11 16:00:09.841711-04	\N	\N	czambrano	\N	\N	2026-11-03 09:47:30.221438
 81	5	29637599	Dayerling	Manrique	dmanrique@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-11-03 09:43:05.809756-04	\N	\N	dmanrique	\N	\N	2026-11-03 09:44:10.034971
@@ -39378,7 +39462,6 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 2	1	27474427	Yineska	Jaramillo	yjaramillo@mercosur.com.ve	\N	t	2026-10-01 11:51:44.544172-04	2026-10-10 21:15:44.108154-04	\N	\N	yjaramillo	\N	\N	2026-11-19 11:28:55.283057
 106	11	20303001	Carolaine	Noguera	cnoguera@mercosur.com.ve	\N	t	2026-11-20 09:24:10.013662-04	2026-11-20 11:22:34.648222-04	\N	\N	cnoguera	\N	\N	2026-11-20 11:22:48.959278
 4	1	16379712	Neel Ezequiel	Barazarte Aché	nbarazarte@mercosur.com.ve	\N	t	2026-10-01 14:51:25.418478-04	2026-10-09 21:12:50.402422-04	\N	\N	nbarazarte	\N	\N	2026-11-20 11:20:52.928867
-74	5	32227026	Eleany	Gil	egil@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-15 14:20:44.27114-04	\N	\N	egil	\N	\N	2026-11-23 22:54:33.695084
 61	5	13409801	Helianta	Blanco	hblanco@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-18 20:13:17.191674-04	\N	\N	hblanco	\N	\N	2026-11-23 22:47:54.419341
 69	6	27653272	Georgia Nazareth	Dominguez Hernandez	gdominguez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-01 18:42:20.690565-04	\N	\N	gdominguez	\N	\N	2026-11-23 22:55:26.324157
 65	5	31758735	Moises	Chacon	mchacon@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-18 16:44:48.041433-04	\N	\N	mchacon	\N	\N	2026-11-23 21:07:37.277751
@@ -39387,12 +39470,14 @@ COPY public.tbl_usuarios (id, departamento_id, str_cedula, str_nombre, str_apell
 63	6	20674807	Luis Enrique	Castillo Marquez	lcastillo@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-11-23 19:39:20.680409-04	\N	\N	lcastillo	\N	\N	2026-11-23 22:46:30.713766
 77	2	17962449	Adys Maria	Gonzalez Velasquez	agonzalez@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-11-23 20:41:21.599068-04	\N	\N	agonzalez	\N	\N	2026-11-23 20:41:29.923584
 68	2	30180999	Mariangel Fara	Delgado Salazar	mdelgado@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-11-23 20:42:13.374346-04	\N	\N	mdelgado	\N	\N	2026-11-23 20:42:52.166569
+74	5	32227026	Eleany	Gil	egil@mercosur.com.ve	\N	t	2026-10-01 16:41:00.998101-04	2026-10-15 14:20:44.27114-04	\N	\N	egil	\N	\N	2026-11-25 14:46:29.219855
+1	1	00000000	Admin	Mercosur	sistemasmcdb@mercosur.com.ve	$2a$10$0N9CZGs3cq1pMUMt/vOa7e0/TdWyd1ziWgs3zMQC4BvC4PykCLoDW	t	2026-09-10 13:13:24.007018-04	2026-10-01 11:49:40.344834-04	\N	\N	admin	\N	\N	2026-11-25 14:47:18.985976
 \.
 
 
 --
--- TOC entry 3943 (class 0 OID 73497)
--- Dependencies: 255
+-- TOC entry 3960 (class 0 OID 192225)
+-- Dependencies: 257
 -- Data for Name: tbl_usuarios_opciones_excepciones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -39401,8 +39486,8 @@ COPY public.tbl_usuarios_opciones_excepciones (id, usuario_id, opcion_id, bol_pe
 
 
 --
--- TOC entry 3945 (class 0 OID 73504)
--- Dependencies: 257
+-- TOC entry 3962 (class 0 OID 192238)
+-- Dependencies: 259
 -- Data for Name: tbl_usuarios_roles_sistemas; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -39615,8 +39700,8 @@ COPY public.tbl_usuarios_roles_sistemas (id, usuario_id, rol_sistema_id, bol_act
 
 
 --
--- TOC entry 3949 (class 0 OID 73567)
--- Dependencies: 271
+-- TOC entry 3966 (class 0 OID 192315)
+-- Dependencies: 273
 -- Data for Name: tbl_amonestaciones; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -39625,8 +39710,8 @@ COPY rrhh.tbl_amonestaciones (id, usuario_id, motivo_id, str_motivo_descripcion,
 
 
 --
--- TOC entry 3951 (class 0 OID 73575)
--- Dependencies: 273
+-- TOC entry 3968 (class 0 OID 192326)
+-- Dependencies: 275
 -- Data for Name: tbl_carga_familiar; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -39635,8 +39720,8 @@ COPY rrhh.tbl_carga_familiar (id, usuario_id, parentesco_id, nombre_completo, fe
 
 
 --
--- TOC entry 3953 (class 0 OID 73581)
--- Dependencies: 275
+-- TOC entry 3970 (class 0 OID 192338)
+-- Dependencies: 277
 -- Data for Name: tbl_expediente; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -39645,8 +39730,8 @@ COPY rrhh.tbl_expediente (id, str_num_expediente, usuario_id, dmt_fecha_exp, bol
 
 
 --
--- TOC entry 3955 (class 0 OID 73587)
--- Dependencies: 277
+-- TOC entry 3972 (class 0 OID 192347)
+-- Dependencies: 279
 -- Data for Name: tbl_permisos; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -39655,8 +39740,8 @@ COPY rrhh.tbl_permisos (id, usuario_id, motivo_id, str_motivo_descripcion, dmt_f
 
 
 --
--- TOC entry 3957 (class 0 OID 73595)
--- Dependencies: 279
+-- TOC entry 3974 (class 0 OID 192358)
+-- Dependencies: 281
 -- Data for Name: tbl_reposos; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -39665,8 +39750,8 @@ COPY rrhh.tbl_reposos (id, usuario_id, motivo_id, str_motivo_descripcion, tim_fe
 
 
 --
--- TOC entry 3959 (class 0 OID 73603)
--- Dependencies: 281
+-- TOC entry 3976 (class 0 OID 192369)
+-- Dependencies: 283
 -- Data for Name: tbl_vacaciones; Type: TABLE DATA; Schema: rrhh; Owner: postgres
 --
 
@@ -39675,8 +39760,8 @@ COPY rrhh.tbl_vacaciones (id, usuario_id, int_total_dias, dmt_fecha_desde, dmt_f
 
 
 --
--- TOC entry 3961 (class 0 OID 73609)
--- Dependencies: 283
+-- TOC entry 3978 (class 0 OID 192378)
+-- Dependencies: 285
 -- Data for Name: cat_sla_configuracion; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
@@ -39689,8 +39774,8 @@ COPY tickets.cat_sla_configuracion (id, prioridad_id, tiempo_maximo, activo) FRO
 
 
 --
--- TOC entry 3948 (class 0 OID 73512)
--- Dependencies: 260
+-- TOC entry 3965 (class 0 OID 192252)
+-- Dependencies: 262
 -- Data for Name: tbl_alertas; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
@@ -39699,8 +39784,8 @@ COPY tickets.tbl_alertas (id, caso_id, usuario_id, str_tipo_alerta, str_mensaje,
 
 
 --
--- TOC entry 3964 (class 0 OID 73615)
--- Dependencies: 286
+-- TOC entry 3981 (class 0 OID 192388)
+-- Dependencies: 288
 -- Data for Name: tbl_clientes_juridicos; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
@@ -40622,12 +40707,13 @@ COPY tickets.tbl_clientes_juridicos (id, str_rif, str_razon_social, str_telefono
 915	j994390	\N	02120000000	agrohermesca@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 916	t	venezolano  c a    faven    sociedad en promocion fondo agroindustrial	04144248921	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 917	t1	\N	02120000000	invierte@venezuelamobilityventures.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+918	j500146183	grupo super boletos 101, ca	04265172551	contabilidad@goliiive.com	["gestion"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
 \.
 
 
 --
--- TOC entry 3966 (class 0 OID 73624)
--- Dependencies: 288
+-- TOC entry 3983 (class 0 OID 192398)
+-- Dependencies: 290
 -- Data for Name: tbl_clientes_naturales; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
@@ -40967,7 +41053,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 332	v10140455	felix  octavio	aguilar  alvarado	04166551377	foaa6903@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 333	v10140697	eloy  felipe	rodriguez ballesteros	04241603349	erodriguez.ths2018@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 334	v10143523	angel benjamin	palacio cordero	04145172818	angelpalacio04@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-335	v10144185	eladio alexander	silva quintero	+584126080666	eladiosilvaq@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 336	v10146766	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 337	v10147546	jose pablino	siavato arenas	+584266016768	pablino.siavatto@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 338	v10149690	manuel gerardo	naranjo vivas	02418353621	manuelnaranjo@hotmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -41922,7 +42007,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 1282	v10773111	jaiker jose	reyes figueroa	04262323059	jaiker.reyes@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 1283	v10774468	aurelis soledad	freitez meza	04245651648	freitezaurelis@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 1284	v10774836	beatriz elena	rondon montesinos	+584120531813	bearondon@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-1285	v10774888	nestor rafael	figuera uribe	+584142117749	nerrafi@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 1286	v10774951	carlo rodolfo	de marchis frigo	4120520568	2way.ca@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 1287	v10775253	yamisela josefina	pastran aguilar	04245032631	yamijopa@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 1288	v10775287	pascual antonio	riera perozo	+584166251964	pascualrp@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -42572,6 +42656,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 1930	v11123874	karina coromoto	herrera martinez	04161258359	herreramartinezkarina3@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 1931	v11124123	ana celida	garcia noguera	04242569442	ocang29@hotmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 1932	v11124270	reny tony	ramirez	04124404099	renny.ramirez@hotmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+48070	v4456648	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 1933	v11124582	yorvan gustavo	villegas	04121786550	villegasyorvan@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 1934	v11124675	laurelys beatriz	caldera	04228883638	laurelyscaldera@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 1935	v11124854	francy del valle	romero  delgado	04164351282	francheskaromero980@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -43693,6 +43778,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 3050	v11739624	fidel eduardo	barreat guilarte	+584241768947	fidelbarreat10@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 3051	v11739672	pedro raul	yaselli zarikian	04122713152	pyaselli@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 3052	v11739815	danilir	ochoa gonzalez	04125277163	danilirochoag@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+48071	v4456743	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 3053	v11739909	marcos antonio	tinedo moises	04129736891	mtinedo@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 3054	v11740110	daniel gustavo	castro rojas	04241388086	daniel.ghcr@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 3055	v11740246	mario alejandro	esquivel  nunez	04142271521	mariomaen@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -44863,6 +44949,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 4217	v12260185	sidney jair	riverol gonzalez	+588170022	sidney.riverol@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4218	v12260318	iraima yolibeth	chavez  barrios	04242040800	chaveziraima@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4219	v12260435	daniel rafael	marcano garcia	04165245975	daniel_marcano04@yahoo.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+48072	v4456827	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4220	v12260628	francys  merliu	meneses isturiz	04163298383	ftcriptoproyecto@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4221	v12260808	luis  oswaldo	yendiz  henriquez	04126158826	genioeterno2015@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4222	v12261116	reiner sanin	sanchez perez	04124194054	reinersanin@hotmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -45064,6 +45151,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 4418	v12345678	test	recon	\N	testuser@mailinator.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4419	v12346105	alfonso  gerardo	castro  cerrada	04245899521	castroagx@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4420	v12346298	angelica del valle	rodriguez	+584120105946	rodriguezangelica532@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+48073	v4456831	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4421	v12346678	carlos  alberto	escalona  molina	04249744335	publicidadcym1428@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4422	v12346776	josmar david	dugarte villasmil	04128561460	josmardugarte@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 4423	v12348064	francisco jesus	valero zerpa	+584129706978	franciscojesusvalerozerpa@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -45822,6 +45910,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 5177	v12671575	bill alexander	vasquez  martinez	04241575278	billvasquez2405@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 5178	v12671770	roberto julio	jimenez martinez	04241319067	robertojimenez166@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 5179	v12672268	pedro francisco	hernandez lopez	04123594872	sponkycripto2021@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+48074	v4456909	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 5180	v12672675	hector simon	mata gutierrez	04147978033	hectormata2407@hotmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 5181	v12672824	regina carmen	vasquez	04126212563	regina_cvasquez@hotmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 5182	v12674670	carlos jose	naveda romero	04145479569	cj.naveda.romero@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -46226,6 +46315,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 5581	v12834278	marvel rosely	becerra tovar	04129902776	marvel12rosely5@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 5582	v12834816	tom raul	sanchez ayala	04241680371	tom5whp@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 5583	v12834846	yennifer nairit	hernandez soto	04127000358	yenniferh@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+48075	v4456924	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 5584	v12834980	carmen elena	amarista rivas	04143175550	amaristacarmen2@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 5585	v12834992	jolis maria	peña carrero	04241262240	jolispena534@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 5586	v12835199	miguel jose	rodriguez marcano	+584148430333	mrodriguezfcp@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -47282,6 +47372,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 6635	v13306042	freddy alexander	varela sanchez	04247785999	freddyvarelasanchez@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 50426	v7242145	fanny	garcia   inactivo	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6636	v13306050	richard alberto	guerrero guerrero	04247364999	richardguerrero1978.lagrita@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+48076	v4456990	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6637	v13306865	ely marbella	bautista hevia	04147340438	suanisaray@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6638	v13307219	leonardo andres	trujillo aponte	04129938313	leo.trujillo@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6639	v13307308	jose antonio	garcia perez	04127867010	joseagarpe@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -47391,7 +47482,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 6743	v1336275	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6744	v13366094	jose	velasco   inactivo	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6745	v1336728	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-6746	v13368040	jose alfredo	larez herrera	+584145066677	lareza547@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6747	v13368132	ronny javier	ayala rodriguez	04248786242	ronnyjayalar@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6748	v13368581	melvin  alfredo	algara rios	04248551155	melvin.andrea27@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6750	v13369501	carleny carolina	ramirez aragort	04248831781	ccra1979@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -47486,6 +47576,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 6839	v13412964	eddy josefina	marquez  duque	04125093634	eddyave31@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6840	v13415079	andy  samir	solera  puerta	04120684895	andysolera02@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6841	v1341668	guido ramon	rodriguez barela	02120000000	guidrodri@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+51534	v8844707	allison	acosta   inactivo	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6842	v13417732	presley  de jesus	celiz gamboa	04142457271	presley.celiz@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6843	v13417984	marines carolina	ortiz lugo	04146847507	marinesbonita2026@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 6844	v13419059	carmen judith	ortiz ortiz	04242754002	carmenortiz242@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -48060,7 +48151,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 7413	v13620691	felix elias	gonzalez lopez	04243854163	felixgon08@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 7414	v13621120	carlos  gustavo	perez  rivas	04243297839	carlos_gustavo_01@hotmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 7415	v13621262	dino	di rosa ulloa	+584125683458	dinodirosau@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-7416	v13622115	carmen aracelis	cabrieles yvirma	+584142328787	yvirma2025@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 7417	v1362354	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 7418	v13624180	dugoberto de jesus	perdomo perdomo	04146737352	dugoberto@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 7419	v1362455	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -48957,6 +49047,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 8306	v13968910	rosmary	jimenez diaz	04125600146	rosmajd568@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8307	v13968974	manuel alejandro	caldera rodriguez	04241165187	elmanucaldera@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8359	v13987972	mari  trini	marquez pe a	04144133693	invermaritrini@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+9707	v14496650	romulo orlando	rodriguez diaz	04162261367	romulor2379@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8308	v13969048	veronica  mercedes	perez  mujica	04241510640	veronica28523@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8309	v13969091	yonamin	garcia mendoza	04241218530	yonamigarcia@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8310	v13969145	edgar leonardo	suarez rondon	04128212129	suarez.leonardo27@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -49312,7 +49403,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 8664	v14072121	beatris coromoto	blanco echenique	04129361474	beatris.blanco@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8665	v14072504	will alfonso	montaña jimenez	+584143059245	wamj43@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8666	v14072612	tito jose	rosales	04122988913	titojoser@yahoo.es	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-8667	v14072708	nardy alejandra	torres de ramos mata	04129208838	nardytorres@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8668	v14072778	oswaldo alberto	herrera gonzalez	04243350616	oswaldoyantar1@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8669	v14072789	ana freiddy	suescun gomez	04242816804	anafsun1979@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 8670	v14072852	yarida grabiela	lopez guedez	04122652825	yaridalopez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -50353,7 +50443,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 9704	v14494651	oramaika	espinoza duarte	02125758185	oramaikae@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 9705	v14495109	juan pablo	ojeda monia	04120186778	jereyaban@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 9706	v14495175	omar  alexis	cede o  eslava	04264235734	cedeo.omar51@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-9707	v14496650	romulo orlando	rodriguez diaz	04162261367	romulor2379@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 9708	v14498800	luis miguel	mota gonzalez	+584147961779	evangemota@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 9709	v14498878	joan manuel	martinez	04125931780	joan16032010@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 9710	v14499349	carlos luis	limpio marcano	04248078882	carlosll6979@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -52357,7 +52446,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 11710	v15348140	jesus rafael	rivero totesaut	04126982846	jrrtotesaut@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 11711	v15348242	ramon antonio	sambrano alvarez	04265901813	neorasa@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 11712	v15349105	maria raquel	narvasco saavedra	04145134225	narvascoraquel@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-11713	v15349873	oscar jose	betancourt bastidas	+584267920002	oscarbetancourt249@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 11714	v15351516	maria  elena	hernandez  vasquez	04245805470	marilena.hernandez@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 11715	v15352290	maikol  manuel	villacinda carreno	04126746696	mmvillacarr@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 11716	v1535256	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -54378,7 +54466,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 13733	v16179902	wilson omar	sanchez poveda	04241732655	wilsonosp5@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13734	v16180006	laura josefina	campos buriel	04121886189	laurajcamposb@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13735	v16180677	elizabeth andreina	santoyo de armas	+584124746619	santelymakeup@hotmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-13736	v16181285	mario alexander	osuna herrera	+584122538292	osunamario481@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13737	v16181365	ruben  de la cruz	paruta  millan	04120615675	rubenparuta82@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13738	v16181898	jhonny alexander	ramirez vasquez	04129205842	jarv1983@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13739	v16182430	jose luis	hernandez mota	04248402036	jh4254414@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -54417,7 +54504,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 13772	v16201627	nelson jesus	sanchez gutierrez	04123695280	nelsonsanchezgutierrez5@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13773	v16202410	doris alejandra	cuevas hernandez	04241496667	asalomemakeup@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13774	v16202567	jonathan oswaldo	valera jaimes	+584249085663	jonathan.valera@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-13775	v16202575	isaac argenis	blanco cueva	+584125899504	isaacblanco73@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13776	v16202614	eduardo	heredia	04242419017	herediaeduardo8@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13777	v16202730	yoleimy carolina	gonzalez de cedeño	04242584084	yolicede01@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 13778	v16202856	christian david	villasana medina	04241972081	christian558222@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -55434,7 +55520,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 14789	v16582549	evelio jose	garcia aponte	04244176995	sibr.evelio@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 14790	v16584524	igor isaac	salazar rodriguez	+585240410	28913002rsii@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 14791	v16584580	keberlin yonina	perez perez	04122614440	keberlin08@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-14792	v16584829	rafael	fung yee	+584140302458	rfynb983@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 14793	v16585534	emilbe joselith	alvarado	04145232236	emilbealvarado2025@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 14794	v16586015	jacknelly carolina	rojas pirela	02123658227	jacknellyrojas@hotmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 14795	v16586230	jackson alfonso	borjas gonzález	04122096390	jack16586230@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -56898,6 +56983,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 16254	v17182515	alcides jose	castillo contreras	04246202766	alcidescc@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 16255	v17183649	yarelis coromoto	vargas navarro	04141763379	odyarelisvargas@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 16256	v17184364	luis  enrique	borges parra	04125149958	borgesparra@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+19293	v18321756	william  alejandro	avila diaz	04141430853	avilaale338@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 16257	v17184404	jose daniel	villa rodriguez	04127107036	josedanielvilla620@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 16258	v1718446	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 16259	v17186561	noritza edy	urdaneta rozo	04242252531	yariku1486@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -57311,7 +57397,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 16667	v17366056	jose luis	rodriguez villegas	04143348430	joseluis2411@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 16668	v17366071	miguel   angel	pena arias	04144887282	ing.miguel.apa07@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 16669	v17366117	victor daniel	aguilar malpa	04265320847	xocuerv@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-16670	v17366183	deybis javier	peralta sanchez	+584144808453	deybisperalta244@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 16671	v17366577	rafael david	bravo maldonado	04123111702	mercadobravoca@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 16672	v17366614	pedro  luis	rodriguez yepez	04128950560	pedro09arpia29@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 16673	v17366690	jaime manuel	escalona perdomo	04128050619	jaimeescalona12@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -58791,6 +58876,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 18148	v17891054	yenny beatriz	clameran reverol	04244211210	yclameranr@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 18149	v1789120	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 18150	v17892151	jose gregorio	garcia  garcia	04144226330	jsgarcia1901@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+19294	v18323775	jesus gustavo	palacios	+584122734933	palacios291284@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 18151	v17892758	alejandra yoselin	arias lopez	04124234812	alejandrayoselinariaslopez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 18152	v17893675	fernando jose	da silva lovera	04123222895	fernandodasilva757@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 18153	v17895297	morelba nazaret	rivas rojas	02742210407	nrivas@grupoapanm.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -59932,8 +60018,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 19290	v18320560	jesus antonio	colmenares contreras	04244152246	jesuscolmenarescontreras@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 19291	v18320664	ronald  de jesus	briceno  rivas	04121722340	ronalddejesusbriceno@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 19292	v18321166	wilmary	alvarado gonzalez	04244473664	g.wilmary@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-19293	v18321756	william  alejandro	avila diaz	04141430853	avilaale338@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-19294	v18323775	jesus gustavo	palacios	+584122734933	palacios291284@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 19295	v18324513	johnays mercedes	moreno rosas	04125927590	johnaysm26@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 19296	v18324731	katherine dubraska	guzman perez	04141351508	dra.guzmankatherine@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 19297	v18324877	jhonathan jose	aguilar chirino	04149303071	jhonathanchirinoo@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -61274,7 +61358,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 20632	v18843995	mauricio antonio	guedez medina	+584122110825	guedezmau@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 20633	v18844211	francisco javier	mendoza lopez	04245034873	interfranco578@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 20634	v18844423	maiderling katherine	cruces montemurro	04245078697	maidcruces@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-20635	v18845678	cristhian javier	moreno orozco	+584147451148	cristhmet89@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 20636	v18847314	mairim victoria	garofano rivas	04129443813	magarofano1987@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 20637	v18847452	juan  miguel	cabrera bracho	04125475600	abogadojcabrera@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 20638	v18847613	ronald jose	velasquez malave	04120848956	cjvm2288@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -61616,7 +61699,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 20974	v18989879	priscilla de la rosa	alfaro chacon	04127512214	priscilla3a@icloud.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 20975	v18991055	charles joseph	hernandez rivas	04147310274	chhernandezr@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 20976	v18991268	maria isis	pereira ardila	04147090579	mariaisispereira2019@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-20977	v18991505	estefani milagros	acacio de rivas	+584126787960	doctoradopsico25@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 20978	v18992754	kenny josefina nazareth	gutierrez flores	04243177073	kennygf889@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 20979	v18992864	zugeidy  elismar	solorzano  morillo	04263999527	zesm.25@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 20980	v18993687	sabrina  antonietta	delgado  coronado	04242523081	sabrinadelgado537@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -61901,7 +61983,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 21259	v19107967	reyberth rodolfo	rodriguez romero	04244250605	reyberth.rodolfo@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 21260	v19108428	raul alfonso	marquez gonzalez	04121683027	rmderaulmarquez55@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 21261	v19108469	fernando jose	oropeza franco	04121123073	feropz89@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-21262	v19108574	carlos eduardo	cedeño guedez	+584124153440	cedecarlos2008@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 21263	v19109027	yudany clarelh	montiel montiel	04121101251	yudanymontielm@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 21264	v19109327	nelson daniel	velasquez moreno	04142230512	velasquez.asoc@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 21265	v19110211	eddy albannys	suarez  rivero	04128562887	edd240888@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -62965,6 +63046,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 22323	v19541062	eudes armando	lindarte  calderon	04142990344	eudesarmando@hotmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 22324	v19543916	elba maria	hera jimenez	04260333873	evahera23@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 22325	v19544622	maria fernanda	castillo	04129050626	mariafcastillo1990@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+25647	v20954039	marian evelix	amaricua fuenmayor	+584269485562	maryluis375@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 22326	v19545920	olgeddie del valle	ferrer jimenez	04129325457	ing.olgeddie.ferrer@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 22327	v19546138	luis alejandro	rincon  delgado	04127925472	rincondelgadoluis.a@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 22328	v19546658	rafael jose	calles gutierrez	04127596928	rafacallesg10@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -63367,7 +63449,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 22725	v19720329	alejandra del valle	rodriguez calderon	04242258920	alejandra19720@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 22726	v19720382	yulis carolina	lastra morales	04220271442	yulislastra2016@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 22727	v19720980	kira  alexandra	torres  bustamante	04242032845	kiratorres12@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-22728	v19721210	juan gilberto	contreras perez	+584123933986	jgcp2190@yahoo.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 22729	v19721269	omar jose	jimenez lares	04149056015	omarlares552@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 22730	v19721296	iris viviana	marcano lugo	04125736779	irianamarcano1@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 22731	v19721589	yessica	moran garcia	04126295443	ysskmg.ym@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -63661,7 +63742,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 23019	v19836795	diana andreina	sanchez	04149641692	andreinasanchez282@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 23020	v19837933	victor jose	toro finol	+584244415015	victorjtf@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 23021	v19839216	jeniree josefina	pereira barreto	04120419694	jenireepereirab1@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-23022	v19839261	wilmer rafael	lopez mota	+584126408191	wilmerlopez89@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 23023	v19839495	adolfo david	rangel mihajlow	04147923717	rangelmihajlow@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 23024	v19839651	alvaro luis	fernandez perez	04127954123	alvarofernandezperez90@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 23025	v19840163	jos  alberto	tarache	04129423624	jatarache@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -64216,7 +64296,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 23574	v20067163	eduardo abrahan	paez torrealba	04243240579	paezeduardo1107@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 23575	v20067311	luis orlando	romero nuñez	04243413022	luis.orlando.romero@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 23576	v20067379	raiza nohelia	herrera pacheco	04140816993	mdnohelia@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-23577	v20067721	alejandra suleyn	carrillo parra	+584164099374	kzsuly33@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 23578	v20067838	marco antonio	natera sayago	04121413714	natera1126@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 23579	v20067885	daniela patricia	colon hinojosa	04125252923	dradanielacolon@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 23580	v20068021	gean anthony	piñero lugo	+584122204784	gean3091@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -66285,7 +66364,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 25644	v20952993	leila  yurubi	manosalva grillo	04121314303	leilasan82@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 25645	v20953615	julio alejandro	gonzalez matute	04124436013	gonzalezmatutejulio@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 25646	v20953926	junnior josue	benitez  jimenez	04144817294	junniotbenitez@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-25647	v20954039	marian evelix	amaricua fuenmayor	+584269485562	maryluis375@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 25648	v20954366	jesus armando	marcano  vargas	04241678083	ninoting2@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 25649	v20954429	phillipe	camero diaz	04163766399	phillippecamero@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 25650	v20954741	bertha vanessa	montilla montenegro	+584126662231	berthavane85@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -67726,6 +67804,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 27085	v22171201	yojhaina isabel	hernandez rodriguez	04246129335	ing.yojhainahernandez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 27086	v22177972	thomas  eduardo	barboza  deane	04246019366	tbarcelona15@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 27087	v22180686	alice rosario	rubio briceño	+584241910140	rubioalice38@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+31990	v2569830	johsua alberto	perez rios	+584129810070	johsuaperez1996@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 27088	v22180991	jenerbith daniela	jimenez reyes	04245229512	gerenciajeny@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 27089	v22181338	eduardo jose	perez rodriguez	04245489732	eduardosnrodriguez21@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 27090	v22181372	joel  jose	tirado rangel	02512375769	tiradojoel994@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -68815,6 +68894,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 28175	v23484898	klaribelly	alvarez torres	04245378330	klaribelly.simplesite@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 28176	v23485310	adriangela	aguilar escobar	04125671833	adriaguilar0917@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 28177	v23486453	luis  andres	pena  castillo	04242979273	gabrielstyle0@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+31991	v25698464	jenson jose	garrido mora	04128958418	jeisongarrido2012@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 28178	v23486803	delvimar liedena	colmenarez colmenarez	04127503323	delvimarcolmenarezc@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 28179	v23486945	orlando jose	daza duran	+584245410867	orlandodaza27@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 28180	v23488284	alex daniel	pina arias	04167572593	alexpina364@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -69707,7 +69787,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 29068	v24073741	joel	julio solar	04120909141	jowelljulios@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29069	v24074125	gregorio david	cassiani cassiani	04124891393	cassiani125@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29070	v24074803	javier antonio	giraldo diaz	+584242820450	javiergiraldo18@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-29071	v24074919	emma maria	gutierrez  arias	04143686869	emma.gut.07@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29072	v24087758	isaac  david	llanos andrades	04141419119	isaacdavidllanos.a@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29073	v24088212	greidysmar joennyth	aguilera gutierrez	04261394415	aguileragutierrezgreidysmar@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29074	v24088539	kevin  javier	briceno marquez	04129082561	kevin123.1994@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -70610,7 +70689,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 29972	v24592403	sergio moises	inojosa rivas	04148008830	sinojosa12@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29973	v24592835	oscar antonio	pirela rodriguez	04147046695	leomar231944@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29974	v24593695	veruzka nazaret	berroteran rodriguez	+584248093350	berroteranveruzka@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-29975	v24595249	erick samuel	ramirez piña	+584121060131	smuelpina@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29976	v24595726	willian jesus	rodriguez ramirez	04121081638	rodriguezwillian95@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29977	v24596430	jose miguel	salas latuff	04146879201	salassjose1@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 29978	v24596684	jesus  miguel	jimenez gonzalez	04127855151	jesusmiguelj87@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -70645,6 +70723,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 30007	v24629286	miguel alfredo	diaz vasquez	04244618947	miguelda654@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 30008	v24629864	alejandro	lourenco goncalves	+584244496043	alejandro.lourenco1995@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 30009	v24630212	miguel adrian	archila  castro	04128604903	godd64879@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+31992	v25698482	alber jose	cuevas ayala	04128005464	alberjose253@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 30010	v24630817	marcelys daniela	casadiego benaventi	04124080918	marcelys.casadiego@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 30011	v24631429	rogmer david	guevara flores	04143444262	rogmerdgf@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 30012	v24631697	eduar nicolas	castellano artahona	04129911143	caste.130193@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -70968,7 +71047,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 30330	v24812584	yailin michell	castillo samanay	04125480623	michellsamanay21@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 30331	v24812671	reinier ricardo	castellanos munos	04241789451	rrcm50@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 30332	v24812940	jhoynner jesus	español hidalgo	04126657037	espanoljhoynner058@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-30333	v24812978	yennifer nacary	urbina sanella	+584125771672	yennifernacary@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 30334	v24813755	jose daniel	castillo rodriguez	04145672104	josecastilloro22@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 30335	v24813949	fabiana  alejandra	rossi esser	02556641014	fabiana.r.esser@hotmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 30336	v24815082	jesus miguel	garcia peña	04126605751	noisesix.booking@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -72329,6 +72407,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 31691	v25537412	albert jose	belandria contreras	04247695691	albertbelandria@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 31791	v25584869	jesus alejandro	galan parra	+584121541280	jesusgalanparra@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 31692	v25537517	edixon emilio	ramirez perez	04124765388	edixonramirez2016@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+31993	v25698647	yeckson alejandro	matinez	04124527998	yunior1martinez.ym@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 31693	v25538264	junior  gabriel	pernia  paredes	04123482776	jjjuniorperniaamarb@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 31694	v25538267	francisco  javier	pineda  reyes	04243452601	franciscopineda190795@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 31695	v25538470	evanys  julieth	diaz  aponte	04243349170	3vanyluz@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -72625,10 +72704,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 31987	v25698081	luis daniel	gomez munoz	04124521632	luisdanielgm19@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 31988	v25698115	alexander clayderman alberto	aranguren rodriguez	04242185601	alexandervonclayderman@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 31989	v25698211	jesus rodolfo	leon mejias	04243364036	jesusrlm20@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-31990	v2569830	johsua alberto	perez rios	+584129810070	johsuaperez1996@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-31991	v25698464	jenson jose	garrido mora	04128958418	jeisongarrido2012@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-31992	v25698482	alber jose	cuevas ayala	04128005464	alberjose253@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-31993	v25698647	yeckson alejandro	matinez	04124527998	yunior1martinez.ym@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 31994	v25698673	eleana carolina	tablante serrano	04243732248	tablanteeleana@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 31995	v25698789	ricardo jose	mujica nieves	04124568610	ricardojosemujicanieves@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 31996	v25700858	pedro jeses	lopez sol	04246610487	pedrojloso@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -73376,7 +73451,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 32739	v26040196	carlos eduardo	perez orea	04142103395	tecnireck@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 32740	v26040695	cleiver alexander	prado gutierrez	04241549481	cleitozx73@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 32741	v26043842	neiker moises	sulbaran zerpa	04241652644	neikersulbaran21@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-32742	v26044036	nelson eduardo	lara camacho	04122647732	nelsonelarac@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 32743	v26044061	adrialy elimary	lopez graterol	+584126194645	adryrey0717@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 32744	v26044094	julio cesar	escalona  pena	04127288083	escalonajulioc@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 32745	v26044609	lady barbara	garces barbara	04141184663	ladygarces01@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -74993,6 +75067,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 34356	v26728028	vicdalis andreina	añazco ibarra	04123668018	vicdalisa@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34357	v26728155	kleiver jose	perez varela	04247133191	kleiverjose2121@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34358	v26728245	israel  armando	carias  gonzalez	04120222653	cariasgzlz@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+38306	v28335344	angel alejandro	garcía rodríguez	+584243184319	alejandrorodrigo802@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34359	v26728248	miguel arcangel	pantoja marcano	04242994869	miguelpma1999@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34360	v26728844	ivan alejandro	gari qui ones	04126010532	ivanalejandrogq@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34361	v26728932	manuel alejandro	rafael criollo	+584241086687	manuelrafaell97@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -75248,7 +75323,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 34611	v26825449	cristina  elizabeth	hernandez  monasterios	04142488777	elizabethmonasterios99@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34612	v26825666	joshua	afonso briceño	04142042420	josh1998afonso@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34613	v26825745	rafael alejandro	adrian  alfonzo	04127701831	ralejadrain@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-34614	v26825898	alex eduardo	azocar avila	04129623586	eduardo.azocar253@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34615	v26827285	jose  ronaldo	romero labarca	04146266549	jrrl0107@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34616	v26827841	andres eduardo	fajardo fajardo	+584146150532	eduardo@tormaca.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34617	v26828639	jaaziel david	tovar lista	04248475318	jaazieltovar@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -75387,6 +75461,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 34750	v26890659	pedro alejandro	pacheco monsalve	04264578070	pachecopedroalejandro@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34751	v26892386	deisy yakelin	molina pérez	+584263789435	yakelinmp6@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34752	v26892590	alexander miguel	uribe noguera	04163489949	alexanderuribe98@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+51535	v8844929	lilian dalia	villegas mejias	04144339778	lilianvillegas8@hotmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34753	v26893348	alfredo daniel	ramos garcia	04125429807	ramosgdanielalfredo24@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34754	v26893613	rhina  nazareth	pacheco  urbina	04126312566	frhina24@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34755	v26894145	jose daniel	afonso acosta	04122081563	jdafonsoacosta@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -75485,6 +75560,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 34848	v26929383	zeus aaron	marval araujo	04244107545	zeusmarval@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34849	v26929680	raul gerardo	gonzalez gonzalez	04123777803	graul7368@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34850	v26929907	leonardo jose	valera aguiar	04244046430	leonardojvalera@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+51536	v8844987	edison maral	ruiz	+584144079658	ruedson@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34851	v26930165	wilmer jose	mora gomez	04127671854	wilme0308@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34852	v26931363	jean carlos	diaz fernandez	04120472683	jenkarlosdf@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34853	v26931758	jhon keivy	convita hernandez	+584247191531	hernandezkeivy88@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -75583,6 +75659,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 34946	v26972273	jos  gregorio	torin angulo	04125226678	jtorin26@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34947	v26972719	harold alexander	marquez suarez	+584124377318	marquezharold86@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34948	v26973266	arantxa  valeria	arvelaiz  pe a	04122682149	arantxaarvelaiz24@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+51537	v8845424	luis rafael	zambrano arroyo	04128862872	luiszambrano277@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34949	v26973310	yorfran jesus	hernandez hernandez	04243082867	yorfranh100@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34950	v26973376	anaumi victoria de la caridad	rojas pe a	04243058049	anaumivic@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 34951	v26973378	jesus omar	rodriguez  bustamante	04243017063	jeomarodri@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -78168,7 +78245,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 37531	v28040722	roxana  aidymar	viez  chuello	04246559966	roxanaviez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 37532	v28041386	fernando alberto	quintero ramirez	04127921422	fernandoalbertoquinteroramirez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 37533	v28042608	kevin brian	chirinos soto	04144687868	kbchirinos.kc@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-37534	v28043048	jesus  de nazareth	gomez gil	04269869554	jesusgomezgil438@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 37535	v28044201	robinson rafael	hernandez cordova	04248529213	rhernandezcordova580@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 37536	v28044355	jose manuel	perez guerra	04129324487	cajavalores2@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 37537	v2804504	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -78543,6 +78619,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 37906	v28188009	juan andres	martinez rodriguez	04121810013	juan.andres.mr123@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 37907	v28188494	aryam carolina	moreno iriarte	+34656668169	aryamoreno01@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 37908	v28188547	jose enrique	ordaz figueroa	+18579190471	jeordaz2000@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+51538	v8846411	silvia del valle	lizardo guevara	02120000000	lizardosilvia@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 37909	v28188784	andres jesus	gonzalez castillo	04248973404	andesgonzalezcastillos@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 37910	v28188832	jose  alejandro	bravo  romero	04128374735	jbravoromero22@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 37911	v28188898	jesus luis	betancourt fernandez	04121877018	jesusluis28188898@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -78938,7 +79015,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 38302	v28334746	gregori miguel	parra cardozo	04128474645	gmpc2102@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38304	v28335049	alejandro david	tovar ortiz	04128980782	tc.alejandro.tovar.8672@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38305	v28335178	manuel alejandro	ysturiz rivas	04144773504	ysturizalejandro@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-38306	v28335344	angel alejandro	garcía rodríguez	+584243184319	alejandrorodrigo802@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38307	v28336517	lesther daniel	quintero lucena	04124923069	lestherquintero517@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38308	v28336693	leonardo alexis	monta ez hernandez	04242145587	leonardo100820@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38309	v28337603	samuel elias	ravelo alarcon	04125300279	ravelosamuel449@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -79103,7 +79179,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 38469	v28410209	jheldem  yeray enrique	marcano  celis	04123855533	jheldem212@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38470	v28410499	oswaldo jose	morillo mu oz	04241331555	oswaldomorillo001@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38471	v28410936	jesus  alejandro	diaz  coronil	04242735526	alejocormusic@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-38472	v2841100	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38473	v28411127	eduardo david	carmona espinoza	+584245664499	ecarmona.dev@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38474	v28411528	luis ramón	farias arteaga	+584264270680	luisfarias2811@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 38475	v28411898	alannys carolina	verastegui mu oz	04126776186	alannyscvm@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -80092,7 +80167,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 39459	v29578467	keiver  jose	torrealba  quintero	04245211654	kjosetorrealba2023@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 39460	v29578768	luis  david	perez ramos	04245752716	luisdperez0602@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 39461	v29581036	enmanuel alejandro	castillo campos	04227188512	enmanuel.castillo@icloud.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-39462	v29581118	franklin samuel	arteaga  montenegro	04120373378	franklitoarteaga@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 39463	v29581164	gregory jose	revilla montenegro	04121184780	gr.josemontenegro@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 39464	v29581174	jesus moises	mayorca franco	+584123556820	moisesmayorca7@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 39465	v29581207	hanse jesus	esparragoza nieves	04243335842	hanse.esparragoza@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -80245,6 +80319,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 39612	v29622149	martin stuart	medina solorzano	04124710890	mppremartin@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 39613	v29622277	juan andres	aldana alvarez	04147813779	iphonejuan080999@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 39614	v29622505	victor eduardo	ruiz spinelli	04241216533	inversionesenbolsa3011@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+24142	v20299553	ildemar  joseline	poveda medina	04242708087	ildemarjpm@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-25 14:47:09.642297
 39615	v29622772	ernesto domenico	marquez velasquez	04120169915	ernestodomenico058@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 39616	v29622912	luis enrique	torres gil	04242447256	luistorres200259@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 39617	v29622916	sharon nicole	reveron nava	04143126569	ganache.sombramos.7o@icloud.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -83157,7 +83232,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 42529	v30684772	keiler jose	navarro montilla	04245499786	4keiler03@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42530	v30685610	zeus adonis	patinez rojas	04248304882	zeusadonis53@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42531	v30685679	frank jose eduardo	la rosa lopez	+584248213083	joseeduardolarosa4@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-42532	v30687149	moises abraham eduardo	diaz moronta	+584128333184	esteesmicorreo1919@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42533	v30687240	pedro daniel	rojas medina	04123870264	danielpedro040928@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42534	v30687300	yomesli lisbeth	urbina mendoza	+584241866670	uyomesli@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 42535	v30687437	raziel  isaac	rojas peña	04129882577	rojasraziel531@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -84309,7 +84383,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 43682	v31156816	cristhian alejandro	figueroa  castaneda	04125820932	krissdaryfor@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 43683	v31157072	jose gregorio	navarro  marquez	04248494074	josenavarro200516@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 43684	v31157375	daniela zaraith	guevara larios	+584248889945	zaraithlarios@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-43685	v31158488	luis jose	moreno rosales	04124519910	luisjosemorenorosales171@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 43686	v31159306	santiago sebastian	medina cozier	+584249508337	tiagocompmed@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 43687	v31159361	angel daniel	anaya hernandez	04126535987	angelanaya.4540@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 43688	v31160018	salvador ismail	rodriguez palma	04242549452	salvador.rodriguez100323@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -87578,7 +87651,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 46941	v3386550	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 46942	v3386707	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 46943	v3386827	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-46944	v3386848	jose ramon	leon uscategui	04144336989	leonuzcategui2015@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 46945	v3386994	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 46946	v33872480	leonel de jesus	ramos pinto	04123407525	lr084526@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 46947	v33872503	yankelvin jose	gando navarro	04120763600	yankelvin.gandonavarro@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -88689,13 +88761,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 48067	v4456171	gladys maribel	guill n s nchez	02120000000	maribelguillen2179@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48068	v4456239	maria isabel	garcia meijes	04144195886	mary_isabel10@hotmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48069	v4456310	angelo	lanza scioscia	04144997030	angelolanza1@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-48070	v4456648	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-48071	v4456743	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-48072	v4456827	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-48073	v4456831	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-48074	v4456909	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-48075	v4456924	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-48076	v4456990	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48077	v4456999	mauro fioravante	nascimbeni de mari	04144821397	mauronascimbeni54@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48078	v4457019	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48079	v4457064	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -88819,7 +88884,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 48197	v4629306	sileny	flores santiago	04126706090	solesmita@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48198	v4631415	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48199	v4631592	jose  joaquin	rodriguez rincon	04142370656	jjrrodriguez21@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-48200	v4638310	elda rosa	talavera de vallejo	02120000000	talaveraelda@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48201	v4644132	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48202	v4645403	victor alfonso	carrillo camargo	04120408014	viktorcarrillo46@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48203	v4651238	lobelia isabel	aguilera gil	04248805183	aguileralobelia@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -89393,7 +89457,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 48774	v5972847	nelly	maita rodriguez	02512543070	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48775	v5975531	jorge enrique	barrios castiblanco	04129991740	jbarrios28@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48776	v5975945	domenico	rambaldo cella	04169233277	rambaldodr@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-48777	v5976289	juan  vicente	medina  codecido	04129994434	medinacapital.invest@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48778	v5976849	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48779	v5979162	yrania del carmen	gonzalez ventura	04122163370	gonzalezyrania1@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 48780	v598763	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -90956,7 +91019,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 50342	v7184645	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 50343	v7185002	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 50344	v7185211	hilda yadira	briceño arias	04121373119	hilyabriar22@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-50345	v7185396	niza	ferrera pinto	+584160449632	nizafp333@gmail.com	["v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 50346	v7185779	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 50347	v7186110	juan carlos	gonzalez avellaneda	04243568959	juancgonzalez@yahoo.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 50348	v7186963	juana cohinta	ruiz	04129871828	juanitacoa123@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -91712,7 +91774,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 51100	v8340273	romel bartolo	rodriguez	02812694610	romel.b.rodriguez46@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51101	v8341180	antonio gaetano giuseppe	volpe gonzalez	04121371065	volpeantoniog@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51102	v8341226	carmen  del valle	gonzalez	04248474442	gonzalezcdv3@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-51103	v8341891	julio  manuel	rojas orence	02812673124	juliorojasorence@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51104	v8343756	frank jose	rondon	02812828649	frankjrve@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51105	v8344611	erylin del valle	ochoa garc a	04248092842	ochoaerylin@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51106	v8345811	danilo	alvarez  carrillo	04241795937	dalvarezcarrillo@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -91930,6 +91991,7 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 51318	v8687973	renny  ildemar	fernandez zapata	04143206657	ildemarfernandez27@gmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51319	v8688038	maria ines	carias galvis	04163472755	carias.ines97@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51320	v8688293	arminda rosa	escalona de tain	04124624709	mindaescalona@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
+52645	v10075451	pablo ramon	arias bello	04142420974	ariaspabl@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
 51321	v8688361	doris  celeste	oropeza reyes	04243369515	oropezadoriscieleste@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51322	v8688823	carlos alberto	mendez montilla	04128311850	carlosmendezmontilla@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51323	v8689053	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -92142,11 +92204,6 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 51531	v8844312	yolaima  karina	rivas  ramos	04166483002	yolaimakarinarivas@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51532	v8844391	jose	benaventa   inactivo	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51533	v8844584	yaneth josefina	alastre arape	04149413408	yanethalastre1@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-51534	v8844707	allison	acosta   inactivo	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-51535	v8844929	lilian dalia	villegas mejias	04144339778	lilianvillegas8@hotmail.com	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-51536	v8844987	edison maral	ruiz	+584144079658	ruedson@gmail.com	["v2"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-51537	v8845424	luis rafael	zambrano arroyo	04128862872	luiszambrano277@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-51538	v8846411	silvia del valle	lizardo guevara	02120000000	lizardosilvia@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51539	v8846522	ivette  coromoto	contreras  azuaje	04127823769	prof.ivettecontrerasuc@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51540	v8846654	\N	\N	02120000000	\N	["gestion"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 51541	v8847290	daniel antonio	puerta negreti	04241462155	dnegreti65@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
@@ -93177,14 +93234,13 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 52570	v9999412	angela yelisque	biera	04141013806	angelabiera69@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 52571	v9999689	eusebio	desousa de vasconcelos	04129753299	sephoraestilos@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
 52572	v9999997	mireya del valle	rada cedeno	04248251315	mireyarada.mgta@gmail.com	["gestion", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063
-24142	v20299553	ildemar  joseline	poveda medina	04242708087	ildemarjpm@gmail.com	["gestion", "v2", "portal"]	2026-11-23 09:12:52.062063	2026-11-23 09:12:52.062063	2026-11-23 21:08:24.275695
 52573	v10121750	josefa maria	angulo gil	+584128292042	alsuje11@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52574	v10341068	jose rafael	jimenez colmenares	04221200016	col54jj@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52575	v11119899	pedro jose	leon blanco	04243716981	peleon7586@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52576	v11191619	jose dionisio	villarroel arroyo	04123053064	jvillarroel8888@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52577	v11306215	edson guillermo	joves martinez	04143343717	edsonjoves@yahoo.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
-52578	v11359927	jose alexander	pirela ledezma	+584244347584	pirelazos@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52579	v11368294	henry jose	rodriguez delgado	04127347867	henrod3071@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
+52578	v11359927	jose alexander	pirela ledezma	04244347584	pirelazos@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 23:40:15.242469	2026-11-25 14:54:40.961648
 52580	v11682538	ana carolina	bianchi cotua	04249094539	anacabian@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52581	v11978032	osdilmar belen	mendez luzon	04243672032	triptoriches@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52582	v12056554	nelson	ochoa borges	04241434824	nochoa.sumex.vic@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
@@ -93192,10 +93248,8 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 52584	v12561461	miguel angel	villasana blanco	04123622236	mglvillasana@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52585	v12650877	ricci marielis	rodriguez perez	04148849004	riccimrodriguez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52586	v12772192	narven eliana	alvarez garces	04244224362	narvenalvarez22@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
-52587	v12914721	bellaliz trinidad	rattia olivares	+584224772464	bellaliz.rattia@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52588	v12983796	ankel saul	aponte pirela	04143995566	ankelaponte@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52589	v13678926	pablo jose	alvarado escalona	+584125081025	alvarapa.7@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
-52590	v13691259	gilma norelkis	hernandez silva	+584125953679	gilma.hernandez.consultora@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52591	v14061297	williams jose	urdaneta quintero	+584122580195	urdanetaq.williamsjose@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52592	v14446918	jean carlos	rangel sanchez	+584241785550	jcrangels@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52593	v14483523	marcos alberto	jara galvis	+584146388238	m.jara.g10@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
@@ -93229,10 +93283,8 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 52621	v30043087	angello isaac	padron velasquez	04143703905	angellopadron2001@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52622	v30577849	jhonny jesus	linares serrano	04122447203	jhonnylinares091@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52623	v31142934	daniel alejandro	rouffet carrillo	04143500825	danielrouffet@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
-52624	v31460372	yuretzidel del valle	larez cadamo	+584126444088	yuretzicadamo25@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52625	v31460449	ivanna cristina	guerra piñate	+584124421049	ivannaguerrap@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52626	v31699200	juan jose	guaramato hernandez	04125652994	juanguaramato7@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
-52627	v31747737	moises rafael	morillo pinto	+584127925774	morimoises06@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52628	v31784490	samuel jesus	mendoza fermin	+584126027834	samuelmf0909@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52629	v32235508	daniel alejandro	chirinos silva	04264199331	danielchirinos177@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52630	v32299828	aleyberson jesus	canelon hernandez	04143655439	aleyberson1@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
@@ -93240,12 +93292,9 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 52632	v32626919	thomas enrique	sanchez marcano	04248819701	sanchezthomasenrique@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52633	v32872005	ricardo antonio	negron de fries	04242021647	ricardoanegrond@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52634	v3899810	victor miguel	perez gainza	+584148693794	vimipega@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
-52635	v6239273	carlos omar	colmenares colmenares	+584227004654	omarcolmenares6219@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52636	v6267038	argenis antonio	leon guerra	+584141166898	argenisprimero1@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52637	v6347894	kalil	kalil abdel	+584127414424	kalilkalil1966@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52638	v6824173	hebe carolina	apitz sardi	+584242130440	evecarmin@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
-52639	v6868045	olivier rafael	schael gomez	+584142710365	olivierschael@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
-52640	v7894866	ricardo alfonso	cardenas villalobos	+584124737794	alfonsovillalobos49@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52641	v8712148	angela custodia	velazquez martinez	+584120616672	angelavelazquez65@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52642	v8826748	roberto rene	guillen rodriguez	+584144517801	eljuanki2008@gmail.com	["v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
 52643	v9279291	marina del valle	morales mayz	04248210450	marina.morales.mayz@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469	2026-11-23 23:40:15.242469
@@ -93264,10 +93313,8 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 13320	v1602317	carmen eden	rivas de yepez	04220378080	rivasdeyepezcarmeneden@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
 15533	v16896087	marcel jose	milano ojeda	04121983811	mm6463791@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
 15633	v16932812	jose antonio	guilarte velasquez	04123548812	joseguilarte24@gmail.com	["gestion", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
-17482	v17637873	gonzalo  jesus	hernandez  gallones	04123486577	todobien091@gmail.com	["gestion", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
 27284	v22356393	carlos eduardo	pantaleon pabon	51982651859	kameroonp@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
 28663	v23705489	maria gabriela	hernandez salcedo	04160175263	margahersal@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
-29866	v24523702	desiree carolina	ramirez  gomez	04242806948	contadorpublico.desiramirez@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
 32548	v25956641	juan  leon	gallardo  gutierrez	04126917370	juan.gallardo249@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
 35834	v27352233	gustavo alejandro	ramos rios	04126565166	tavoalejandroramos@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
 38254	v28323808	gabriel  del valle	garcia alvarez	04241291785	gabogarcia200114@gmail.com	["gestion", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
@@ -93276,12 +93323,160 @@ COPY tickets.tbl_clientes_naturales (id, str_cedula, str_nombre, str_apellido, s
 42449	v30651717	shairain atanai	perez ramirez	04144057802	shairainiphone13pm@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
 43374	v31026050	ricardo jose	guevara castillo	04248228227	guevaracj8@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
 45366	v32075776	karla nazareth	tovar morillo	04121737724	tovarkarla813@gmail.com	["gestion", "v2", "portal"]	2026-11-23 23:40:15.242469	2026-11-23 09:12:52.062063	2026-11-23 23:40:15.242469
+52646	v10151424	gaudis francelina	alviarez de cosenza	+584242258281	gaudisalviarez@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52647	v10247354	osmal aristides	ortiz montero	04244004821	osmalortiz@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52648	v10345290	trino moises	coronado briceño	04142246821	coronadobtrino@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52649	v10512505	wirman xiomara	calvo gonzalez	+584140144513	vilmacalvo68@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52650	v10694213	marco pablo	manrique garcia	+584140575670	rozmarpaz@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52651	v11311672	rafael antonio	franco quintero	+584242872195	rfqa52639@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52652	v11364552	elbert raul	saraiva brea	+584144109413	elbertsaraiva@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52653	v12059082	jennifer	marcano jimenez	+584142164957	jennykeysc@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52654	v12059699	carlos alfonzo	arciles toro	04167143057	karciles25@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52655	v12570106	pedro jose	ojeda castillo	+584163122291	pedroojeda7213@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52656	v12839530	elisandro ramon	gil araujo	+584123678418	elisandrogilaraujo@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52657	v12973885	jose ramon	ramirez morales	04126424102	ing.ramirezjoseramon@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52658	v13086355	edison andres	duran arellano	04129614761	ed359580@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52659	v13246261	marlene eglee	brizuela espinoza	04166059502	brizuelamarlene1976@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52660	v13406280	jose luis	lopez diaz	04169349708	joseluislopezdiaz78@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52661	v13568503	rolfer antonio	ruiz	04241549763	rolferxruiz@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52662	v13646977	nyko ruben	rodriguez rodriguez	04164866755	nykopediatra@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52663	v13837386	cesar humberto	ibarra estaba	+584149976681	cesar.2019.ibarra@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52664	v14045285	johan manuel	oleaga vera	04241209181	jwoleaga@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52665	v14065238	carlos eduardo	guevara guevara	+584142909862	cguevaraguevara@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52666	v14301730	alberth thomas	mendiola hernandez	+584122078126	alberth1603@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52667	v14308830	pedro ramon	toledo rosas	04121033350	toledopedro7@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52668	v14591467	jose francisco	ure rojas	04245653317	joseure2501@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52669	v14674115	david alexander	peña pineda	04120192900	davidpenagu@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52670	v14880158	ricardo jose	quevedo medina	+584128292627	quevedorj1979@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52671	v15109149	daniris solimar	amaro llovera	04145595003	daniris82@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52672	v15179539	celeste marina	fernandez rodriguez	+584124688988	marinafernandez1981@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52673	v15207678	ryhan antonio	perez	04242106944	inversionesryhanyemilio2015@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52674	v15416864	alvaro antonio	lunar hernandez	+584248080341	alvarolunar@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52675	v15437789	johan jose	garcia antolinez	04147394920	johanantolinez2011@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52676	v15438488	danny alfonso	antolinez rodriguez	04220337002	dannyantolinez@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52677	v15447008	luis antonio	ramirez pacheco	04120505024	luramirezp@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52678	v15453848	polo alberto	vivas bustamante	+584121493672	vivasalbertopolo@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52679	v15532855	leonardo fernando	perez borges	04144894899	leoferperez101112@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52680	v15585384	yuneivy lourdes	ramirez aguilar	04120276543	yr.espa@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52681	v15844727	jose alberto	camacho ramos	+584123151418	jan19833@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52682	v15845095	robert alexander	navarro escala	04140853451	coord.investigacion.ot@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52683	v15937353	yonel alfonso	aranguibel colmenares	04246677061	webvenet@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52684	v15993595	gimberly zahilly	yusty blanco	04243692574	zahillyblanco@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52685	v16036409	lucila virginia	mota velasquez	04123571222	lucilavmv@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52686	v16040650	carlos raul	mamber eulacio	+584145468865	carlosmamber81@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52687	v16152873	juan manuel	maita	+584128888069	aykatauro@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52688	v16971927	jeraldine vanessa	granadillo magallanes	04141274766	jerald1307@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52689	v17429902	jonathan william	ibarra gamboa	04129889417	jonathan.mojo.ibarra672@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52690	v17899405	ybelsy del carmen	martin navarro	+584120938129	ybelsymartin85@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52691	v17931746	fernando alberto	rojas daza	04247285731	dazaf8067@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52692	v18022931	andru junior	tocuyo garcia	+584124780275	tocuyoandru@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52693	v18265141	leonardo andres	sanchez blanco	04243040693	firussanchez3@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52694	v18708401	gabriel arturo	zambrano daboin	+584120118902	rutas44x44@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52695	v18761584	resnigre manuel	corro castellanos	04123885173	resnigre@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52696	v18803925	luis eduardo	dorta arreaza	04124324749	dortal936@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52697	v18830276	abude	mamo gonzalez	04129554504	abudemamo@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52698	v18994730	marcos antonio	hidalgo lisboa	04124759169	hidalgolisboa432@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52699	v19091907	genessis vanessa	cristopher	+584123496822	vanessacristopher22@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52700	v19494457	joan carlos	cañongo ramirez	+584126321745	joan19c@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52701	v19556482	engel alexander	luna caro	04142269899	engelalexanderluna@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52702	v19672129	alejandro benjamin	barrios franquis	+584144383174	alestar923@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52703	v19727230	carlos eduardo	vasquez vasquez	+584142763451	eltigreduarvasquez@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52704	v22530306	orlando jesus	quicaño vargas	04129555068	orlandoq429@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52705	v22744685	erick alexander	bolivar villasana	+584126819112	bolivarerick080@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52706	v22921326	bianny jose	machado de rojas	+584120802171	biannymachado16@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52707	v23202134	marly andreina	yanez rojas	04242649143	yanezmarly21@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52708	v23513898	wilder ismael	gomez duran	+584247610023	wilderismaelgomez@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52709	v23778468	yaritza carolina	torres briceño	+584126562145	yaritorresb0@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52710	v23903112	samuel david	ranuare villasmil	04125162512	samuelranuare1693@hotmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52711	v24181902	ever julian	huerta millan	+584129146175	eljulian78@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52712	v24243487	jose maria	salazar rojas	+584145981464	salazarrojas95@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52713	v24610307	cristian alejandro	urbaez	04221237166	cristianubaez20@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52714	v25321680	carlos luis	balza	04248955258	carlosbalza2@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52715	v25467582	jose francisco	barreto jimenez	+584142265184	josebarreto35@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52716	v26182024	grebhert daniel	cordero godoy	+584220136675	grebhert@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52717	v27279527	valeria katiuska	rangel perez	04129832138	valeria.rangel02@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52718	v27633620	adrian de jesus	ferrer palmar	04141137488	adrianferrerpalmar@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52719	v27713890	keny abrahan	briceño ramirez	04120433102	kenybramirez@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52720	v27925647	fausto javier	gonzalez rodriguez	04124100125	faustogonzalez486@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52721	v27978850	victoria gerarlene	arias silva	04123393347	victoriaariassilva.22@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52722	v28176152	kleyderman jafett	martinez martinez	04242072222	jafett135@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52723	v28333072	alexandra joselin	niño perez	+584142767463	alexandranino24@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52724	v28337981	angelo gabriel	mera mora	+573229275064	angelomera0@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52725	v28395801	jesus gabriel	reyes reyes	04121374957	jesusgbrreyes@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52726	v28609421	domingo anselmo	piña alvarez	+584220261551	pi400565@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52727	v29634691	javier de jesus	alvarez molina	04247056870	jav23alv@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52728	v29935087	oscar geovanny	bracamonte escalona	04241955707	obracamonte073@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52729	v30089744	jesus rafael	aparicio garcia	04148079523	casanay245@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52730	v30368153	jose david	garcia torres	+584241496990	fakerbusinesz@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52731	v30389368	juan alexander	brizuela rojas	+584124274083	juanbrizuelarjas@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52732	v30389803	albis yojan	orellana diaz	04126729666	albisorellana5@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52733	v30580306	berlitz mairelys	torres zerpa	+584122108510	mairelystorreszerpa@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52734	v31448628	kenedy david	ochoa linares	04241985400	kenedyochoa2005@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52735	v31654544	juan david	tona alvarado	04245836787	juandavidtona@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52736	v31907324	angel samuel	rojas riera	+584123823890	anrojas571@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52737	v32045833	fabian alejandro	farfan bastidas	+584126360192	ffarfan2005@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52738	v32226526	deiner josue	naguanagua machado	04128510472	deiner.2605@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52739	v32768731	sebastian arturo	vazquez camargo	04123536140	sebastianvazquez.2008.21@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52740	v3277249	enso ernesto	boscan varela	+584126683070	ensoboscan1@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52741	v32775864	jose david	lopez maldonado	04127646741	lopezmaldonadojosedavid@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52742	v32869440	aysquel paola	hurtado fuentes	04243613396	aysquelhurtado@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52743	v33552376	saraely valentina	montilla garcia	+584241457768	saraelyvalentinamontillagarcia@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52744	v36573304	sofia valentina	rodriguez gomez	+584142288619	sofiavrg2023@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52745	v5542954	jose gabriel	burgos suarez	04125810830	burgosjgabriel@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52746	v5812547	jose luis	canquiz parra	04146727797	jluiscanquiz@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52747	v6217971	abraham enrique	jimenez chirinos	04126021009	jimenezabraham92@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52748	v6374773	beda josefina	cabriles lara	04123579165	bcabriles22@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52749	v6965287	luis alexis	valles leon	+584127132248	lav1806@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52750	v8639763	bricio rafael	carreño patiño	+584262819541	bocaripo@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52751	v8709817	arcangel antonio	carrillo gonzalez	+584163971231	arcangelcarr@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52752	v8810896	antonio	borges mamede	04127402555	anborma@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+52753	v9953415	stiven alvaro	sandia	04264165715	stivensandia@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648	2026-11-25 14:54:40.961648
+335	v10144185	eladio alexander	silva quintero	04126080666	eladiosilvaq@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+1285	v10774888	nestor rafael	figuera uribe	04142117749	nerrafi@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+52587	v12914721	bellaliz trinidad	rattia olivares	04224772464	bellaliz.rattia@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 23:40:15.242469	2026-11-25 14:54:40.961648
+6746	v13368040	jose alfredo	larez herrera	04145066677	lareza547@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+7416	v13622115	carmen aracelis	cabriles yvirma	+584142328787	yvirma2025@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+52590	v13691259	gilma norelkis	hernandez silva	04125953679	gilma.hernandez.consultora@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 23:40:15.242469	2026-11-25 14:54:40.961648
+8667	v14072708	nardy alejandra	torres de ramos mata	04125921201	nardytorres@gmail.com	["gestion", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+11713	v15349873	oscar jose	betancourt bastidas	04267920002	oscarbetancourt249@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+13736	v16181285	mario alexander	osuna herrera	04122538292	osunamario481@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+13775	v16202575	isaac argenis	blanco cueva	04125899504	isaacblanco73@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+14792	v16584829	rafael	fung yee	04140302458	rfynb983@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+16670	v17366183	deybis javier	peralta sanchez	04144808453	deybisperalta244@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+17482	v17637873	gonzalo  jesus	hernandez  gallones	04123486577	todobien091@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+20635	v18845678	cristhian javier	moreno orozco	04147451148	cristhmet89@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+20977	v18991505	estefani milagros	acacio de rivas	04126787960	doctoradopsico25@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+21262	v19108574	carlos eduardo	cedeño guedez	04124153440	cedecarlos2008@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+22728	v19721210	juan gilberto	contreras perez	04123933986	jgcp2190@yahoo.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+23022	v19839261	wilmer rafael	lopez mota	04126408191	wilmerlopez89@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+23577	v20067721	alejandra suleyn	carrillo parra	04164099374	kzsuly33@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+29071	v24074919	emma maria	gutierrez  arias	04143686869	emma.gut.07@gmail.com	["gestion", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+29866	v24523702	desiree carolina	ramirez gomez	04242806948	contadorpublico.desiramirez@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+29975	v24595249	erick samuel	ramirez piña	04121060131	smuelpina@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+30333	v24812978	yennifer nacary	urbina sanella	4125771672	yennifernacary@gmail.com	["v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+32742	v26044036	nelson eduardo	lara camacho	04122647732	nelsonelarac@gmail.com	["gestion", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+34614	v26825898	alex eduardo	azocar avila	04129623586	eduardo.azocar253@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+37534	v28043048	jesus  de nazareth	gomez gil	04269869554	jesusgomezgil438@gmail.com	["gestion", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+38472	v2841100	cecilia cristina	arocha correa	04122844325	arocor@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+39462	v29581118	franklin samuel	arteaga  montenegro	04120373378	franklitoarteaga@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+42532	v30687149	moises abraham eduardo	diaz moronta	04128333184	esteesmicorreo1919@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+43685	v31158488	luis jose	moreno rosales	04124519910	luisjosemorenorosales171@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+52624	v31460372	yuretzidel del valle	larez cadamo	04126444088	yuretzicadamo25@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 23:40:15.242469	2026-11-25 14:54:40.961648
+52627	v31747737	moises rafael	morillo pinto	04127925774	morimoises06@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 23:40:15.242469	2026-11-25 14:54:40.961648
+46944	v3386848	jose ramon	leon uscategui	04144336989	leonuzcategui2015@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+48200	v4638310	elda rosa	talavera de vallejo	17862717258	talaveraelda@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+48777	v5976289	juan  vicente	medina  codecido	04129994434	medinacapital.invest@gmail.com	["gestion", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+52635	v6239273	carlos omar	colmenares colmenares	04227004654	omarcolmenares6219@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 23:40:15.242469	2026-11-25 14:54:40.961648
+52639	v6868045	olivier rafael	schael gomez	04142710365	olivierschael@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 23:40:15.242469	2026-11-25 14:54:40.961648
+50345	v7185396	niza	ferrera pinto	04160449632	nizafp333@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
+52640	v7894866	ricardo alfonso	cardenas villalobos	04124737794	alfonsovillalobos49@gmail.com	["gestion", "v2", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 23:40:15.242469	2026-11-25 14:54:40.961648
+51103	v8341891	julio  manuel	rojas orence	04163815000	juliorojasorence@gmail.com	["gestion", "portal"]	2026-11-25 14:54:40.961648	2026-11-23 09:12:52.062063	2026-11-25 14:54:40.961648
 \.
 
 
 --
--- TOC entry 3968 (class 0 OID 73633)
--- Dependencies: 290
+-- TOC entry 3985 (class 0 OID 192408)
+-- Dependencies: 292
 -- Data for Name: tbl_secuencias_tickets; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
@@ -93290,8 +93485,8 @@ COPY tickets.tbl_secuencias_tickets (int_anio, int_mes, int_dia, int_ultimo_secu
 
 
 --
--- TOC entry 3969 (class 0 OID 73637)
--- Dependencies: 291
+-- TOC entry 3986 (class 0 OID 192416)
+-- Dependencies: 293
 -- Data for Name: tbl_tickets; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
@@ -93300,8 +93495,8 @@ COPY tickets.tbl_tickets (id, str_ticket, cliente_id, creador_agente_id, cierre_
 
 
 --
--- TOC entry 3970 (class 0 OID 73647)
--- Dependencies: 292
+-- TOC entry 3987 (class 0 OID 192437)
+-- Dependencies: 294
 -- Data for Name: tbl_tickets_bitacora; Type: TABLE DATA; Schema: tickets; Owner: postgres
 --
 
@@ -93310,8 +93505,8 @@ COPY tickets.tbl_tickets_bitacora (id, ticket_id, usuario_id, str_comentario, cr
 
 
 --
--- TOC entry 4025 (class 0 OID 0)
--- Dependencies: 223
+-- TOC entry 4042 (class 0 OID 0)
+-- Dependencies: 225
 -- Name: jobid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
 
@@ -93319,17 +93514,17 @@ SELECT pg_catalog.setval('cron.jobid_seq', 1, true);
 
 
 --
--- TOC entry 4026 (class 0 OID 0)
--- Dependencies: 225
+-- TOC entry 4043 (class 0 OID 0)
+-- Dependencies: 227
 -- Name: runid_seq; Type: SEQUENCE SET; Schema: cron; Owner: postgres
 --
 
-SELECT pg_catalog.setval('cron.runid_seq', 36619, true);
+SELECT pg_catalog.setval('cron.runid_seq', 36704, true);
 
 
 --
--- TOC entry 4027 (class 0 OID 0)
--- Dependencies: 229
+-- TOC entry 4044 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: tbl_enlaces_archivos_id_seq; Type: SEQUENCE SET; Schema: drive; Owner: postgres
 --
 
@@ -93337,8 +93532,8 @@ SELECT pg_catalog.setval('drive.tbl_enlaces_archivos_id_seq', 1, false);
 
 
 --
--- TOC entry 4028 (class 0 OID 0)
--- Dependencies: 231
+-- TOC entry 4045 (class 0 OID 0)
+-- Dependencies: 233
 -- Name: tbl_enlaces_descargas_id_seq; Type: SEQUENCE SET; Schema: drive; Owner: postgres
 --
 
@@ -93346,8 +93541,8 @@ SELECT pg_catalog.setval('drive.tbl_enlaces_descargas_id_seq', 1, false);
 
 
 --
--- TOC entry 4029 (class 0 OID 0)
--- Dependencies: 232
+-- TOC entry 4046 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: tbl_enlaces_id_seq; Type: SEQUENCE SET; Schema: drive; Owner: postgres
 --
 
@@ -93355,8 +93550,8 @@ SELECT pg_catalog.setval('drive.tbl_enlaces_id_seq', 1, false);
 
 
 --
--- TOC entry 4030 (class 0 OID 0)
--- Dependencies: 235
+-- TOC entry 4047 (class 0 OID 0)
+-- Dependencies: 237
 -- Name: tbl_urls_cortas_clics_id_seq; Type: SEQUENCE SET; Schema: drive; Owner: postgres
 --
 
@@ -93364,8 +93559,8 @@ SELECT pg_catalog.setval('drive.tbl_urls_cortas_clics_id_seq', 7, true);
 
 
 --
--- TOC entry 4031 (class 0 OID 0)
--- Dependencies: 236
+-- TOC entry 4048 (class 0 OID 0)
+-- Dependencies: 238
 -- Name: tbl_urls_cortas_id_seq; Type: SEQUENCE SET; Schema: drive; Owner: postgres
 --
 
@@ -93373,8 +93568,8 @@ SELECT pg_catalog.setval('drive.tbl_urls_cortas_id_seq', 6, true);
 
 
 --
--- TOC entry 4032 (class 0 OID 0)
--- Dependencies: 237
+-- TOC entry 4049 (class 0 OID 0)
+-- Dependencies: 239
 -- Name: tbl_kcs_articulos_id_seq; Type: SEQUENCE SET; Schema: kcs; Owner: postgres
 --
 
@@ -93382,8 +93577,8 @@ SELECT pg_catalog.setval('kcs.tbl_kcs_articulos_id_seq', 6, true);
 
 
 --
--- TOC entry 4033 (class 0 OID 0)
--- Dependencies: 239
+-- TOC entry 4050 (class 0 OID 0)
+-- Dependencies: 241
 -- Name: cat_datos_maestros_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -93391,8 +93586,8 @@ SELECT pg_catalog.setval('public.cat_datos_maestros_id_seq', 49, true);
 
 
 --
--- TOC entry 4034 (class 0 OID 0)
--- Dependencies: 241
+-- TOC entry 4051 (class 0 OID 0)
+-- Dependencies: 243
 -- Name: cat_departamentos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -93400,17 +93595,17 @@ SELECT pg_catalog.setval('public.cat_departamentos_id_seq', 11, true);
 
 
 --
--- TOC entry 4035 (class 0 OID 0)
--- Dependencies: 246
+-- TOC entry 4052 (class 0 OID 0)
+-- Dependencies: 248
 -- Name: tbl_auth_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 809, true);
+SELECT pg_catalog.setval('public.tbl_auth_tokens_id_seq', 812, true);
 
 
 --
--- TOC entry 4036 (class 0 OID 0)
--- Dependencies: 247
+-- TOC entry 4053 (class 0 OID 0)
+-- Dependencies: 249
 -- Name: tbl_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -93418,8 +93613,8 @@ SELECT pg_catalog.setval('public.tbl_opciones_id_seq', 52, true);
 
 
 --
--- TOC entry 4037 (class 0 OID 0)
--- Dependencies: 248
+-- TOC entry 4054 (class 0 OID 0)
+-- Dependencies: 250
 -- Name: tbl_roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -93427,8 +93622,8 @@ SELECT pg_catalog.setval('public.tbl_roles_id_seq', 22, true);
 
 
 --
--- TOC entry 4038 (class 0 OID 0)
--- Dependencies: 250
+-- TOC entry 4055 (class 0 OID 0)
+-- Dependencies: 252
 -- Name: tbl_roles_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -93436,8 +93631,8 @@ SELECT pg_catalog.setval('public.tbl_roles_opciones_id_seq', 51, true);
 
 
 --
--- TOC entry 4039 (class 0 OID 0)
--- Dependencies: 252
+-- TOC entry 4056 (class 0 OID 0)
+-- Dependencies: 254
 -- Name: tbl_roles_sistemas_opciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -93445,8 +93640,8 @@ SELECT pg_catalog.setval('public.tbl_roles_sistemas_opciones_id_seq', 103, true)
 
 
 --
--- TOC entry 4040 (class 0 OID 0)
--- Dependencies: 253
+-- TOC entry 4057 (class 0 OID 0)
+-- Dependencies: 255
 -- Name: tbl_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -93454,8 +93649,8 @@ SELECT pg_catalog.setval('public.tbl_sistemas_id_seq', 36, true);
 
 
 --
--- TOC entry 4041 (class 0 OID 0)
--- Dependencies: 256
+-- TOC entry 4058 (class 0 OID 0)
+-- Dependencies: 258
 -- Name: tbl_usuarios_opciones_excepciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -93463,8 +93658,8 @@ SELECT pg_catalog.setval('public.tbl_usuarios_opciones_excepciones_id_seq', 1, f
 
 
 --
--- TOC entry 4042 (class 0 OID 0)
--- Dependencies: 258
+-- TOC entry 4059 (class 0 OID 0)
+-- Dependencies: 260
 -- Name: tbl_usuarios_roles_sistemas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -93472,8 +93667,8 @@ SELECT pg_catalog.setval('public.tbl_usuarios_roles_sistemas_id_seq', 329, true)
 
 
 --
--- TOC entry 4043 (class 0 OID 0)
--- Dependencies: 259
+-- TOC entry 4060 (class 0 OID 0)
+-- Dependencies: 261
 -- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -93481,8 +93676,8 @@ SELECT pg_catalog.setval('public.usuarios_id_seq', 106, true);
 
 
 --
--- TOC entry 4044 (class 0 OID 0)
--- Dependencies: 272
+-- TOC entry 4061 (class 0 OID 0)
+-- Dependencies: 274
 -- Name: tbl_amonestaciones_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -93490,8 +93685,8 @@ SELECT pg_catalog.setval('rrhh.tbl_amonestaciones_id_seq', 1, false);
 
 
 --
--- TOC entry 4045 (class 0 OID 0)
--- Dependencies: 274
+-- TOC entry 4062 (class 0 OID 0)
+-- Dependencies: 276
 -- Name: tbl_carga_familiar_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -93499,8 +93694,8 @@ SELECT pg_catalog.setval('rrhh.tbl_carga_familiar_id_seq', 1, false);
 
 
 --
--- TOC entry 4046 (class 0 OID 0)
--- Dependencies: 276
+-- TOC entry 4063 (class 0 OID 0)
+-- Dependencies: 278
 -- Name: tbl_expediente_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -93508,8 +93703,8 @@ SELECT pg_catalog.setval('rrhh.tbl_expediente_id_seq', 1, false);
 
 
 --
--- TOC entry 4047 (class 0 OID 0)
--- Dependencies: 278
+-- TOC entry 4064 (class 0 OID 0)
+-- Dependencies: 280
 -- Name: tbl_permisos_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -93517,8 +93712,8 @@ SELECT pg_catalog.setval('rrhh.tbl_permisos_id_seq', 1, false);
 
 
 --
--- TOC entry 4048 (class 0 OID 0)
--- Dependencies: 280
+-- TOC entry 4065 (class 0 OID 0)
+-- Dependencies: 282
 -- Name: tbl_reposos_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -93526,8 +93721,8 @@ SELECT pg_catalog.setval('rrhh.tbl_reposos_id_seq', 1, false);
 
 
 --
--- TOC entry 4049 (class 0 OID 0)
--- Dependencies: 282
+-- TOC entry 4066 (class 0 OID 0)
+-- Dependencies: 284
 -- Name: tbl_vacaciones_id_seq; Type: SEQUENCE SET; Schema: rrhh; Owner: postgres
 --
 
@@ -93535,8 +93730,8 @@ SELECT pg_catalog.setval('rrhh.tbl_vacaciones_id_seq', 1, false);
 
 
 --
--- TOC entry 4050 (class 0 OID 0)
--- Dependencies: 284
+-- TOC entry 4067 (class 0 OID 0)
+-- Dependencies: 286
 -- Name: cat_sla_configuracion_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
@@ -93544,8 +93739,8 @@ SELECT pg_catalog.setval('tickets.cat_sla_configuracion_id_seq', 4, true);
 
 
 --
--- TOC entry 4051 (class 0 OID 0)
--- Dependencies: 285
+-- TOC entry 4068 (class 0 OID 0)
+-- Dependencies: 287
 -- Name: tbl_alertas_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
@@ -93553,26 +93748,26 @@ SELECT pg_catalog.setval('tickets.tbl_alertas_id_seq', 1, false);
 
 
 --
--- TOC entry 4052 (class 0 OID 0)
--- Dependencies: 287
+-- TOC entry 4069 (class 0 OID 0)
+-- Dependencies: 289
 -- Name: tbl_clientes_juridicos_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_clientes_juridicos_id_seq', 917, true);
+SELECT pg_catalog.setval('tickets.tbl_clientes_juridicos_id_seq', 918, true);
 
 
 --
--- TOC entry 4053 (class 0 OID 0)
--- Dependencies: 289
+-- TOC entry 4070 (class 0 OID 0)
+-- Dependencies: 291
 -- Name: tbl_clientes_naturales_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tickets.tbl_clientes_naturales_id_seq', 52644, true);
+SELECT pg_catalog.setval('tickets.tbl_clientes_naturales_id_seq', 52753, true);
 
 
 --
--- TOC entry 4054 (class 0 OID 0)
--- Dependencies: 293
+-- TOC entry 4071 (class 0 OID 0)
+-- Dependencies: 295
 -- Name: tbl_tickets_bitacora_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
@@ -93580,8 +93775,8 @@ SELECT pg_catalog.setval('tickets.tbl_tickets_bitacora_id_seq', 1, false);
 
 
 --
--- TOC entry 4055 (class 0 OID 0)
--- Dependencies: 294
+-- TOC entry 4072 (class 0 OID 0)
+-- Dependencies: 296
 -- Name: tbl_tickets_id_seq; Type: SEQUENCE SET; Schema: tickets; Owner: postgres
 --
 
@@ -93589,7 +93784,7 @@ SELECT pg_catalog.setval('tickets.tbl_tickets_id_seq', 1, false);
 
 
 --
--- TOC entry 3640 (class 2606 OID 73724)
+-- TOC entry 3655 (class 2606 OID 192513)
 -- Name: tbl_enlaces_archivos tbl_enlaces_archivos_pkey; Type: CONSTRAINT; Schema: drive; Owner: postgres
 --
 
@@ -93598,7 +93793,7 @@ ALTER TABLE ONLY drive.tbl_enlaces_archivos
 
 
 --
--- TOC entry 3636 (class 2606 OID 73726)
+-- TOC entry 3651 (class 2606 OID 192515)
 -- Name: tbl_enlaces tbl_enlaces_codigo_corto_key; Type: CONSTRAINT; Schema: drive; Owner: postgres
 --
 
@@ -93607,7 +93802,7 @@ ALTER TABLE ONLY drive.tbl_enlaces
 
 
 --
--- TOC entry 3643 (class 2606 OID 73728)
+-- TOC entry 3658 (class 2606 OID 192517)
 -- Name: tbl_enlaces_descargas tbl_enlaces_descargas_pkey; Type: CONSTRAINT; Schema: drive; Owner: postgres
 --
 
@@ -93616,7 +93811,7 @@ ALTER TABLE ONLY drive.tbl_enlaces_descargas
 
 
 --
--- TOC entry 3638 (class 2606 OID 73730)
+-- TOC entry 3653 (class 2606 OID 192519)
 -- Name: tbl_enlaces tbl_enlaces_pkey; Type: CONSTRAINT; Schema: drive; Owner: postgres
 --
 
@@ -93625,7 +93820,7 @@ ALTER TABLE ONLY drive.tbl_enlaces
 
 
 --
--- TOC entry 3651 (class 2606 OID 73732)
+-- TOC entry 3666 (class 2606 OID 192521)
 -- Name: tbl_urls_cortas_clics tbl_urls_cortas_clics_pkey; Type: CONSTRAINT; Schema: drive; Owner: postgres
 --
 
@@ -93634,7 +93829,7 @@ ALTER TABLE ONLY drive.tbl_urls_cortas_clics
 
 
 --
--- TOC entry 3646 (class 2606 OID 73734)
+-- TOC entry 3661 (class 2606 OID 192523)
 -- Name: tbl_urls_cortas tbl_urls_cortas_codigo_corto_key; Type: CONSTRAINT; Schema: drive; Owner: postgres
 --
 
@@ -93643,7 +93838,7 @@ ALTER TABLE ONLY drive.tbl_urls_cortas
 
 
 --
--- TOC entry 3648 (class 2606 OID 73736)
+-- TOC entry 3663 (class 2606 OID 192525)
 -- Name: tbl_urls_cortas tbl_urls_cortas_pkey; Type: CONSTRAINT; Schema: drive; Owner: postgres
 --
 
@@ -93652,7 +93847,7 @@ ALTER TABLE ONLY drive.tbl_urls_cortas
 
 
 --
--- TOC entry 3653 (class 2606 OID 73738)
+-- TOC entry 3668 (class 2606 OID 192527)
 -- Name: cat_datos_maestros cat_datos_maestros_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93661,7 +93856,7 @@ ALTER TABLE ONLY public.cat_datos_maestros
 
 
 --
--- TOC entry 3655 (class 2606 OID 73740)
+-- TOC entry 3670 (class 2606 OID 192529)
 -- Name: cat_departamentos cat_departamentos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93670,7 +93865,7 @@ ALTER TABLE ONLY public.cat_departamentos
 
 
 --
--- TOC entry 3657 (class 2606 OID 73742)
+-- TOC entry 3672 (class 2606 OID 192531)
 -- Name: cat_departamentos cat_departamentos_str_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93679,7 +93874,7 @@ ALTER TABLE ONLY public.cat_departamentos
 
 
 --
--- TOC entry 3673 (class 2606 OID 73744)
+-- TOC entry 3688 (class 2606 OID 192533)
 -- Name: tbl_roles_sistemas_opciones pk_roles_sistemas_opciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93688,7 +93883,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3667 (class 2606 OID 73746)
+-- TOC entry 3682 (class 2606 OID 192535)
 -- Name: tbl_auth_tokens tbl_auth_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93697,7 +93892,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 3659 (class 2606 OID 73748)
+-- TOC entry 3674 (class 2606 OID 192537)
 -- Name: cat_opciones tbl_opciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93706,7 +93901,7 @@ ALTER TABLE ONLY public.cat_opciones
 
 
 --
--- TOC entry 3661 (class 2606 OID 73750)
+-- TOC entry 3676 (class 2606 OID 192539)
 -- Name: cat_roles tbl_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93715,7 +93910,7 @@ ALTER TABLE ONLY public.cat_roles
 
 
 --
--- TOC entry 3671 (class 2606 OID 73752)
+-- TOC entry 3686 (class 2606 OID 192541)
 -- Name: tbl_roles_sistemas tbl_roles_sistemas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93724,7 +93919,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 3663 (class 2606 OID 73754)
+-- TOC entry 3678 (class 2606 OID 192543)
 -- Name: cat_roles tbl_roles_str_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93733,7 +93928,7 @@ ALTER TABLE ONLY public.cat_roles
 
 
 --
--- TOC entry 3665 (class 2606 OID 73756)
+-- TOC entry 3680 (class 2606 OID 192545)
 -- Name: cat_sistemas tbl_sistemas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93742,7 +93937,7 @@ ALTER TABLE ONLY public.cat_sistemas
 
 
 --
--- TOC entry 3683 (class 2606 OID 73758)
+-- TOC entry 3698 (class 2606 OID 192547)
 -- Name: tbl_usuarios_opciones_excepciones tbl_usuarios_opciones_excepciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93751,7 +93946,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3675 (class 2606 OID 73760)
+-- TOC entry 3690 (class 2606 OID 192549)
 -- Name: tbl_usuarios tbl_usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93760,7 +93955,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3685 (class 2606 OID 73762)
+-- TOC entry 3700 (class 2606 OID 192551)
 -- Name: tbl_usuarios_opciones_excepciones uk_usuario_opcion_excepcion; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93769,7 +93964,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3669 (class 2606 OID 73764)
+-- TOC entry 3684 (class 2606 OID 192553)
 -- Name: tbl_auth_tokens unique_user_device; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93778,7 +93973,7 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 3687 (class 2606 OID 73766)
+-- TOC entry 3702 (class 2606 OID 192555)
 -- Name: tbl_usuarios_roles_sistemas unique_usuario_rol_sistema; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93787,7 +93982,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3677 (class 2606 OID 73768)
+-- TOC entry 3692 (class 2606 OID 192557)
 -- Name: tbl_usuarios usuarios_str_cedula_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93796,7 +93991,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3679 (class 2606 OID 73770)
+-- TOC entry 3694 (class 2606 OID 192559)
 -- Name: tbl_usuarios usuarios_str_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -93805,7 +94000,7 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 3691 (class 2606 OID 73772)
+-- TOC entry 3706 (class 2606 OID 192561)
 -- Name: tbl_amonestaciones tbl_amonestaciones_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -93814,7 +94009,7 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones
 
 
 --
--- TOC entry 3693 (class 2606 OID 73774)
+-- TOC entry 3708 (class 2606 OID 192563)
 -- Name: tbl_carga_familiar tbl_carga_familiar_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -93823,7 +94018,7 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar
 
 
 --
--- TOC entry 3695 (class 2606 OID 73776)
+-- TOC entry 3710 (class 2606 OID 192565)
 -- Name: tbl_expediente tbl_expediente_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -93832,7 +94027,7 @@ ALTER TABLE ONLY rrhh.tbl_expediente
 
 
 --
--- TOC entry 3697 (class 2606 OID 73778)
+-- TOC entry 3712 (class 2606 OID 192567)
 -- Name: tbl_permisos tbl_permisos_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -93841,7 +94036,7 @@ ALTER TABLE ONLY rrhh.tbl_permisos
 
 
 --
--- TOC entry 3699 (class 2606 OID 73780)
+-- TOC entry 3714 (class 2606 OID 192569)
 -- Name: tbl_reposos tbl_reposos_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -93850,7 +94045,7 @@ ALTER TABLE ONLY rrhh.tbl_reposos
 
 
 --
--- TOC entry 3701 (class 2606 OID 73782)
+-- TOC entry 3716 (class 2606 OID 192571)
 -- Name: tbl_vacaciones tbl_vacaciones_pkey; Type: CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -93859,7 +94054,7 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones
 
 
 --
--- TOC entry 3703 (class 2606 OID 73784)
+-- TOC entry 3718 (class 2606 OID 192573)
 -- Name: cat_sla_configuracion cat_sla_configuracion_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -93868,7 +94063,7 @@ ALTER TABLE ONLY tickets.cat_sla_configuracion
 
 
 --
--- TOC entry 3689 (class 2606 OID 73786)
+-- TOC entry 3704 (class 2606 OID 192575)
 -- Name: tbl_alertas tbl_alertas_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -93877,7 +94072,7 @@ ALTER TABLE ONLY tickets.tbl_alertas
 
 
 --
--- TOC entry 3705 (class 2606 OID 73788)
+-- TOC entry 3720 (class 2606 OID 192577)
 -- Name: tbl_clientes_juridicos tbl_clientes_juridicos_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -93886,7 +94081,7 @@ ALTER TABLE ONLY tickets.tbl_clientes_juridicos
 
 
 --
--- TOC entry 3709 (class 2606 OID 73790)
+-- TOC entry 3724 (class 2606 OID 192579)
 -- Name: tbl_clientes_naturales tbl_clientes_naturales_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -93895,7 +94090,7 @@ ALTER TABLE ONLY tickets.tbl_clientes_naturales
 
 
 --
--- TOC entry 3713 (class 2606 OID 73792)
+-- TOC entry 3728 (class 2606 OID 192581)
 -- Name: tbl_secuencias_tickets tbl_secuencias_tickets_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -93904,7 +94099,7 @@ ALTER TABLE ONLY tickets.tbl_secuencias_tickets
 
 
 --
--- TOC entry 3727 (class 2606 OID 73794)
+-- TOC entry 3742 (class 2606 OID 192583)
 -- Name: tbl_tickets_bitacora tbl_tickets_bitacora_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -93913,7 +94108,7 @@ ALTER TABLE ONLY tickets.tbl_tickets_bitacora
 
 
 --
--- TOC entry 3722 (class 2606 OID 73796)
+-- TOC entry 3737 (class 2606 OID 192585)
 -- Name: tbl_tickets tbl_tickets_pkey; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -93922,7 +94117,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3724 (class 2606 OID 73798)
+-- TOC entry 3739 (class 2606 OID 192587)
 -- Name: tbl_tickets tbl_tickets_str_ticket_key; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -93931,7 +94126,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3707 (class 2606 OID 73800)
+-- TOC entry 3722 (class 2606 OID 192589)
 -- Name: tbl_clientes_juridicos uk_clientes_juridicos_rif; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -93940,7 +94135,7 @@ ALTER TABLE ONLY tickets.tbl_clientes_juridicos
 
 
 --
--- TOC entry 3711 (class 2606 OID 73802)
+-- TOC entry 3726 (class 2606 OID 192591)
 -- Name: tbl_clientes_naturales uk_clientes_naturales_cedula; Type: CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -93949,7 +94144,7 @@ ALTER TABLE ONLY tickets.tbl_clientes_naturales
 
 
 --
--- TOC entry 3641 (class 1259 OID 73803)
+-- TOC entry 3656 (class 1259 OID 192592)
 -- Name: idx_enlaces_descargas_enlace_id; Type: INDEX; Schema: drive; Owner: postgres
 --
 
@@ -93957,7 +94152,7 @@ CREATE INDEX idx_enlaces_descargas_enlace_id ON drive.tbl_enlaces_descargas USIN
 
 
 --
--- TOC entry 3634 (class 1259 OID 73804)
+-- TOC entry 3649 (class 1259 OID 192593)
 -- Name: idx_tbl_enlaces_codigo_corto; Type: INDEX; Schema: drive; Owner: postgres
 --
 
@@ -93965,7 +94160,7 @@ CREATE INDEX idx_tbl_enlaces_codigo_corto ON drive.tbl_enlaces USING btree (codi
 
 
 --
--- TOC entry 3644 (class 1259 OID 73805)
+-- TOC entry 3659 (class 1259 OID 192594)
 -- Name: idx_tbl_urls_cortas_codigo; Type: INDEX; Schema: drive; Owner: postgres
 --
 
@@ -93973,7 +94168,7 @@ CREATE INDEX idx_tbl_urls_cortas_codigo ON drive.tbl_urls_cortas USING btree (co
 
 
 --
--- TOC entry 3649 (class 1259 OID 73806)
+-- TOC entry 3664 (class 1259 OID 192595)
 -- Name: idx_urls_cortas_clics_id; Type: INDEX; Schema: drive; Owner: postgres
 --
 
@@ -93981,7 +94176,7 @@ CREATE INDEX idx_urls_cortas_clics_id ON drive.tbl_urls_cortas_clics USING btree
 
 
 --
--- TOC entry 3680 (class 1259 OID 73807)
+-- TOC entry 3695 (class 1259 OID 192596)
 -- Name: idx_excepciones_opcion; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -93989,7 +94184,7 @@ CREATE INDEX idx_excepciones_opcion ON public.tbl_usuarios_opciones_excepciones 
 
 
 --
--- TOC entry 3681 (class 1259 OID 73808)
+-- TOC entry 3696 (class 1259 OID 192597)
 -- Name: idx_excepciones_usuario; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -93997,7 +94192,7 @@ CREATE INDEX idx_excepciones_usuario ON public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3725 (class 1259 OID 73809)
+-- TOC entry 3740 (class 1259 OID 192598)
 -- Name: idx_tickets_bitacora_ticket_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -94005,7 +94200,7 @@ CREATE INDEX idx_tickets_bitacora_ticket_id ON tickets.tbl_tickets_bitacora USIN
 
 
 --
--- TOC entry 3714 (class 1259 OID 73810)
+-- TOC entry 3729 (class 1259 OID 192599)
 -- Name: idx_tickets_canal_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -94013,7 +94208,7 @@ CREATE INDEX idx_tickets_canal_id ON tickets.tbl_tickets USING btree (canal_id);
 
 
 --
--- TOC entry 3715 (class 1259 OID 73811)
+-- TOC entry 3730 (class 1259 OID 192600)
 -- Name: idx_tickets_created_at; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -94021,7 +94216,7 @@ CREATE INDEX idx_tickets_created_at ON tickets.tbl_tickets USING btree (created_
 
 
 --
--- TOC entry 3716 (class 1259 OID 73812)
+-- TOC entry 3731 (class 1259 OID 192601)
 -- Name: idx_tickets_departamento_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -94029,7 +94224,7 @@ CREATE INDEX idx_tickets_departamento_id ON tickets.tbl_tickets USING btree (dep
 
 
 --
--- TOC entry 3717 (class 1259 OID 73813)
+-- TOC entry 3732 (class 1259 OID 192602)
 -- Name: idx_tickets_estatus_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -94037,7 +94232,7 @@ CREATE INDEX idx_tickets_estatus_id ON tickets.tbl_tickets USING btree (estatus_
 
 
 --
--- TOC entry 3718 (class 1259 OID 73814)
+-- TOC entry 3733 (class 1259 OID 192603)
 -- Name: idx_tickets_prioridad_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -94045,7 +94240,7 @@ CREATE INDEX idx_tickets_prioridad_id ON tickets.tbl_tickets USING btree (priori
 
 
 --
--- TOC entry 3719 (class 1259 OID 73815)
+-- TOC entry 3734 (class 1259 OID 192604)
 -- Name: idx_tickets_tipo_ticket_id; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -94053,7 +94248,7 @@ CREATE INDEX idx_tickets_tipo_ticket_id ON tickets.tbl_tickets USING btree (tipo
 
 
 --
--- TOC entry 3720 (class 1259 OID 73816)
+-- TOC entry 3735 (class 1259 OID 192605)
 -- Name: idx_tickets_vencimiento_sla; Type: INDEX; Schema: tickets; Owner: postgres
 --
 
@@ -94061,7 +94256,7 @@ CREATE INDEX idx_tickets_vencimiento_sla ON tickets.tbl_tickets USING btree (dmt
 
 
 --
--- TOC entry 3903 (class 2618 OID 73546)
+-- TOC entry 3920 (class 2618 OID 192294)
 -- Name: view_matriz_roles_opciones _RETURN; Type: RULE; Schema: public; Owner: postgres
 --
 
@@ -94085,7 +94280,7 @@ CREATE OR REPLACE VIEW public.view_matriz_roles_opciones AS
 
 
 --
--- TOC entry 3728 (class 2606 OID 73818)
+-- TOC entry 3743 (class 2606 OID 192607)
 -- Name: tbl_enlaces_archivos tbl_enlaces_archivos_enlace_id_fkey; Type: FK CONSTRAINT; Schema: drive; Owner: postgres
 --
 
@@ -94094,7 +94289,7 @@ ALTER TABLE ONLY drive.tbl_enlaces_archivos
 
 
 --
--- TOC entry 3729 (class 2606 OID 73823)
+-- TOC entry 3744 (class 2606 OID 192612)
 -- Name: tbl_enlaces_descargas tbl_enlaces_descargas_enlace_id_fkey; Type: FK CONSTRAINT; Schema: drive; Owner: postgres
 --
 
@@ -94103,7 +94298,7 @@ ALTER TABLE ONLY drive.tbl_enlaces_descargas
 
 
 --
--- TOC entry 3730 (class 2606 OID 73828)
+-- TOC entry 3745 (class 2606 OID 192617)
 -- Name: tbl_urls_cortas_clics tbl_urls_cortas_clics_url_corta_id_fkey; Type: FK CONSTRAINT; Schema: drive; Owner: postgres
 --
 
@@ -94112,7 +94307,7 @@ ALTER TABLE ONLY drive.tbl_urls_cortas_clics
 
 
 --
--- TOC entry 3737 (class 2606 OID 73833)
+-- TOC entry 3752 (class 2606 OID 192622)
 -- Name: tbl_usuarios_opciones_excepciones fk_excepciones_opcion; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -94121,7 +94316,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3738 (class 2606 OID 73838)
+-- TOC entry 3753 (class 2606 OID 192627)
 -- Name: tbl_usuarios_opciones_excepciones fk_excepciones_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -94130,7 +94325,7 @@ ALTER TABLE ONLY public.tbl_usuarios_opciones_excepciones
 
 
 --
--- TOC entry 3734 (class 2606 OID 73843)
+-- TOC entry 3749 (class 2606 OID 192632)
 -- Name: tbl_roles_sistemas_opciones fk_opciones; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -94139,7 +94334,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3732 (class 2606 OID 73848)
+-- TOC entry 3747 (class 2606 OID 192637)
 -- Name: tbl_roles_sistemas fk_rol; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -94148,8 +94343,8 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 4056 (class 0 OID 0)
--- Dependencies: 3732
+-- TOC entry 4073 (class 0 OID 0)
+-- Dependencies: 3747
 -- Name: CONSTRAINT fk_rol ON tbl_roles_sistemas; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -94157,7 +94352,7 @@ COMMENT ON CONSTRAINT fk_rol ON public.tbl_roles_sistemas IS 'Relaciona la colum
 
 
 --
--- TOC entry 3735 (class 2606 OID 73853)
+-- TOC entry 3750 (class 2606 OID 192642)
 -- Name: tbl_roles_sistemas_opciones fk_roles_sistemas; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -94166,7 +94361,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas_opciones
 
 
 --
--- TOC entry 3733 (class 2606 OID 73858)
+-- TOC entry 3748 (class 2606 OID 192647)
 -- Name: tbl_roles_sistemas fk_sistema; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -94175,7 +94370,7 @@ ALTER TABLE ONLY public.tbl_roles_sistemas
 
 
 --
--- TOC entry 3731 (class 2606 OID 73863)
+-- TOC entry 3746 (class 2606 OID 192652)
 -- Name: tbl_auth_tokens fk_tokens_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -94184,8 +94379,8 @@ ALTER TABLE ONLY public.tbl_auth_tokens
 
 
 --
--- TOC entry 4057 (class 0 OID 0)
--- Dependencies: 3731
+-- TOC entry 4074 (class 0 OID 0)
+-- Dependencies: 3746
 -- Name: CONSTRAINT fk_tokens_usuario ON tbl_auth_tokens; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -94193,7 +94388,7 @@ COMMENT ON CONSTRAINT fk_tokens_usuario ON public.tbl_auth_tokens IS 'Relaciona 
 
 
 --
--- TOC entry 3739 (class 2606 OID 73868)
+-- TOC entry 3754 (class 2606 OID 192657)
 -- Name: tbl_usuarios_roles_sistemas fk_urs_roles_sistemas; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -94202,7 +94397,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3740 (class 2606 OID 73873)
+-- TOC entry 3755 (class 2606 OID 192662)
 -- Name: tbl_usuarios_roles_sistemas fk_urs_usuario; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -94211,7 +94406,7 @@ ALTER TABLE ONLY public.tbl_usuarios_roles_sistemas
 
 
 --
--- TOC entry 3736 (class 2606 OID 73878)
+-- TOC entry 3751 (class 2606 OID 192667)
 -- Name: tbl_usuarios fk_usuario_departamento; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -94220,8 +94415,8 @@ ALTER TABLE ONLY public.tbl_usuarios
 
 
 --
--- TOC entry 4058 (class 0 OID 0)
--- Dependencies: 3736
+-- TOC entry 4075 (class 0 OID 0)
+-- Dependencies: 3751
 -- Name: CONSTRAINT fk_usuario_departamento ON tbl_usuarios; Type: COMMENT; Schema: public; Owner: postgres
 --
 
@@ -94229,7 +94424,7 @@ COMMENT ON CONSTRAINT fk_usuario_departamento ON public.tbl_usuarios IS 'Relacio
 
 
 --
--- TOC entry 3742 (class 2606 OID 73883)
+-- TOC entry 3757 (class 2606 OID 192672)
 -- Name: tbl_carga_familiar fk_CargaFamiliar; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -94238,8 +94433,8 @@ ALTER TABLE ONLY rrhh.tbl_carga_familiar
 
 
 --
--- TOC entry 4059 (class 0 OID 0)
--- Dependencies: 3742
+-- TOC entry 4076 (class 0 OID 0)
+-- Dependencies: 3757
 -- Name: CONSTRAINT "fk_CargaFamiliar" ON tbl_carga_familiar; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -94247,7 +94442,7 @@ COMMENT ON CONSTRAINT "fk_CargaFamiliar" ON rrhh.tbl_carga_familiar IS 'Relació
 
 
 --
--- TOC entry 3741 (class 2606 OID 73888)
+-- TOC entry 3756 (class 2606 OID 192677)
 -- Name: tbl_amonestaciones fk_amonestaciones; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -94256,8 +94451,8 @@ ALTER TABLE ONLY rrhh.tbl_amonestaciones
 
 
 --
--- TOC entry 4060 (class 0 OID 0)
--- Dependencies: 3741
+-- TOC entry 4077 (class 0 OID 0)
+-- Dependencies: 3756
 -- Name: CONSTRAINT fk_amonestaciones ON tbl_amonestaciones; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -94265,7 +94460,7 @@ COMMENT ON CONSTRAINT fk_amonestaciones ON rrhh.tbl_amonestaciones IS 'Relación
 
 
 --
--- TOC entry 3743 (class 2606 OID 73893)
+-- TOC entry 3758 (class 2606 OID 192682)
 -- Name: tbl_expediente fk_expediente_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -94274,8 +94469,8 @@ ALTER TABLE ONLY rrhh.tbl_expediente
 
 
 --
--- TOC entry 4061 (class 0 OID 0)
--- Dependencies: 3743
+-- TOC entry 4078 (class 0 OID 0)
+-- Dependencies: 3758
 -- Name: CONSTRAINT fk_expediente_usuario ON tbl_expediente; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -94283,7 +94478,7 @@ COMMENT ON CONSTRAINT fk_expediente_usuario ON rrhh.tbl_expediente IS 'Relación
 
 
 --
--- TOC entry 3744 (class 2606 OID 73898)
+-- TOC entry 3759 (class 2606 OID 192687)
 -- Name: tbl_permisos fk_permisos_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -94292,8 +94487,8 @@ ALTER TABLE ONLY rrhh.tbl_permisos
 
 
 --
--- TOC entry 4062 (class 0 OID 0)
--- Dependencies: 3744
+-- TOC entry 4079 (class 0 OID 0)
+-- Dependencies: 3759
 -- Name: CONSTRAINT fk_permisos_usuario ON tbl_permisos; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -94301,7 +94496,7 @@ COMMENT ON CONSTRAINT fk_permisos_usuario ON rrhh.tbl_permisos IS 'Relación ent
 
 
 --
--- TOC entry 3745 (class 2606 OID 73903)
+-- TOC entry 3760 (class 2606 OID 192692)
 -- Name: tbl_reposos fk_reposo_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -94310,8 +94505,8 @@ ALTER TABLE ONLY rrhh.tbl_reposos
 
 
 --
--- TOC entry 4063 (class 0 OID 0)
--- Dependencies: 3745
+-- TOC entry 4080 (class 0 OID 0)
+-- Dependencies: 3760
 -- Name: CONSTRAINT fk_reposo_usuario ON tbl_reposos; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -94319,7 +94514,7 @@ COMMENT ON CONSTRAINT fk_reposo_usuario ON rrhh.tbl_reposos IS 'Relación entre 
 
 
 --
--- TOC entry 3746 (class 2606 OID 73908)
+-- TOC entry 3761 (class 2606 OID 192697)
 -- Name: tbl_vacaciones fk_vacaciones_usuario; Type: FK CONSTRAINT; Schema: rrhh; Owner: postgres
 --
 
@@ -94328,8 +94523,8 @@ ALTER TABLE ONLY rrhh.tbl_vacaciones
 
 
 --
--- TOC entry 4064 (class 0 OID 0)
--- Dependencies: 3746
+-- TOC entry 4081 (class 0 OID 0)
+-- Dependencies: 3761
 -- Name: CONSTRAINT fk_vacaciones_usuario ON tbl_vacaciones; Type: COMMENT; Schema: rrhh; Owner: postgres
 --
 
@@ -94337,7 +94532,7 @@ COMMENT ON CONSTRAINT fk_vacaciones_usuario ON rrhh.tbl_vacaciones IS 'Relación
 
 
 --
--- TOC entry 3747 (class 2606 OID 73913)
+-- TOC entry 3762 (class 2606 OID 192702)
 -- Name: cat_sla_configuracion fk_cat_sla_prioridad; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -94346,7 +94541,7 @@ ALTER TABLE ONLY tickets.cat_sla_configuracion
 
 
 --
--- TOC entry 3748 (class 2606 OID 73918)
+-- TOC entry 3763 (class 2606 OID 192707)
 -- Name: tbl_tickets fk_tickets_usuario_asignado; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -94355,7 +94550,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3751 (class 2606 OID 73923)
+-- TOC entry 3766 (class 2606 OID 192712)
 -- Name: tbl_tickets_bitacora tbl_tickets_bitacora_ticket_id_fkey; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -94364,7 +94559,7 @@ ALTER TABLE ONLY tickets.tbl_tickets_bitacora
 
 
 --
--- TOC entry 3752 (class 2606 OID 73928)
+-- TOC entry 3767 (class 2606 OID 192717)
 -- Name: tbl_tickets_bitacora tbl_tickets_bitacora_usuario_id_fkey; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -94373,7 +94568,7 @@ ALTER TABLE ONLY tickets.tbl_tickets_bitacora
 
 
 --
--- TOC entry 3749 (class 2606 OID 73933)
+-- TOC entry 3764 (class 2606 OID 192722)
 -- Name: tbl_tickets tbl_tickets_cliente_juridico_id_fkey; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -94382,7 +94577,7 @@ ALTER TABLE ONLY tickets.tbl_tickets
 
 
 --
--- TOC entry 3750 (class 2606 OID 73938)
+-- TOC entry 3765 (class 2606 OID 192727)
 -- Name: tbl_tickets tbl_tickets_tipo_ticket_id_fkey; Type: FK CONSTRAINT; Schema: tickets; Owner: postgres
 --
 
@@ -94390,11 +94585,11 @@ ALTER TABLE ONLY tickets.tbl_tickets
     ADD CONSTRAINT tbl_tickets_tipo_ticket_id_fkey FOREIGN KEY (tipo_ticket_id) REFERENCES public.cat_datos_maestros(id);
 
 
--- Completed on 2026-11-23 23:44:04 -04
+-- Completed on 2026-11-25 14:56:20 -04
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict XW8ZtZMr0WVUbRR4g1wqpIFYhVD5VAq8o8AmJT2chSo8UwNq04JIDgCjzITKj3P
+\unrestrict EfjxaVStDuWRwx9AlGnY2EYCF07w3Y4GKhba3acTYMRavabxntA5nBKi632uLvd
 

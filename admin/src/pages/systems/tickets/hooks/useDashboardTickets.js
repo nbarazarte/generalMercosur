@@ -54,6 +54,7 @@ export function useDashboardTickets() {
     tipo_persona: "",
     creacion_desde: "",
     creacion_hasta: "",
+    creador_agente_id: "",
   });
 
   // ==========================================
@@ -113,7 +114,7 @@ export function useDashboardTickets() {
           Object.entries({
             ...paramsFiltros,
             rol: currentUserRole,
-            departamento: currentUserDepartamento_id, // vale 5 pero me da error
+            departamento: currentUserDepartamento_id,
           }).filter(([_, v]) => v !== "" && v != null),
         );
 
@@ -448,6 +449,7 @@ export function useDashboardTickets() {
       tipo_persona: "",
       creacion_desde: "",
       creacion_hasta: "",
+      creador_agente_id: "",
     });
   };
 

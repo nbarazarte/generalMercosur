@@ -142,6 +142,7 @@ export default function DashboardTickets() {
           empleadosFiltrados={empleadosFiltrados}
           currentUserRole={currentUserRole}
           currentUserDepartamento={currentUserDepartamento}
+          casosPorAnalista={casosPorAnalista}
         />
 
         {/* TARJETAS KPI */}

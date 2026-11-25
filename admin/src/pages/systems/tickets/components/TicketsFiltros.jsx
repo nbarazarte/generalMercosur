@@ -381,7 +381,8 @@ export function TicketsFiltros({
           </button>
 
           {/* Con esto habilito el boton de exportar solo cuando los tickets sean de tipo externos (que sean del admin y la persona sea natural) */}
-          {fTipoTicket === "25" && fTipoPersona === "natural" && (
+
+          {/* {fTipoTicket === "25" && fTipoPersona === "natural" && (
             <button
               className="btn-icon"
               onClick={exportarExcelTicketsAdminYMep}
@@ -396,7 +397,7 @@ export function TicketsFiltros({
             >
               <DynamicIcon name="RiFileExcel2Line" style={{ fontSize: 22 }} />
             </button>
-          )}
+          )} */}
         </div>
       </div>
     </div>

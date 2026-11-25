@@ -11,6 +11,7 @@ export function TicketDashboardFiltros({
   empleadosFiltrados,
   currentUserRole,
   currentUserDepartamento,
+  casosPorAnalista,
 }) {
   const filtroStyle = {
     padding: "8px 12px",
@@ -52,6 +53,8 @@ export function TicketDashboardFiltros({
     ?.toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+
+  //console.log(casosPorAnalista)
 
   return (
     <div
@@ -147,6 +150,25 @@ export function TicketDashboardFiltros({
           {listaEstatus.map((est) => (
             <option key={est.id} value={est.id}>
               {est.str_nombre}
+            </option>
+          ))}
+        </select>
+
+        {/* Creado por */}
+        <select
+          value={filtros.creador_agente_id}
+          onChange={(e) =>
+            setFiltros((prev) => ({
+              ...prev,
+              creador_agente_id: e.target.value,
+            }))
+          }
+          style={filtroStyle}
+        >
+          <option value="">Creado por</option>
+          {casosPorAnalista.map((d) => (
+            <option key={d.creador_agente_id} value={d.creador_agente_id}>
+              {d.nombre_analista}
             </option>
           ))}
         </select>

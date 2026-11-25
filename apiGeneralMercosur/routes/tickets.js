@@ -120,6 +120,7 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
     tipo_persona,
     creacion_desde,
     creacion_hasta,
+    creador_agente_id,
     rol,
     departamento, // id del departamento al que pertenece el usuario logueado
   } = req.query;
@@ -190,6 +191,10 @@ function construirFiltrosDashboard(req, aliasTabla = "t") {
   if (creacion_hasta) {
     whereClause += ` AND ${aliasTabla}.created_at <= ($${paramIndex++}::timestamp + INTERVAL '1 day' - INTERVAL '1 second')`;
     params.push(creacion_hasta);
+  }
+  if (creador_agente_id) {
+    whereClause += ` AND ${aliasTabla}.creador_agente_id = $${paramIndex++}`;
+    params.push(Number(creador_agente_id));
   }
 
   return { whereClause, params };
@@ -279,7 +284,7 @@ router.get("/dashboard/casos-por-analista", async (req, res) => {
   try {
     const { whereClause, params } = construirFiltrosDashboard(req, "t");
 
-    let query = `SELECT  COALESCE(creador_nombre || ' ' || creador_apellido, 'Sin Asignar') AS nombre_analista,
+    let query = `SELECT creador_agente_id,COALESCE(creador_nombre || ' ' || creador_apellido, 'Sin Asignar') AS nombre_analista,
           COUNT(t.id) AS total_tickets
           FROM tickets.view_listar_tickets t ${whereClause}
           GROUP BY t.creador_agente_id, creador_nombre, creador_apellido
